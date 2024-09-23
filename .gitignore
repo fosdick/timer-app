@@ -1,0 +1,11 @@
+node_modules
+.expo
+dist
+*.tgz
+android
+ios
+.yarn
+package-lock.json
+*/package-lock.json
+.DS_Store
+*/.DS_Store
