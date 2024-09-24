@@ -7,7 +7,7 @@ import { ThemedView } from '@/components/ThemedView';
 
 import  Clock  from '@/components/Clock';
 
-import Beats from '@/components/beats'
+// import Beats from '@/components/beats'
 
 export default function HomeScreen() {
   return (
@@ -26,7 +26,7 @@ export default function HomeScreen() {
         <ThemedText><Clock></Clock></ThemedText>
         <ThemedView>
        
-        <ThemedText><Beats></Beats></ThemedText>
+        {/* <ThemedText><Beats></Beats></ThemedText> */}
       </ThemedView>
       
      

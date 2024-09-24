@@ -25,7 +25,7 @@ export default function Beats()  {
             );
             // setSound(sound);
         
-            console.log('Playing Sound', sound);
+            // console.log('Playing Sound', sound);
             // await sound.playAsync();
           }
         playSound()
