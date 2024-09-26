@@ -108,7 +108,7 @@ export default function Metronome() {
           if (!isStop && totalTime >= 0) {
            setTotalTime(totalTime - 1);
            setBeatCount(beatCount + 1);
-           if (beatCount % beatInterval === 0 && beatCount !== 0 && isMetronomeEnabled) {
+           if (beatCount % beatInterval === 0 && beatCount !== 0 ) {
             playBeat();
            }
             setAlarmString(formatTime(getRemainingTime()));
