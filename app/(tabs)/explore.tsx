@@ -10,16 +10,13 @@ export default function TabTwoScreen() {
 
 
   return (
-    <View style={styles.viewBody}>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Pranayama Timer</ThemedText>
-        
-      </ThemedView>
-      <ThemedView>
-      <Metronome></Metronome>
-      </ThemedView>
+    <ThemedView style={styles.viewBody}>
      
-    </View>
+      
+      <Metronome></Metronome>
+     
+     
+    </ThemedView>
   );
 }
 
@@ -35,6 +32,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   viewBody: {
-    marginTop:30
+    marginTop:30,
+    // backgroundColor: 'none'
   }
 });
