@@ -1,4 +1,3 @@
-import { Audio } from 'expo-av';
 import { LinearGradient } from "expo-linear-gradient"; // or `import LinearGradient from "react-native-linear-gradient"`
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -6,6 +5,10 @@ import { useEffect, useState} from 'react';
 import {StyleSheet, Switch, Text, TouchableOpacity, View} from 'react-native';
 import Slider from '@react-native-community/slider';
 import { TimerPickerModal } from "react-native-timer-picker";
+import { TimerStyles } from '@/assets/styles/timer-app'
+import { formatTime} from "../assets/utils/format-time";
+import {playBeat, playEndChime} from '../assets/utils/sounds'
+import { Audio } from 'expo-av';
 
 const PRANAYAMA_TIMER_APP_DATA: string = 'pranayama_timer_app_data'
 type PranayamaTimerAppData = {
@@ -30,9 +33,6 @@ const storePersistenceData  = async (value: PranayamaTimerAppData) => {
     }
   };
 
-Audio.setAudioModeAsync({
-    playsInSilentModeIOS: true,
-});
 const DEFAULT_BEAT_INTERVAL = 3;
 const DEFAULT_BEAT_COUNT = 0;
 const DEFAULT_METRONOME_ON = true;
@@ -62,43 +62,9 @@ export default function Metronome() {
         }
     }
 
-    const formatTime = ({
-        hours,
-        minutes,
-        seconds,
-    }: {
-        hours?: number;
-        minutes?: number;
-        seconds?: number;
-    }) => {
-        const timeParts = [];
-        if (hours !== undefined) {
-            timeParts.push(hours.toString().padStart(2, "0"));
-        }
-        if (minutes !== undefined) {
-            timeParts.push(minutes.toString().padStart(2, "0"));
-        }
-        if (seconds !== undefined) {
-            timeParts.push(seconds.toString().padStart(2, "0"));
-        }
-        return timeParts.join(":");
-    };
+
     
-    
-    const playBeat = () => {
-        async function playSound() {
-            const { sound } = await Audio.Sound.createAsync( require('../assets/sounds/sticks-low-1.wav'));
-            await sound.playAsync();
-          }
-        playSound()
-    }
-    const playEndChime = () => {
-        async function playSound() {
-            const { sound } = await Audio.Sound.createAsync( require('../assets/sounds/end-bell.wav'));
-            await sound.playAsync();
-          }
-        playSound()
-    }
+
     useEffect(() => {
         
 
@@ -124,14 +90,14 @@ export default function Metronome() {
         });
     return (
 
-      <View style={styles.metronomeTheme}>
+      <View style={TimerStyles.metronomeTheme}>
         
         <TouchableOpacity
             activeOpacity={0.7}
             onPress={() => setShowPicker(true)}>
             <View style={{alignItems: "center"}}>
                 {alarmString !== null ? (
-                    <Text style={styles.timerFace}>
+                    <Text style={TimerStyles.timerFace}>
                         {alarmString}
                     </Text>
                 ) : null}
@@ -139,7 +105,7 @@ export default function Metronome() {
                     activeOpacity={0.7}
                     onPress={() => setShowPicker(true)}>
                     <View style={{marginTop: 30}}>
-                        <Text style={styles.timePicker}>
+                        <Text style={TimerStyles.timePicker}>
                             Set Time
                         </Text>
                     </View>
@@ -148,16 +114,16 @@ export default function Metronome() {
                     activeOpacity={0.7}
                     onPress={() => setIsStop(!isStop)}>
                     
-                    <View style={{marginTop: 30}}>
-                        <Text style={styles.startButton}>
+                    <View style={TimerStyles.marginTop}>
+                        <Text style={TimerStyles.startButton}>
                             {isStop === true ? "Start" : "Stop"}
                         </Text>
                     </View>
                     </TouchableOpacity>
-                    <View><Text style={styles.metronome}>
+                    <View><Text style={TimerStyles.metronome}>
                         Metronome Count (seconds)
                     </Text></View>
-                    <View><Text style={styles.valueText}>
+                    <View><Text style={TimerStyles.valueText}>
                         {beatInterval}
                     </Text></View>
                     <Slider
@@ -196,7 +162,7 @@ export default function Metronome() {
                 overlayOpacity: 0.2,
             }}
         />
-        <View><Text style={styles.valueText}>
+        <View><Text style={TimerStyles.valueText}>
                         Metronome {isMetronomeEnabled ? "On" : "Off"}
                     </Text></View>
    <Switch
@@ -210,59 +176,3 @@ export default function Metronome() {
     );
 }
 
-
-const styles = StyleSheet.create({
-    metronomeTheme: {
-        // backgroundColor: '#DBD6D2',
-        alignItems: "center", 
-        justifyContent: "center",
-    },
-    timePicker: {
-      paddingVertical: 10,
-      paddingHorizontal: 18,
-      borderWidth: 1,
-      borderRadius: 10,
-      fontSize: 16,
-      overflow: "hidden",
-      borderColor: "#65BABF",
-      color: "#3670A5"
-      },
-      startButton: {
-        paddingVertical: 18,
-        paddingHorizontal: 48,
-        borderWidth: 1,
-        borderRadius: 10,
-        fontSize: 16,
-        overflow: "hidden",
-        borderColor: "#65BABF",
-        color: "#3670A5"
-        },
-      metronome: {
-        marginTop:30,
-        paddingVertical: 10,
-        paddingHorizontal: 18,
-        fontSize: 16,
-        overflow: "hidden",
-        borderColor: "#65BABF",
-        color: "#3670A5"
-        },
-        valueText: {
-            
-            paddingVertical: 10,
-            paddingHorizontal: 18,
-            fontSize: 16,
-            fontWeight: 400,
-            overflow: "hidden",
-            borderColor: "#65BABF",
-            color: "#3670A5"
-            },
-        timerFace: {
-            marginTop:30,
-            paddingVertical: 10,
-            paddingHorizontal: 18,
-            fontSize: 75,
-            overflow: "hidden",
-            borderColor: "#65BABF",
-            color: "#3670A5"
-            }
-  });

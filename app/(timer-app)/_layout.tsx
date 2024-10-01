@@ -10,24 +10,37 @@ export default function TabLayout() {
 
   return (
     <Tabs
+    sceneContainerStyle={{
+      // backgroundColor:'#000'
+    }}
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme ?? 'dark'].tint,
         headerShown: false,
-      }}>
+      }}
+      >
       <Tabs.Screen
         name="index"
         options={{
 
-          title: 'Home',
+          title: 'Pranayama',
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon name={focused ? 'home' : 'home-outline'} color={color} />
           ),
         }}
       />
       <Tabs.Screen
-        name="explore"
+        name="yoga"
         options={{
-          title: 'Explore',
+          title: 'Yoga',
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon name={focused ? 'code-slash' : 'code-slash-outline'} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="hitt"
+        options={{
+          title: 'HITT',
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon name={focused ? 'code-slash' : 'code-slash-outline'} color={color} />
           ),
