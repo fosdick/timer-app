@@ -1,6 +1,7 @@
 import {StyleSheet} from 'react-native';
 
-
+// const fontColor = '#3670A5';
+const fontColor = '#629231'
 export const TimerStyles = StyleSheet.create({
 
     marginTop: {
@@ -19,7 +20,7 @@ timerFace: {
     fontSize: 75,
     overflow: "hidden",
     borderColor: "#65BABF",
-    color: "#3670A5",
+    color: fontColor,
     fontVariant: ['tabular-nums']
     },
     timePicker: {
@@ -30,7 +31,7 @@ timerFace: {
         fontSize: 16,
         overflow: "hidden",
         borderColor: "#65BABF",
-        color: "#3670A5"
+        color: fontColor,
         },
         startButton: {
           paddingVertical: 18,
@@ -40,7 +41,7 @@ timerFace: {
           fontSize: 16,
           overflow: "hidden",
           borderColor: "#65BABF",
-          color: "#3670A5"
+          color: fontColor,
           },
         metronome: {
           marginTop:15,
@@ -49,7 +50,7 @@ timerFace: {
           fontSize: 16,
           overflow: "hidden",
           borderColor: "#65BABF",
-          color: "#3670A5"
+          color: fontColor,
           },
           valueText: {
               
@@ -59,7 +60,7 @@ timerFace: {
               fontWeight: 400,
               overflow: "hidden",
               borderColor: "#65BABF",
-              color: "#3670A5"
+              color: fontColor,
               },
               small: {
                 fontSize:16,
