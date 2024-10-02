@@ -16,22 +16,6 @@ const DEFAULT_REST_TIME = 2;
 export default function HittView() {
 
 
-    const [totalTime, setTotalTime] = useState<number>(0);
-    const [isStop, setIsStop] = useState<boolean>(true);
-    const [numberRounds, setNumberRounds] = useState<number>(DEFAULT_NUMBER_ROUNDS);
-    const [roundsRemaining, setRoundsRemaining] =useState<number>(DEFAULT_NUMBER_ROUNDS);
-
-    const [totalIntervalTimeString, setTotalIntervalTimeString] = useState<string | null>("00:00:00");
-
-    const [workoutIntervalValue, setWorkoutIntervalValue] = useState<any>('00:30');
-    const [restIntervalValue, setRestIntervalValue] = useState<any>('00:30');
-
-    const [initialWorkoutTotalTime, setInitialWorkoutTotalTime] = useState<number>(DEFAULT_WORKOUT_TIME);
-    const [initialRestTotalTime, setInitialRestTotalTime] = useState<number>(DEFAULT_REST_TIME);
-
-    const [currentWorkoutTotalTime, setCurrentWorkoutTotalTime] = useState<number>(DEFAULT_WORKOUT_TIME);
-    const [currentRestTotalTime, setCurrentRestTotalTime] = useState<number>(DEFAULT_REST_TIME);
-
     const getTimeRemaining = () => {
         const remaining = totalTime;
         const minutes = Math.floor(remaining/ 60);
@@ -40,16 +24,50 @@ export default function HittView() {
             minutes, seconds
         }
     }
+    const getTimePartsMinSec = (val:number) => {
+        const minutes = Math.floor(val / 60);
+        const seconds = val % 60
+        return {
+            minutes, seconds
+        }
+    }
+
+    const [totalTime, setTotalTime] = useState<number>(0);
+    const [isStop, setIsStop] = useState<boolean>(true);
+    const [numberRounds, setNumberRounds] = useState<number>(DEFAULT_NUMBER_ROUNDS);
+    const [roundsRemaining, setRoundsRemaining] =useState<number>(DEFAULT_NUMBER_ROUNDS);
+
+    const [totalIntervalTimeString, setTotalIntervalTimeString] = useState<string | null>("00:00:00");
+
+    const [workoutIntervalDisplayString, setWorkoutIntervalDisplayString] = useState<any>(formatMinutesSeonds(getTimePartsMinSec(DEFAULT_WORKOUT_TIME)));
+    const [restIntervalDisplayString, setRestIntervalDisplayString] = useState<any>(formatMinutesSeonds(getTimePartsMinSec(DEFAULT_REST_TIME)));
+
+    const [initialWorkoutTotalTime, setInitialWorkoutTotalTime] = useState<number>(DEFAULT_WORKOUT_TIME);
+    const [initialRestTotalTime, setInitialRestTotalTime] = useState<number>(DEFAULT_REST_TIME);
+
+    const [currentWorkoutTotalTime, setCurrentWorkoutTotalTime] = useState<number>(DEFAULT_WORKOUT_TIME);
+    const [currentRestTotalTime, setCurrentRestTotalTime] = useState<number>(DEFAULT_REST_TIME);
+
+    const resetInitalState = () => {
+        const ms = (initialWorkoutTotalTime + initialRestTotalTime) * numberRounds;
+        setTotalTime(ms);
+        setTotalIntervalTimeString(formatTime(getTimePartsMinSec(ms)));
+        setCurrentWorkoutTotalTime(initialWorkoutTotalTime);
+        setCurrentRestTotalTime(initialRestTotalTime);
+    }
+    
 
 
     useEffect(() => {
         
-        setTotalTime((initialWorkoutTotalTime + initialRestTotalTime) * numberRounds);
-        setTotalIntervalTimeString(formatTime(getTimeRemaining()));
-
         const intervalid: any = setTimeout(() => {
-          if (!isStop && roundsRemaining >= 0) {
+            
+          if (!isStop && roundsRemaining >= 0 && totalTime >= 0) {
+            setTotalTime(totalTime - 1);
             setTotalIntervalTimeString(formatTime(getTimeRemaining()));
+            setWorkoutIntervalDisplayString(formatMinutesSeonds(getTimePartsMinSec(currentWorkoutTotalTime)));
+            setRestIntervalDisplayString(formatMinutesSeonds(getTimePartsMinSec(currentRestTotalTime)))
+
            if (currentRestTotalTime === 0 && currentWorkoutTotalTime === 0) {
             setRoundsRemaining(roundsRemaining - 1);
             setCurrentWorkoutTotalTime(initialWorkoutTotalTime);
@@ -65,6 +83,12 @@ export default function HittView() {
            }
            
         }
+        if (totalTime < 0) {
+            setTotalTime(0);
+        }
+        if (roundsRemaining === 0) {
+            setIsStop(true);
+        }
           
           
         }, 1000);
@@ -72,32 +96,42 @@ export default function HittView() {
         });
 
 
-
     return (
     <View style={TimerStyles.metronomeTheme}>
-         
-        <Text>{JSON.stringify(isStop)}</Text>
-        <Text>{JSON.stringify(roundsRemaining)}</Text>
-        <Text>{JSON.stringify(currentWorkoutTotalTime )}</Text>
-        <Text>{JSON.stringify(currentRestTotalTime)}</Text>
-        <Text>{JSON.stringify(initialRestTotalTime)} ir</Text>
-
-         <View style={TimerStyles.metronomeTheme}>
+        <View style={TimerStyles.metronomeTheme}>
          <Text style={TimerStyles.metronome}>
-                        Total Remaining
+                        Total Remaining : {totalIntervalTimeString}
                         </Text>
-              <Text style={TimerStyles.timerFace}>{totalIntervalTimeString}</Text>
          </View>
 
+           <View style={TimerStyles.metronomeTheme}>
+         <Text style={TimerStyles.metronome}>
+                        Rounds Remaining : 
+                        </Text>
+              <Text style={TimerStyles.timerFace}>{roundsRemaining}</Text>
+         </View>
+        {/* <Text>{JSON.stringify(isStop)}</Text>
+       
+        <Text>{JSON.stringify(currentWorkoutTotalTime )}</Text>
+        <Text>{JSON.stringify(workoutIntervalDisplayString )}wds</Text>
+        <Text>{JSON.stringify(currentRestTotalTime)}</Text>
+        <Text>{JSON.stringify(initialRestTotalTime)} ir</Text>
+        <Text>{JSON.stringify(totalTime)} tot t</Text> */}
+
+         
    
-        <HittIntervalPicker textTitle='Workout' pickerDisplayTimeString={workoutIntervalValue}
-            setIntervalValue={{setIntervalValue: setWorkoutIntervalValue}}
-            setInitialTotalTime={{setInitialTotalTime:setInitialWorkoutTotalTime}}>
+        <HittIntervalPicker textTitle='Workout' pickerDisplayTimeString={workoutIntervalDisplayString}
+            setIntervalDisplayString={{setIntervalDisplayString: setWorkoutIntervalDisplayString}}
+            setInitialTotalTime={{setInitialTotalTime:setInitialWorkoutTotalTime}}
+            setCurrentTotalTime={{setCurrentTotalTime:setCurrentWorkoutTotalTime}}
+            updateValue={{updateValue: resetInitalState}}>
         </HittIntervalPicker>
 
-        <HittIntervalPicker textTitle='Rest' pickerDisplayTimeString={restIntervalValue}
-            setIntervalValue={{setIntervalValue: setRestIntervalValue}}
-            setInitialTotalTime={{setInitialTotalTime:setInitialRestTotalTime}}>
+        <HittIntervalPicker textTitle='Rest' pickerDisplayTimeString={restIntervalDisplayString}
+            setIntervalDisplayString={{setIntervalDisplayString: setRestIntervalDisplayString}}
+            setInitialTotalTime={{setInitialTotalTime:setInitialRestTotalTime}}
+            setCurrentTotalTime={{setCurrentTotalTime:setCurrentRestTotalTime}}
+            updateValue={{updateValue: resetInitalState}}>
         </HittIntervalPicker>
    
       
@@ -119,8 +153,8 @@ export default function HittView() {
                         value={DEFAULT_NUMBER_ROUNDS}
                         minimumTrackTintColor='#C3D8DB'
                         maximumTrackTintColor='#767577'
-                        onValueChange={(val) => setNumberRounds(val)}
-                        onSlidingComplete={(val) => setNumberRounds(val)}
+                        onValueChange={(val) => {setIsStop(true); setNumberRounds(val); setRoundsRemaining(val); resetInitalState()}}
+                        onSlidingComplete={(val) => {setNumberRounds(val); setRoundsRemaining(val); resetInitalState()}}
                     />
 
 

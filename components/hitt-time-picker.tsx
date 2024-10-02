@@ -38,10 +38,12 @@ return (
             visible={showPicker}
             setIsVisible={setShowPicker}
             onConfirm={(pickedDuration) => {
-                props.setIntervalValue.setIntervalValue(pickedDuration);
+                // props.setIntervalValue.setIntervalValue(pickedDuration);
                 setShowPicker(false);
-                props.setIntervalValue.setIntervalValue(formatMinutesSeonds(pickedDuration));
+                props.setIntervalDisplayString.setIntervalDisplayString(formatMinutesSeonds(pickedDuration));
                 props.setInitialTotalTime.setInitialTotalTime((pickedDuration.minutes * 60) + (pickedDuration.seconds));
+                props.setCurrentTotalTime.setCurrentTotalTime((pickedDuration.minutes * 60) + (pickedDuration.seconds));
+                props.updateValue.updateValue();
             }}
             hideHours={true}
             modalTitle="Interval Length"
