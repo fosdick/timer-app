@@ -28,11 +28,8 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack
-      screenOptions={{ title: 'Timer App' }}
-      
-      >
-        <Stack.Screen name="+html" options={{ headerShown: false }} />
+      <Stack screenOptions={{ title: 'Timer App' }}>
+        {/* <Stack.Screen name="+html" options={{ headerShown: false }} /> */}
         <Stack.Screen name="+not-found" />
       </Stack>
     </ThemeProvider>

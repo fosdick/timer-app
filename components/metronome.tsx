@@ -5,7 +5,7 @@ import { useEffect, useState} from 'react';
 import {StyleSheet, Switch, Text, TouchableOpacity, View} from 'react-native';
 import Slider from '@react-native-community/slider';
 import { TimerPickerModal } from "react-native-timer-picker";
-import { TimerStyles } from '@/assets/styles/timer-app'
+import { TimerStyles, GreenTheme } from '@/assets/styles/timer-app'
 import { formatTime} from "../assets/utils/format-time";
 import {playBeat, playEndChime} from '../assets/utils/sounds'
 import { Audio } from 'expo-av';
@@ -132,10 +132,11 @@ export default function Metronome() {
                         maximumValue={20}
                         step={1}
                         value={DEFAULT_BEAT_INTERVAL}
-                        minimumTrackTintColor='#C3D8DB'
-                        maximumTrackTintColor='#767577'
+                        minimumTrackTintColor={GreenTheme.thumbColorEnabled}
+                        maximumTrackTintColor={GreenTheme.trackColorTrue}
                         onValueChange={(val) => setBeatInterval(val)}
                         onSlidingComplete={(val) => setBeatInterval(val)}
+                        thumbTintColor={GreenTheme.trackColorTrue}
                     />
                 
             </View>
@@ -166,8 +167,8 @@ export default function Metronome() {
                         Metronome {isMetronomeEnabled ? "On" : "Off"}
                     </Text></View>
    <Switch
-    trackColor={{false: '#f4f3f4', true: '#767577'}}
-    thumbColor={isMetronomeEnabled ? '#f4f3f4' : '#C3D8DB'}
+    trackColor={{false: GreenTheme.thumbColorDisabled, true: GreenTheme.thumbColorEnabled}}
+    thumbColor={GreenTheme.trackColorFalse}
     // ios_backgroundColor="#3e3e3e"
     onValueChange={toggleMetronomeEnabled}
     value={isMetronomeEnabled}

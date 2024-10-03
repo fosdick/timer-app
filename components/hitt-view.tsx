@@ -3,7 +3,7 @@ import {useEffect, useState} from 'react'
 import {Text, TouchableOpacity, View} from 'react-native';
 import Slider from '@react-native-community/slider';
 
-import {TimerStyles} from '@/assets/styles/timer-app'
+import {TimerStyles, GreenTheme} from '@/assets/styles/timer-app'
 
 import HittIntervalPicker from '@/components/hitt-time-picker';
 
@@ -151,8 +151,9 @@ export default function HittView() {
                         maximumValue={50}
                         step={1}
                         value={DEFAULT_NUMBER_ROUNDS}
-                        minimumTrackTintColor='#C3D8DB'
-                        maximumTrackTintColor='#767577'
+                        minimumTrackTintColor={GreenTheme.thumbColorEnabled}
+                        maximumTrackTintColor={GreenTheme.trackColorTrue}
+                        thumbTintColor={GreenTheme.trackColorTrue}
                         onValueChange={(val) => {setIsStop(true); setNumberRounds(val); setRoundsRemaining(val); resetInitalState()}}
                         onSlidingComplete={(val) => {setNumberRounds(val); setRoundsRemaining(val); resetInitalState()}}
                     />
