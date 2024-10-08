@@ -1,48 +1,56 @@
-import { Tabs } from 'expo-router';
-import React from 'react';
-
-import { TabBarIcon } from '@/components/navigation/TabBarIcon';
-import { Colors } from '@/constants/Colors';
-import { useColorScheme } from '@/hooks/useColorScheme';
+import { Tabs } from "expo-router";
+import React from "react";
+import { TabBarIcon } from "@/components/navigation/TabBarIcon";
+import { Colors } from "@/constants/Colors";
+import { useColorScheme } from "@/hooks/useColorScheme";
+import { useKeepAwake } from "expo-keep-awake";
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
-
+  useKeepAwake();
   return (
     <Tabs
-    sceneContainerStyle={{
-      backgroundColor:'#080B0c'
-    }}
+      sceneContainerStyle={{
+        backgroundColor: "#080B0c",
+      }}
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'dark'].tint,
+        tabBarActiveTintColor: Colors[colorScheme ?? "dark"].tint,
         headerShown: false,
       }}
-      >
+    >
       <Tabs.Screen
         name="index"
         options={{
-
-          title: 'Pranayama',
+          title: "Pranayama",
           tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'home' : 'home-outline'} color={color} />
+            <TabBarIcon
+              name={focused ? "home" : "home-outline"}
+              color={color}
+            />
           ),
         }}
       />
       <Tabs.Screen
         name="yoga"
         options={{
-          title: 'Yoga',
+          title: "Yoga",
           tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'code-slash' : 'code-slash-outline'} color={color} />
+            <TabBarIcon
+              name={focused ? "code-slash" : "code-slash-outline"}
+              color={color}
+            />
           ),
         }}
       />
       <Tabs.Screen
         name="hitt"
         options={{
-          title: 'HITT',
+          title: "HITT",
           tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'code-slash' : 'code-slash-outline'} color={color} />
+            <TabBarIcon
+              name={focused ? "code-slash" : "code-slash-outline"}
+              color={color}
+            />
           ),
         }}
       />

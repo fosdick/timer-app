@@ -29,7 +29,6 @@ export default function HittIntervalPicker(props: any) {
         visible={showPicker}
         setIsVisible={setShowPicker}
         onConfirm={(pickedDuration) => {
-          // props.setIntervalValue.setIntervalValue(pickedDuration);
           setShowPicker(false);
           props.setIntervalDisplayString.setIntervalDisplayString(
             formatMinutesSeonds(pickedDuration)
@@ -40,7 +39,6 @@ export default function HittIntervalPicker(props: any) {
           props.setCurrentTotalTime.setCurrentTotalTime(
             pickedDuration.minutes * 60 + pickedDuration.seconds
           );
-          // props.updateValue.updateValue();
         }}
         hideHours={true}
         modalTitle="Interval Length"

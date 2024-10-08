@@ -138,7 +138,6 @@ export default function HittView() {
         setCurrentTotalTime={{
           setCurrentTotalTime: setCurrentWorkoutTotalTime,
         }}
-        // updateValue={{updateValue: resetInitalState}}
       ></HittIntervalPicker>
 
       <HittIntervalPicker
@@ -149,7 +148,6 @@ export default function HittView() {
         }}
         setInitialTotalTime={{ setInitialTotalTime: setInitialRestTotalTime }}
         setCurrentTotalTime={{ setCurrentTotalTime: setCurrentRestTotalTime }}
-        // updateValue={{updateValue: resetInitalState}}
       ></HittIntervalPicker>
 
       <View>
