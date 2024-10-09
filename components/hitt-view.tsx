@@ -8,12 +8,25 @@ import { TimerStyles, GreenTheme } from "@/assets/styles/timer-app";
 import HittIntervalPicker from "@/components/hitt-time-picker";
 
 import { formatMinutesSeonds, formatTime } from "../assets/utils/format-time";
+// import { getData, storeData } from "../assets/utils/persistant-storage";
 
-const DEFAULT_NUMBER_ROUNDS = 10;
-const DEFAULT_WORKOUT_TIME = 2;
-const DEFAULT_REST_TIME = 2;
+export default async function HittView() {
+  const HITT_DATA_STORAGE_KEY = "hitt-data-storage-key";
+  const DEFAULT_NUMBER_ROUNDS = 10;
+  const DEFAULT_WORKOUT_TIME = 2;
+  const DEFAULT_REST_TIME = 2;
 
-export default function HittView() {
+  useState(() => {
+    const HITT_DATA_STORAGE_KEY = "hitt-data-storage-key";
+    // const persistantStorageData = getData(HITT_DATA_STORAGE_KEY);
+
+    //     setNumberRounds(
+    //       persistantStorageData.numberRounds || DEFAULT_NUMBER_ROUNDS
+    //     );
+    //     setInitialWorkoutTotalTime(persistantStorageData.workoutTime || 2);
+    //     setInitialRestTotalTime(persistantStorageData.restTime || 2);
+    //   });
+  });
   const getTimeRemaining = () => {
     const remaining = totalTime;
     const minutes = Math.floor(remaining / 60);
@@ -68,6 +81,11 @@ export default function HittView() {
     setTotalIntervalTimeString(formatTime(getTimePartsMinSec(ms)));
     setCurrentWorkoutTotalTime(initialWorkoutTotalTime);
     setCurrentRestTotalTime(initialRestTotalTime);
+    // storeData(HITT_DATA_STORAGE_KEY, {
+    //   numberRounds: numberRounds,
+    //   workoutTime: initialWorkoutTotalTime,
+    //   restTime: initialRestTotalTime,
+    // });
   };
 
   useEffect(() => {

@@ -11,7 +11,7 @@ import {
 import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
-import Metronome from "@/components/metronome";
+import Metronome from "@/components/pranayama";
 
 export default function TabTwoScreen() {
   return (

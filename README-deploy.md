@@ -9,9 +9,7 @@ eas
 with RN, expo and eas (eas install global)
 sign into expo and apple , open xcode and sign in
 
-```bash
-eas build --platform ios
-```
+<!-- https://docs.expo.dev/submit/ios/ -->
 
 ```bash
 eas build --platform ios
