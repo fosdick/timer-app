@@ -4,7 +4,7 @@ import { Text, TouchableOpacity, View } from "react-native";
 import Slider from "@react-native-community/slider";
 
 import { TimerStyles, GreenTheme } from "@/assets/styles/timer-app";
-
+import { playLevelComplete, playHittStart } from "@/assets/utils/sounds";
 import HittIntervalPicker from "@/components/hitt-time-picker";
 
 import EventEmitter from "eventemitter3";
@@ -28,7 +28,6 @@ export default function HittView() {
     TIMER_ENDED_EVENT_NAME,
     () => {
       startTimerAgain();
-      console.log("on event test");
     },
     {}
   );
@@ -157,10 +156,17 @@ export default function HittView() {
           setRoundsRemaining(roundsRemaining - 1);
           setCurrentWorkoutTotalTime(initialWorkoutTotalTime);
           setCurrentRestTotalTime(initialRestTotalTime);
+          playHittStart();
         }
 
         if (currentWorkoutTotalTime > 0 && currentRestTotalTime > 0) {
           setCurrentWorkoutTotalTime(currentWorkoutTotalTime - 1);
+        }
+        if (
+          currentWorkoutTotalTime === 0 &&
+          currentRestTotalTime === initialRestTotalTime
+        ) {
+          playLevelComplete();
         }
 
         if (currentWorkoutTotalTime === 0 && currentRestTotalTime > 0) {
@@ -258,8 +264,11 @@ export default function HittView() {
       <TouchableOpacity
         activeOpacity={0.7}
         onPress={() => {
+          if (isStop) {
+            playHittStart();
+          }
           setIsStop(!isStop);
-          resetInitalState();
+          //   resetInitalState();
         }}
       >
         <View style={TimerStyles.marginTop}>

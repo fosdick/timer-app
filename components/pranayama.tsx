@@ -7,7 +7,7 @@ import Slider from "@react-native-community/slider";
 import { TimerPickerModal } from "react-native-timer-picker";
 import { TimerStyles, GreenTheme } from "@/assets/styles/timer-app";
 import { formatTime, getTimeParts } from "../assets/utils/format-time";
-import { playBeat, playEndChime } from "../assets/utils/sounds";
+import { playBeat, playEndChime, playSnap } from "../assets/utils/sounds";
 import { Audio } from "expo-av";
 import { getData, storeData } from "../assets/utils/persistant-storage";
 
@@ -16,7 +16,7 @@ const PRANAYAMA_TIMER_APP_DATA: string = "pranayama_timer_app_data";
 const DEFAULT_BEAT_INTERVAL = 3;
 const DEFAULT_BEAT_COUNT = 0;
 const DEFAULT_METRONOME_ON = true;
-const DEFAULT_TIMER_LENGTH = 5 * 60;
+const DEFAULT_TIMER_LENGTH = 300;
 
 export default function Metronome() {
   const [isMetronomeEnabled, setIsMetronomeEnabled] =
@@ -26,7 +26,7 @@ export default function Metronome() {
   };
   const getRemainingTime = () => {
     const hours = Math.floor(totalTime / 3600);
-    const minutes = (totalTime - hours * 3600) / 60;
+    const minutes = Math.floor((totalTime - hours * 3600) / 60);
     const seconds = totalTime % 60;
     return {
       hours,
@@ -46,21 +46,14 @@ export default function Metronome() {
   const [beatInterval, setBeatInterval] = useState(DEFAULT_BEAT_INTERVAL);
   const [beatCount, setBeatCount] = useState(DEFAULT_BEAT_COUNT);
 
-  const [lastTotalTime, setLastTotalTiime] = useState();
-
   const updateInitialState = () => {
     storeData(PRANAYAMA_TIMER_APP_DATA, {
-      totalTime,
-      beatInterval,
-    });
-    console.log("state saved", {
       totalTime,
       beatInterval,
     });
   };
   useState(async () => {
     const savedData = await getData(PRANAYAMA_TIMER_APP_DATA);
-    console.log(savedData, "saved data fetched");
     setBeatInterval(savedData?.beatInterval || DEFAULT_BEAT_INTERVAL);
     setTotalTime(savedData?.totalTime || DEFAULT_TIMER_LENGTH);
     if (savedData?.totalTime) {
@@ -69,8 +62,7 @@ export default function Metronome() {
   });
 
   useEffect(() => {
-    // setTotalTime(pranayamaTimerAppData.lastTotalTime ? pranayamaTimerAppData.lastTotalTime : 0);
-
+    setTotalTime(DEFAULT_TIMER_LENGTH);
     const intervalid: any = setTimeout(() => {
       if (!isStop && totalTime >= 0) {
         setTotalTime(totalTime - 1);
@@ -80,9 +72,9 @@ export default function Metronome() {
           beatCount !== 0 &&
           isMetronomeEnabled
         ) {
-          playBeat();
+          playSnap();
         }
-        setAlarmString(formatTime(getRemainingTime()));
+        setAlarmString(formatTime(getTimeParts(totalTime)));
         if (totalTime === 0) {
           setIsStop(true);
           playEndChime();

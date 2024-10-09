@@ -6,14 +6,9 @@ import YogaView from "@/components/yoga-view";
 import { useState } from "react";
 
 export default function TabTwoScreen() {
-  const [yogaInterval, setYogaInterval] = useState("00:00");
-
   return (
     <ThemedView style={styles.viewBody}>
-      <YogaView
-        yogaInterval={yogaInterval}
-        setYogaInterval={{ setYogaInterval }}
-      ></YogaView>
+      <YogaView></YogaView>
     </ThemedView>
   );
 }

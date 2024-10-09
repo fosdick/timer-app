@@ -14,11 +14,9 @@ import {
 import { getData, storeData } from "../assets/utils/persistant-storage";
 
 const YOGA_TIMER_APP_DATA: string = "yoga_timer_app_data";
-const DEFAULT_INITIAL_TOTAL_TIME = 31;
+const DEFAULT_INITIAL_TOTAL_TIME = 30;
 export default function YogaView(props: any) {
-  const [totalTime, setTotalTime] = useState<number>(
-    DEFAULT_INITIAL_TOTAL_TIME
-  );
+  const [totalTime, setTotalTime] = useState<number>(0);
   const [isStop, setIsStop] = useState<boolean>(true);
 
   const [showPicker, setShowPicker] = useState(false);
@@ -112,9 +110,9 @@ export default function YogaView(props: any) {
             pickedDuration.minutes * 60 + pickedDuration.seconds
           );
           setIntervalAlarmString(formatMinutesSeonds(pickedDuration));
-          props.setYogaInterval.setYogaInterval(
-            formatMinutesSeonds(pickedDuration)
-          );
+          // props.setYogaInterval.setYogaInterval(
+          //   formatMinutesSeonds(pickedDuration)
+          // );
           setShowPicker(false);
           setIsStop(true);
           storeData(YOGA_TIMER_APP_DATA, {
