@@ -62,7 +62,6 @@ export default function Metronome() {
   });
 
   useEffect(() => {
-    setTotalTime(DEFAULT_TIMER_LENGTH);
     const intervalid: any = setTimeout(() => {
       if (!isStop && totalTime >= 0) {
         setTotalTime(totalTime - 1);
