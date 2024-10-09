@@ -7,45 +7,41 @@ import { TimerStyles, GreenTheme } from "@/assets/styles/timer-app";
 
 import HittIntervalPicker from "@/components/hitt-time-picker";
 
-import { formatMinutesSeonds, formatTime } from "../assets/utils/format-time";
-// import { getData, storeData } from "../assets/utils/persistant-storage";
+import EventEmitter from "eventemitter3";
 
-export default async function HittView() {
+import {
+  formatMinutesSeonds,
+  formatTime,
+  getTimePartsMinSec,
+} from "../assets/utils/format-time";
+import { getData, storeData } from "../assets/utils/persistant-storage";
+
+export default function HittView() {
   const HITT_DATA_STORAGE_KEY = "hitt-data-storage-key";
   const DEFAULT_NUMBER_ROUNDS = 10;
-  const DEFAULT_WORKOUT_TIME = 2;
-  const DEFAULT_REST_TIME = 2;
+  const DEFAULT_WORKOUT_TIME = 30;
+  const DEFAULT_REST_TIME = 30;
+  const TIMER_ENDED_EVENT_NAME = "hitt-timer-ended";
 
-  const getTimeRemaining = () => {
-    const remaining = totalTime;
-    const minutes = Math.floor(remaining / 60);
-    const seconds = remaining % 60;
-    return {
-      minutes,
-      seconds,
-    };
-  };
-  const getTimePartsMinSec = (val: number) => {
-    const minutes = Math.floor(val / 60);
-    const seconds = val % 60;
-    return {
-      minutes,
-      seconds,
-    };
-  };
-
-  const [totalTime, setTotalTime] = useState<number>(0);
-  const [isStop, setIsStop] = useState<boolean>(true);
-  const [numberRounds, setNumberRounds] = useState<number>(
-    DEFAULT_NUMBER_ROUNDS
-  );
-  const [roundsRemaining, setRoundsRemaining] = useState<number>(
-    DEFAULT_NUMBER_ROUNDS
+  const timerEndEvent = new EventEmitter();
+  timerEndEvent.on(
+    TIMER_ENDED_EVENT_NAME,
+    () => {
+      startTimerAgain();
+      console.log("on event test");
+    },
+    {}
   );
 
   const [totalIntervalTimeString, setTotalIntervalTimeString] = useState<
     string | null
-  >("00:00:00");
+  >(
+    formatMinutesSeonds(
+      getTimePartsMinSec(
+        DEFAULT_NUMBER_ROUNDS * (DEFAULT_WORKOUT_TIME + DEFAULT_REST_TIME)
+      )
+    )
+  );
 
   const [workoutIntervalDisplayString, setWorkoutIntervalDisplayString] =
     useState<any>(
@@ -64,17 +60,85 @@ export default async function HittView() {
   const [currentRestTotalTime, setCurrentRestTotalTime] =
     useState<number>(DEFAULT_REST_TIME);
 
+  const [numberRounds, setNumberRounds] = useState<number>(
+    DEFAULT_NUMBER_ROUNDS
+  );
+  const [roundsRemaining, setRoundsRemaining] = useState<number>(
+    DEFAULT_NUMBER_ROUNDS
+  );
+
+  useState(async () => {
+    const HITT_DATA_STORAGE_KEY = "hitt-data-storage-key";
+    const persistantStorageData = await getData(HITT_DATA_STORAGE_KEY);
+
+    setNumberRounds(
+      persistantStorageData?.numberRounds || DEFAULT_NUMBER_ROUNDS
+    );
+    setRoundsRemaining(
+      persistantStorageData?.numberRounds || DEFAULT_NUMBER_ROUNDS
+    );
+    setInitialWorkoutTotalTime(
+      persistantStorageData?.workoutTime || DEFAULT_WORKOUT_TIME
+    );
+    setInitialRestTotalTime(
+      persistantStorageData?.restTime || DEFAULT_REST_TIME
+    );
+    setWorkoutIntervalDisplayString(
+      formatMinutesSeonds(
+        getTimePartsMinSec(
+          persistantStorageData?.workoutTime || DEFAULT_WORKOUT_TIME
+        )
+      )
+    );
+    setRestIntervalDisplayString(
+      formatMinutesSeonds(
+        getTimePartsMinSec(persistantStorageData?.restTime || DEFAULT_REST_TIME)
+      )
+    );
+    setTotalIntervalTimeString(
+      formatMinutesSeonds(
+        getTimePartsMinSec(
+          persistantStorageData?.numberRounds *
+            (persistantStorageData?.workoutTime +
+              persistantStorageData?.restTime)
+        ) || totalIntervalTimeString
+      )
+    );
+  });
+
+  const getTimeRemaining = () => {
+    const remaining = totalTime;
+    const minutes = Math.floor(remaining / 60);
+    const seconds = remaining % 60;
+    return {
+      minutes,
+      seconds,
+    };
+  };
+
+  const [totalTime, setTotalTime] = useState<number>(0);
+  const [isStop, setIsStop] = useState<boolean>(true);
+
   const resetInitalState = () => {
     const ms = (initialWorkoutTotalTime + initialRestTotalTime) * numberRounds;
     setTotalTime(ms);
     setTotalIntervalTimeString(formatTime(getTimePartsMinSec(ms)));
     setCurrentWorkoutTotalTime(initialWorkoutTotalTime);
     setCurrentRestTotalTime(initialRestTotalTime);
-    // storeData(HITT_DATA_STORAGE_KEY, {
-    //   numberRounds: numberRounds,
-    //   workoutTime: initialWorkoutTotalTime,
-    //   restTime: initialRestTotalTime,
-    // });
+    storeData(HITT_DATA_STORAGE_KEY, {
+      numberRounds: numberRounds,
+      workoutTime: initialWorkoutTotalTime,
+      restTime: initialRestTotalTime,
+    });
+  };
+  const startTimerAgain = () => {
+    setRoundsRemaining(numberRounds);
+    setRestIntervalDisplayString(
+      formatMinutesSeonds(getTimePartsMinSec(initialRestTotalTime))
+    );
+    setWorkoutIntervalDisplayString(
+      formatMinutesSeonds(getTimePartsMinSec(initialWorkoutTotalTime))
+    );
   };
 
   useEffect(() => {
@@ -108,6 +172,8 @@ export default async function HittView() {
       }
       if (roundsRemaining === 0) {
         setIsStop(true);
+        resetInitalState();
+        timerEndEvent.emit(TIMER_ENDED_EVENT_NAME);
       }
     }, 1000);
     return () => clearInterval(intervalid);
@@ -121,10 +187,6 @@ export default async function HittView() {
         </Text>
       </View>
 
-      <View style={TimerStyles.metronomeTheme}>
-        <Text style={TimerStyles.metronome}>Rounds Remaining :</Text>
-        <Text style={TimerStyles.timerFace}>{roundsRemaining}</Text>
-      </View>
       {/* <Text>{JSON.stringify(isStop)}</Text>
        
         <Text>{JSON.stringify(currentWorkoutTotalTime )}</Text>
@@ -145,6 +207,8 @@ export default async function HittView() {
         setCurrentTotalTime={{
           setCurrentTotalTime: setCurrentWorkoutTotalTime,
         }}
+        resetInitalState={{ resetInitalState }}
+        initialTotalTime={{ initialTotalTime: initialWorkoutTotalTime }}
       ></HittIntervalPicker>
 
       <HittIntervalPicker
@@ -155,13 +219,19 @@ export default async function HittView() {
         }}
         setInitialTotalTime={{ setInitialTotalTime: setInitialRestTotalTime }}
         setCurrentTotalTime={{ setCurrentTotalTime: setCurrentRestTotalTime }}
+        resetInitalState={{ resetInitalState }}
+        initialTotalTime={{ initialTotalTime: initialRestTotalTime }}
       ></HittIntervalPicker>
 
+      {/* <View style={TimerStyles.metronomeTheme}>
+        <Text style={TimerStyles.metronome}>Rounds Remaining :</Text>
+        <Text style={TimerStyles.timerFace}>{roundsRemaining}</Text>
+      </View> */}
       <View>
-        <Text style={TimerStyles.metronome}>Number of Rounds</Text>
+        <Text style={TimerStyles.metronome}>Rounds</Text>
       </View>
       <View>
-        <Text style={TimerStyles.valueText}>{numberRounds}</Text>
+        <Text style={TimerStyles.timerFaceSmall}>{roundsRemaining}</Text>
       </View>
       <Slider
         style={{ width: 200, height: 40 }}

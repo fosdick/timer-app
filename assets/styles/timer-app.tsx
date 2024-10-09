@@ -26,6 +26,9 @@ export const TimerStyles = StyleSheet.create({
   marginTop: {
     marginTop: 30,
   },
+  marginTopXL: {
+    marginTop: 70,
+  },
   metronomeTheme: {
     // backgroundColor: '#DBD6D2',
     alignItems: "center",
@@ -37,6 +40,16 @@ export const TimerStyles = StyleSheet.create({
     // paddingVertical: 10,
     paddingHorizontal: 18,
     fontSize: 85,
+    overflow: "hidden",
+    borderColor: borderColor,
+    color: fontColor,
+    fontVariant: ["tabular-nums"],
+  },
+  timerFaceSmall: {
+    // marginTop:30,
+    // paddingVertical: 10,
+    paddingHorizontal: 18,
+    fontSize: 65,
     overflow: "hidden",
     borderColor: borderColor,
     color: fontColor,

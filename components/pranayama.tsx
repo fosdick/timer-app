@@ -9,29 +9,9 @@ import { TimerStyles, GreenTheme } from "@/assets/styles/timer-app";
 import { formatTime, getTimeParts } from "../assets/utils/format-time";
 import { playBeat, playEndChime } from "../assets/utils/sounds";
 import { Audio } from "expo-av";
+import { getData, storeData } from "../assets/utils/persistant-storage";
 
 const PRANAYAMA_TIMER_APP_DATA: string = "pranayama_timer_app_data";
-type PranayamaTimerAppData = {
-  beatInterval: number;
-  lastTotalTime: number;
-};
-const storePersistenceData = async (value: PranayamaTimerAppData) => {
-  try {
-    const jsonValue = JSON.stringify(value);
-    await AsyncStorage.setItem(PRANAYAMA_TIMER_APP_DATA, jsonValue);
-  } catch (e) {
-    // saving error
-  }
-};
-
-const getPersistenceData = async () => {
-  try {
-    const jsonValue = await AsyncStorage.getItem(PRANAYAMA_TIMER_APP_DATA);
-    return jsonValue != null ? JSON.parse(jsonValue) : null;
-  } catch (e) {
-    // error reading value
-  }
-};
 
 const DEFAULT_BEAT_INTERVAL = 3;
 const DEFAULT_BEAT_COUNT = 0;
@@ -46,7 +26,7 @@ export default function Metronome() {
   };
   const getRemainingTime = () => {
     const hours = Math.floor(totalTime / 3600);
-    const minutes = Math.floor(totalTime / 60);
+    const minutes = (totalTime - hours * 3600) / 60;
     const seconds = totalTime % 60;
     return {
       hours,
@@ -67,6 +47,26 @@ export default function Metronome() {
   const [beatCount, setBeatCount] = useState(DEFAULT_BEAT_COUNT);
 
   const [lastTotalTime, setLastTotalTiime] = useState();
+
+  const updateInitialState = () => {
+    storeData(PRANAYAMA_TIMER_APP_DATA, {
+      totalTime,
+      beatInterval,
+    });
+    console.log("state saved", {
+      totalTime,
+      beatInterval,
+    });
+  };
+  useState(async () => {
+    const savedData = await getData(PRANAYAMA_TIMER_APP_DATA);
+    console.log(savedData, "saved data fetched");
+    setBeatInterval(savedData?.beatInterval || DEFAULT_BEAT_INTERVAL);
+    setTotalTime(savedData?.totalTime || DEFAULT_TIMER_LENGTH);
+    if (savedData?.totalTime) {
+      setAlarmString(formatTime(getTimeParts(savedData.totalTime)));
+    }
+  });
 
   useEffect(() => {
     // setTotalTime(pranayamaTimerAppData.lastTotalTime ? pranayamaTimerAppData.lastTotalTime : 0);
@@ -123,8 +123,14 @@ export default function Metronome() {
             value={DEFAULT_BEAT_INTERVAL}
             minimumTrackTintColor={GreenTheme.thumbColorEnabled}
             maximumTrackTintColor={GreenTheme.trackColorTrue}
-            onValueChange={(val) => setBeatInterval(val)}
-            onSlidingComplete={(val) => setBeatInterval(val)}
+            onValueChange={(val) => {
+              setBeatInterval(val);
+              updateInitialState();
+            }}
+            onSlidingComplete={(val) => {
+              setBeatInterval(val);
+              updateInitialState();
+            }}
             thumbTintColor={GreenTheme.trackColorTrue}
           />
         </View>
@@ -142,6 +148,7 @@ export default function Metronome() {
           setAlarmString(formatTime(pickedDuration));
           setShowPicker(false);
           setIsStop(true);
+          updateInitialState();
         }}
         modalTitle="Set Alarm"
         onCancel={() => setShowPicker(false)}

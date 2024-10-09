@@ -4,6 +4,10 @@ type storageData = {
   numberRounds: any;
   workoutTime: any;
   restTime: any;
+  yogaIntervalTime: any;
+  beatInterval: any;
+  beatCount: any;
+  totalTime: any;
 };
 const storeData = async (key: string, value: Partial<storageData>) => {
   try {

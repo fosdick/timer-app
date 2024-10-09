@@ -5,7 +5,10 @@ import { LinearGradient } from "expo-linear-gradient"; // or `import LinearGradi
 import { useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 
-import { formatMinutesSeonds } from "../assets/utils/format-time";
+import {
+  formatMinutesSeonds,
+  getTimePartsMinSec,
+} from "../assets/utils/format-time";
 
 export default function HittIntervalPicker(props: any) {
   const [showPicker, setShowPicker] = useState(false);
@@ -25,7 +28,9 @@ export default function HittIntervalPicker(props: any) {
         </View>
       </TouchableOpacity>
       <TimerPickerModal
-        initialValue={{ hours: 0, minutes: 0, seconds: 0 }}
+        initialValue={getTimePartsMinSec(
+          props.initialTotalTime.initialTotalTime
+        )}
         visible={showPicker}
         setIsVisible={setShowPicker}
         onConfirm={(pickedDuration) => {
@@ -39,6 +44,7 @@ export default function HittIntervalPicker(props: any) {
           props.setCurrentTotalTime.setCurrentTotalTime(
             pickedDuration.minutes * 60 + pickedDuration.seconds
           );
+          props.resetInitalState.resetInitalState();
         }}
         hideHours={true}
         modalTitle="Interval Length"

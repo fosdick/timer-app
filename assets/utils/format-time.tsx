@@ -33,10 +33,18 @@ type TimeParts = {
 
 export const getTimeParts = (totalTime: number): TimeParts => {
   const hours = Math.floor(totalTime / 3600);
-  const minutes = Math.floor(totalTime / 60);
+  const minutes = (totalTime - hours * 3600) / 60;
   const seconds = totalTime % 60;
   return {
     hours,
+    minutes,
+    seconds,
+  };
+};
+export const getTimePartsMinSec = (val: number) => {
+  const minutes = Math.floor(val / 60);
+  const seconds = val % 60;
+  return {
     minutes,
     seconds,
   };

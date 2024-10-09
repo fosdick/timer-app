@@ -1,19 +1,8 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
-import {
-  StyleSheet,
-  Image,
-  Platform,
-  View,
-  Text,
-  TouchableOpacity,
-} from "react-native";
+import { StyleSheet } from "react-native";
 
-import ParallaxScrollView from "@/components/ParallaxScrollView";
-import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
-import Metronome from "@/components/pranayama";
 import YogaView from "@/components/yoga-view";
-import Clock from "@/components/Clock";
 import { useState } from "react";
 
 export default function TabTwoScreen() {
@@ -42,6 +31,7 @@ const styles = StyleSheet.create({
   },
   viewBody: {
     marginTop: 30,
+    alignItems: "center",
     // backgroundColor: 'none'
   },
 });
