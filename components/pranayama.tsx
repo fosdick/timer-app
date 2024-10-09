@@ -6,7 +6,7 @@ import { StyleSheet, Switch, Text, TouchableOpacity, View } from "react-native";
 import Slider from "@react-native-community/slider";
 import { TimerPickerModal } from "react-native-timer-picker";
 import { TimerStyles, GreenTheme } from "@/assets/styles/timer-app";
-import { formatTime } from "../assets/utils/format-time";
+import { formatTime, getTimeParts } from "../assets/utils/format-time";
 import { playBeat, playEndChime } from "../assets/utils/sounds";
 import { Audio } from "expo-av";
 
@@ -36,19 +36,9 @@ const getPersistenceData = async () => {
 const DEFAULT_BEAT_INTERVAL = 3;
 const DEFAULT_BEAT_COUNT = 0;
 const DEFAULT_METRONOME_ON = true;
+const DEFAULT_TIMER_LENGTH = 5 * 60;
 
 export default function Metronome() {
-  const [totalTime, setTotalTime] = useState(0);
-  const [isStop, setIsStop] = useState(true);
-
-  const [showPicker, setShowPicker] = useState(false);
-  const [alarmString, setAlarmString] = useState<string | null>("00:00:00");
-
-  const [beatInterval, setBeatInterval] = useState(DEFAULT_BEAT_INTERVAL);
-  const [beatCount, setBeatCount] = useState(DEFAULT_BEAT_COUNT);
-
-  const [lastTotalTime, setLastTotalTiime] = useState();
-
   const [isMetronomeEnabled, setIsMetronomeEnabled] =
     useState(DEFAULT_METRONOME_ON);
   const toggleMetronomeEnabled = () => {
@@ -64,6 +54,19 @@ export default function Metronome() {
       seconds,
     };
   };
+
+  const [totalTime, setTotalTime] = useState(DEFAULT_TIMER_LENGTH);
+  const [isStop, setIsStop] = useState(true);
+
+  const [showPicker, setShowPicker] = useState(false);
+  const [alarmString, setAlarmString] = useState<string | null>(
+    formatTime(getRemainingTime())
+  );
+
+  const [beatInterval, setBeatInterval] = useState(DEFAULT_BEAT_INTERVAL);
+  const [beatCount, setBeatCount] = useState(DEFAULT_BEAT_COUNT);
+
+  const [lastTotalTime, setLastTotalTiime] = useState();
 
   useEffect(() => {
     // setTotalTime(pranayamaTimerAppData.lastTotalTime ? pranayamaTimerAppData.lastTotalTime : 0);
@@ -95,14 +98,7 @@ export default function Metronome() {
           {alarmString !== null ? (
             <Text style={TimerStyles.timerFace}>{alarmString}</Text>
           ) : null}
-          <TouchableOpacity
-            activeOpacity={0.7}
-            onPress={() => setShowPicker(true)}
-          >
-            <View style={{ marginTop: 30 }}>
-              <Text style={TimerStyles.timePicker}>Set Time</Text>
-            </View>
-          </TouchableOpacity>
+
           <TouchableOpacity
             activeOpacity={0.7}
             onPress={() => setIsStop(!isStop)}
@@ -134,7 +130,7 @@ export default function Metronome() {
         </View>
       </TouchableOpacity>
       <TimerPickerModal
-        initialValue={{ hours: 0, minutes: 0, seconds: 0 }}
+        initialValue={getTimeParts(DEFAULT_TIMER_LENGTH)}
         visible={showPicker}
         setIsVisible={setShowPicker}
         onConfirm={(pickedDuration) => {

@@ -16,17 +16,6 @@ export default async function HittView() {
   const DEFAULT_WORKOUT_TIME = 2;
   const DEFAULT_REST_TIME = 2;
 
-  useState(() => {
-    const HITT_DATA_STORAGE_KEY = "hitt-data-storage-key";
-    // const persistantStorageData = getData(HITT_DATA_STORAGE_KEY);
-
-    //     setNumberRounds(
-    //       persistantStorageData.numberRounds || DEFAULT_NUMBER_ROUNDS
-    //     );
-    //     setInitialWorkoutTotalTime(persistantStorageData.workoutTime || 2);
-    //     setInitialRestTotalTime(persistantStorageData.restTime || 2);
-    //   });
-  });
   const getTimeRemaining = () => {
     const remaining = totalTime;
     const minutes = Math.floor(remaining / 60);
