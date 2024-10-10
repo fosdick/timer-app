@@ -47,8 +47,19 @@ export default function YogaView(props: any) {
 
   useState(async () => {
     const savedData = await getData(YOGA_TIMER_APP_DATA);
+    console.log(savedData, "saved daa");
     setInitialTotalTime(
       savedData?.yogaTotalInterval || DEFAULT_INITIAL_TOTAL_TIME
+    );
+    setInitialTotalTime(
+      savedData?.yogaTotalInterval || DEFAULT_INITIAL_TOTAL_TIME
+    );
+    setIntervalAlarmString(
+      formatMinutesSeonds(
+        getTimePartsMinSec(
+          savedData?.yogaTotalInterval || DEFAULT_INITIAL_TOTAL_TIME
+        )
+      )
     );
   });
   const waitTransition: any = async () => {
@@ -56,20 +67,35 @@ export default function YogaView(props: any) {
       playYogaTransition();
     }, 3500);
   };
+  const [isTransition, setIsTransition] = useState<boolean>(false);
+  const TRANSITION_LOOP_VALUE = 3;
+  const [transCount, setTransCount] = useState<number>(TRANSITION_LOOP_VALUE);
   useEffect(() => {
     // setTotalTime(pranayamaTimerAppData.lastTotalTime ? pranayamaTimerAppData.lastTotalTime : 0);
 
     const intervalid: any = setTimeout(() => {
       setCurrentTime(new Date());
+
       if (!isStop && totalTime >= 0) {
-        setTotalTime(totalTime + 1);
-        if (totalTime === initialTotalTime && initialTotalTime > 0) {
-          // playEndChime();
-          playBeat();
-          // (async () => {
-          //   await waitTransition();
-          // })();
-          setTotalTime(0);
+        if (!isTransition && totalTime + 1 <= initialTotalTime) {
+          setTotalTime(totalTime + 1);
+        }
+        if (
+          isTransition ||
+          (totalTime === initialTotalTime && initialTotalTime >= 0)
+        ) {
+          if (TRANSITION_LOOP_VALUE === transCount) {
+            playYogaTransition();
+          }
+
+          setIsTransition(true);
+          setTransCount(transCount - 1);
+
+          if (transCount === 0) {
+            setTotalTime(0);
+            setTransCount(5);
+            setIsTransition(false);
+          }
         }
         if (initialTotalTime > 0) {
           setIntervalAlarmString(formatMinutesSeonds(getTimeRemaining()));
@@ -134,7 +160,8 @@ export default function YogaView(props: any) {
           setShowPicker(false);
           setIsStop(true);
           storeData(YOGA_TIMER_APP_DATA, {
-            yogaIntervalTime: pickedDuration,
+            yogaTotalInterval:
+              pickedDuration.minutes * 60 + pickedDuration.seconds,
           });
         }}
         hideHours={true}

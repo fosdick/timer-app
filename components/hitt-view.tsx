@@ -22,16 +22,39 @@ export default function HittView() {
   const DEFAULT_WORKOUT_TIME = 30;
   const DEFAULT_REST_TIME = 30;
   const TIMER_ENDED_EVENT_NAME = "hitt-timer-ended";
+  const RESET_ALL_EVENT = "reset-all-event";
 
-  const timerEndEvent = new EventEmitter();
-  timerEndEvent.on(
+  const hittTimerEventController = new EventEmitter();
+  hittTimerEventController.on(
     TIMER_ENDED_EVENT_NAME,
     () => {
       startTimerAgain();
     },
     {}
   );
+  hittTimerEventController.on(
+    RESET_ALL_EVENT,
+    () => {
+      console.log(
+        {
+          _initialWorkoutTotalTime: initialWorkoutTotalTime,
+          _initialRestTotalTime: initialRestTotalTime,
+          _numberRounds: numberRounds,
+        },
+        "emit calls reset stuffing"
+      );
 
+      // resetInitalState({
+      //   _initialWorkoutTotalTime: initialWorkoutTotalTime,
+      //   _initialRestTotalTime: initialRestTotalTime,
+      //   _numberRounds: numberRounds,
+      // });
+    },
+    {}
+  );
+  const resetAllEmit = () => {
+    hittTimerEventController.emit(RESET_ALL_EVENT);
+  };
   const [totalIntervalTimeString, setTotalIntervalTimeString] = useState<any>(
     formatMinutesSeonds(
       getTimePartsMinSec(
@@ -68,28 +91,26 @@ export default function HittView() {
     const HITT_DATA_STORAGE_KEY = "hitt-data-storage-key";
     const persistantStorageData = await getData(HITT_DATA_STORAGE_KEY);
 
-    setNumberRounds(
-      persistantStorageData?.numberRounds || DEFAULT_NUMBER_ROUNDS
-    );
-    setRoundsRemaining(
-      persistantStorageData?.numberRounds || DEFAULT_NUMBER_ROUNDS
-    );
+    setNumberRounds(persistantStorageData?.numberRounds || numberRounds);
+    setRoundsRemaining(persistantStorageData?.numberRounds || numberRounds);
     setInitialWorkoutTotalTime(
-      persistantStorageData?.workoutTime || DEFAULT_WORKOUT_TIME
+      persistantStorageData?.workoutTime || initialWorkoutTotalTime
     );
     setInitialRestTotalTime(
-      persistantStorageData?.restTime || DEFAULT_REST_TIME
+      persistantStorageData?.restTime || initialRestTotalTime
     );
     setWorkoutIntervalDisplayString(
       formatMinutesSeonds(
         getTimePartsMinSec(
-          persistantStorageData?.workoutTime || DEFAULT_WORKOUT_TIME
+          persistantStorageData?.workoutTime || initialWorkoutTotalTime
         )
       )
     );
     setRestIntervalDisplayString(
       formatMinutesSeonds(
-        getTimePartsMinSec(persistantStorageData?.restTime || DEFAULT_REST_TIME)
+        getTimePartsMinSec(
+          persistantStorageData?.restTime || initialRestTotalTime
+        )
       )
     );
     setTotalIntervalTimeString(
@@ -98,7 +119,7 @@ export default function HittView() {
           persistantStorageData?.numberRounds *
             (persistantStorageData?.workoutTime +
               persistantStorageData?.restTime) ||
-            DEFAULT_NUMBER_ROUNDS * (DEFAULT_WORKOUT_TIME + DEFAULT_REST_TIME)
+            numberRounds * (initialWorkoutTotalTime + initialRestTotalTime)
         )
       )
     );
@@ -117,18 +138,38 @@ export default function HittView() {
   const [totalTime, setTotalTime] = useState<number>(0);
   const [isStop, setIsStop] = useState<boolean>(true);
 
-  const resetInitalState = () => {
-    const ms = (initialWorkoutTotalTime + initialRestTotalTime) * numberRounds;
+  const resetInitalState = ({
+    _initialWorkoutTotalTime,
+    _initialRestTotalTime,
+    _numberRounds,
+  }: any) => {
+    const ms =
+      ((_initialWorkoutTotalTime || initialWorkoutTotalTime) +
+        (_initialRestTotalTime || initialRestTotalTime)) *
+      (_numberRounds || numberRounds);
     setTotalTime(ms);
     setTotalIntervalTimeString(formatTime(getTimePartsMinSec(ms)));
-    setCurrentWorkoutTotalTime(initialWorkoutTotalTime);
-    setCurrentRestTotalTime(initialRestTotalTime);
+    setCurrentWorkoutTotalTime(
+      _initialWorkoutTotalTime || initialWorkoutTotalTime
+    );
+    setCurrentRestTotalTime(_initialRestTotalTime || initialRestTotalTime);
+    setWorkoutIntervalDisplayString(
+      formatMinutesSeonds(
+        getTimePartsMinSec(_initialWorkoutTotalTime || initialWorkoutTotalTime)
+      )
+    );
+    setRestIntervalDisplayString(
+      formatMinutesSeonds(
+        getTimePartsMinSec(_initialRestTotalTime || initialRestTotalTime)
+      )
+    );
     storeData(HITT_DATA_STORAGE_KEY, {
-      numberRounds: numberRounds,
-      workoutTime: initialWorkoutTotalTime,
-      restTime: initialRestTotalTime,
+      numberRounds: _numberRounds || numberRounds,
+      workoutTime: _initialWorkoutTotalTime || initialWorkoutTotalTime,
+      restTime: _initialRestTotalTime || initialRestTotalTime,
     });
   };
+
   const startTimerAgain = () => {
     setRoundsRemaining(numberRounds);
     setRestIntervalDisplayString(
@@ -177,8 +218,12 @@ export default function HittView() {
       }
       if (roundsRemaining === 0) {
         setIsStop(true);
-        resetInitalState();
-        timerEndEvent.emit(TIMER_ENDED_EVENT_NAME);
+        resetInitalState({
+          _initialWorkoutTotalTime: initialWorkoutTotalTime,
+          _initialRestTotalTime: initialRestTotalTime,
+          _numberRounds: numberRounds,
+        });
+        hittTimerEventController.emit(TIMER_ENDED_EVENT_NAME);
       }
     }, 1000);
     return () => clearInterval(intervalid);
@@ -187,19 +232,25 @@ export default function HittView() {
   return (
     <View style={TimerStyles.metronomeTheme}>
       <View style={TimerStyles.metronomeTheme}>
+        {/* <View>
+          <Text style={TimerStyles.metronomeTheme}>
+            {JSON.stringify(workoutIntervalDisplayString)}wds
+          </Text>
+          <Text style={TimerStyles.metronomeTheme}>
+            {JSON.stringify(currentRestTotalTime)}rest
+          </Text>
+        </View> */}
         <Text style={TimerStyles.metronome}>
           Total Remaining : {totalIntervalTimeString}
         </Text>
       </View>
 
       {/* <Text>{JSON.stringify(isStop)}</Text>
-       
-        <Text>{JSON.stringify(currentWorkoutTotalTime )}</Text>
-        <Text>{JSON.stringify(workoutIntervalDisplayString )}wds</Text>
-        <Text>{JSON.stringify(currentRestTotalTime)}</Text>
-        <Text>{JSON.stringify(initialRestTotalTime)} ir</Text>
-        <Text>{JSON.stringify(totalTime)} tot t</Text> */}
 
+      <Text>{JSON.stringify(currentWorkoutTotalTime)}cwtt</Text>
+      <Text>{JSON.stringify(workoutIntervalDisplayString)}wds</Text>
+      <Text>{JSON.stringify(initialRestTotalTime)} ir</Text>
+      <Text>{JSON.stringify(totalTime)} tot t</Text> */}
       <HittIntervalPicker
         textTitle="Workout"
         pickerDisplayTimeString={workoutIntervalDisplayString}
@@ -212,10 +263,9 @@ export default function HittView() {
         setCurrentTotalTime={{
           setCurrentTotalTime: setCurrentWorkoutTotalTime,
         }}
-        resetInitalState={{ resetInitalState }}
+        resetAllEmit={{ resetAllEmit }}
         initialTotalTime={{ initialTotalTime: initialWorkoutTotalTime }}
       ></HittIntervalPicker>
-
       <HittIntervalPicker
         textTitle="Rest"
         pickerDisplayTimeString={restIntervalDisplayString}
@@ -224,10 +274,9 @@ export default function HittView() {
         }}
         setInitialTotalTime={{ setInitialTotalTime: setInitialRestTotalTime }}
         setCurrentTotalTime={{ setCurrentTotalTime: setCurrentRestTotalTime }}
-        resetInitalState={{ resetInitalState }}
+        resetAllEmit={{ resetAllEmit }}
         initialTotalTime={{ initialTotalTime: initialRestTotalTime }}
       ></HittIntervalPicker>
-
       {/* <View style={TimerStyles.metronomeTheme}>
         <Text style={TimerStyles.metronome}>Rounds Remaining :</Text>
         <Text style={TimerStyles.timerFace}>{roundsRemaining}</Text>
@@ -251,15 +300,22 @@ export default function HittView() {
           setIsStop(true);
           setNumberRounds(val);
           setRoundsRemaining(val);
-          resetInitalState();
+          resetInitalState({
+            _initialWorkoutTotalTime: initialWorkoutTotalTime,
+            _initialRestTotalTime: initialRestTotalTime,
+            _numberRounds: val,
+          });
         }}
         onSlidingComplete={(val) => {
           setNumberRounds(val);
           setRoundsRemaining(val);
-          resetInitalState();
+          resetInitalState({
+            _initialWorkoutTotalTime: initialWorkoutTotalTime,
+            _initialRestTotalTime: initialRestTotalTime,
+            _numberRounds: val,
+          });
         }}
       />
-
       <TouchableOpacity
         activeOpacity={0.7}
         onPress={() => {

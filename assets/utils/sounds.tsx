@@ -61,7 +61,7 @@ export const playStart = () => {
 export const playYogaTransition = (): any => {
   async function playSound() {
     const { sound } = await Audio.Sound.createAsync(
-      require("../sounds/442944__qubodup__ocean-wave.wav")
+      require("../sounds/733936__creator_gt__swoosh-04.wav")
     );
     await sound.playAsync();
   }

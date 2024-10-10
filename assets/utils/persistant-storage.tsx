@@ -8,6 +8,7 @@ type storageData = {
   beatInterval: any;
   beatCount: any;
   totalTime: any;
+  yogaTotalInterval: any;
 };
 const storeData = async (key: string, value: Partial<storageData>) => {
   try {

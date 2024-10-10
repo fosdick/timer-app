@@ -39,8 +39,9 @@ export default function Metronome() {
       seconds,
     };
   };
-
-  const [totalTime, setTotalTime] = useState(DEFAULT_TIMER_LENGTH);
+  const [initialTotalTime, setInitialTotalTime] =
+    useState<number>(DEFAULT_TIMER_LENGTH);
+  const [totalTime, setTotalTime] = useState<number>(DEFAULT_TIMER_LENGTH);
   const [isStop, setIsStop] = useState(true);
 
   const [showPicker, setShowPicker] = useState(false);
@@ -53,7 +54,7 @@ export default function Metronome() {
 
   const updateInitialState = () => {
     storeData(PRANAYAMA_TIMER_APP_DATA, {
-      totalTime,
+      totalTime: initialTotalTime,
       beatInterval,
     });
   };
@@ -142,6 +143,11 @@ export default function Metronome() {
         setIsVisible={setShowPicker}
         onConfirm={(pickedDuration) => {
           setTotalTime(
+            pickedDuration.hours * 3600 +
+              pickedDuration.minutes * 60 +
+              pickedDuration.seconds
+          );
+          setInitialTotalTime(
             pickedDuration.hours * 3600 +
               pickedDuration.minutes * 60 +
               pickedDuration.seconds

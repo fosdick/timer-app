@@ -44,7 +44,7 @@ export default function HittIntervalPicker(props: any) {
           props.setCurrentTotalTime.setCurrentTotalTime(
             pickedDuration.minutes * 60 + pickedDuration.seconds
           );
-          props.resetInitalState.resetInitalState();
+          props.resetAllEmit.resetAllEmit();
         }}
         hideHours={true}
         modalTitle="Interval Length"
