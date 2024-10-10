@@ -32,9 +32,7 @@ export default function HittView() {
     {}
   );
 
-  const [totalIntervalTimeString, setTotalIntervalTimeString] = useState<
-    string | null
-  >(
+  const [totalIntervalTimeString, setTotalIntervalTimeString] = useState<any>(
     formatMinutesSeonds(
       getTimePartsMinSec(
         DEFAULT_NUMBER_ROUNDS * (DEFAULT_WORKOUT_TIME + DEFAULT_REST_TIME)
@@ -99,8 +97,9 @@ export default function HittView() {
         getTimePartsMinSec(
           persistantStorageData?.numberRounds *
             (persistantStorageData?.workoutTime +
-              persistantStorageData?.restTime)
-        ) || totalIntervalTimeString
+              persistantStorageData?.restTime) ||
+            DEFAULT_NUMBER_ROUNDS * (DEFAULT_WORKOUT_TIME + DEFAULT_REST_TIME)
+        )
       )
     );
   });

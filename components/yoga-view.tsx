@@ -1,5 +1,10 @@
 import { Audio } from "expo-av";
-import { playBeat, playEndChime } from "../assets/utils/sounds";
+import {
+  playBeat,
+  playEndChime,
+  playStart,
+  playYogaTransition,
+} from "../assets/utils/sounds";
 import { LinearGradient } from "expo-linear-gradient"; // or `import LinearGradient from "react-native-linear-gradient"`
 
 import { useEffect, useState } from "react";
@@ -46,6 +51,11 @@ export default function YogaView(props: any) {
       savedData?.yogaTotalInterval || DEFAULT_INITIAL_TOTAL_TIME
     );
   });
+  const waitTransition: any = async () => {
+    const id: any = setTimeout(() => {
+      playYogaTransition();
+    }, 3500);
+  };
   useEffect(() => {
     // setTotalTime(pranayamaTimerAppData.lastTotalTime ? pranayamaTimerAppData.lastTotalTime : 0);
 
@@ -56,7 +66,10 @@ export default function YogaView(props: any) {
         if (totalTime === initialTotalTime && initialTotalTime > 0) {
           // playEndChime();
           playBeat();
-          setTotalTime(0);
+          // (async () => {
+          //   await waitTransition();
+          // })();
+          // setTotalTime(0);
         }
         if (initialTotalTime > 0) {
           setIntervalAlarmString(formatMinutesSeonds(getTimeRemaining()));
@@ -90,7 +103,12 @@ export default function YogaView(props: any) {
 
           <TouchableOpacity
             activeOpacity={0.7}
-            onPress={() => setIsStop(!isStop)}
+            onPress={() => {
+              setIsStop(!isStop);
+              if (isStop) {
+                playStart();
+              }
+            }}
           >
             <View style={TimerStyles.marginTop}>
               <Text style={TimerStyles.startButton}>

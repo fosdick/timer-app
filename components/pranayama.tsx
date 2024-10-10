@@ -7,7 +7,12 @@ import Slider from "@react-native-community/slider";
 import { TimerPickerModal } from "react-native-timer-picker";
 import { TimerStyles, GreenTheme } from "@/assets/styles/timer-app";
 import { formatTime, getTimeParts } from "../assets/utils/format-time";
-import { playBeat, playEndChime, playSnap } from "../assets/utils/sounds";
+import {
+  playBeat,
+  playEndChime,
+  playSnap,
+  playStart,
+} from "../assets/utils/sounds";
 import { Audio } from "expo-av";
 import { getData, storeData } from "../assets/utils/persistant-storage";
 
@@ -92,7 +97,12 @@ export default function Metronome() {
 
           <TouchableOpacity
             activeOpacity={0.7}
-            onPress={() => setIsStop(!isStop)}
+            onPress={() => {
+              setIsStop(!isStop);
+              if (isStop) {
+                playStart();
+              }
+            }}
           >
             <View style={TimerStyles.marginTop}>
               <Text style={TimerStyles.startButton}>

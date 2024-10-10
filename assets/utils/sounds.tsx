@@ -49,3 +49,21 @@ export const playHittStart = () => {
   }
   playSound();
 };
+export const playStart = () => {
+  async function playSound() {
+    const { sound } = await Audio.Sound.createAsync(
+      require("../sounds/350548__fairhavencollection__bell-hit.wav")
+    );
+    await sound.playAsync();
+  }
+  playSound();
+};
+export const playYogaTransition = (): any => {
+  async function playSound() {
+    const { sound } = await Audio.Sound.createAsync(
+      require("../sounds/442944__qubodup__ocean-wave.wav")
+    );
+    await sound.playAsync();
+  }
+  playSound();
+};
