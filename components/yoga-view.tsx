@@ -69,7 +69,7 @@ export default function YogaView(props: any) {
           // (async () => {
           //   await waitTransition();
           // })();
-          // setTotalTime(0);
+          setTotalTime(0);
         }
         if (initialTotalTime > 0) {
           setIntervalAlarmString(formatMinutesSeonds(getTimeRemaining()));
