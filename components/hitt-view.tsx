@@ -32,23 +32,11 @@ export default function HittView() {
     },
     {}
   );
+  const [doResetAll, setDoResetAll] = useState<boolean>(false);
   hittTimerEventController.on(
     RESET_ALL_EVENT,
     () => {
-      console.log(
-        {
-          _initialWorkoutTotalTime: initialWorkoutTotalTime,
-          _initialRestTotalTime: initialRestTotalTime,
-          _numberRounds: numberRounds,
-        },
-        "emit calls reset stuffing"
-      );
-
-      // resetInitalState({
-      //   _initialWorkoutTotalTime: initialWorkoutTotalTime,
-      //   _initialRestTotalTime: initialRestTotalTime,
-      //   _numberRounds: numberRounds,
-      // });
+      setDoResetAll(true);
     },
     {}
   );
@@ -181,6 +169,15 @@ export default function HittView() {
   };
 
   useEffect(() => {
+    if (doResetAll) {
+      resetInitalState({
+        _initialWorkoutTotalTime: initialWorkoutTotalTime,
+        _initialRestTotalTime: initialRestTotalTime,
+        _numberRounds: numberRounds,
+      });
+      setRoundsRemaining(numberRounds);
+      setDoResetAll(false);
+    }
     const intervalid: any = setTimeout(() => {
       if (!isStop && roundsRemaining >= 0 && totalTime >= 0) {
         setTotalTime(totalTime - 1);
