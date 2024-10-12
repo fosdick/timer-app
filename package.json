@@ -10,7 +10,7 @@
     "web": "expo start --web",
     "test": "jest --watchAll",
     "lint": "expo lint",
-    "release-ios": "git checkout build-6 && eas build --platform ios && eas submit --platform ios"
+    "release-ios": "git checkout build-7 && eas build --platform ios && eas submit --platform ios"
   },
   "jest": {
     "preset": "jest-expo"
