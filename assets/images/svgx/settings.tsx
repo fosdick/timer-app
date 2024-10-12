@@ -1,15 +1,12 @@
 import * as React from "react";
 import Svg, { Path } from "react-native-svg";
 import { Text, TouchableOpacity, View, TouchableHighlight } from "react-native";
-import { Stack, Navigator } from "expo-router";
+import { Stack, Navigator, Link } from "expo-router";
 
 const SettingsSvg = (props: any) => {
-  function pressed() {
-    // Navigator.Screen({ name: "settings" });
-  }
   return (
-    <TouchableHighlight onPress={pressed}>
-      <View>
+    <View>
+      <Link href="/settings">
         <Svg
           width="24px"
           height="24px"
@@ -31,8 +28,8 @@ const SettingsSvg = (props: any) => {
             fill="#1C274C"
           />
         </Svg>
-      </View>
-    </TouchableHighlight>
+      </Link>
+    </View>
   );
 };
 export { SettingsSvg };

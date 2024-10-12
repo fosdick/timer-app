@@ -11,6 +11,18 @@ const minimumTrackTintColor = "#C3D8DB";
 const maximumTrackTintColor = "#767577";
 const backgroundColor = "#080B0c";
 
+export const Settings = StyleSheet.create({
+  regText: {
+    // marginTop:30,
+    // paddingVertical: 10,
+    paddingHorizontal: 18,
+    fontSize: 25,
+    overflow: "hidden",
+    borderColor: borderColor,
+    color: fontColor,
+    fontVariant: ["tabular-nums"],
+  },
+});
 export const GreenTheme = {
   borderColor,
   fontColor,

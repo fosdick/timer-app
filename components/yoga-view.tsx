@@ -47,7 +47,6 @@ export default function YogaView(props: any) {
 
   useState(async () => {
     const savedData = await getData(YOGA_TIMER_APP_DATA);
-    console.log(savedData, "saved daa");
     setInitialTotalTime(
       savedData?.yogaTotalInterval || DEFAULT_INITIAL_TOTAL_TIME
     );
