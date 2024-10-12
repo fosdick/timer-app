@@ -4,11 +4,13 @@ import {
   ThemeProvider,
 } from "@react-navigation/native";
 import { useFonts } from "expo-font";
-import { Stack } from "expo-router";
+import { Stack, Navigator } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
-import { useEffect } from "react";
+import { Component, useEffect } from "react";
 import "react-native-reanimated";
 import { useColorScheme } from "@/hooks/useColorScheme";
+
+import { SettingsSvg } from "@/assets/images/svgx/settings";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -28,13 +30,19 @@ export default function RootLayout() {
   if (!loaded) {
     return null;
   }
-
+  const pressed = () => {
+    return "prseed";
+  };
   return (
-    <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-      <Stack screenOptions={{ title: "Timer App" }}>
-        {/* <Stack.Screen name="+html" options={{ headerShown: false }} /> */}
-        <Stack.Screen name="+not-found" />
-      </Stack>
-    </ThemeProvider>
+    <Stack
+      screenOptions={{
+        title: "Timer App",
+        headerRight: () => <SettingsSvg />,
+      }}
+    >
+      {/* <Stack.Screen name="+html" options={{ headerShown: false }} /> */}
+      <Stack.Screen name="+not-found" />
+      <Stack.Screen name="settings" />
+    </Stack>
   );
 }

@@ -7,7 +7,6 @@ import { useKeepAwake } from "expo-keep-awake";
 import { YogaSvg } from "@/assets/images/svgx/yoga";
 import { Pranayama } from "@/assets/images/svgx/pranayama";
 import { HittSvg } from "@/assets/images/svgx/hitt";
-
 export default function TabLayout() {
   const colorScheme = useColorScheme();
   useKeepAwake();
