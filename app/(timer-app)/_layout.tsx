@@ -4,6 +4,9 @@ import { TabBarIcon } from "@/components/navigation/TabBarIcon";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { useKeepAwake } from "expo-keep-awake";
+import { YogaSvg } from "@/assets/images/svgx/yoga";
+import { Pranayama } from "@/assets/images/svgx/pranayama";
+import { HittSvg } from "@/assets/images/svgx/hitt";
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
@@ -22,36 +25,21 @@ export default function TabLayout() {
         name="index"
         options={{
           title: "Pranayama",
-          tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon
-              name={focused ? "home" : "home-outline"}
-              color={color}
-            />
-          ),
+          tabBarIcon: ({ color, focused }) => <Pranayama color={color} />,
         }}
       />
       <Tabs.Screen
         name="yoga"
         options={{
           title: "Yoga",
-          tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon
-              name={focused ? "code-slash" : "code-slash-outline"}
-              color={color}
-            />
-          ),
+          tabBarIcon: ({ color, focused }) => <YogaSvg color={color} />,
         }}
       />
       <Tabs.Screen
         name="hitt"
         options={{
           title: "HITT",
-          tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon
-              name={focused ? "code-slash" : "code-slash-outline"}
-              color={color}
-            />
-          ),
+          tabBarIcon: ({ color, focused }) => <HittSvg color={color} />,
         }}
       />
     </Tabs>
