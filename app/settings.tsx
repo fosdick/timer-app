@@ -11,8 +11,6 @@ import {
 } from "react-native";
 
 import ParallaxScrollView from "@/components/ParallaxScrollView";
-import { ThemedText } from "@/components/ThemedText";
-import { ThemedView } from "@/components/ThemedView";
 import { useEffect, useState } from "react";
 import { Settings } from "@/assets/styles/timer-app";
 
@@ -23,22 +21,35 @@ export default function TabTwoScreen() {
     setNoAdsCode(codeText);
   };
   return (
-    <ThemedView style={styles.viewBody}>
-      <Text>Enter Code to Remove Ads - Beta Only!</Text>
+    <View style={styles.viewBody}>
+      <Text style={styles.settingsText}>
+        Enter Code to Remove Ads - Beta Only!
+      </Text>
       <TextInput
+        style={styles.settingsInput}
         style={Settings.regText}
         onChangeText={handleNoAds}
         value={noAdsCode}
         placeholder="Enter Code"
       />
-      <TouchableOpacity>
-        <Text>Purchase and Remove Ads</Text>
-      </TouchableOpacity>
-    </ThemedView>
+      <View style={styles.viewBody}>
+        <Text style={styles.settingsText}>Purchase and Remove Ads</Text>
+        <Text style={styles.settingsText}>How to use pranayama video</Text>
+        <Text style={styles.settingsText}>How to use yoga video</Text>
+        <Text style={styles.settingsText}>How to use HITT video</Text>
+      </View>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  settingsInput: {
+    padding: 25,
+  },
+  settingsText: {
+    padding: 18,
+    fontSize: 25,
+  },
   headerImage: {
     color: "#808080",
     bottom: -90,
@@ -52,5 +63,6 @@ const styles = StyleSheet.create({
   viewBody: {
     marginTop: 30,
     // backgroundColor: 'none'
+    justifyContent: "space-evenly",
   },
 });
