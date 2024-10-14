@@ -9,13 +9,13 @@ import { YogaSvg } from "@/assets/images/svgx/yoga";
 import { Pranayama } from "@/assets/images/svgx/pranayama";
 import { HittSvg } from "@/assets/images/svgx/hitt";
 
-// import {
-//   AppOpenAd,
-//   InterstitialAd,
-//   RewardedAd,
-//   BannerAd,
-//   TestIds,
-// } from "react-native-google-mobile-ads";
+import {
+  AppOpenAd,
+  InterstitialAd,
+  RewardedAd,
+  BannerAd,
+  TestIds,
+} from "react-native-google-mobile-ads";
 
 // // # App Open
 // AppOpenAd.createForAdRequest(TestIds.APP_OPEN);
@@ -33,7 +33,9 @@ export default function TabLayout() {
   useKeepAwake();
   return (
     <View>
-      <View>{/* <BannerAd unitId={TestIds.BANNER} size="100%" /> */}</View>
+      <View>
+        <BannerAd unitId={TestIds.BANNER} size="100%" />
+      </View>
 
       <Tabs
         sceneContainerStyle={{
