@@ -12,18 +12,18 @@ import { useColorScheme } from "@/hooks/useColorScheme";
 
 import { SettingsSvg } from "@/assets/images/svgx/settings";
 import { setStatusBarBackgroundColor } from "expo-status-bar";
-import mobileAds from "react-native-google-mobile-ads";
+// import mobileAds from "react-native-google-mobile-ads";
 
 import { check, request, PERMISSIONS, RESULTS } from "react-native-permissions";
 
 const local = true;
-if (!local) {
-  mobileAds()
-    .initialize()
-    .then((adapterStatuses) => {
-      // Initialization complete!
-    });
-}
+// if (!local) {
+//   mobileAds()
+//     .initialize()
+//     .then((adapterStatuses) => {
+//       // Initialization complete!
+//     });
+// }
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
@@ -35,7 +35,7 @@ export default async function RootLayout() {
       await request(PERMISSIONS.IOS.APP_TRACKING_TRANSPARENCY);
     }
 
-    const adapterStatuses = await mobileAds().initialize();
+    // const adapterStatuses = await mobileAds().initialize();
   }
   const colorScheme = useColorScheme();
   const [loaded] = useFonts({
