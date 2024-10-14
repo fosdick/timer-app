@@ -10,9 +10,7 @@ import { Pranayama } from "@/assets/images/svgx/pranayama";
 import { HittSvg } from "@/assets/images/svgx/hitt";
 
 import {
-  AppOpenAd,
-  InterstitialAd,
-  RewardedAd,
+  BannerAdSize,
   BannerAd,
   TestIds,
 } from "react-native-google-mobile-ads";
@@ -34,7 +32,16 @@ export default function TabLayout() {
   return (
     <View>
       <View>
-        <BannerAd unitId={TestIds.BANNER} size="100%" />
+        <BannerAd
+          size={BannerAdSize.BANNER}
+          unitId="ca-app-pub-9298793039154739~4696334699"
+          onAdLoaded={() => {
+            console.log("Advert loaded");
+          }}
+          onAdFailedToLoad={(error) => {
+            console.error("Advert failed to load: ", error);
+          }}
+        />
       </View>
 
       <Tabs
