@@ -27,7 +27,6 @@ export default function TabTwoScreen() {
       </Text>
       <TextInput
         style={styles.settingsInput}
-        style={Settings.regText}
         onChangeText={handleNoAds}
         value={noAdsCode}
         placeholder="Enter Code"

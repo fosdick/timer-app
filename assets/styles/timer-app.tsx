@@ -10,6 +10,7 @@ const thumbColorDisabled = "#0D2013";
 const minimumTrackTintColor = "#C3D8DB";
 const maximumTrackTintColor = "#767577";
 const backgroundColor = "#080B0c";
+const neutralColor = "#dfffea";
 
 export const Settings = StyleSheet.create({
   regText: {

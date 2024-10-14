@@ -12,11 +12,11 @@ sign into expo and apple , open xcode and sign in
 <!-- https://docs.expo.dev/submit/ios/ -->
 
 ```bash
-eas build --platform ios
+eas-cli build --platform ios
 ```
 
 ```bash
-eas submit --platform ios
+eas-cli submit --platform ios
 ```
 
 https://forums.developer.apple.com/forums/thread/98240
