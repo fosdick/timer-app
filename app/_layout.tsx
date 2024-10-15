@@ -11,7 +11,6 @@ import "react-native-reanimated";
 import { useColorScheme } from "@/hooks/useColorScheme";
 
 import { SettingsSvg } from "@/assets/images/svgx/settings";
-import { setStatusBarBackgroundColor } from "expo-status-bar";
 // import mobileAds from "react-native-google-mobile-ads";
 
 // mobileAds()
