@@ -38,9 +38,7 @@ export default async function RootLayout() {
   if (!loaded) {
     return null;
   }
-  const pressed = () => {
-    return "prseed";
-  };
+
   return (
     <Stack
       screenOptions={{

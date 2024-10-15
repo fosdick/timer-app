@@ -15,26 +15,20 @@ import {
   TestIds,
 } from "react-native-google-mobile-ads";
 
-// // # App Open
-// AppOpenAd.createForAdRequest(TestIds.APP_OPEN);
+import mobileAds from "react-native-google-mobile-ads";
 
-// // # Interstitial
-// InterstitialAd.createForAdRequest(TestIds.INTERSTITIAL);
-
-// // # Rewarded
-// RewardedAd.createForAdRequest(TestIds.REWARDED);
-
-// # Banners
-
-export default function TabLayout() {
+export default async function TabLayout() {
   const colorScheme = useColorScheme();
   useKeepAwake();
+  // const ads = await mobileAds();
+  // await ads.initialize();
+
   return (
     <View>
       <View>
         <BannerAd
           size={BannerAdSize.BANNER}
-          unitId="ca-app-pub-9298793039154739~4696334699"
+          unitId={TestIds.INTERSTITIAL}
           onAdLoaded={() => {
             console.log("Advert loaded");
           }}
@@ -49,7 +43,7 @@ export default function TabLayout() {
           backgroundColor: "#080B0c",
         }}
         screenOptions={{
-          tabBarActiveTintColor: Colors[colorScheme ?? "dark"].tint,
+          // tabBarActiveTintColor: Colors[colorScheme ?? "dark"].tint,
           headerShown: false,
           tabBarStyle: {
             backgroundColor: "#dfffea",
