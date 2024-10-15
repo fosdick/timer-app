@@ -2,6 +2,7 @@ import { Audio } from "expo-av";
 
 Audio.setAudioModeAsync({
   playsInSilentModeIOS: true,
+  interruptionModeIOS: 2,
 });
 
 export const playBeat = () => {

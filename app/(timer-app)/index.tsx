@@ -6,6 +6,7 @@ import {
   View,
   Text,
   TouchableOpacity,
+  SafeAreaView,
 } from "react-native";
 
 import ParallaxScrollView from "@/components/ParallaxScrollView";
@@ -16,7 +17,9 @@ import Metronome from "@/components/pranayama";
 export default function TabTwoScreen() {
   return (
     <ThemedView style={styles.viewBody}>
-      <Metronome></Metronome>
+      <View>
+        <Metronome></Metronome>
+      </View>
     </ThemedView>
   );
 }
