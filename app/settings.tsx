@@ -50,7 +50,7 @@ export default function TabTwoScreen() {
       <View>
         <Text>{products?.current?.availablePackages} </Text>
       </View>
-      <Text style={styles.settingsText}>
+      {/* <Text style={styles.settingsText}>
         Enter Code to Remove Ads - Beta Only!
       </Text>
       <TextInput
@@ -58,12 +58,13 @@ export default function TabTwoScreen() {
         onChangeText={handleNoAds}
         value={noAdsCode}
         placeholder="Enter Code"
-      />
+      /> */}
       <View style={styles.viewBody}>
         <Text style={styles.settingsText}>Purchase and Remove Ads</Text>
         <Text style={styles.settingsText}>How to use pranayama video</Text>
         <Text style={styles.settingsText}>How to use yoga video</Text>
         <Text style={styles.settingsText}>How to use HITT video</Text>
+        <Text>suggestions / comments? email: app.support@fastmail.fm</Text>
       </View>
     </View>
   );
