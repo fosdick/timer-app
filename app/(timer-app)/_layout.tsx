@@ -26,7 +26,7 @@ export default function TabLayout() {
           size={BannerAdSize.FULL_BANNER}
           unitId={TestIds.BANNER}
           onAdLoaded={() => {
-            console.log("Advert loaded");
+            // console.log("Advert loaded");
           }}
           onAdFailedToLoad={(error) => {
             console.error("Advert failed to load: ", error);
@@ -41,7 +41,7 @@ export default function TabLayout() {
           tabBarActiveTintColor: Colors[colorScheme ?? "dark"].tint,
           headerShown: false,
           tabBarStyle: {
-            backgroundColor: "#dfffea",
+            backgroundColor: "#080B0c",
           },
         }}
       >

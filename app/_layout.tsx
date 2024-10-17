@@ -41,8 +41,9 @@ export default function RootLayout() {
   return (
     <Stack
       screenOptions={{
-        title: "Timer App",
+        title: "Timer App Yoga",
         headerStyle: {
+          // backgroundColor: "#080B0c",
           backgroundColor: "#dfffea",
         },
         headerRight: () => <SettingsSvg />,

@@ -97,6 +97,16 @@ export const TimerStyles = StyleSheet.create({
     borderColor: borderColor,
     color: fontColor,
   },
+  metronomeMedium: {
+    marginTop: 0,
+    paddingVertical: 5,
+    paddingHorizontal: 18,
+    fontSize: 30,
+    overflow: "hidden",
+    borderColor: borderColor,
+    color: fontColor,
+    fontVariant: ["tabular-nums"],
+  },
   valueText: {
     paddingVertical: 10,
     paddingHorizontal: 18,

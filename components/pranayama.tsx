@@ -51,7 +51,11 @@ export default function Metronome() {
 
   const [beatInterval, setBeatInterval] = useState(DEFAULT_BEAT_INTERVAL);
   const [beatCount, setBeatCount] = useState(DEFAULT_BEAT_COUNT);
-
+  const resetTimer = async () => {
+    console.log("reset here");
+    setTotalTime(initialTotalTime);
+    setAlarmString(formatTime(getTimeParts(initialTotalTime)));
+  };
   const updateInitialState = () => {
     storeData(PRANAYAMA_TIMER_APP_DATA, {
       totalTime: initialTotalTime,
@@ -83,6 +87,7 @@ export default function Metronome() {
         if (totalTime === 0) {
           setIsStop(true);
           playEndChime();
+          resetTimer();
         }
       }
     }, 1000);

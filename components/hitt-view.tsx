@@ -166,6 +166,7 @@ export default function HittView() {
     setWorkoutIntervalDisplayString(
       formatMinutesSeonds(getTimePartsMinSec(initialWorkoutTotalTime))
     );
+    setIsStop(true);
   };
 
   useEffect(() => {
@@ -176,6 +177,7 @@ export default function HittView() {
         _numberRounds: numberRounds,
       });
       setRoundsRemaining(numberRounds);
+      setIsStop(true);
       setDoResetAll(false);
     }
     const intervalid: any = setTimeout(() => {
@@ -229,25 +231,12 @@ export default function HittView() {
   return (
     <View style={TimerStyles.metronomeTheme}>
       <View style={TimerStyles.metronomeTheme}>
-        {/* <View>
-          <Text style={TimerStyles.metronomeTheme}>
-            {JSON.stringify(workoutIntervalDisplayString)}wds
-          </Text>
-          <Text style={TimerStyles.metronomeTheme}>
-            {JSON.stringify(currentRestTotalTime)}rest
-          </Text>
-        </View> */}
-        <Text style={TimerStyles.metronome}>
-          Total Remaining : {totalIntervalTimeString}
+        <Text style={TimerStyles.metronomeMedium}>
+          <Text style={TimerStyles.metronome}>Total: </Text>
+          {totalIntervalTimeString}
         </Text>
       </View>
 
-      {/* <Text>{JSON.stringify(isStop)}</Text>
-
-      <Text>{JSON.stringify(currentWorkoutTotalTime)}cwtt</Text>
-      <Text>{JSON.stringify(workoutIntervalDisplayString)}wds</Text>
-      <Text>{JSON.stringify(initialRestTotalTime)} ir</Text>
-      <Text>{JSON.stringify(totalTime)} tot t</Text> */}
       <HittIntervalPicker
         textTitle="Workout"
         pickerDisplayTimeString={workoutIntervalDisplayString}
@@ -274,10 +263,6 @@ export default function HittView() {
         resetAllEmit={{ resetAllEmit }}
         initialTotalTime={{ initialTotalTime: initialRestTotalTime }}
       ></HittIntervalPicker>
-      {/* <View style={TimerStyles.metronomeTheme}>
-        <Text style={TimerStyles.metronome}>Rounds Remaining :</Text>
-        <Text style={TimerStyles.timerFace}>{roundsRemaining}</Text>
-      </View> */}
       <View>
         <Text style={TimerStyles.metronome}>Rounds</Text>
       </View>
@@ -294,7 +279,6 @@ export default function HittView() {
         maximumTrackTintColor={GreenTheme.trackColorTrue}
         thumbTintColor={GreenTheme.trackColorTrue}
         onValueChange={(val) => {
-          setIsStop(true);
           setNumberRounds(val);
           setRoundsRemaining(val);
           resetInitalState({
@@ -311,6 +295,7 @@ export default function HittView() {
             _initialRestTotalTime: initialRestTotalTime,
             _numberRounds: val,
           });
+          setIsStop(true);
         }}
       />
       <TouchableOpacity
