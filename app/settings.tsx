@@ -13,15 +13,43 @@ import {
 import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { useEffect, useState } from "react";
 import { Settings } from "@/assets/styles/timer-app";
+import Purchases from "react-native-purchases";
+import Config from "react-native-config";
+console.log(Config, "catsssssss");
+if (Platform.OS === "ios") {
+  Purchases.configure({ apiKey: Config.PURCHASES_API_KEY || "" });
+}
+{
+  /* else if (Platform.OS === 'android') {
+       Purchases.configure({apiKey: <revenuecat_project_google_api_key>});
 
+      // OR: if building for Amazon, be sure to follow the installation instructions then:
+       Purchases.configure({ apiKey: <revenuecat_project_amazon_api_key>, useAmazon: true });
+    } */
+}
 export default function TabTwoScreen() {
   const [noAdsCode, setNoAdsCode] = useState<string>("");
 
   const handleNoAds = (codeText: string) => {
     setNoAdsCode(codeText);
   };
+  let products: any = {};
+  useState(async () => {
+    try {
+      products = await Purchases.getProducts;
+      if (console.log(products, "pro ducks")) {
+        // Display packages for sale
+      }
+    } catch (e) {
+      console.log(e, "error with purchases get offer");
+    }
+  });
+
   return (
     <View style={styles.viewBody}>
+      <View>
+        <Text>{products?.current?.availablePackages} </Text>
+      </View>
       <Text style={styles.settingsText}>
         Enter Code to Remove Ads - Beta Only!
       </Text>

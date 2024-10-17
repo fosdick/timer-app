@@ -19,9 +19,6 @@ import {
 export default function TabLayout() {
   const colorScheme = useColorScheme();
   useKeepAwake();
-  // const ads = await mobileAds();
-  // await ads.initialize();
-
   return (
     <View style={styles.tabsWithAds}>
       <View style={styles.adView}>

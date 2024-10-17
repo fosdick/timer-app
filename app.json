@@ -1,8 +1,8 @@
 {
   "expo": {
     "name": "TimerAppYoga",
-    "slug": "timer-app",
-    "version": "1.0.0",
+    "slug": "timer-app-yoga",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "myapp",
@@ -43,7 +43,7 @@
     },
     "extra": {
       "eas": {
-        "projectId": "405b9d5d-821f-4302-b1fc-f4c071739dfc"
+        "projectId": "eb3f4eef-fafa-4d8e-8942-3604f7ea39a9"
       }
     },
     "owner": "stuffingcat",
