@@ -17,7 +17,6 @@ import { Settings } from "@/assets/styles/timer-app";
 import Purchases from "react-native-purchases";
 import PaywallScreen from "@/components/paywall";
 import Config from "react-native-config";
-console.log(Config, "catsssssss");
 if (Platform.OS === "ios") {
   Purchases.configure({ apiKey: Config.PURCHASES_API_KEY || "" });
 }
@@ -31,10 +30,6 @@ if (Platform.OS === "ios") {
 }
 export default function TabTwoScreen() {
   const [noAdsCode, setNoAdsCode] = useState<string>("");
-
-  const handleNoAds = (codeText: string) => {
-    setNoAdsCode(codeText);
-  };
 
   return (
     <View style={styles.viewBody}>

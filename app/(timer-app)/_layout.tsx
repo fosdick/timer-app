@@ -17,7 +17,6 @@ import {
   BannerAd,
   TestIds,
 } from "react-native-google-mobile-ads";
-const USER_SETTINGS_DATA = "user-settings-data";
 export default function TabLayout() {
   const colorScheme = useColorScheme();
   useKeepAwake();
