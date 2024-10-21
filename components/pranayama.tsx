@@ -23,9 +23,7 @@ import {
   TestIds,
 } from "react-native-google-mobile-ads";
 
-const adUnitId = __DEV__
-  ? TestIds.INTERSTITIAL
-  : "ca-app-pub-xxxxxxxxxxxxx/yyyyyyyyyyyyyy";
+const adUnitId = TestIds.INTERSTITIAL;
 
 const interstitial = InterstitialAd.createForAdRequest(adUnitId, {
   keywords: ["yoga", "pranayama", "mindful"],
@@ -39,13 +37,6 @@ const DEFAULT_METRONOME_ON = true;
 const DEFAULT_TIMER_LENGTH = 300;
 
 const pranayamaEventController = new EventEmitter();
-pranayamaEventController.on(
-  "show-interstitial-ad",
-  () => {
-    interstitial.show();
-  },
-  {}
-);
 
 const timerEndedEmit = () => {
   pranayamaEventController.emit("show-interstitial-ad");
@@ -81,13 +72,12 @@ export default function Metronome() {
   const [beatInterval, setBeatInterval] = useState(DEFAULT_BEAT_INTERVAL);
   const [beatCount, setBeatCount] = useState(DEFAULT_BEAT_COUNT);
   const resetTimer = async () => {
-    console.log("reset here");
     setTotalTime(initialTotalTime);
     setAlarmString(formatTime(getTimeParts(initialTotalTime)));
   };
-  const updateInitialState = () => {
+  const updateInitialState = (totalTimeVal?: number) => {
     storeData(PRANAYAMA_TIMER_APP_DATA, {
-      totalTime: initialTotalTime,
+      totalTime: totalTimeVal || initialTotalTime,
       beatInterval,
     });
   };
@@ -95,6 +85,7 @@ export default function Metronome() {
     const savedData = await getData(PRANAYAMA_TIMER_APP_DATA);
     setBeatInterval(savedData?.beatInterval || DEFAULT_BEAT_INTERVAL);
     setTotalTime(savedData?.totalTime || DEFAULT_TIMER_LENGTH);
+    setInitialTotalTime(savedData?.totalTime || DEFAULT_TIMER_LENGTH);
     if (savedData?.totalTime) {
       setAlarmString(formatTime(getTimeParts(savedData.totalTime)));
     }
@@ -108,7 +99,7 @@ export default function Metronome() {
     );
     // Start loading the interstitial straight away
     interstitial.load();
-
+    console.log(unsubscribe, "unscub");
     // Unsubscribe from events on unmount
     return unsubscribe;
   }, []);
@@ -135,6 +126,10 @@ export default function Metronome() {
     }, 1000);
     return () => clearInterval(intervalid);
   });
+  // No advert ready to show yet
+  if (!loaded) {
+    return null;
+  }
   return (
     <View style={TimerStyles.metronomeTheme}>
       <TouchableOpacity activeOpacity={0.7} onPress={() => setShowPicker(true)}>
@@ -185,7 +180,7 @@ export default function Metronome() {
         </View>
       </TouchableOpacity>
       <TimerPickerModal
-        initialValue={getTimeParts(DEFAULT_TIMER_LENGTH)}
+        initialValue={getTimeParts(initialTotalTime)}
         visible={showPicker}
         setIsVisible={setShowPicker}
         onConfirm={(pickedDuration) => {
@@ -202,7 +197,11 @@ export default function Metronome() {
           setAlarmString(formatTime(pickedDuration));
           setShowPicker(false);
           setIsStop(true);
-          updateInitialState();
+          updateInitialState(
+            pickedDuration.hours * 3600 +
+              pickedDuration.minutes * 60 +
+              pickedDuration.seconds
+          );
         }}
         modalTitle="Set Alarm"
         onCancel={() => setShowPicker(false)}

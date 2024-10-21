@@ -10,13 +10,27 @@ import { Pranayama } from "@/assets/images/svgx/pranayama";
 import { HittSvg } from "@/assets/images/svgx/hitt";
 import Config from "react-native-config";
 import { getData, storeData } from "../../assets/utils/persistant-storage";
-
+import Purchases from "react-native-purchases";
+import { Platform } from "react-native";
 // import mobileAds from "react-native-google-mobile-ads";
 import {
   BannerAdSize,
   BannerAd,
   TestIds,
 } from "react-native-google-mobile-ads";
+
+if (Platform.OS === "ios") {
+  Purchases.configure({ apiKey: Config.PURCHASES_API_KEY || "" });
+}
+{
+  /* else if (Platform.OS === 'android') {
+       Purchases.configure({apiKey: <revenuecat_project_google_api_key>});
+
+      // OR: if building for Amazon, be sure to follow the installation instructions then:
+       Purchases.configure({ apiKey: <revenuecat_project_amazon_api_key>, useAmazon: true });
+    } */
+}
+
 export default function TabLayout() {
   const colorScheme = useColorScheme();
   useKeepAwake();
