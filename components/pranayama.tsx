@@ -15,6 +15,21 @@ import {
 } from "../assets/utils/sounds";
 import { Audio } from "expo-av";
 import { getData, storeData } from "../assets/utils/persistant-storage";
+import EventEmitter from "eventemitter3";
+
+import {
+  InterstitialAd,
+  AdEventType,
+  TestIds,
+} from "react-native-google-mobile-ads";
+
+const adUnitId = __DEV__
+  ? TestIds.INTERSTITIAL
+  : "ca-app-pub-xxxxxxxxxxxxx/yyyyyyyyyyyyyy";
+
+const interstitial = InterstitialAd.createForAdRequest(adUnitId, {
+  keywords: ["yoga", "pranayama", "mindful"],
+});
 
 const PRANAYAMA_TIMER_APP_DATA: string = "pranayama_timer_app_data";
 
@@ -23,7 +38,21 @@ const DEFAULT_BEAT_COUNT = 0;
 const DEFAULT_METRONOME_ON = true;
 const DEFAULT_TIMER_LENGTH = 300;
 
+const pranayamaEventController = new EventEmitter();
+pranayamaEventController.on(
+  "show-interstitial-ad",
+  () => {
+    interstitial.show();
+  },
+  {}
+);
+
+const timerEndedEmit = () => {
+  pranayamaEventController.emit("show-interstitial-ad");
+};
+
 export default function Metronome() {
+  const [loaded, setLoaded] = useState(false);
   const [isMetronomeEnabled, setIsMetronomeEnabled] =
     useState(DEFAULT_METRONOME_ON);
   const toggleMetronomeEnabled = () => {
@@ -70,7 +99,19 @@ export default function Metronome() {
       setAlarmString(formatTime(getTimeParts(savedData.totalTime)));
     }
   });
+  useEffect(() => {
+    const unsubscribe = interstitial.addAdEventListener(
+      AdEventType.LOADED,
+      () => {
+        setLoaded(true);
+      }
+    );
+    // Start loading the interstitial straight away
+    interstitial.load();
 
+    // Unsubscribe from events on unmount
+    return unsubscribe;
+  }, []);
   useEffect(() => {
     const intervalid: any = setTimeout(() => {
       if (!isStop && totalTime >= 0) {
@@ -88,6 +129,7 @@ export default function Metronome() {
           setIsStop(true);
           playEndChime();
           resetTimer();
+          timerEndedEmit();
         }
       }
     }, 1000);

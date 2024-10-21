@@ -21,11 +21,11 @@ export default function TabLayout() {
   const colorScheme = useColorScheme();
   useKeepAwake();
 
-  const [removeAds, setRemoveAds] = useState(false);
+  const [removeAds, setRemoveAds] = useState(true);
 
   useState(async () => {
     const savedData = await getData(Config.USER_SETTINGS_DATA);
-    if (savedData.removeAds) {
+    if (savedData?.removeAds) {
       setRemoveAds(savedData.removeAds);
     }
   });
