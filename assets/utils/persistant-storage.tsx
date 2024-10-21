@@ -18,12 +18,14 @@ const storeData = async (key: string, value: Partial<storageData>) => {
     // saving error
   }
 };
-const getData = async (key: string) => {
-  try {
-    const jsonValue = await AsyncStorage.getItem(key);
-    return jsonValue != null ? JSON.parse(jsonValue) : null;
-  } catch (e) {
-    // error reading value
+const getData = async (key: string | undefined) => {
+  if (key) {
+    try {
+      const jsonValue = await AsyncStorage.getItem(key);
+      return jsonValue != null ? JSON.parse(jsonValue) : null;
+    } catch (e) {
+      // error reading value
+    }
   }
 };
 

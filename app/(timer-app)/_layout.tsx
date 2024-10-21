@@ -1,5 +1,5 @@
 import { Tabs } from "expo-router";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { TabBarIcon } from "@/components/navigation/TabBarIcon";
 import { Colors } from "@/constants/Colors";
@@ -8,6 +8,8 @@ import { useKeepAwake } from "expo-keep-awake";
 import { YogaSvg } from "@/assets/images/svgx/yoga";
 import { Pranayama } from "@/assets/images/svgx/pranayama";
 import { HittSvg } from "@/assets/images/svgx/hitt";
+import Config from "react-native-config";
+import { getData, storeData } from "../../assets/utils/persistant-storage";
 
 // import mobileAds from "react-native-google-mobile-ads";
 import {
@@ -15,24 +17,35 @@ import {
   BannerAd,
   TestIds,
 } from "react-native-google-mobile-ads";
-
+const USER_SETTINGS_DATA = "user-settings-data";
 export default function TabLayout() {
   const colorScheme = useColorScheme();
   useKeepAwake();
+
+  const [removeAds, setRemoveAds] = useState(false);
+
+  useState(async () => {
+    const savedData = await getData(Config.USER_SETTINGS_DATA);
+    if (savedData.removeAds) {
+      setRemoveAds(savedData.removeAds);
+    }
+  });
   return (
     <View style={styles.tabsWithAds}>
-      <View style={styles.adView}>
-        <BannerAd
-          size={BannerAdSize.FULL_BANNER}
-          unitId={TestIds.BANNER}
-          onAdLoaded={() => {
-            // console.log("Advert loaded");
-          }}
-          onAdFailedToLoad={(error) => {
-            console.error("Advert failed to load: ", error);
-          }}
-        />
-      </View>
+      {removeAds && (
+        <View style={styles.adView}>
+          <BannerAd
+            size={BannerAdSize.FULL_BANNER}
+            unitId={TestIds.BANNER}
+            onAdLoaded={() => {
+              // console.log("Advert loaded");
+            }}
+            onAdFailedToLoad={(error) => {
+              console.error("Advert failed to load: ", error);
+            }}
+          />
+        </View>
+      )}
       <Tabs
         sceneContainerStyle={{
           backgroundColor: "#080B0c",

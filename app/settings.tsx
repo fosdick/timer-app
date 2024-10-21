@@ -4,16 +4,18 @@ import {
   Image,
   Platform,
   View,
+  ScrollView,
   Text,
   TouchableOpacity,
   TextInput,
   Button,
 } from "react-native";
-
+import { getData, storeData } from "../assets/utils/persistant-storage";
 import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { useEffect, useState } from "react";
 import { Settings } from "@/assets/styles/timer-app";
 import Purchases from "react-native-purchases";
+import PaywallScreen from "@/components/paywall";
 import Config from "react-native-config";
 console.log(Config, "catsssssss");
 if (Platform.OS === "ios") {
@@ -33,39 +35,19 @@ export default function TabTwoScreen() {
   const handleNoAds = (codeText: string) => {
     setNoAdsCode(codeText);
   };
-  let products: any = {};
-  useState(async () => {
-    try {
-      products = await Purchases.getProducts;
-      if (console.log(products, "pro ducks")) {
-        // Display packages for sale
-      }
-    } catch (e) {
-      console.log(e, "error with purchases get offer");
-    }
-  });
 
   return (
     <View style={styles.viewBody}>
-      <View>
-        <Text>{products?.current?.availablePackages} </Text>
-      </View>
-      {/* <Text style={styles.settingsText}>
-        Enter Code to Remove Ads - Beta Only!
-      </Text>
-      <TextInput
-        style={styles.settingsInput}
-        onChangeText={handleNoAds}
-        value={noAdsCode}
-        placeholder="Enter Code"
-      /> */}
-      <View style={styles.viewBody}>
-        <Text style={styles.settingsText}>Purchase and Remove Ads</Text>
-        <Text style={styles.settingsText}>How to use pranayama video</Text>
-        <Text style={styles.settingsText}>How to use yoga video</Text>
-        <Text style={styles.settingsText}>How to use HITT video</Text>
-        <Text>suggestions / comments? email: app.support@fastmail.fm</Text>
-      </View>
+      <ScrollView>
+        <PaywallScreen></PaywallScreen>
+        <View style={styles.viewBody}>
+          <Text style={styles.settingsText}>Purchase and Remove Ads</Text>
+          <Text style={styles.settingsText}>How to use pranayama video</Text>
+          <Text style={styles.settingsText}>How to use yoga video</Text>
+          <Text style={styles.settingsText}>How to use HITT video</Text>
+          <Text>suggestions / comments? email: app.support@fastmail.fm</Text>
+        </View>
+      </ScrollView>
     </View>
   );
 }
