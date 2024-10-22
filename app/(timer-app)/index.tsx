@@ -12,13 +12,13 @@ import {
 import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
-import Metronome from "@/components/pranayama";
+import Pranayama from "@/components/pranayama";
 
-export default function TabTwoScreen() {
+export default function TabTwoScreen(props: any) {
   return (
     <ThemedView style={styles.viewBody}>
       <View>
-        <Metronome></Metronome>
+        <Pranayama eventController={props?.eventController}></Pranayama>
       </View>
     </ThemedView>
   );

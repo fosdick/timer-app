@@ -10,14 +10,29 @@ import { Pranayama } from "@/assets/images/svgx/pranayama";
 import { HittSvg } from "@/assets/images/svgx/hitt";
 import Config from "react-native-config";
 import { getData, storeData } from "../../assets/utils/persistant-storage";
+import EventEmitter from "eventemitter3";
 
 // import mobileAds from "react-native-google-mobile-ads";
+import { BannerAdSize, BannerAd } from "react-native-google-mobile-ads";
+
 import {
-  BannerAdSize,
-  BannerAd,
+  InterstitialAd,
+  AdEventType,
   TestIds,
 } from "react-native-google-mobile-ads";
 
+const adUnitId = TestIds.INTERSTITIAL;
+
+const interstitial = InterstitialAd.createForAdRequest(adUnitId, {
+  keywords: ["yoga", "pranayama", "mindful"],
+});
+const [loaded, setLoaded] = useState(false);
+const eventController = new EventEmitter();
+
+eventController.on("show-interstitial-ad", () => {
+  console.log("show in sit event happens");
+  interstitial.show();
+});
 export default function TabLayout() {
   const colorScheme = useColorScheme();
   useKeepAwake();
@@ -30,6 +45,7 @@ export default function TabLayout() {
       setRemoveAds(savedData.removeAds);
     }
   });
+
   return (
     <View style={styles.tabsWithAds}>
       {removeAds && (
@@ -64,6 +80,7 @@ export default function TabLayout() {
             title: "Pranayama",
             tabBarIcon: ({ color, focused }) => <Pranayama color={color} />,
           }}
+          // initialParams={{ eventController }}
         />
         <Tabs.Screen
           name="yoga"

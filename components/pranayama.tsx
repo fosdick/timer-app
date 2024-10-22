@@ -15,19 +15,7 @@ import {
 } from "../assets/utils/sounds";
 import { Audio } from "expo-av";
 import { getData, storeData } from "../assets/utils/persistant-storage";
-import EventEmitter from "eventemitter3";
-
-import {
-  InterstitialAd,
-  AdEventType,
-  TestIds,
-} from "react-native-google-mobile-ads";
-
-const adUnitId = TestIds.INTERSTITIAL;
-
-const interstitial = InterstitialAd.createForAdRequest(adUnitId, {
-  keywords: ["yoga", "pranayama", "mindful"],
-});
+// import EventEmitter from "eventemitter3";
 
 const PRANAYAMA_TIMER_APP_DATA: string = "pranayama_timer_app_data";
 
@@ -36,18 +24,16 @@ const DEFAULT_BEAT_COUNT = 0;
 const DEFAULT_METRONOME_ON = true;
 const DEFAULT_TIMER_LENGTH = 300;
 
-const pranayamaEventController = new EventEmitter();
+// const pranayamaEventController = new EventEmitter();
 
-const timerEndedEmit = () => {
-  pranayamaEventController.emit("show-interstitial-ad");
-};
-
-export default function Metronome() {
-  const [loaded, setLoaded] = useState(false);
+export default function Pranayama(props: any) {
   const [isMetronomeEnabled, setIsMetronomeEnabled] =
     useState(DEFAULT_METRONOME_ON);
   const toggleMetronomeEnabled = () => {
     setIsMetronomeEnabled(!isMetronomeEnabled);
+  };
+  const timerEndedEmit = () => {
+    props.eventController.emit("show-interstitial-ad");
   };
   const getRemainingTime = () => {
     const hours = Math.floor(totalTime / 3600);
@@ -90,19 +76,7 @@ export default function Metronome() {
       setAlarmString(formatTime(getTimeParts(savedData.totalTime)));
     }
   });
-  useEffect(() => {
-    const unsubscribe = interstitial.addAdEventListener(
-      AdEventType.LOADED,
-      () => {
-        setLoaded(true);
-      }
-    );
-    // Start loading the interstitial straight away
-    interstitial.load();
-    console.log(unsubscribe, "unscub");
-    // Unsubscribe from events on unmount
-    return unsubscribe;
-  }, []);
+
   useEffect(() => {
     const intervalid: any = setTimeout(() => {
       if (!isStop && totalTime >= 0) {
@@ -126,10 +100,7 @@ export default function Metronome() {
     }, 1000);
     return () => clearInterval(intervalid);
   });
-  // No advert ready to show yet
-  if (!loaded) {
-    return null;
-  }
+
   return (
     <View style={TimerStyles.metronomeTheme}>
       <TouchableOpacity activeOpacity={0.7} onPress={() => setShowPicker(true)}>
