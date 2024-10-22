@@ -44,8 +44,8 @@ export default function TabTwoScreen() {
   });
   return (
     <SafeAreaView style={styles.viewBody}>
+      <PaywallScreen></PaywallScreen>
       <ScrollView>
-        <PaywallScreen></PaywallScreen>
         <View style={styles.viewBody}>
           <Text style={styles.settingsText}>Purchase and Remove Ads</Text>
           <Text style={styles.settingsText}>How to use pranayama video</Text>
