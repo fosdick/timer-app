@@ -27,7 +27,9 @@ export default function TabTwoScreen() {
     <SafeAreaView style={styles.viewBody}>
       <PaywallScreen></PaywallScreen>
       <Support></Support>
-      <RestorePurchasesButton />
+      <View style={styles.container}>
+        <RestorePurchasesButton />
+      </View>
     </SafeAreaView>
   );
 }
@@ -54,5 +56,9 @@ const styles = StyleSheet.create({
     marginTop: 30,
     // backgroundColor: 'none'
     justifyContent: "space-evenly",
+  },
+  container: {
+    alignItems: "center",
+    padding: 8,
   },
 });

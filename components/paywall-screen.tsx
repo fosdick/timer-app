@@ -6,6 +6,7 @@ import {
   Button,
   Linking,
   StyleSheet,
+  Alert,
 } from "react-native";
 import Purchases from "react-native-purchases";
 import PackageItem from "./package-item";
@@ -16,7 +17,6 @@ import { Constants } from "@/constants/constants";
 const PaywallScreen = () => {
   // - State for all available package
   const [packages, setPackages] = useState<any>([]);
-  const [msg, setMsg] = useState<any>("");
   // - State for displaying an overlay view
   const [isPurchasing, setIsPurchasing] = useState(false);
   const [removeAds, setRemoveAds] = useState(false);
@@ -32,6 +32,7 @@ const PaywallScreen = () => {
           setPackages(offerings.current.availablePackages);
         }
       } catch (e: any) {
+        Alert.alert(e.message);
         console.error("Error getting offers", e.message);
       }
     };
@@ -56,28 +57,28 @@ const PaywallScreen = () => {
   }, []);
 
   return (
-    <View>
-      <View style={styles.container}>
-        {!removeAds && <Text style={styles.purchaseTitle}>Remove Ads</Text>}
-      </View>
-      <View style={styles.page}>
-        {/* The paywall flat list displaying each package */}
-        {!removeAds && (
-          <FlatList
-            data={packages}
-            renderItem={({ item }) => (
-              <PackageItem
-                purchasePackage={item}
-                setIsPurchasing={setIsPurchasing}
-              />
-            )}
-            keyExtractor={(item) => item.identifier}
-          />
-        )}
-        {isPurchasing && <View style={styles.overlay} />}
-      </View>
-      <Text>{msg}</Text>
+    // <View>
+    //   <View style={styles.container}>
+    //     {!removeAds && <Text style={styles.purchaseTitle}>Remove Ads</Text>}
+    //   </View>
+    <View style={styles.page}>
+      {/* The paywall flat list displaying each package */}
+      {!removeAds && (
+        <FlatList
+          data={packages}
+          renderItem={({ item }) => (
+            <PackageItem
+              purchasePackage={item}
+              setIsPurchasing={setIsPurchasing}
+            />
+          )}
+          keyExtractor={(item) => item.identifier}
+        />
+      )}
+      {isPurchasing && <View style={styles.overlay} />}
     </View>
+    // <Text>{msg}</Text>
+    // </View>
   );
 };
 const tintColorLight = "#0a7ea4";

@@ -37,11 +37,9 @@ const RestorePurchasesButton = () => {
   });
 
   return (
-    <View style={styles.container}>
-      <Pressable onPress={restorePurchases} style={styles.button}>
-        <Text style={styles.title}>{errorMsg || "Restore Purchases"}</Text>
-      </Pressable>
-    </View>
+    <Pressable onPress={restorePurchases} style={styles.button}>
+      <Text style={styles.title}>{errorMsg || "Restore Purchases"}</Text>
+    </Pressable>
   );
 };
 
