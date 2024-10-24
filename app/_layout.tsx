@@ -11,31 +11,12 @@ import "react-native-reanimated";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import Purchases from "react-native-purchases";
 import { Platform } from "react-native";
-import Config from "react-native-config";
+import { Constants } from "@/./constants";
 import { SettingsSvg } from "@/assets/images/svgx/settings";
-// import mobileAds from "react-native-google-mobile-ads";
-
-// mobileAds()
-//   .initialize()
-//   .then((adapterStatuses) => {
-//     // Initialization complete!
-//   });
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
-
 export default function RootLayout() {
-  if (Platform.OS === "ios") {
-    Purchases.configure({ apiKey: Config.PURCHASES_API_KEY || "" });
-  }
-  {
-    /* else if (Platform.OS === 'android') {
-       Purchases.configure({apiKey: <revenuecat_project_google_api_key>});
-
-      // OR: if building for Amazon, be sure to follow the installation instructions then:
-       Purchases.configure({ apiKey: <revenuecat_project_amazon_api_key>, useAmazon: true });
-    } */
-  }
   const colorScheme = useColorScheme();
   const [loaded] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
@@ -45,6 +26,19 @@ export default function RootLayout() {
     if (loaded) {
       SplashScreen.hideAsync();
     }
+    if (Platform.OS === "ios") {
+      try {
+        Purchases.configure({ apiKey: Constants.PURCHASES_API_KEY });
+      } catch (e) {
+        console.error("Could not cofigure purchases", e);
+      }
+    }
+    /* else if (Platform.OS === 'android') {
+       Purchases.configure({apiKey: <revenuecat_project_google_api_key>});
+
+      // OR: if building for Amazon, be sure to follow the installation instructions then:
+       Purchases.configure({ apiKey: <revenuecat_project_amazon_api_key>, useAmazon: true });
+    } */
   }, [loaded]);
 
   if (!loaded) {

@@ -2,9 +2,8 @@ import React from "react";
 import { View, Text, Pressable, Alert } from "react-native";
 import Purchases from "react-native-purchases";
 import { useNavigation } from "@react-navigation/native";
-import Config from "react-native-config";
-
-const ENTITLEMENT_ID = Config.ENTITLEMENT_ID || "";
+import { Constants } from "@/constants";
+const ENTITLEMENT_ID = Constants.ENTITLEMENT_ID || "";
 
 const PackageItem = ({ purchasePackage, setIsPurchasing }: any) => {
   const {

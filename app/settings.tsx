@@ -17,18 +17,22 @@ import { useEffect, useState } from "react";
 import { Settings } from "@/assets/styles/timer-app";
 import Purchases from "react-native-purchases";
 import PaywallScreen from "@/components/paywall";
-import Config from "react-native-config";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { Constants } from "@/constants";
 const checkPurchases = async () => {
   try {
     // access latest customerInfo
     const customerInfo = await Purchases.getCustomerInfo();
-
+    alert(customerInfo.entitlements.active);
+    let j = JSON.stringify(customerInfo);
+    console.log(j, customerInfo.entitlements.active, "cust info");
+    console.log(await Purchases.getAppUserID());
     if (
-      typeof customerInfo.entitlements.active[Config.ENTITLEMENT_ID || ""] !==
+      typeof customerInfo.entitlements.active[Constants.ENTITLEMENT_ID] !==
       "undefined"
     ) {
       // do not show adds
+      console.log(customerInfo, "cust info");
     } else {
       // navigation.navigate("Paywall");
     }

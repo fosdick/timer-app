@@ -8,7 +8,7 @@ import { useKeepAwake } from "expo-keep-awake";
 import { YogaSvg } from "@/assets/images/svgx/yoga";
 import { Pranayama } from "@/assets/images/svgx/pranayama";
 import { HittSvg } from "@/assets/images/svgx/hitt";
-import Config from "react-native-config";
+import { Constants } from "@/./constants";
 import { getData, storeData } from "../../assets/utils/persistant-storage";
 
 // import mobileAds from "react-native-google-mobile-ads";
@@ -25,18 +25,20 @@ export default function TabLayout() {
   const [removeAds, setRemoveAds] = useState(true);
 
   useState(async () => {
-    const savedData = await getData(Config.USER_SETTINGS_DATA);
+    const savedData = await getData(Constants.USER_SETTINGS_DATA);
     if (savedData?.removeAds) {
       setRemoveAds(savedData.removeAds);
     }
   });
+  const adUnitId = __DEV__ ? TestIds.BANNER : Constants.ADMOD_ADUNIT_ID || "";
+
   return (
     <View style={styles.tabsWithAds}>
       {removeAds && (
         <View style={styles.adView}>
           <BannerAd
             size={BannerAdSize.FULL_BANNER}
-            unitId={TestIds.BANNER}
+            unitId={adUnitId}
             onAdLoaded={() => {
               // console.log("Advert loaded");
             }}
