@@ -13,7 +13,7 @@ const Support = () => {
         <Button
           onPress={() =>
             Linking.openURL(
-              `mailto:${Constants.SUPPORT_EMAI}?subject=Timer App Yoga`
+              `mailto:${Constants.SUPPORT_EMAIL}?subject=Timer App Yoga`
             )
           }
           title={`Email: ${Constants.SUPPORT_EMAIL}`}
@@ -22,9 +22,7 @@ const Support = () => {
       <View>
         <Button
           onPress={() =>
-            Linking.openURL(
-              "https://app.fastmail.com/files/4905761455/4909401471?u=41d941ae"
-            )
+            Linking.openURL("http://timer-app-yoga.jarvis1.fastmail.fm.user.fm")
           }
           title="Privacy Policy"
         />

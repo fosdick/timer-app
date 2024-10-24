@@ -53,7 +53,7 @@ export default function TabLayout() {
 
   return (
     <View style={styles.tabsWithAds}>
-      {!removeAds && (
+      {true && (
         <View style={styles.adView}>
           <BannerAd
             size={BannerAdSize.FULL_BANNER}
