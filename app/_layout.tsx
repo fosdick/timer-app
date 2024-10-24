@@ -10,7 +10,7 @@ import { Component, useEffect } from "react";
 import "react-native-reanimated";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import Purchases from "react-native-purchases";
-import { Platform } from "react-native";
+import { Platform, Alert } from "react-native";
 import { Constants } from "@/constants/constants";
 import { SettingsSvg } from "@/assets/images/svgx/settings";
 
@@ -29,7 +29,8 @@ export default function RootLayout() {
     if (Platform.OS === "ios") {
       try {
         Purchases.configure({ apiKey: Constants.PURCHASES_API_KEY });
-      } catch (e) {
+      } catch (e: any) {
+        Alert.alert(e.message);
         console.error("Could not cofigure purchases", e);
       }
     }

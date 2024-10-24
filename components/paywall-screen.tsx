@@ -16,7 +16,7 @@ import { Constants } from "@/constants/constants";
 const PaywallScreen = () => {
   // - State for all available package
   const [packages, setPackages] = useState<any>([]);
-
+  const [msg, setMsg] = useState<any>("");
   // - State for displaying an overlay view
   const [isPurchasing, setIsPurchasing] = useState(false);
   const [removeAds, setRemoveAds] = useState(false);
@@ -76,6 +76,7 @@ const PaywallScreen = () => {
         )}
         {isPurchasing && <View style={styles.overlay} />}
       </View>
+      <Text>{msg}</Text>
     </View>
   );
 };

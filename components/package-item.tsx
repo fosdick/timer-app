@@ -24,6 +24,7 @@ const PackageItem = ({ purchasePackage, setIsPurchasing }: any) => {
         navigation.goBack();
       }
     } catch (e: any) {
+      Alert.alert(e.message);
       if (e.code === Purchases.PURCHASES_ERROR_CODE.PURCHASE_CANCELLED_ERROR) {
         Alert.alert("Error purchasing package", e.message);
       }
