@@ -8,9 +8,10 @@ import { useKeepAwake } from "expo-keep-awake";
 import { YogaSvg } from "@/assets/images/svgx/yoga";
 import { Pranayama } from "@/assets/images/svgx/pranayama";
 import { HittSvg } from "@/assets/images/svgx/hitt";
-import { Constants } from "@/./constants";
+import { Constants } from "@/constants/constants";
 import { getData, storeData } from "../../assets/utils/persistant-storage";
-
+import Purchases from "react-native-purchases";
+import { GreenTheme } from "@/assets/styles/timer-app";
 // import mobileAds from "react-native-google-mobile-ads";
 import {
   BannerAdSize,
@@ -19,10 +20,28 @@ import {
 } from "react-native-google-mobile-ads";
 
 export default function TabLayout() {
+  const [removeAds, setRemoveAds] = useState(false);
+
+  const checkPurchases = async () => {
+    try {
+      // access latest customerInfo
+      const customerInfo = await Purchases.getCustomerInfo();
+      if (
+        typeof customerInfo.entitlements.active[Constants.ENTITLEMENT_ID] !==
+        "undefined"
+      ) {
+        // do not show adds
+        setRemoveAds(true);
+      }
+    } catch (e: any) {
+      console.error("Error fetching customer info", e.message);
+    }
+  };
+  useState(async () => {
+    await checkPurchases();
+  });
   const colorScheme = useColorScheme();
   useKeepAwake();
-
-  const [removeAds, setRemoveAds] = useState(true);
 
   useState(async () => {
     const savedData = await getData(Constants.USER_SETTINGS_DATA);
@@ -34,7 +53,7 @@ export default function TabLayout() {
 
   return (
     <View style={styles.tabsWithAds}>
-      {removeAds && (
+      {!removeAds && (
         <View style={styles.adView}>
           <BannerAd
             size={BannerAdSize.FULL_BANNER}

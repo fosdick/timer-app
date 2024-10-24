@@ -15,49 +15,19 @@ import { getData, storeData } from "../assets/utils/persistant-storage";
 import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { useEffect, useState } from "react";
 import { Settings } from "@/assets/styles/timer-app";
-import Purchases from "react-native-purchases";
-import PaywallScreen from "@/components/paywall";
+
+import PaywallScreen from "@/components/paywall-screen";
+import RestorePurchasesButton from "@/components/restore-purchases-button";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Constants } from "@/constants";
-const checkPurchases = async () => {
-  try {
-    // access latest customerInfo
-    const customerInfo = await Purchases.getCustomerInfo();
-    alert(customerInfo.entitlements.active);
-    let j = JSON.stringify(customerInfo);
-    console.log(j, customerInfo.entitlements.active, "cust info");
-    console.log(await Purchases.getAppUserID());
-    if (
-      typeof customerInfo.entitlements.active[Constants.ENTITLEMENT_ID] !==
-      "undefined"
-    ) {
-      // do not show adds
-      console.log(customerInfo, "cust info");
-    } else {
-      // navigation.navigate("Paywall");
-    }
-  } catch (e: any) {
-    Alert.alert("Error fetching customer info", e.message);
-  }
-};
+import { Constants } from "@/constants/constants";
+import Support from "@/components/support";
 
 export default function TabTwoScreen() {
-  const [noAdsCode, setNoAdsCode] = useState<string>("");
-  useState(async () => {
-    await checkPurchases();
-  });
   return (
     <SafeAreaView style={styles.viewBody}>
       <PaywallScreen></PaywallScreen>
-      <ScrollView>
-        <View style={styles.viewBody}>
-          <Text style={styles.settingsText}>Purchase and Remove Ads</Text>
-          <Text style={styles.settingsText}>How to use pranayama video</Text>
-          <Text style={styles.settingsText}>How to use yoga video</Text>
-          <Text style={styles.settingsText}>How to use HITT video</Text>
-          <Text>suggestions / comments? email: app.support@fastmail.fm</Text>
-        </View>
-      </ScrollView>
+      <Support></Support>
+      <RestorePurchasesButton />
     </SafeAreaView>
   );
 }

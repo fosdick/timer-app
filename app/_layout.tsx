@@ -11,7 +11,7 @@ import "react-native-reanimated";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import Purchases from "react-native-purchases";
 import { Platform } from "react-native";
-import { Constants } from "@/./constants";
+import { Constants } from "@/constants/constants";
 import { SettingsSvg } from "@/assets/images/svgx/settings";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
