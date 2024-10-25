@@ -21,7 +21,6 @@ import RestorePurchasesButton from "@/components/restore-purchases-button";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Constants } from "@/constants/constants";
 import Support from "@/components/support";
-
 export default function TabTwoScreen() {
   return (
     <SafeAreaView style={styles.viewBody}>

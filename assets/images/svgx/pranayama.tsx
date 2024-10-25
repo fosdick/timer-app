@@ -1,7 +1,7 @@
 import * as React from "react";
 import Svg, { Path } from "react-native-svg";
 
-const Pranayama = (props: any) => {
+const PranayamaSvg = (props: any) => {
   return (
     <Svg
       viewBox="0 0 24 24"
@@ -19,4 +19,4 @@ const Pranayama = (props: any) => {
   );
 };
 
-export { Pranayama };
+export { PranayamaSvg };

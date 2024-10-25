@@ -3,14 +3,19 @@ import { Pressable, Text, View } from "react-native";
 import Purchases from "react-native-purchases";
 import { StyleSheet } from "react-native";
 import { useState } from "react";
+import EventEmitter from "eventemitter3";
+import { Constants } from "@/constants/constants";
 
 const RestorePurchasesButton = () => {
+  const eventController = new EventEmitter();
   const [errorMsg, setErrorMsg] = useState<string>("");
   const restorePurchases = async () => {
     try {
       setErrorMsg("restoring");
-      await Purchases.restorePurchases();
+      const r = await Purchases.restorePurchases();
+      setErrorMsg("");
     } catch (e: any) {
+      eventController.emit(Constants.REMOVE_ADS_EVENT);
       setErrorMsg(e.message);
       console.error("Error restoring purchases", e.message);
     }

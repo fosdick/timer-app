@@ -12,13 +12,15 @@ import {
 import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
-import Metronome from "@/components/pranayama";
+import Pranayama from "@/components/pranayama";
+import { useKeepAwake } from "expo-keep-awake";
 
 export default function TabTwoScreen() {
+  useKeepAwake();
   return (
     <ThemedView style={styles.viewBody}>
       <View>
-        <Metronome></Metronome>
+        <Pranayama></Pranayama>
       </View>
     </ThemedView>
   );

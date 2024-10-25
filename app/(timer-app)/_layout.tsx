@@ -1,12 +1,12 @@
 import { Tabs } from "expo-router";
 import React, { useEffect, useState } from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, View, Alert, Text } from "react-native";
 import { TabBarIcon } from "@/components/navigation/TabBarIcon";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
-import { useKeepAwake } from "expo-keep-awake";
+// import { useKeepAwake } from "expo-keep-awake";
 import { YogaSvg } from "@/assets/images/svgx/yoga";
-import { Pranayama } from "@/assets/images/svgx/pranayama";
+import { PranayamaSvg } from "@/assets/images/svgx/pranayama";
 import { HittSvg } from "@/assets/images/svgx/hitt";
 import { Constants } from "@/constants/constants";
 import { getData, storeData } from "../../assets/utils/persistant-storage";
@@ -35,15 +35,23 @@ export default function TabLayout() {
       }
     } catch (e: any) {
       console.error("Error fetching customer info", e.message);
+    } finally {
+      // check local storage
+      // maybe off line
+      const removeAdsData = await getData(Constants.REMOVE_ADS_DATA_KEY);
+      if (removeAdsData?.removeAds) {
+        setRemoveAds(true);
+      }
     }
   };
   useState(async () => {
     await checkPurchases();
   });
-  const colorScheme = useColorScheme();
-  useKeepAwake();
 
-  const adUnitId = __DEV__ ? TestIds.BANNER : Constants.ADMOD_ADUNIT_ID || "";
+  const colorScheme = useColorScheme();
+  // useKeepAwake();
+
+  const adUnitId = TestIds.BANNER; //__DEV__ ? TestIds.BANNER : Constants.ADMOD_ADUNIT_ID;
 
   return (
     <View style={styles.tabsWithAds}>
@@ -77,7 +85,7 @@ export default function TabLayout() {
           name="index"
           options={{
             title: "Pranayama",
-            tabBarIcon: ({ color, focused }) => <Pranayama color={color} />,
+            tabBarIcon: ({ color, focused }) => <PranayamaSvg color={color} />,
           }}
         />
         <Tabs.Screen

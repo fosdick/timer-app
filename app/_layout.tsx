@@ -21,11 +21,7 @@ export default function RootLayout() {
   const [loaded] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
   });
-
   useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
-    }
     if (Platform.OS === "ios") {
       try {
         Purchases.configure({ apiKey: Constants.PURCHASES_API_KEY });
@@ -40,6 +36,11 @@ export default function RootLayout() {
       // OR: if building for Amazon, be sure to follow the installation instructions then:
        Purchases.configure({ apiKey: <revenuecat_project_amazon_api_key>, useAmazon: true });
     } */
+  });
+  useEffect(() => {
+    if (loaded) {
+      SplashScreen.hideAsync();
+    }
   }, [loaded]);
 
   if (!loaded) {

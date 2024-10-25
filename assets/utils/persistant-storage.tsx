@@ -9,6 +9,9 @@ type storageData = {
   beatCount: any;
   totalTime: any;
   yogaTotalInterval: any;
+  removeAds: boolean;
+  appUserId: string;
+  message: string;
 };
 const storeData = async (key: string, value: Partial<storageData>) => {
   try {

@@ -3,9 +3,14 @@ import { View, Text, Pressable, Alert } from "react-native";
 import Purchases from "react-native-purchases";
 import { useNavigation } from "@react-navigation/native";
 import { Constants } from "@/constants/constants";
-const ENTITLEMENT_ID = Constants.ENTITLEMENT_ID || "";
+import { getData, storeData } from "../assets/utils/persistant-storage";
+const ENTITLEMENT_ID = Constants.ENTITLEMENT_ID;
 
-const PackageItem = ({ purchasePackage, setIsPurchasing }: any) => {
+const PackageItem = ({
+  purchasePackage,
+  setIsPurchasing,
+  setRemoveAds,
+}: any) => {
   const {
     product: { title, description, priceString },
   } = purchasePackage;
@@ -21,6 +26,12 @@ const PackageItem = ({ purchasePackage, setIsPurchasing }: any) => {
       if (
         typeof customerInfo.entitlements.active[ENTITLEMENT_ID] !== "undefined"
       ) {
+        // purchase is active, do stuff
+        storeData(Constants.REMOVE_ADS_DATA_KEY, {
+          removeAds: true,
+          appUserId: customerInfo.originalAppUserId,
+          message: JSON.stringify(customerInfo),
+        });
         navigation.goBack();
       }
     } catch (e: any) {
