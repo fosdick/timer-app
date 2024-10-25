@@ -43,12 +43,6 @@ export default function TabLayout() {
   const colorScheme = useColorScheme();
   useKeepAwake();
 
-  useState(async () => {
-    const savedData = await getData(Constants.USER_SETTINGS_DATA);
-    if (savedData?.removeAds) {
-      setRemoveAds(savedData.removeAds);
-    }
-  });
   const adUnitId = __DEV__ ? TestIds.BANNER : Constants.ADMOD_ADUNIT_ID || "";
 
   return (

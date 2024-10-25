@@ -8,6 +8,7 @@ const RestorePurchasesButton = () => {
   const [errorMsg, setErrorMsg] = useState<string>("");
   const restorePurchases = async () => {
     try {
+      setErrorMsg("restoring");
       await Purchases.restorePurchases();
     } catch (e: any) {
       setErrorMsg(e.message);

@@ -57,28 +57,27 @@ const PaywallScreen = () => {
   }, []);
 
   return (
-    // <View>
-    //   <View style={styles.container}>
-    //     {!removeAds && <Text style={styles.purchaseTitle}>Remove Ads</Text>}
-    //   </View>
-    <View style={styles.page}>
-      {/* The paywall flat list displaying each package */}
-      {!removeAds && (
-        <FlatList
-          data={packages}
-          renderItem={({ item }) => (
-            <PackageItem
-              purchasePackage={item}
-              setIsPurchasing={setIsPurchasing}
-            />
-          )}
-          keyExtractor={(item) => item.identifier}
-        />
-      )}
-      {isPurchasing && <View style={styles.overlay} />}
+    <View>
+      <View style={styles.container}>
+        {!removeAds && <Text style={styles.purchaseTitle}>Remove Ads</Text>}
+      </View>
+      <View style={styles.page}>
+        {/* The paywall flat list displaying each package */}
+        {!removeAds && (
+          <FlatList
+            data={packages}
+            renderItem={({ item }) => (
+              <PackageItem
+                purchasePackage={item}
+                setIsPurchasing={setIsPurchasing}
+              />
+            )}
+            keyExtractor={(item) => item.identifier}
+          />
+        )}
+        {isPurchasing && <View style={styles.overlay} />}
+      </View>
     </View>
-    // <Text>{msg}</Text>
-    // </View>
   );
 };
 const tintColorLight = "#0a7ea4";
