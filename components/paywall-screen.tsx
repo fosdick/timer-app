@@ -1,4 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
+import { DisplayAdsContext, DisplayAdsProvider } from "./display-ads-context";
+import { getData, storeData } from "../assets/utils/persistant-storage";
+import { Constants } from "@/constants/constants";
+
 import {
   View,
   Text,
@@ -10,16 +14,16 @@ import {
 } from "react-native";
 import Purchases from "react-native-purchases";
 import PackageItem from "./package-item";
-import { Constants } from "@/constants/constants";
 /*
  An example paywall that uses the current offering.
  */
 const PaywallScreen = () => {
+  const { displayAds, setDisplayAds } = useContext(DisplayAdsContext);
+
   // - State for all available package
   const [packages, setPackages] = useState<any>([]);
   // - State for displaying an overlay view
   const [isPurchasing, setIsPurchasing] = useState(false);
-  const [removeAds, setRemoveAds] = useState(false);
   useEffect(() => {
     // Get current available packages
     const getPackages = async () => {
@@ -47,7 +51,9 @@ const PaywallScreen = () => {
           "undefined"
         ) {
           // do not show adds
-          setRemoveAds(true);
+          setDisplayAds(false);
+          // save in cache
+          await storeData(Constants.REMOVE_ADS_DATA_KEY, { removeAds: true });
         }
       } catch (e: any) {
         console.error("Error fetching customer info", e.message);
@@ -59,11 +65,14 @@ const PaywallScreen = () => {
   return (
     <View>
       <View style={styles.container}>
-        {!removeAds && <Text style={styles.purchaseTitle}>Remove Ads</Text>}
+        {displayAds && <Text style={styles.purchaseTitle}>Remove Ads</Text>}
+        {!displayAds && (
+          <Text style={styles.purchaseTitle}>Remove Ads Purchased!</Text>
+        )}
       </View>
       <View style={styles.page}>
         {/* The paywall flat list displaying each package */}
-        {!removeAds && (
+        {displayAds && (
           <FlatList
             data={packages}
             renderItem={({ item }) => (

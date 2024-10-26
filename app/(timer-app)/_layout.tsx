@@ -8,67 +8,18 @@ import { useColorScheme } from "@/hooks/useColorScheme";
 import { YogaSvg } from "@/assets/images/svgx/yoga";
 import { PranayamaSvg } from "@/assets/images/svgx/pranayama";
 import { HittSvg } from "@/assets/images/svgx/hitt";
-import { Constants } from "@/constants/constants";
-import { getData, storeData } from "../../assets/utils/persistant-storage";
-import Purchases from "react-native-purchases";
-import { GreenTheme } from "@/assets/styles/timer-app";
-// import mobileAds from "react-native-google-mobile-ads";
-import {
-  BannerAdSize,
-  BannerAd,
-  TestIds,
-} from "react-native-google-mobile-ads";
+import { BannerAdsView } from "@/components/banner-ads-view";
+import { DisplayAdsProvider } from "@/components/display-ads-context";
 
 export default function TabLayout() {
-  const [removeAds, setRemoveAds] = useState(false);
-
-  const checkPurchases = async () => {
-    try {
-      // access latest customerInfo
-      const customerInfo = await Purchases.getCustomerInfo();
-      if (
-        typeof customerInfo.entitlements.active[Constants.ENTITLEMENT_ID] !==
-        "undefined"
-      ) {
-        // do not show adds
-        setRemoveAds(true);
-      }
-    } catch (e: any) {
-      console.error("Error fetching customer info", e.message);
-    } finally {
-      // check local storage
-      // maybe off line
-      const removeAdsData = await getData(Constants.REMOVE_ADS_DATA_KEY);
-      if (removeAdsData?.removeAds) {
-        setRemoveAds(true);
-      }
-    }
-  };
-  useState(async () => {
-    await checkPurchases();
-  });
-
   const colorScheme = useColorScheme();
   // useKeepAwake();
 
-  const adUnitId = TestIds.BANNER; //__DEV__ ? TestIds.BANNER : Constants.ADMOD_ADUNIT_ID;
-
   return (
-    <View style={styles.tabsWithAds}>
-      {!removeAds && (
-        <View style={styles.adView}>
-          <BannerAd
-            size={BannerAdSize.FULL_BANNER}
-            unitId={adUnitId}
-            onAdLoaded={() => {
-              // console.log("Advert loaded");
-            }}
-            onAdFailedToLoad={(error) => {
-              console.error("Advert failed to load: ", error);
-            }}
-          />
-        </View>
-      )}
+    <View>
+      {/* <DisplayAdsProvider>
+        <BannerAdsView></BannerAdsView>
+      </DisplayAdsProvider> */}
       <Tabs
         sceneContainerStyle={{
           backgroundColor: "#080B0c",
@@ -106,13 +57,3 @@ export default function TabLayout() {
     </View>
   );
 }
-const styles = StyleSheet.create({
-  tabsWithAds: {
-    // marginTop: 30,
-    flex: 1,
-  },
-  adView: {
-    // flex: 1,
-    // justifyContent: "flex-end",
-  },
-});
