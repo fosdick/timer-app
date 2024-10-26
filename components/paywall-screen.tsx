@@ -27,6 +27,7 @@ const PaywallScreen = () => {
   useEffect(() => {
     // Get current available packages
     const getPackages = async () => {
+      // setDisplayAds(false);
       try {
         const offerings: any = await Purchases.getOfferings();
         if (

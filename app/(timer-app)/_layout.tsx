@@ -9,17 +9,14 @@ import { YogaSvg } from "@/assets/images/svgx/yoga";
 import { PranayamaSvg } from "@/assets/images/svgx/pranayama";
 import { HittSvg } from "@/assets/images/svgx/hitt";
 import { BannerAdsView } from "@/components/banner-ads-view";
-import { DisplayAdsProvider } from "@/components/display-ads-context";
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
   // useKeepAwake();
 
   return (
-    <View>
-      {/* <DisplayAdsProvider>
-        <BannerAdsView></BannerAdsView>
-      </DisplayAdsProvider> */}
+    <View style={styles.tabsWithAds}>
+      <BannerAdsView></BannerAdsView>
       <Tabs
         sceneContainerStyle={{
           backgroundColor: "#080B0c",
@@ -57,3 +54,9 @@ export default function TabLayout() {
     </View>
   );
 }
+const styles = StyleSheet.create({
+  tabsWithAds: {
+    // marginTop: 30,
+    flex: 1,
+  },
+});

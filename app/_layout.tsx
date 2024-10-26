@@ -13,6 +13,10 @@ import Purchases from "react-native-purchases";
 import { Platform, Alert } from "react-native";
 import { Constants } from "@/constants/constants";
 import { SettingsSvg } from "@/assets/images/svgx/settings";
+import {
+  DisplayAdsContext,
+  DisplayAdsProvider,
+} from "../components/display-ads-context";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -48,19 +52,21 @@ export default function RootLayout() {
   }
 
   return (
-    <Stack
-      screenOptions={{
-        title: "Timer App Yoga",
-        headerStyle: {
-          // backgroundColor: "#080B0c",
-          backgroundColor: "#dfffea",
-        },
-        headerRight: () => <SettingsSvg />,
-      }}
-    >
-      {/* <Stack.Screen name="+html" options={{ headerShown: false }} /> */}
-      <Stack.Screen name="+not-found" />
-      <Stack.Screen name="settings" />
-    </Stack>
+    <DisplayAdsProvider>
+      <Stack
+        screenOptions={{
+          title: "Timer App Yoga",
+          headerStyle: {
+            // backgroundColor: "#080B0c",
+            backgroundColor: "#dfffea",
+          },
+          headerRight: () => <SettingsSvg />,
+        }}
+      >
+        {/* <Stack.Screen name="+html" options={{ headerShown: false }} /> */}
+        <Stack.Screen name="+not-found" />
+        <Stack.Screen name="settings" />
+      </Stack>
+    </DisplayAdsProvider>
   );
 }

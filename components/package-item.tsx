@@ -1,9 +1,11 @@
-import React from "react";
+import React, { useContext } from "react";
 import { View, Text, Pressable, Alert } from "react-native";
 import Purchases from "react-native-purchases";
 import { useNavigation } from "@react-navigation/native";
 import { Constants } from "@/constants/constants";
 import { getData, storeData } from "../assets/utils/persistant-storage";
+import { DisplayAdsContext, DisplayAdsProvider } from "./display-ads-context";
+
 const ENTITLEMENT_ID = Constants.ENTITLEMENT_ID;
 
 const PackageItem = ({
@@ -14,7 +16,7 @@ const PackageItem = ({
   const {
     product: { title, description, priceString },
   } = purchasePackage;
-
+  const { displayAds, setDisplayAds } = useContext(DisplayAdsContext);
   const navigation = useNavigation();
 
   const onSelection = async () => {
@@ -27,6 +29,7 @@ const PackageItem = ({
         typeof customerInfo.entitlements.active[ENTITLEMENT_ID] !== "undefined"
       ) {
         // purchase is active, do stuff
+        setDisplayAds(false);
         storeData(Constants.REMOVE_ADS_DATA_KEY, {
           removeAds: true,
           appUserId: customerInfo.originalAppUserId,
@@ -37,7 +40,8 @@ const PackageItem = ({
     } catch (e: any) {
       Alert.alert(e.message);
       if (e.code === Purchases.PURCHASES_ERROR_CODE.PURCHASE_CANCELLED_ERROR) {
-        Alert.alert("Error purchasing package", e.message);
+        setDisplayAds(true);
+        Alert.alert("Error purchasing package cats", e.message);
       }
     } finally {
       setIsPurchasing(false);
@@ -45,13 +49,15 @@ const PackageItem = ({
   };
 
   return (
-    <Pressable onPress={onSelection} style={styles.container}>
-      <View>
-        <Text style={styles.title}>{title}</Text>
-        <Text style={styles.terms}>{description}</Text>
-      </View>
-      <Text style={styles.title}>{priceString}</Text>
-    </Pressable>
+    <View>
+      <Pressable onPress={onSelection} style={styles.container}>
+        <View>
+          <Text style={styles.title}>{title}</Text>
+          <Text style={styles.terms}>{description}</Text>
+        </View>
+        <Text style={styles.title}>{priceString}</Text>
+      </Pressable>
+    </View>
   );
 };
 
