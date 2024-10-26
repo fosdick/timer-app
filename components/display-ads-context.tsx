@@ -30,7 +30,7 @@ const DisplayAdsProvider: React.FC<{ children: React.ReactNode }> = ({
         "undefined"
       ) {
         // do not show adds
-        setDisplayAds(true);
+        setDisplayAds(false);
       }
     } catch (e: any) {
       console.error("Error fetching customer info", e.message);
@@ -39,7 +39,7 @@ const DisplayAdsProvider: React.FC<{ children: React.ReactNode }> = ({
       // maybe off line
       const removeAdsData = await getData(Constants.REMOVE_ADS_DATA_KEY);
       if (removeAdsData?.removeAds) {
-        setDisplayAds(true);
+        setDisplayAds(false);
       }
     }
   };
