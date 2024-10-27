@@ -26,8 +26,9 @@ const DisplayAdsProvider: React.FC<{ children: React.ReactNode }> = ({
       // access latest customerInfo
       const customerInfo = await Purchases.getCustomerInfo();
       if (
-        typeof customerInfo.entitlements.active[Constants.ENTITLEMENT_ID] !==
-        "undefined"
+        typeof customerInfo.entitlements.active[
+          Constants.ENTITLEMENT_IDENTIFIER
+        ] !== "undefined"
       ) {
         // do not show adds
         setDisplayAds(false);

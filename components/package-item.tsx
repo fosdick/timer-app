@@ -5,8 +5,6 @@ import { Constants } from "@/constants/constants";
 import { getData, storeData } from "../assets/utils/persistant-storage";
 import { DisplayAdsContext, DisplayAdsProvider } from "./display-ads-context";
 
-const ENTITLEMENT_ID = Constants.ENTITLEMENT_ID;
-
 const PackageItem = ({ purchasePackage, setIsPurchasing }: any) => {
   const {
     product: { title, description, priceString },
@@ -20,7 +18,9 @@ const PackageItem = ({ purchasePackage, setIsPurchasing }: any) => {
       const { customerInfo } = await Purchases.purchasePackage(purchasePackage);
       setMsg(msg + JSON.stringify(customerInfo));
       if (
-        typeof customerInfo.entitlements.active[ENTITLEMENT_ID] !== "undefined"
+        typeof customerInfo.entitlements.active[
+          Constants.ENTITLEMENT_IDENTIFIER
+        ] !== "undefined"
       ) {
         // purchase is active, do stuff
         setDisplayAds(false);
@@ -50,7 +50,7 @@ const PackageItem = ({ purchasePackage, setIsPurchasing }: any) => {
         </View>
         <Text style={styles.title}>{priceString}</Text>
       </Pressable>
-      <Text>{msg}</Text>
+      <Text selectable={true}>{msg}</Text>
     </View>
   );
 };
