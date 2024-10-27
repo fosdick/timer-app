@@ -50,7 +50,11 @@ const PackageItem = ({ purchasePackage, setIsPurchasing }: any) => {
         </View>
         <Text style={styles.title}>{priceString}</Text>
       </Pressable>
-      <Text selectable={true}>{msg}</Text>
+      {/* <Text selectable>
+        {msg}
+        {title}
+        {JSON.stringify(purchasePackage)}
+      </Text> */}
     </View>
   );
 };

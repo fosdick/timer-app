@@ -11,24 +11,22 @@ import {
   Button,
   Alert,
 } from "react-native";
-import { getData, storeData } from "../assets/utils/persistant-storage";
-import ParallaxScrollView from "@/components/ParallaxScrollView";
-import { useEffect, useState } from "react";
-import { Settings } from "@/assets/styles/timer-app";
-
+import { useContext } from "react";
 import PaywallScreen from "@/components/paywall-screen";
 import RestorePurchasesButton from "@/components/restore-purchases-button";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Constants } from "@/constants/constants";
+import { DisplayAdsContext } from "../components/display-ads-context";
 
 import Support from "@/components/support";
 export default function TabTwoScreen() {
+  const { displayAds } = useContext(DisplayAdsContext);
+
   return (
     <SafeAreaView style={styles.viewBody}>
       <PaywallScreen></PaywallScreen>
       <Support></Support>
       <View style={styles.container}>
-        <RestorePurchasesButton />
+        {displayAds && <RestorePurchasesButton />}
       </View>
     </SafeAreaView>
   );

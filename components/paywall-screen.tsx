@@ -22,6 +22,7 @@ const PaywallScreen = () => {
 
   // - State for all available package
   const [packages, setPackages] = useState<any>([]);
+  const [offerings2, setOfferings] = useState<any>();
   // - State for displaying an overlay view
   const [isPurchasing, setIsPurchasing] = useState(false);
   useEffect(() => {
@@ -29,7 +30,8 @@ const PaywallScreen = () => {
     const getPackages = async () => {
       // setDisplayAds(false);
       try {
-        const offerings: any = await Purchases.getOfferings();
+        const offerings = await Purchases.getOfferings();
+        setOfferings(offerings);
         if (
           offerings.current !== null &&
           offerings.current.availablePackages.length !== 0
@@ -68,7 +70,7 @@ const PaywallScreen = () => {
       <View style={styles.container}>
         {displayAds && <Text style={styles.purchaseTitle}>Remove Ads</Text>}
         {!displayAds && (
-          <Text style={styles.purchaseTitle}>Remove Ads Purchased!</Text>
+          <Text style={styles.purchaseTitle}>Thank you for purchasing!</Text>
         )}
       </View>
       <View style={styles.page}>
@@ -87,6 +89,7 @@ const PaywallScreen = () => {
         )}
         {isPurchasing && <View style={styles.overlay} />}
       </View>
+      {/* <Text selectable>{JSON.stringify(offerings2)}</Text> */}
     </View>
   );
 };
@@ -98,7 +101,7 @@ const styles = StyleSheet.create({
   },
   purchaseTitle: {
     color: tintColorLight,
-    fontSize: 36,
+    fontSize: 24,
     fontWeight: "bold",
     borderBottomWidth: 1,
     borderBottomColor: "#687076",
