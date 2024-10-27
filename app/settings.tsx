@@ -16,9 +16,11 @@ import PaywallScreen from "@/components/paywall-screen";
 import RestorePurchasesButton from "@/components/restore-purchases-button";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { DisplayAdsContext } from "../components/display-ads-context";
+import { activateKeepAwake, deactivateKeepAwake } from "expo-keep-awake";
 
 import Support from "@/components/support";
 export default function TabTwoScreen() {
+  deactivateKeepAwake();
   const { displayAds } = useContext(DisplayAdsContext);
 
   return (

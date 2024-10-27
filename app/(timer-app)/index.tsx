@@ -14,31 +14,18 @@ import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import Pranayama from "@/components/pranayama";
 import { useKeepAwake } from "expo-keep-awake";
+import { BannerAdsView } from "@/components/banner-ads-view";
+import { screenStyles } from "@/assets/styles/timer-app";
 
 export default function TabTwoScreen() {
   useKeepAwake();
   return (
-    <ThemedView style={styles.viewBody}>
+    <ThemedView style={screenStyles.viewBody}>
       <View>
         <Pranayama></Pranayama>
       </View>
+
+      <BannerAdsView></BannerAdsView>
     </ThemedView>
   );
 }
-
-const styles = StyleSheet.create({
-  headerImage: {
-    color: "#808080",
-    bottom: -90,
-    left: -35,
-    position: "absolute",
-  },
-  titleContainer: {
-    flexDirection: "row",
-    gap: 8,
-  },
-  viewBody: {
-    marginTop: 30,
-    // backgroundColor: 'none'
-  },
-});

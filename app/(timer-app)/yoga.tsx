@@ -1,34 +1,20 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { StyleSheet } from "react-native";
+import { StyleSheet, View } from "react-native";
 
 import { ThemedView } from "@/components/ThemedView";
 import YogaView from "@/components/yoga-view";
-import { useState } from "react";
+import { screenStyles } from "@/assets/styles/timer-app";
 import { useKeepAwake } from "expo-keep-awake";
+import { BannerAdsView } from "@/components/banner-ads-view";
 
 export default function TabTwoScreen() {
   useKeepAwake();
   return (
-    <ThemedView style={styles.viewBody}>
-      <YogaView></YogaView>
+    <ThemedView style={screenStyles.viewBody}>
+      <View>
+        <YogaView></YogaView>
+      </View>
+      <BannerAdsView></BannerAdsView>
     </ThemedView>
   );
 }
-
-const styles = StyleSheet.create({
-  headerImage: {
-    color: "#808080",
-    bottom: -90,
-    left: -35,
-    position: "absolute",
-  },
-  titleContainer: {
-    flexDirection: "row",
-    gap: 8,
-  },
-  viewBody: {
-    marginTop: 30,
-    alignItems: "center",
-    // backgroundColor: 'none'
-  },
-});

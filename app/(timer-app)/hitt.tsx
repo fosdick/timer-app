@@ -13,6 +13,8 @@ import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import HittView from "@/components/hitt-view";
 import { useKeepAwake } from "expo-keep-awake";
+import { BannerAdsView } from "@/components/banner-ads-view";
+import { screenStyles } from "@/assets/styles/timer-app";
 
 import { useState } from "react";
 
@@ -20,25 +22,11 @@ export default function TabTwoScreen() {
   const [yogaInterval, setYogaInterval] = useState("00:oo");
   useKeepAwake();
   return (
-    <ThemedView style={styles.viewBody}>
-      <HittView></HittView>
+    <ThemedView style={screenStyles.viewBody}>
+      <View>
+        <HittView></HittView>
+      </View>
+      <BannerAdsView></BannerAdsView>
     </ThemedView>
   );
 }
-
-const styles = StyleSheet.create({
-  headerImage: {
-    color: "#808080",
-    bottom: -90,
-    left: -35,
-    position: "absolute",
-  },
-  titleContainer: {
-    flexDirection: "row",
-    gap: 8,
-  },
-  viewBody: {
-    marginTop: 30,
-    // backgroundColor: 'none'
-  },
-});

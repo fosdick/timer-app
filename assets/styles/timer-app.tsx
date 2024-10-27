@@ -120,3 +120,26 @@ export const TimerStyles = StyleSheet.create({
     fontSize: 16,
   },
 });
+export const screenStyles = StyleSheet.create({
+  headerImage: {
+    color: "#808080",
+    bottom: -90,
+    left: -35,
+    position: "absolute",
+  },
+  BannerAdBottom: {
+    position: "absolute",
+    margin: 0,
+    padding: 0,
+    bottom: 0,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  titleContainer: {
+    flexDirection: "row",
+    gap: 8,
+  },
+  viewBody: {
+    flex: 1,
+  },
+});

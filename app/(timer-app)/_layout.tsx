@@ -17,7 +17,7 @@ export default function TabLayout() {
 
   return (
     <View style={styles.tabsWithAds}>
-      <BannerAdsView></BannerAdsView>
+      {/* <BannerAdsView></BannerAdsView> */}
       <Tabs
         sceneContainerStyle={{
           backgroundColor: "#080B0c",
