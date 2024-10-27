@@ -1,30 +1,24 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { View, Text, Pressable, Alert } from "react-native";
 import Purchases from "react-native-purchases";
-import { useNavigation } from "@react-navigation/native";
 import { Constants } from "@/constants/constants";
 import { getData, storeData } from "../assets/utils/persistant-storage";
 import { DisplayAdsContext, DisplayAdsProvider } from "./display-ads-context";
 
 const ENTITLEMENT_ID = Constants.ENTITLEMENT_ID;
 
-const PackageItem = ({
-  purchasePackage,
-  setIsPurchasing,
-  setRemoveAds,
-}: any) => {
+const PackageItem = ({ purchasePackage, setIsPurchasing }: any) => {
   const {
     product: { title, description, priceString },
   } = purchasePackage;
   const { displayAds, setDisplayAds } = useContext(DisplayAdsContext);
-  const navigation = useNavigation();
-
+  const [msg, setMsg] = useState("debug: ");
   const onSelection = async () => {
     setIsPurchasing(true);
 
     try {
       const { customerInfo } = await Purchases.purchasePackage(purchasePackage);
-
+      setMsg(msg + JSON.stringify(customerInfo));
       if (
         typeof customerInfo.entitlements.active[ENTITLEMENT_ID] !== "undefined"
       ) {
@@ -35,7 +29,6 @@ const PackageItem = ({
           appUserId: customerInfo.originalAppUserId,
           message: JSON.stringify(customerInfo),
         });
-        navigation.goBack();
       }
     } catch (e: any) {
       Alert.alert(e.message);
@@ -57,6 +50,7 @@ const PackageItem = ({
         </View>
         <Text style={styles.title}>{priceString}</Text>
       </Pressable>
+      <Text>{msg}</Text>
     </View>
   );
 };

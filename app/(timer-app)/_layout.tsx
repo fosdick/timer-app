@@ -9,6 +9,7 @@ import { YogaSvg } from "@/assets/images/svgx/yoga";
 import { PranayamaSvg } from "@/assets/images/svgx/pranayama";
 import { HittSvg } from "@/assets/images/svgx/hitt";
 import { BannerAdsView } from "@/components/banner-ads-view";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
