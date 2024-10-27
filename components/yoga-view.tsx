@@ -110,12 +110,11 @@ export default function YogaView(props: any) {
   const [h, m, s, pam] = formatedTime.split(/:|\s/);
 
   return (
-    <View style={[TimerStyles.metronomeTheme, TimerStyles.marginTopXL]}>
-      <View style={TimerStyles.metronomeTheme}>
-        <Text style={TimerStyles.timerFaceSmall}>
-          {h}:{m}:{s} <Text style={TimerStyles.small}>{pam}</Text>
-        </Text>
-      </View>
+    <View style={[TimerStyles.metronomeTheme]}>
+      <Text style={TimerStyles.timerFaceSmall}>
+        {h}:{m}:{s} <Text style={TimerStyles.small}>{pam}</Text>
+      </Text>
+
       {/* <Text>{JSON.stringify(props.yogaInterval)} beats</Text> */}
       <View style={TimerStyles.marginTop}>
         <Text style={TimerStyles.valueText}>Next Pose In:</Text>

@@ -50,8 +50,9 @@ const PaywallScreen = () => {
       try {
         const customerInfo = await Purchases.getCustomerInfo();
         if (
-          typeof customerInfo.entitlements.active[Constants.ENTITLEMENT_ID] !==
-          "undefined"
+          typeof customerInfo.entitlements.active[
+            Constants.ENTITLEMENT_IDENTIFIER
+          ] !== "undefined"
         ) {
           // do not show adds
           setDisplayAds(false);
