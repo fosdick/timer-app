@@ -116,11 +116,11 @@ export default function Pranayama() {
               </Text>
             </View>
           </TouchableOpacity>
-          <View>
+          <View style={TimerStyles.marginTop}>
             <Text style={TimerStyles.metronome}>Metronome Count (seconds)</Text>
           </View>
           <View>
-            <Text style={TimerStyles.valueText}>{beatInterval}</Text>
+            <Text style={TimerStyles.timerFaceSmall}>{beatInterval}</Text>
           </View>
           <Slider
             style={{ width: 200, height: 40 }}

@@ -230,7 +230,7 @@ export default function HittView() {
 
   return (
     <View style={TimerStyles.metronomeTheme}>
-      <View style={TimerStyles.metronomeTheme}>
+      <View>
         <Text style={TimerStyles.metronomeMedium}>
           <Text style={TimerStyles.metronome}>Total: </Text>
           {totalIntervalTimeString}
@@ -267,7 +267,7 @@ export default function HittView() {
         <Text style={TimerStyles.metronome}>Rounds</Text>
       </View>
       <View>
-        <Text style={TimerStyles.timerFaceSmall}>{roundsRemaining}</Text>
+        <Text style={TimerStyles.timerFace}>{roundsRemaining}</Text>
       </View>
       <Slider
         style={{ width: 200, height: 40 }}
