@@ -191,7 +191,7 @@ export default function Pranayama(props: any) {
           value={isMetronomeEnabled}
         />
       </View>
-      <View style={[TimerStyles.vertBox, { marginBottom: 60 }]}>
+      <View style={[TimerStyles.vertBox, { paddingBottom: 36 }]}>
         <TouchableOpacity
           activeOpacity={0.7}
           onPress={() => {

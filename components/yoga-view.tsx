@@ -139,7 +139,7 @@ export default function YogaView(props: any) {
       <View
         style={[
           TimerStyles.vertBox,
-          { alignSelf: "baseline", marginBottom: 60 },
+          { alignSelf: "baseline", marginBottom: 32 },
         ]}
       >
         <TouchableOpacity

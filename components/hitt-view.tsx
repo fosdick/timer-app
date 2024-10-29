@@ -295,10 +295,12 @@ export default function HittView() {
         />
       </View>
       <View style={[TimerStyles.marginTop, TimerStyles.vertBox]}>
-        <Text style={[{ marginTop: 40 }, TimerStyles.valueText]}>Total</Text>
+        <Text style={[{ paddingTop: 0 }, TimerStyles.valueText]}>Total</Text>
         <Text style={TimerStyles.timerFaceSmall}>
           {totalIntervalTimeString}
         </Text>
+      </View>
+      <View style={[TimerStyles.vertBox, { paddingBottom: 40 }]}>
         <TouchableOpacity
           activeOpacity={0.7}
           onPress={() => {
@@ -309,14 +311,13 @@ export default function HittView() {
             //   resetInitalState();
           }}
         >
-          <View style={{ marginTop: 20 }}>
+          <View>
             <Text style={TimerStyles.startButton}>
               {isStop === true ? "Start" : "Stop"}
             </Text>
           </View>
         </TouchableOpacity>
       </View>
-      <View style={TimerStyles.vertBox}></View>
     </View>
   );
 }
