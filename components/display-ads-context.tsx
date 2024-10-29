@@ -6,6 +6,7 @@ import { getData, storeData } from "../assets/utils/persistant-storage";
 type DisplayAdsContextType = {
   displayAds: boolean;
   setDisplayAds?: any;
+  customerInfoData?: any;
 };
 const DisplayAdsContext = createContext<DisplayAdsContextType>({
   displayAds: true,
@@ -15,16 +16,19 @@ const DisplayAdsProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [displayAds, setDisplayAds] = useState(true);
+  const [customerInfoData, setCustomerInfoData] = useState<any>();
 
   const value: DisplayAdsContextType = {
     displayAds,
     setDisplayAds,
+    customerInfoData,
   };
 
   const checkPurchases = async () => {
     try {
       // access latest customerInfo
       const customerInfo = await Purchases.getCustomerInfo();
+      setCustomerInfoData(customerInfo);
       if (
         typeof customerInfo.entitlements.active[
           Constants.ENTITLEMENT_IDENTIFIER
