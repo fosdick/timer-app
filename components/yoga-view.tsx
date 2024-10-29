@@ -67,7 +67,7 @@ export default function YogaView(props: any) {
     }, 3500);
   };
   const [isTransition, setIsTransition] = useState<boolean>(false);
-  const TRANSITION_LOOP_VALUE = 3;
+  const TRANSITION_LOOP_VALUE = 4;
   const [transCount, setTransCount] = useState<number>(TRANSITION_LOOP_VALUE);
   useEffect(() => {
     // setTotalTime(pranayamaTimerAppData.lastTotalTime ? pranayamaTimerAppData.lastTotalTime : 0);
@@ -92,7 +92,7 @@ export default function YogaView(props: any) {
 
           if (transCount === 0) {
             setTotalTime(0);
-            setTransCount(5);
+            setTransCount(TRANSITION_LOOP_VALUE);
             setIsTransition(false);
           }
         }
@@ -110,38 +110,55 @@ export default function YogaView(props: any) {
   const [h, m, s, pam] = formatedTime.split(/:|\s/);
 
   return (
-    <View style={[TimerStyles.metronomeTheme]}>
-      <Text style={TimerStyles.timerFaceSmall}>
-        {h}:{m}:{s} <Text style={TimerStyles.small}>{pam}</Text>
-      </Text>
-
-      {/* <Text>{JSON.stringify(props.yogaInterval)} beats</Text> */}
-      <View style={TimerStyles.marginTop}>
-        <Text style={TimerStyles.valueText}>Next Pose In:</Text>
-      </View>
-      <TouchableOpacity activeOpacity={0.7} onPress={() => setShowPicker(true)}>
-        <View style={{ alignItems: "center" }}>
-          {intervalAlarmString !== null ? (
-            <Text style={TimerStyles.timerFace}>{intervalAlarmString}</Text>
-          ) : null}
-
-          <TouchableOpacity
-            activeOpacity={0.7}
-            onPress={() => {
-              setIsStop(!isStop);
-              if (isStop) {
-                playStart();
-              }
-            }}
-          >
-            <View style={TimerStyles.marginTop}>
-              <Text style={TimerStyles.startButton}>
-                {isStop === true ? "Start" : "Stop"}
-              </Text>
-            </View>
-          </TouchableOpacity>
+    <View style={TimerStyles.vertBox}>
+      <View style={TimerStyles.vertBox}>
+        <View style={TimerStyles.marginTop}>
+          <Text style={TimerStyles.valueText}>Remaining</Text>
         </View>
-      </TouchableOpacity>
+        <TouchableOpacity
+          activeOpacity={0.7}
+          onPress={() => setShowPicker(true)}
+        >
+          <View style={{ alignItems: "center" }}>
+            {intervalAlarmString !== null ? (
+              <Text style={TimerStyles.timerFace}>{intervalAlarmString}</Text>
+            ) : null}
+          </View>
+        </TouchableOpacity>
+      </View>
+
+      <View style={TimerStyles.vertBox}></View>
+      <View style={TimerStyles.vertBox}>
+        <View style={TimerStyles.marginTop}>
+          <Text style={TimerStyles.valueText}>Current Time</Text>
+        </View>
+        <Text style={TimerStyles.timerFaceSmall}>
+          {h}:{m}:{s} <Text style={TimerStyles.small}>{pam}</Text>
+        </Text>
+      </View>
+      <View
+        style={[
+          TimerStyles.vertBox,
+          { alignSelf: "baseline", marginBottom: 60 },
+        ]}
+      >
+        <TouchableOpacity
+          activeOpacity={0.7}
+          onPress={() => {
+            setIsStop(!isStop);
+            if (isStop) {
+              playStart();
+            }
+          }}
+        >
+          <View style={TimerStyles.marginTop}>
+            <Text style={TimerStyles.startButton}>
+              {isStop === true ? "Start" : "Stop"}
+            </Text>
+          </View>
+        </TouchableOpacity>
+      </View>
+
       <TimerPickerModal
         initialValue={getTimePartsMinSec(initialTotalTime)}
         visible={showPicker}

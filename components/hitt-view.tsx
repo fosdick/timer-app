@@ -229,14 +229,7 @@ export default function HittView() {
   });
 
   return (
-    <View style={TimerStyles.metronomeTheme}>
-      <View>
-        <Text style={TimerStyles.metronomeMedium}>
-          <Text style={TimerStyles.metronome}>Total: </Text>
-          {totalIntervalTimeString}
-        </Text>
-      </View>
-
+    <View style={TimerStyles.vertBox}>
       <HittIntervalPicker
         textTitle="Workout"
         pickerDisplayTimeString={workoutIntervalDisplayString}
@@ -263,57 +256,67 @@ export default function HittView() {
         resetAllEmit={{ resetAllEmit }}
         initialTotalTime={{ initialTotalTime: initialRestTotalTime }}
       ></HittIntervalPicker>
-      <View>
-        <Text style={TimerStyles.metronome}>Rounds</Text>
-      </View>
-      <View>
-        <Text style={TimerStyles.timerFace}>{roundsRemaining}</Text>
-      </View>
-      <Slider
-        style={{ width: 200, height: 40 }}
-        minimumValue={1}
-        maximumValue={50}
-        step={1}
-        value={DEFAULT_NUMBER_ROUNDS}
-        minimumTrackTintColor={GreenTheme.thumbColorEnabled}
-        maximumTrackTintColor={GreenTheme.trackColorTrue}
-        thumbTintColor={GreenTheme.trackColorTrue}
-        onValueChange={(val) => {
-          setNumberRounds(val);
-          setRoundsRemaining(val);
-          resetInitalState({
-            _initialWorkoutTotalTime: initialWorkoutTotalTime,
-            _initialRestTotalTime: initialRestTotalTime,
-            _numberRounds: val,
-          });
-        }}
-        onSlidingComplete={(val) => {
-          setNumberRounds(val);
-          setRoundsRemaining(val);
-          resetInitalState({
-            _initialWorkoutTotalTime: initialWorkoutTotalTime,
-            _initialRestTotalTime: initialRestTotalTime,
-            _numberRounds: val,
-          });
-          setIsStop(true);
-        }}
-      />
-      <TouchableOpacity
-        activeOpacity={0.7}
-        onPress={() => {
-          if (isStop) {
-            playHittStart();
-          }
-          setIsStop(!isStop);
-          //   resetInitalState();
-        }}
-      >
-        <View style={TimerStyles.marginTop}>
-          <Text style={TimerStyles.startButton}>
-            {isStop === true ? "Start" : "Stop"}
-          </Text>
+      <View style={[TimerStyles.marginTop, TimerStyles.vertBox]}>
+        <Text style={[TimerStyles.marginTop, TimerStyles.valueText]}>
+          Rounds
+        </Text>
+        <View>
+          <Text style={TimerStyles.timerFaceSmall}>{roundsRemaining}</Text>
         </View>
-      </TouchableOpacity>
+
+        <Slider
+          style={{ width: 200, height: 40 }}
+          minimumValue={1}
+          maximumValue={50}
+          step={1}
+          value={DEFAULT_NUMBER_ROUNDS}
+          minimumTrackTintColor={GreenTheme.thumbColorEnabled}
+          maximumTrackTintColor={GreenTheme.trackColorTrue}
+          thumbTintColor={GreenTheme.trackColorTrue}
+          onValueChange={(val) => {
+            setNumberRounds(val);
+            setRoundsRemaining(val);
+            resetInitalState({
+              _initialWorkoutTotalTime: initialWorkoutTotalTime,
+              _initialRestTotalTime: initialRestTotalTime,
+              _numberRounds: val,
+            });
+          }}
+          onSlidingComplete={(val) => {
+            setNumberRounds(val);
+            setRoundsRemaining(val);
+            resetInitalState({
+              _initialWorkoutTotalTime: initialWorkoutTotalTime,
+              _initialRestTotalTime: initialRestTotalTime,
+              _numberRounds: val,
+            });
+            setIsStop(true);
+          }}
+        />
+      </View>
+      <View style={[TimerStyles.marginTop, TimerStyles.vertBox]}>
+        <Text style={[{ marginTop: 40 }, TimerStyles.valueText]}>Total</Text>
+        <Text style={TimerStyles.timerFaceSmall}>
+          {totalIntervalTimeString}
+        </Text>
+        <TouchableOpacity
+          activeOpacity={0.7}
+          onPress={() => {
+            if (isStop) {
+              playHittStart();
+            }
+            setIsStop(!isStop);
+            //   resetInitalState();
+          }}
+        >
+          <View style={{ marginTop: 20 }}>
+            <Text style={TimerStyles.startButton}>
+              {isStop === true ? "Start" : "Stop"}
+            </Text>
+          </View>
+        </TouchableOpacity>
+      </View>
+      <View style={TimerStyles.vertBox}></View>
     </View>
   );
 }

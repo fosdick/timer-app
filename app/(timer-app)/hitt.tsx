@@ -22,10 +22,9 @@ export default function TabTwoScreen() {
   const [yogaInterval, setYogaInterval] = useState("00:oo");
   useKeepAwake();
   return (
-    <ThemedView style={screenStyles.viewBody}>
-      <View>
-        <HittView></HittView>
-      </View>
+    <ThemedView style={{ flex: 1 }}>
+      <HittView></HittView>
+
       <BannerAdsView></BannerAdsView>
     </ThemedView>
   );

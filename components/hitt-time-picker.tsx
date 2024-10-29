@@ -16,8 +16,10 @@ export default function HittIntervalPicker(props: any) {
     useState<string>(props.pickerDisplayTimeString || "00:00");
 
   return (
-    <View style={TimerStyles.metronomeTheme}>
-      <Text style={TimerStyles.metronome}>{props.textTitle}</Text>
+    <View style={TimerStyles.vertBox}>
+      <Text style={[TimerStyles.marginTop, TimerStyles.valueText]}>
+        {props.textTitle}
+      </Text>
       <TouchableOpacity activeOpacity={0.7} onPress={() => setShowPicker(true)}>
         <View style={{ alignItems: "center" }}>
           {pickerDisplayTimeString !== null ? (

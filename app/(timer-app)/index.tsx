@@ -21,9 +21,7 @@ export default function TabTwoScreen() {
   useKeepAwake();
   return (
     <ThemedView style={screenStyles.viewBody}>
-      <View>
-        <Pranayama></Pranayama>
-      </View>
+      <Pranayama></Pranayama>
 
       <BannerAdsView></BannerAdsView>
     </ThemedView>

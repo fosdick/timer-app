@@ -36,6 +36,14 @@ export const GreenTheme = {
   backgroundColor,
 };
 export const TimerStyles = StyleSheet.create({
+  vertBox: {
+    // borderWidth: 1,
+    // borderBlockColor: "#333",
+    flex: 2,
+    alignItems: "center",
+    width: "100%",
+    justifyContent: "center",
+  },
   marginTop: {
     marginTop: 30,
   },
