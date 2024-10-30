@@ -22,7 +22,10 @@ App User Id: ${customerInfoData?.originalAppUserId}
         <Text style={styles.title}>Instruction Videos</Text>
       </View>
 
-      <Button onPress={() => Linking.openURL(``)} title={`Pranayama`} />
+      <Button
+        onPress={() => Linking.openURL(`https://youtu.be/FoFX4qkEzig`)}
+        title={`Pranayama`}
+      />
       <Button
         onPress={() => Linking.openURL(`https://youtu.be/FoFX4qkEzig`)}
         title={`Yoga`}
