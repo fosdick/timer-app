@@ -94,12 +94,18 @@ export default function HittView() {
         )
       )
     );
+    setCurrentWorkoutTotalTime(
+      persistantStorageData?.workoutTime || initialWorkoutTotalTime
+    );
     setRestIntervalDisplayString(
       formatMinutesSeonds(
         getTimePartsMinSec(
           persistantStorageData?.restTime || initialRestTotalTime
         )
       )
+    );
+    setCurrentRestTotalTime(
+      persistantStorageData?.restTime || initialRestTotalTime
     );
     setTotalIntervalTimeString(
       formatMinutesSeonds(
@@ -110,6 +116,12 @@ export default function HittView() {
             numberRounds * (initialWorkoutTotalTime + initialRestTotalTime)
         )
       )
+    );
+    setTotalTime(
+      persistantStorageData?.numberRounds *
+        (persistantStorageData?.workoutTime +
+          persistantStorageData?.restTime) ||
+        numberRounds * (initialWorkoutTotalTime + initialRestTotalTime)
     );
   });
 
@@ -269,7 +281,7 @@ export default function HittView() {
           minimumValue={1}
           maximumValue={50}
           step={1}
-          value={DEFAULT_NUMBER_ROUNDS}
+          value={numberRounds}
           minimumTrackTintColor={GreenTheme.thumbColorEnabled}
           maximumTrackTintColor={GreenTheme.trackColorTrue}
           thumbTintColor={GreenTheme.trackColorTrue}
