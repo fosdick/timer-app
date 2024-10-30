@@ -24,13 +24,13 @@ export default function TabTwoScreen() {
   const { displayAds } = useContext(DisplayAdsContext);
 
   return (
-    <SafeAreaView style={styles.viewBody}>
+    <View style={styles.viewBody}>
       <PaywallScreen></PaywallScreen>
       <Support></Support>
       <View style={styles.container}>
         {displayAds && <RestorePurchasesButton />}
       </View>
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -56,9 +56,11 @@ const styles = StyleSheet.create({
     marginTop: 30,
     // backgroundColor: 'none'
     justifyContent: "space-evenly",
+    flex: 1,
   },
   container: {
     alignItems: "center",
-    padding: 8,
+    // padding: 8,
+    // flex: 1,
   },
 });

@@ -8,29 +8,42 @@ const Support = () => {
   const customerBody = customerInfoData
     ? `
 
-    
+
 Customer Info (support use only):
 
-${JSON.stringify(customerInfoData)}
+App User Id: ${customerInfoData?.originalAppUserId}
 
 `
     : "";
 
   return (
     <View style={styles.container}>
-      <View style={styles.container}>
+      <View>
+        <Text style={styles.title}>Instruction Videos</Text>
+      </View>
+
+      <Button onPress={() => Linking.openURL(``)} title={`Pranayama`} />
+      <Button
+        onPress={() => Linking.openURL(`https://youtu.be/FoFX4qkEzig`)}
+        title={`Yoga`}
+      />
+      <View>
+        <Text style={styles.title}> </Text>
+      </View>
+
+      <View>
         <Text style={styles.title}>App Suport</Text>
       </View>
-      <View>
-        <Button
-          onPress={() =>
-            Linking.openURL(
-              `mailto:${Constants.SUPPORT_EMAIL}?subject=Timer App Yoga&body=${customerBody}`
-            )
-          }
-          title={`Email: ${Constants.SUPPORT_EMAIL}`}
-        />
-      </View>
+
+      <Button
+        onPress={() =>
+          Linking.openURL(
+            `mailto:${Constants.SUPPORT_EMAIL}?subject=Timer App Yoga&body=${customerBody}`
+          )
+        }
+        title={`${Constants.SUPPORT_EMAIL}`}
+      />
+
       <View>
         <Button
           onPress={() =>
@@ -51,15 +64,15 @@ const tintColorDark = "#fff";
 const styles = StyleSheet.create({
   container: {
     alignItems: "center",
-    padding: 8,
+    padding: 0,
   },
   title: {
     color: tintColorLight,
-    fontSize: 36,
-    fontWeight: "bold",
+    fontSize: 24,
+    fontWeight: "normal",
     borderBottomWidth: 1,
     borderBottomColor: "#687076",
-    paddingTop: 100,
+    paddingTop: 30,
     alignItems: "center",
   },
   terms: {

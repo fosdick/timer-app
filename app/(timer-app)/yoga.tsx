@@ -11,7 +11,7 @@ export default function TabTwoScreen() {
   useKeepAwake();
   return (
     <ThemedView style={screenStyles.viewBody}>
-      <YogaView style={{ Flex: 5 }}></YogaView>
+      <YogaView></YogaView>
 
       <BannerAdsView></BannerAdsView>
     </ThemedView>

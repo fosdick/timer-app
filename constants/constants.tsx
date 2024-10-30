@@ -6,4 +6,5 @@ export const Constants: any = {
   ADMOD_ADUNIT_ID: "ca-app-pub-9298793039154739/4696334699",
   SUPPORT_EMAIL: "app.support@fastmail.fm",
   REMOVE_ADS_DATA_KEY: "remove-ads-data-key",
+  CONTACT_EMAIL: "timerapp.yoga@fastmail.fm",
 };

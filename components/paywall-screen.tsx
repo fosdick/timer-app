@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
   purchaseTitle: {
     color: tintColorLight,
     fontSize: 24,
-    fontWeight: "bold",
+    fontWeight: "normal",
     borderBottomWidth: 1,
     borderBottomColor: "#687076",
     // paddingTop: 100,

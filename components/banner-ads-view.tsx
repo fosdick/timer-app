@@ -22,16 +22,18 @@ export const BannerAdsView = () => {
 
   return (
     <SafeAreaView style={styles.BannerAdBottom}>
-      <BannerAd
-        size={BannerAdSize.FULL_BANNER}
-        unitId={adUnitId}
-        onAdLoaded={() => {
-          // console.log("Advert loaded");
-        }}
-        onAdFailedToLoad={(error) => {
-          console.error("Advert failed to load: ", error);
-        }}
-      />
+      {displayAds && (
+        <BannerAd
+          size={BannerAdSize.FULL_BANNER}
+          unitId={adUnitId}
+          onAdLoaded={() => {
+            // console.log("Advert loaded");
+          }}
+          onAdFailedToLoad={(error) => {
+            console.error("Advert failed to load: ", error);
+          }}
+        />
+      )}
     </SafeAreaView>
   );
 };
@@ -42,8 +44,11 @@ const styles = StyleSheet.create({
     padding: 0,
     left: 0,
     // backgroundColor: "#ff00ff",
+    width: "100%",
+    paddingHorizontal: 10,
     bottom: 0,
     justifyContent: "center",
     alignItems: "center",
+    flex: 1,
   },
 });

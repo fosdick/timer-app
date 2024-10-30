@@ -54,8 +54,9 @@ export default function Pranayama(props: any) {
   const resetTimer = async () => {
     setTotalTime(initialTotalTime);
     setAlarmString(formatTime(getTimeParts(initialTotalTime)));
+    setBeatCount(0);
   };
-  const updateInitialState = (totalTimeVal?: number) => {
+  const saveStoredData = (totalTimeVal?: number) => {
     storeData(PRANAYAMA_TIMER_APP_DATA, {
       totalTime: totalTimeVal || initialTotalTime,
       beatInterval,
@@ -78,8 +79,7 @@ export default function Pranayama(props: any) {
         if (
           // wait one count to sync with useEffect delay
           // caused by setState not updating till next cycle
-          (beatCount - 1) % beatInterval === 0 &&
-          beatCount !== 0 &&
+          beatCount % beatInterval === 0 &&
           isMetronomeEnabled
         ) {
           playSnap();
@@ -129,7 +129,8 @@ export default function Pranayama(props: any) {
             setAlarmString(formatTime(pickedDuration));
             setShowPicker(false);
             setIsStop(true);
-            updateInitialState(
+            setBeatCount(0);
+            saveStoredData(
               pickedDuration.hours * 3600 +
                 pickedDuration.minutes * 60 +
                 pickedDuration.seconds
@@ -167,11 +168,13 @@ export default function Pranayama(props: any) {
           maximumTrackTintColor={GreenTheme.trackColorTrue}
           onValueChange={(val) => {
             setBeatInterval(val);
-            updateInitialState();
+            setBeatCount(0);
+            saveStoredData();
           }}
           onSlidingComplete={(val) => {
             setBeatInterval(val);
-            updateInitialState();
+            setBeatCount(0);
+            saveStoredData();
           }}
           thumbTintColor={GreenTheme.trackColorTrue}
         />
