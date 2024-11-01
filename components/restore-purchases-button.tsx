@@ -1,12 +1,14 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Pressable, Text, View } from "react-native";
 import Purchases from "react-native-purchases";
 import { StyleSheet } from "react-native";
 import { useState } from "react";
 import EventEmitter from "eventemitter3";
 import { Constants } from "@/constants/constants";
+import { DisplayAdsContext } from "../components/display-ads-context";
 
 const RestorePurchasesButton = () => {
+  const { displayAds } = useContext(DisplayAdsContext);
   const eventController = new EventEmitter();
   const [errorMsg, setErrorMsg] = useState<string>("");
   const restorePurchases = async () => {
@@ -43,9 +45,13 @@ const RestorePurchasesButton = () => {
   });
 
   return (
-    <Pressable onPress={restorePurchases} style={styles.button}>
-      <Text style={styles.title}>{errorMsg || "Restore Purchases"}</Text>
-    </Pressable>
+    <View>
+      {displayAds && (
+        <Pressable onPress={restorePurchases} style={styles.button}>
+          <Text style={styles.title}>{errorMsg || "Restore Purchases"}</Text>
+        </Pressable>
+      )}
+    </View>
   );
 };
 

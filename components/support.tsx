@@ -35,7 +35,7 @@ App User Id: ${customerInfoData?.originalAppUserId}
       </View>
 
       <View>
-        <Text style={styles.title}>App Suport</Text>
+        <Text style={styles.title}>App Support</Text>
       </View>
 
       <Button
