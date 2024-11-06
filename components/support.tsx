@@ -19,11 +19,14 @@ App User Id: ${customerInfoData?.originalAppUserId}
   return (
     <View style={styles.container}>
       <View>
-        <Text style={styles.title}>Instruction Videos</Text>
+        <Text style={styles.title}>Demo Videos</Text>
       </View>
-
       <Button
-        onPress={() => Linking.openURL(`https://youtu.be/FoFX4qkEzig`)}
+        onPress={() => Linking.openURL(`https://youtu.be/1_mFRf8dPUE`)}
+        title={`Overview`}
+      />
+      <Button
+        onPress={() => Linking.openURL(`https://youtu.be/u9nDcjeLAvo`)}
         title={`Pranayama`}
       />
       <Button
