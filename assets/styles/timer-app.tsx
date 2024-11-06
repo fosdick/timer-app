@@ -1,13 +1,12 @@
 import { StyleSheet } from "react-native";
 
-// const fontColor = '#3670A5';
+// const fontColor = "#3670A5";
 const fontColor = "#629231";
 const borderColor = "#91BD27";
-const trackColorTrue = "#4b6806";
+const thumbTintColor = "#4b6806";
 const trackColorFalse = "#0D2013";
-const thumbColorEnabled = "#3C4E16";
+const minimumTrackTintColor = "#3C4E16";
 const thumbColorDisabled = "#0D2013";
-const minimumTrackTintColor = "#C3D8DB";
 const maximumTrackTintColor = "#767577";
 const backgroundColor = "#080B0c";
 const neutralColor = "#dfffea";
@@ -28,9 +27,8 @@ export const GreenTheme = {
   borderColor,
   fontColor,
   trackColorFalse,
-  trackColorTrue,
+  thumbTintColor,
   thumbColorDisabled,
-  thumbColorEnabled,
   minimumTrackTintColor,
   maximumTrackTintColor,
   backgroundColor,

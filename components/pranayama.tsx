@@ -164,8 +164,8 @@ export default function Pranayama(props: any) {
           maximumValue={20}
           step={1}
           value={DEFAULT_BEAT_INTERVAL}
-          minimumTrackTintColor={GreenTheme.thumbColorEnabled}
-          maximumTrackTintColor={GreenTheme.trackColorTrue}
+          minimumTrackTintColor={GreenTheme.minimumTrackTintColor}
+          maximumTrackTintColor={GreenTheme.thumbTintColor}
           onValueChange={(val) => {
             setBeatInterval(val);
             setBeatCount(0);
@@ -176,7 +176,7 @@ export default function Pranayama(props: any) {
             setBeatCount(0);
             saveStoredData();
           }}
-          thumbTintColor={GreenTheme.trackColorTrue}
+          thumbTintColor={GreenTheme.thumbTintColor}
         />
         <View>
           <Text style={TimerStyles.valueText}>
@@ -186,10 +186,9 @@ export default function Pranayama(props: any) {
         <Switch
           trackColor={{
             false: GreenTheme.thumbColorDisabled,
-            true: GreenTheme.thumbColorEnabled,
+            true: GreenTheme.minimumTrackTintColor,
           }}
           thumbColor={GreenTheme.trackColorFalse}
-          // ios_backgroundColor="#3e3e3e"
           onValueChange={toggleMetronomeEnabled}
           value={isMetronomeEnabled}
         />

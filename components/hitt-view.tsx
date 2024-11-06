@@ -282,9 +282,9 @@ export default function HittView() {
           maximumValue={50}
           step={1}
           value={numberRounds}
-          minimumTrackTintColor={GreenTheme.thumbColorEnabled}
-          maximumTrackTintColor={GreenTheme.trackColorTrue}
-          thumbTintColor={GreenTheme.trackColorTrue}
+          minimumTrackTintColor={GreenTheme.minimumTrackTintColor}
+          maximumTrackTintColor={GreenTheme.thumbTintColor}
+          thumbTintColor={GreenTheme.thumbTintColor}
           onValueChange={(val) => {
             setNumberRounds(val);
             setRoundsRemaining(val);
