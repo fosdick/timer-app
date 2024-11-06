@@ -4,23 +4,83 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <meta name="robots" content="noindex, nofollow" />
+
     <title>Timer App Yoga</title>
-    <!-- <link rel="stylesheet" href="./style.css"> -->
     <link rel="icon" href="./favicon.ico" type="image/x-icon" />
+    <style>
+      .body {
+        text-align: center;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      }
+      .column {
+        display: flex;
+        flex-direction: column;
+        flex-basis: 100%;
+        flex: 1;
+        width: 50%;
+      }
+      .row {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        width: 100%;
+      }
+      /* unvisited link */
+      a:link {
+        color: #629231;
+      }
+
+      /* visited link */
+      a:visited {
+        color: #3c4e16;
+      }
+
+      /* mouse over link */
+      a:hover {
+        color: #3c4e16;
+      }
+
+      /* selected link */
+      a:active {
+        color: #629231;
+      }
+      img#screenshot {
+        padding: 10%;
+      }
+    </style>
   </head>
-  <body>
-    <main>
-      <h1>Support Page for Timer App Yoga</h1>
-      <p>Send comments, quetions or conerns to the email here:</p>
-      <a href="mailto:app.support@fastmail.fm">app.support@fastmail.fm</a>
-      <h2>Privacy Policy</h2>
-      <p>
-        <a
-          href="http://timer-app-yoga.jarvis1.fastmail.fm.user.fm/privacy-policy.pdf"
-          >Privacy Policy</a
-        >
-      </p>
+  <body class="body greenThee">
+    <main class="body">
+       <h1>TimerAppYoga</h1>
+      <div class="row">
+        <div class="column">
+       
+        <h2>Demo Videos</h2>
+        <p><a href="https://youtu.be/1_mFRf8dPUE">Overview</a></p>
+        <p><a href="https://youtu.be/u9nDcjeLAvo">Pranayama</a></p>
+        <p><a href="https://youtu.be/FoFX4qkEzig">Yoga</a></p>
+        <h2>App Downloads</h2>
+        <p>
+          <a href="https://apps.apple.com/us/app/timerappyoga/id6736632134">View on app store</a>
+          <blockquote>Google Play in development</blockquote>
+        </p>
+        <h2>Support</h2>
+        <blockquote>Send comments, questions or concerns to:</blockquote>
+
+        <a href="mailto:app.support@fastmail.fm">app.support@fastmail.fm</a>
+        <p>&nbsp;</p>
+        <h2>Privacy Policy</h2>
+        <p>
+          <a
+            href="http://timer-app-yoga.jarvis1.fastmail.fm.user.fm/privacy-policy.pdf"
+            >Privacy Policy</a
+          >
+        </p>
+        </div>
+      <div class="column">
+        <img id="screenshot" src="./screenshot-pranayama.jpg" /> 
+      </div>
+      </div>
     </main>
     <!-- <script src="index.js"></script> -->
   </body>
