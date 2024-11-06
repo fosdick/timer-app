@@ -60,7 +60,7 @@ export default function RootLayout() {
             // backgroundColor: "#080B0c",
             backgroundColor: "#dfffea",
           },
-          headerRight: () => <SettingsSvg />,
+          headerRight: () => <SettingsSvg {...{ size: 24 }} />,
         }}
       >
         {/* <Stack.Screen name="+html" options={{ headerShown: false }} /> */}
