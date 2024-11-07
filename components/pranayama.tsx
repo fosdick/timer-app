@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { StyleSheet, Switch, Text, TouchableOpacity, View } from "react-native";
 import Slider from "@react-native-community/slider";
 import { TimerPickerModal } from "react-native-timer-picker";
-import { TimerStyles, GreenTheme } from "@/assets/styles/timer-app";
+import { TimerStyles, colorTheme } from "@/assets/styles/timer-app";
 import { formatTime, getTimeParts } from "../assets/utils/format-time";
 import {
   playBeat,
@@ -163,8 +163,8 @@ export default function Pranayama(props: any) {
           maximumValue={20}
           step={1}
           value={DEFAULT_BEAT_INTERVAL}
-          minimumTrackTintColor={GreenTheme.minimumTrackTintColor}
-          maximumTrackTintColor={GreenTheme.maximumTrackTintColor}
+          minimumTrackTintColor={colorTheme.minimumTrackTintColor}
+          maximumTrackTintColor={colorTheme.maximumTrackTintColor}
           onValueChange={(val) => {
             setBeatInterval(val);
             setBeatCount(0);
@@ -175,7 +175,7 @@ export default function Pranayama(props: any) {
             setBeatCount(0);
             saveStoredData();
           }}
-          thumbTintColor={GreenTheme.thumbTintColor}
+          thumbTintColor={colorTheme.thumbTintColor}
         />
         <View>
           <Text style={TimerStyles.valueText}>
@@ -184,10 +184,10 @@ export default function Pranayama(props: any) {
         </View>
         <Switch
           trackColor={{
-            false: GreenTheme.thumbColorDisabled,
-            true: GreenTheme.minimumTrackTintColor,
+            false: colorTheme.thumbColorDisabled,
+            true: colorTheme.minimumTrackTintColor,
           }}
-          thumbColor={GreenTheme.trackColorFalse}
+          thumbColor={colorTheme.trackColorFalse}
           onValueChange={toggleMetronomeEnabled}
           value={isMetronomeEnabled}
         />

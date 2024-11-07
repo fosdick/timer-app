@@ -1,17 +1,55 @@
 import { StyleSheet } from "react-native";
 
-// const fontColor = "#3670A5";
-// const borderColor = "#2B9CB3";
-// const thumbTintColor = "#4b6806";
+const BlueTheme = false;
+const GreenTheme = !BlueTheme;
 
-const fontColor = "#629231";
-const borderColor = "#91BD27";
-const thumbTintColor = "#4b6806";
-const trackColorFalse = "#0D2013";
-const minimumTrackTintColor = "#3C4E16";
-const thumbColorDisabled = "#0D2013";
-const maximumTrackTintColor = thumbTintColor;
-const backgroundColor = "#080B0c";
+let borderColor,
+  fontColor,
+  trackColorFalse,
+  thumbTintColor,
+  thumbColorDisabled,
+  minimumTrackTintColor,
+  maximumTrackTintColor,
+  backgroundColor,
+  headerLiteShade,
+  tabBarActiveTintColor;
+
+if (BlueTheme) {
+  fontColor = "#3670A5";
+  borderColor = "#2B9CB3";
+  thumbTintColor = "#2D5D8B";
+  trackColorFalse = "#081D21";
+  minimumTrackTintColor = "#23496C";
+  thumbColorDisabled = trackColorFalse;
+  maximumTrackTintColor = thumbTintColor;
+  backgroundColor = "#040E10";
+  headerLiteShade = "#C3D8DB";
+  tabBarActiveTintColor = fontColor;
+} else if (GreenTheme) {
+  fontColor = "#629231";
+  borderColor = "#91BD27";
+  thumbTintColor = "#4b6806";
+  trackColorFalse = "#0D2013";
+  minimumTrackTintColor = "#3C4E16";
+  thumbColorDisabled = trackColorFalse;
+  maximumTrackTintColor = thumbTintColor;
+  backgroundColor = "#080B0c";
+  headerLiteShade = "#dfffea";
+  tabBarActiveTintColor = fontColor;
+}
+
+export const colorTheme = {
+  borderColor,
+  fontColor,
+  trackColorFalse,
+  thumbTintColor,
+  thumbColorDisabled,
+  minimumTrackTintColor,
+  maximumTrackTintColor,
+  backgroundColor,
+  headerLiteShade,
+  tabBarActiveTintColor,
+};
 
 export const Settings = StyleSheet.create({
   regText: {
@@ -25,16 +63,7 @@ export const Settings = StyleSheet.create({
     fontVariant: ["tabular-nums"],
   },
 });
-export const GreenTheme = {
-  borderColor,
-  fontColor,
-  trackColorFalse,
-  thumbTintColor,
-  thumbColorDisabled,
-  minimumTrackTintColor,
-  maximumTrackTintColor,
-  backgroundColor,
-};
+
 export const TimerStyles = StyleSheet.create({
   vertBox: {
     flex: 2,

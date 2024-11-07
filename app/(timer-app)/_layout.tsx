@@ -8,8 +8,7 @@ import { useColorScheme } from "@/hooks/useColorScheme";
 import { YogaSvg } from "@/assets/images/svgx/yoga";
 import { PranayamaSvg } from "@/assets/images/svgx/pranayama";
 import { HittSvg } from "@/assets/images/svgx/hitt";
-import { BannerAdsView } from "@/components/banner-ads-view";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { colorTheme } from "@/assets/styles/timer-app";
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
@@ -20,13 +19,14 @@ export default function TabLayout() {
       {/* <BannerAdsView></BannerAdsView> */}
       <Tabs
         sceneContainerStyle={{
-          backgroundColor: "#080B0c",
+          backgroundColor: colorTheme.backgroundColor,
         }}
         screenOptions={{
-          tabBarActiveTintColor: Colors[colorScheme ?? "dark"].tint,
+          tabBarActiveTintColor: colorTheme.tabBarActiveTintColor,
           headerShown: false,
           tabBarStyle: {
-            backgroundColor: "#080B0c",
+            backgroundColor: colorTheme.backgroundColor,
+            borderBlockColor: colorTheme.borderColor,
           },
         }}
       >

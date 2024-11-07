@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { View, Text, Button, Linking } from "react-native";
-import { GreenTheme } from "@/assets/styles/timer-app";
+import { colorTheme } from "@/assets/styles/timer-app";
 import { Constants } from "@/constants/constants";
 import { DisplayAdsContext } from "./display-ads-context";
 const Support = () => {

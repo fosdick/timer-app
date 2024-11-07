@@ -11,8 +11,11 @@ import "react-native-reanimated";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import Purchases from "react-native-purchases";
 import { Platform, Alert } from "react-native";
+
+// app files
 import { Constants } from "@/constants/constants";
 import { SettingsSvg } from "@/assets/images/svgx/settings";
+import { colorTheme } from "@/assets/styles/timer-app";
 import {
   DisplayAdsContext,
   DisplayAdsProvider,
@@ -58,9 +61,9 @@ export default function RootLayout() {
           title: "Timer App Yoga",
           headerStyle: {
             // backgroundColor: "#080B0c",
-            backgroundColor: "#dfffea",
+            backgroundColor: colorTheme.headerLiteShade,
           },
-          headerRight: () => <SettingsSvg {...{ size: 24 }} />,
+          headerRight: () => <SettingsSvg />,
         }}
       >
         {/* <Stack.Screen name="+html" options={{ headerShown: false }} /> */}
