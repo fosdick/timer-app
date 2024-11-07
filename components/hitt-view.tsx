@@ -192,7 +192,7 @@ export default function HittView() {
       setIsStop(true);
       setDoResetAll(false);
     }
-    const intervalid: any = setTimeout(() => {
+    const intervalId: any = setTimeout(() => {
       if (!isStop && roundsRemaining >= 0 && totalTime >= 0) {
         setTotalTime(totalTime - 1);
         setTotalIntervalTimeString(formatTime(getTimeRemaining()));
@@ -237,7 +237,7 @@ export default function HittView() {
         hittTimerEventController.emit(TIMER_ENDED_EVENT_NAME);
       }
     }, 1000);
-    return () => clearInterval(intervalid);
+    return () => clearInterval(intervalId);
   });
 
   return (

@@ -72,7 +72,7 @@ export default function YogaView(props: any) {
   useEffect(() => {
     // setTotalTime(pranayamaTimerAppData.lastTotalTime ? pranayamaTimerAppData.lastTotalTime : 0);
 
-    const intervalid: any = setTimeout(() => {
+    const intervalId: any = setTimeout(() => {
       setCurrentTime(new Date());
 
       if (!isStop && totalTime >= 0) {
@@ -101,7 +101,7 @@ export default function YogaView(props: any) {
         }
       }
     }, 1000);
-    return () => clearInterval(intervalid);
+    return () => clearInterval(intervalId);
   });
 
   const formatedTime: string = currentTime.toLocaleString("en-US", {

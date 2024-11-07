@@ -72,15 +72,14 @@ export default function Pranayama(props: any) {
     }
   });
   useEffect(() => {
-    const intervalid: any = setTimeout(() => {
+    const intervalId: any = setTimeout(() => {
       if (!isStop && totalTime >= 0) {
         setTotalTime(totalTime - 1);
         setBeatCount(beatCount + 1);
         if (
-          // wait one count to sync with useEffect delay
-          // caused by setState not updating till next cycle
           beatCount % beatInterval === 0 &&
-          isMetronomeEnabled
+          isMetronomeEnabled &&
+          totalTime !== initialTotalTime
         ) {
           playSnap();
         }
@@ -92,7 +91,7 @@ export default function Pranayama(props: any) {
         }
       }
     }, 1000);
-    return () => clearInterval(intervalid);
+    return () => clearInterval(intervalId);
   });
 
   return (
