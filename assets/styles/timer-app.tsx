@@ -1,15 +1,17 @@
 import { StyleSheet } from "react-native";
 
 // const fontColor = "#3670A5";
+// const borderColor = "#2B9CB3";
+// const thumbTintColor = "#4b6806";
+
 const fontColor = "#629231";
 const borderColor = "#91BD27";
 const thumbTintColor = "#4b6806";
 const trackColorFalse = "#0D2013";
 const minimumTrackTintColor = "#3C4E16";
 const thumbColorDisabled = "#0D2013";
-const maximumTrackTintColor = "#767577";
+const maximumTrackTintColor = thumbTintColor;
 const backgroundColor = "#080B0c";
-const neutralColor = "#dfffea";
 
 export const Settings = StyleSheet.create({
   regText: {

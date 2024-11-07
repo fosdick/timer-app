@@ -165,7 +165,7 @@ export default function Pranayama(props: any) {
           step={1}
           value={DEFAULT_BEAT_INTERVAL}
           minimumTrackTintColor={GreenTheme.minimumTrackTintColor}
-          maximumTrackTintColor={GreenTheme.thumbTintColor}
+          maximumTrackTintColor={GreenTheme.maximumTrackTintColor}
           onValueChange={(val) => {
             setBeatInterval(val);
             setBeatCount(0);
