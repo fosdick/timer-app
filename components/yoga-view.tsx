@@ -8,11 +8,11 @@ import {
 import { LinearGradient } from "expo-linear-gradient"; // or `import LinearGradient from "react-native-linear-gradient"`
 
 import { useEffect, useState } from "react";
-import { Text, TouchableOpacity, View } from "react-native";
+import { Alert, Text, TouchableOpacity, View } from "react-native";
 import { TimerPickerModal } from "react-native-timer-picker";
 import { TimerStyles } from "@/assets/styles/timer-app";
 import {
-  formatMinutesSeonds,
+  formatMinutesSeconds,
   formatTime,
   getTimePartsMinSec,
 } from "../assets/utils/format-time";
@@ -54,7 +54,7 @@ export default function YogaView(props: any) {
       savedData?.yogaTotalInterval || DEFAULT_INITIAL_TOTAL_TIME
     );
     setIntervalAlarmString(
-      formatMinutesSeonds(
+      formatMinutesSeconds(
         getTimePartsMinSec(
           savedData?.yogaTotalInterval || DEFAULT_INITIAL_TOTAL_TIME
         )
@@ -69,6 +69,7 @@ export default function YogaView(props: any) {
   const [isTransition, setIsTransition] = useState<boolean>(false);
   const TRANSITION_LOOP_VALUE = 4;
   const [transCount, setTransCount] = useState<number>(TRANSITION_LOOP_VALUE);
+
   useEffect(() => {
     // setTotalTime(pranayamaTimerAppData.lastTotalTime ? pranayamaTimerAppData.lastTotalTime : 0);
 
@@ -97,11 +98,13 @@ export default function YogaView(props: any) {
           }
         }
         if (initialTotalTime > 0) {
-          setIntervalAlarmString(formatMinutesSeonds(getTimeRemaining()));
+          setIntervalAlarmString(formatMinutesSeconds(getTimeRemaining()));
         }
       }
     }, 1000);
-    return () => clearInterval(intervalId);
+    return () => {
+      clearInterval(intervalId);
+    };
   });
 
   const formatedTime: string = currentTime.toLocaleString("en-US", {
@@ -168,9 +171,9 @@ export default function YogaView(props: any) {
           setInitialTotalTime(
             pickedDuration.minutes * 60 + pickedDuration.seconds
           );
-          setIntervalAlarmString(formatMinutesSeonds(pickedDuration));
+          setIntervalAlarmString(formatMinutesSeconds(pickedDuration));
           // props.setYogaInterval.setYogaInterval(
-          //   formatMinutesSeonds(pickedDuration)
+          //   formatMinutesSeconds(pickedDuration)
           // );
           setShowPicker(false);
           setIsStop(true);

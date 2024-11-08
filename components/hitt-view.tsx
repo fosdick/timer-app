@@ -10,7 +10,7 @@ import HittIntervalPicker from "@/components/hitt-time-picker";
 import EventEmitter from "eventemitter3";
 
 import {
-  formatMinutesSeonds,
+  formatMinutesSeconds,
   formatTime,
   getTimePartsMinSec,
 } from "../assets/utils/format-time";
@@ -44,7 +44,7 @@ export default function HittView() {
     hittTimerEventController.emit(RESET_ALL_EVENT);
   };
   const [totalIntervalTimeString, setTotalIntervalTimeString] = useState<any>(
-    formatMinutesSeonds(
+    formatMinutesSeconds(
       getTimePartsMinSec(
         DEFAULT_NUMBER_ROUNDS * (DEFAULT_WORKOUT_TIME + DEFAULT_REST_TIME)
       )
@@ -53,10 +53,10 @@ export default function HittView() {
 
   const [workoutIntervalDisplayString, setWorkoutIntervalDisplayString] =
     useState<any>(
-      formatMinutesSeonds(getTimePartsMinSec(DEFAULT_WORKOUT_TIME))
+      formatMinutesSeconds(getTimePartsMinSec(DEFAULT_WORKOUT_TIME))
     );
   const [restIntervalDisplayString, setRestIntervalDisplayString] =
-    useState<any>(formatMinutesSeonds(getTimePartsMinSec(DEFAULT_REST_TIME)));
+    useState<any>(formatMinutesSeconds(getTimePartsMinSec(DEFAULT_REST_TIME)));
 
   const [initialWorkoutTotalTime, setInitialWorkoutTotalTime] =
     useState<number>(DEFAULT_WORKOUT_TIME);
@@ -88,7 +88,7 @@ export default function HittView() {
       persistantStorageData?.restTime || initialRestTotalTime
     );
     setWorkoutIntervalDisplayString(
-      formatMinutesSeonds(
+      formatMinutesSeconds(
         getTimePartsMinSec(
           persistantStorageData?.workoutTime || initialWorkoutTotalTime
         )
@@ -98,7 +98,7 @@ export default function HittView() {
       persistantStorageData?.workoutTime || initialWorkoutTotalTime
     );
     setRestIntervalDisplayString(
-      formatMinutesSeonds(
+      formatMinutesSeconds(
         getTimePartsMinSec(
           persistantStorageData?.restTime || initialRestTotalTime
         )
@@ -108,7 +108,7 @@ export default function HittView() {
       persistantStorageData?.restTime || initialRestTotalTime
     );
     setTotalIntervalTimeString(
-      formatMinutesSeonds(
+      formatMinutesSeconds(
         getTimePartsMinSec(
           persistantStorageData?.numberRounds *
             (persistantStorageData?.workoutTime +
@@ -154,12 +154,12 @@ export default function HittView() {
     );
     setCurrentRestTotalTime(_initialRestTotalTime || initialRestTotalTime);
     setWorkoutIntervalDisplayString(
-      formatMinutesSeonds(
+      formatMinutesSeconds(
         getTimePartsMinSec(_initialWorkoutTotalTime || initialWorkoutTotalTime)
       )
     );
     setRestIntervalDisplayString(
-      formatMinutesSeonds(
+      formatMinutesSeconds(
         getTimePartsMinSec(_initialRestTotalTime || initialRestTotalTime)
       )
     );
@@ -173,10 +173,10 @@ export default function HittView() {
   const startTimerAgain = () => {
     setRoundsRemaining(numberRounds);
     setRestIntervalDisplayString(
-      formatMinutesSeonds(getTimePartsMinSec(initialRestTotalTime))
+      formatMinutesSeconds(getTimePartsMinSec(initialRestTotalTime))
     );
     setWorkoutIntervalDisplayString(
-      formatMinutesSeonds(getTimePartsMinSec(initialWorkoutTotalTime))
+      formatMinutesSeconds(getTimePartsMinSec(initialWorkoutTotalTime))
     );
     setIsStop(true);
   };
@@ -197,10 +197,10 @@ export default function HittView() {
         setTotalTime(totalTime - 1);
         setTotalIntervalTimeString(formatTime(getTimeRemaining()));
         setWorkoutIntervalDisplayString(
-          formatMinutesSeonds(getTimePartsMinSec(currentWorkoutTotalTime))
+          formatMinutesSeconds(getTimePartsMinSec(currentWorkoutTotalTime))
         );
         setRestIntervalDisplayString(
-          formatMinutesSeonds(getTimePartsMinSec(currentRestTotalTime))
+          formatMinutesSeconds(getTimePartsMinSec(currentRestTotalTime))
         );
 
         if (currentRestTotalTime === 0 && currentWorkoutTotalTime === 0) {

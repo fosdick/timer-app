@@ -14,7 +14,11 @@ export const formatTime = ({ hours, minutes, seconds }: TimeParts): string => {
   return timeParts.join(":");
 };
 
-export const formatMinutesSeonds = ({ hours, minutes, seconds }: TimeParts) => {
+export const formatMinutesSeconds = ({
+  hours,
+  minutes,
+  seconds,
+}: TimeParts) => {
   const timeParts = [];
   if (minutes !== undefined) {
     timeParts.push(minutes.toString().padStart(2, "0"));

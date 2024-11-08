@@ -6,7 +6,7 @@ import { useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 
 import {
-  formatMinutesSeonds,
+  formatMinutesSeconds,
   getTimePartsMinSec,
 } from "../assets/utils/format-time";
 
@@ -38,7 +38,7 @@ export default function HittIntervalPicker(props: any) {
         onConfirm={(pickedDuration) => {
           setShowPicker(false);
           props.setIntervalDisplayString.setIntervalDisplayString(
-            formatMinutesSeonds(pickedDuration)
+            formatMinutesSeconds(pickedDuration)
           );
           props.setInitialTotalTime.setInitialTotalTime(
             pickedDuration.minutes * 60 + pickedDuration.seconds

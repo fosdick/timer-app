@@ -30,6 +30,11 @@ export default function TabLayout() {
             borderBlockColor: colorTheme.borderColor,
           },
         }}
+        screenListeners={{
+          tabPress: () => {
+            // Alert.alert("tab pressed");
+          },
+        }}
       >
         <Tabs.Screen
           name="index"
