@@ -12,7 +12,8 @@ let borderColor,
   maximumTrackTintColor,
   backgroundColor,
   headerLiteShade,
-  tabBarActiveTintColor;
+  tabBarActiveTintColor,
+  tabBarInActiveTintColor;
 
 if (BlueTheme) {
   fontColor = "#3670A5";
@@ -24,7 +25,8 @@ if (BlueTheme) {
   maximumTrackTintColor = thumbTintColor;
   backgroundColor = "#040E10";
   headerLiteShade = "#C3D8DB";
-  tabBarActiveTintColor = fontColor;
+  tabBarActiveTintColor = thumbTintColor;
+  tabBarInActiveTintColor = "#687076";
 } else if (GreenTheme) {
   fontColor = "#629231";
   borderColor = "#91BD27";
@@ -35,7 +37,8 @@ if (BlueTheme) {
   maximumTrackTintColor = thumbTintColor;
   backgroundColor = "#080B0c";
   headerLiteShade = "#dfffea";
-  tabBarActiveTintColor = fontColor;
+  tabBarActiveTintColor = thumbTintColor;
+  tabBarInActiveTintColor = "#687076";
 }
 
 export const colorTheme = {
@@ -49,6 +52,7 @@ export const colorTheme = {
   backgroundColor,
   headerLiteShade,
   tabBarActiveTintColor,
+  tabBarInActiveTintColor,
 };
 
 export const Settings = StyleSheet.create({
