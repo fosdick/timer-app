@@ -15,7 +15,7 @@ const DisplayAdsContext = createContext<DisplayAdsContextType>({
 const DisplayAdsProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [displayAds, setDisplayAds] = useState(false);
+  const [displayAds, setDisplayAds] = useState(true);
   const [customerInfoData, setCustomerInfoData] = useState<any>();
 
   const value: DisplayAdsContextType = {

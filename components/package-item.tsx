@@ -32,10 +32,6 @@ const PackageItem = ({ purchasePackage, setIsPurchasing }: any) => {
       }
     } catch (e: any) {
       Alert.alert(e.message);
-      if (e.code === Purchases.PURCHASES_ERROR_CODE.PURCHASE_CANCELLED_ERROR) {
-        setDisplayAds(true);
-        Alert.alert("Error purchasing package", e.message);
-      }
     } finally {
       setIsPurchasing(false);
     }

@@ -28,7 +28,6 @@ const PaywallScreen = () => {
   useEffect(() => {
     // Get current available packages
     const getPackages = async () => {
-      // setDisplayAds(false);
       try {
         const offerings = await Purchases.getOfferings();
         setOfferings(offerings);
@@ -90,7 +89,6 @@ const PaywallScreen = () => {
         )}
         {isPurchasing && <View style={styles.overlay} />}
       </View>
-      {/* <Text selectable>{JSON.stringify(offerings2)}</Text> */}
     </View>
   );
 };
