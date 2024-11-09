@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import { DisplayAdsContext, DisplayAdsProvider } from "./display-ads-context";
-import { getData, storeData } from "../assets/utils/persistant-storage";
+import { getData, storeData } from "../assets/utils/persistent-storage";
 import { Constants } from "@/constants/constants";
 
 import {

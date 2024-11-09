@@ -1,7 +1,7 @@
 import React, { createContext, useState } from "react";
 import { Constants } from "@/constants/constants";
 import Purchases from "react-native-purchases";
-import { getData, storeData } from "../assets/utils/persistant-storage";
+import { getData, storeData } from "../assets/utils/persistent-storage";
 
 type DisplayAdsContextType = {
   displayAds: boolean;

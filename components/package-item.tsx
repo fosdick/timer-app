@@ -2,7 +2,7 @@ import React, { useContext, useState } from "react";
 import { View, Text, Pressable, Alert } from "react-native";
 import Purchases from "react-native-purchases";
 import { Constants } from "@/constants/constants";
-import { getData, storeData } from "../assets/utils/persistant-storage";
+import { getData, storeData } from "../assets/utils/persistent-storage";
 import { DisplayAdsContext, DisplayAdsProvider } from "./display-ads-context";
 
 const PackageItem = ({ purchasePackage, setIsPurchasing }: any) => {

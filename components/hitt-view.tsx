@@ -14,7 +14,7 @@ import {
   formatTime,
   getTimePartsMinSec,
 } from "../assets/utils/format-time";
-import { getData, storeData } from "../assets/utils/persistant-storage";
+import { getData, storeData } from "../assets/utils/persistent-storage";
 
 export default function HittView() {
   const HITT_DATA_STORAGE_KEY = "hitt-data-storage-key";

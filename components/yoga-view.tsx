@@ -16,7 +16,7 @@ import {
   formatTime,
   getTimePartsMinSec,
 } from "../assets/utils/format-time";
-import { getData, storeData } from "../assets/utils/persistant-storage";
+import { getData, storeData } from "../assets/utils/persistent-storage";
 
 const YOGA_TIMER_APP_DATA: string = "yoga_timer_app_data";
 const DEFAULT_INITIAL_TOTAL_TIME = 30;
