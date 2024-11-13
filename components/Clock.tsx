@@ -1,7 +1,7 @@
 import {StyleSheet, Text, View} from 'react-native';
 
 import { useEffect, useState} from 'react';
-
+import { TimerStyles } from '@/assets/styles/timer-app'
 // import { useKeepAwake } from 'expo-keep-awake';
 
 export default function Clock()  {
@@ -20,8 +20,8 @@ export default function Clock()  {
 
 // useKeepAwake();
   return (
-    <View>
-        <Text style={styles.clockFace}>{h}:{m}:{s}</Text>
+    <View style={TimerStyles.metronomeTheme}>
+        <Text style={TimerStyles.timerFace}>{h}:{m}:{s}</Text>
     </View>
   )
 }
