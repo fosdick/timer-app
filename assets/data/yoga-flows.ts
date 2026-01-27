@@ -3,6 +3,7 @@ export interface YogaPose {
   duration: number; // seconds
   description?: string;
   progressText?: string;
+  assetId?: string;
 }
 
 export interface YogaSuperset {
@@ -10,6 +11,7 @@ export interface YogaSuperset {
   totalDuration: number; // seconds - user self-paces through poses
   poses: YogaPose[];
   progressText?: string;
+  assetId?: string;
 }
 
 export type YogaFlowItem = YogaPose | YogaSuperset;
@@ -39,6 +41,7 @@ export const YOGA_FLOWS: YogaFlow[] = [
         duration: 30,
         description: "Stand tall with feet together",
         progressText: "Pose 1 of 11",
+        assetId: "mountain-pose",
       },
       {
         name: "Upward Salute",
@@ -81,6 +84,7 @@ export const YOGA_FLOWS: YogaFlow[] = [
         duration: 45,
         description: "Press hips up and back",
         progressText: "Pose 8 of 11",
+        assetId: "downward-dog",
       },
       {
         name: "Forward Fold",
@@ -99,6 +103,7 @@ export const YOGA_FLOWS: YogaFlow[] = [
         duration: 30,
         description: "Return to standing",
         progressText: "Pose 11 of 11",
+        assetId: "mountain-pose",
       },
     ],
     totalDuration: 305,
@@ -113,12 +118,14 @@ export const YOGA_FLOWS: YogaFlow[] = [
         duration: 30,
         description: "Stand tall and centered",
         progressText: "Pose 1 of 7",
+        assetId: "mountain-pose",
       },
       {
         name: "Warrior I - Right",
         duration: 45,
         description: "Right foot forward, arms up",
         progressText: "Pose 2 of 7",
+        assetId: "warrior-1",
       },
       {
         name: "Warrior II - Right",
@@ -137,6 +144,7 @@ export const YOGA_FLOWS: YogaFlow[] = [
         duration: 45,
         description: "Left foot forward, arms up",
         progressText: "Pose 5 of 7",
+        assetId: "warrior-1",
       },
       {
         name: "Warrior II - Left",
@@ -163,6 +171,7 @@ export const YOGA_FLOWS: YogaFlow[] = [
         duration: 30,
         description: "Start in down dog",
         progressText: "Warming up",
+        assetId: "downward-dog",
       },
       {
         type: "superset",
@@ -173,16 +182,19 @@ export const YOGA_FLOWS: YogaFlow[] = [
             name: "Pigeon Pose - Left",
             duration: 120,
             description: "Left shin forward, breathe deeply",
+            // Uses generic asset (no assetId specified, superset has no assetId)
           },
           {
             name: "Downward Dog",
             duration: 30,
             description: "Transition to down dog",
+            assetId: "downward-dog", // Overrides to show specific downward dog asset
           },
           {
             name: "Pigeon Pose - Right",
             duration: 120,
             description: "Right shin forward, breathe deeply",
+            // Uses generic asset (no assetId specified, superset has no assetId)
           },
         ],
       },

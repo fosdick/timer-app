@@ -4,8 +4,8 @@ import { TimerStyles, colorTheme } from "@/assets/styles/timer-app";
 import { formatMinutesSeconds, getTimePartsMinSec } from "../assets/utils/format-time";
 import { getData, storeData } from "../assets/utils/persistent-storage";
 import { playStart, playYogaTransition } from "../assets/utils/sounds";
-import { YogaSvg } from "@/assets/images/svgx/yoga";
 import YogaFlowSelect from "./yoga-flow-select";
+import YogaAssetRenderer from "./yoga-asset-renderer";
 import { Audio } from "expo-av";
 import { LinearGradient } from "expo-linear-gradient";
 import { TimerPickerModal } from "react-native-timer-picker";
@@ -258,7 +258,7 @@ export default function YogaView() {
     setShowFlowSelect(true);
   };
 
-  // Get current, previous, and next poses for display
+  // Get current, previous, and next poses for display with asset fallback logic
   const getCurrentPose = (): YogaPose | null => {
     if (isManualMode || !selectedFlow) return null;
     const currentItem = selectedFlow.items[currentItemIndex];
@@ -266,6 +266,17 @@ export default function YogaView() {
       return currentItem.poses[currentPoseInSuperset];
     }
     return currentItem;
+  };
+
+  const getCurrentAssetId = (): string | undefined => {
+    if (isManualMode || !selectedFlow) return undefined;
+    const currentItem = selectedFlow.items[currentItemIndex];
+    if (isSuperset(currentItem)) {
+      const pose = currentItem.poses[currentPoseInSuperset];
+      // Use pose's assetId if available, otherwise fall back to superset's assetId
+      return pose.assetId || currentItem.assetId;
+    }
+    return currentItem.assetId;
   };
 
   const getPreviousPose = (): YogaPose | null => {
@@ -290,6 +301,30 @@ export default function YogaView() {
     return null;
   };
 
+  const getPreviousAssetId = (): string | undefined => {
+    if (isManualMode || !selectedFlow) return undefined;
+
+    const currentItem = selectedFlow.items[currentItemIndex];
+
+    // If in superset and not first pose, get asset from previous pose in superset
+    if (isSuperset(currentItem) && currentPoseInSuperset > 0) {
+      const pose = currentItem.poses[currentPoseInSuperset - 1];
+      return pose.assetId || currentItem.assetId;
+    }
+
+    // Otherwise get asset from previous item
+    if (currentItemIndex > 0) {
+      const prevItem = selectedFlow.items[currentItemIndex - 1];
+      if (isSuperset(prevItem)) {
+        const pose = prevItem.poses[prevItem.poses.length - 1];
+        return pose.assetId || prevItem.assetId;
+      }
+      return prevItem.assetId;
+    }
+
+    return undefined;
+  };
+
   const getNextPose = (): YogaPose | null => {
     if (isManualMode || !selectedFlow) return null;
 
@@ -310,6 +345,30 @@ export default function YogaView() {
     }
 
     return null;
+  };
+
+  const getNextAssetId = (): string | undefined => {
+    if (isManualMode || !selectedFlow) return undefined;
+
+    const currentItem = selectedFlow.items[currentItemIndex];
+
+    // If in superset and not last pose, get asset from next pose in superset
+    if (isSuperset(currentItem) && currentPoseInSuperset < currentItem.poses.length - 1) {
+      const pose = currentItem.poses[currentPoseInSuperset + 1];
+      return pose.assetId || currentItem.assetId;
+    }
+
+    // Otherwise get asset from next item
+    if (currentItemIndex < selectedFlow.items.length - 1) {
+      const nextItem = selectedFlow.items[currentItemIndex + 1];
+      if (isSuperset(nextItem)) {
+        const pose = nextItem.poses[0];
+        return pose.assetId || nextItem.assetId;
+      }
+      return nextItem.assetId;
+    }
+
+    return undefined;
   };
 
   const getProgressText = (): string | null => {
@@ -333,6 +392,9 @@ export default function YogaView() {
   const currentPose = getCurrentPose();
   const previousPose = getPreviousPose();
   const nextPose = getNextPose();
+  const currentAssetId = getCurrentAssetId();
+  const previousAssetId = getPreviousAssetId();
+  const nextAssetId = getNextAssetId();
   const progressText = getProgressText();
 
   // Format current time
@@ -384,7 +446,8 @@ export default function YogaView() {
             disabled={!previousPose}
           >
             {previousPose && (
-              <YogaSvg
+              <YogaAssetRenderer
+                assetId={previousAssetId}
                 width={50}
                 height={50}
                 color={colorTheme.fontColor}
@@ -400,13 +463,16 @@ export default function YogaView() {
             onPress={handleCenterIconPress}
           >
             {currentPose ? (
-              <YogaSvg
+              <YogaAssetRenderer
+                assetId={currentAssetId}
                 width={120}
                 height={120}
                 color={colorTheme.borderColor}
+                isPlaying={isRunning}
               />
             ) : (
-              <YogaSvg
+              <YogaAssetRenderer
+                assetId={undefined}
                 width={120}
                 height={120}
                 color={colorTheme.fontColor}
@@ -423,7 +489,8 @@ export default function YogaView() {
             disabled={!nextPose}
           >
             {nextPose && (
-              <YogaSvg
+              <YogaAssetRenderer
+                assetId={nextAssetId}
                 width={50}
                 height={50}
                 color={colorTheme.fontColor}
@@ -444,7 +511,8 @@ export default function YogaView() {
             activeOpacity={0.7}
             onPress={handleCenterIconPress}
           >
-            <YogaSvg
+            <YogaAssetRenderer
+              assetId={undefined}
               width={120}
               height={120}
               color={colorTheme.fontColor}
