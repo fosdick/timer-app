@@ -9,6 +9,7 @@ type storageData = {
   beatCount: any;
   totalTime: any;
   yogaTotalInterval: any;
+  selectedFlowId: string;
   removeAds: boolean;
   appUserId: string;
   message: string;
