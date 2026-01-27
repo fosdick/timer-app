@@ -1,0 +1,41 @@
+[
+  {
+    "id": "my-custom-flow",
+    "name": "My Custom Flow",
+    "description": "Brief description of your flow",
+    "totalDuration": 300,
+    "items": [
+      {
+        "name": "Pose Name",
+        "duration": 30,
+        "description": "Instruction for this pose",
+        "progressText": "Pose 1 of 5",
+        "assetId": "mountain-pose"
+      },
+      {
+        "name": "Another Pose",
+        "duration": 45,
+        "description": "Another instruction",
+        "progressText": "Pose 2 of 5"
+      },
+      {
+        "type": "superset",
+        "totalDuration": 120,
+        "progressText": "Hold each side for 60 seconds",
+        "assetId": "warrior-1",
+        "poses": [
+          {
+            "name": "Warrior I - Right",
+            "duration": 60,
+            "description": "Right foot forward"
+          },
+          {
+            "name": "Warrior I - Left",
+            "duration": 60,
+            "description": "Left foot forward"
+          }
+        ]
+      }
+    ]
+  }
+]

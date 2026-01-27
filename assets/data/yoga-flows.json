@@ -1,0 +1,208 @@
+[
+  {
+    "id": "morning-daily-basic",
+    "name": "Daily Practice",
+    "description": "Foundational full body deep stretch.",
+    "totalDuration": 750,
+    "items": [
+      {
+        "name": "Easy Seat Right Side",
+        "duration": 4,
+        "description": "criss cross seat with feet as far past knees as possible."
+      },
+      {
+        "name": "Easy Seat Left Side",
+        "duration": 4,
+        "description": "Use blocks to rest forehead in gentle forward bend"
+      },
+      {
+        "name": "Fire Log Right",
+        "duration": 4,
+        "description": "From easy seat place ankle on knee."
+      },
+      {
+        "name": "Fire Log Left",
+        "duration": 4
+      },
+      {
+        "name": "Cobblers",
+        "duration": 4,
+        "description": "Feet together like butterfly"
+      },
+      {
+        "name": "Cobblers Look Right",
+        "duration": 4,
+        "description": "Using blocks adjust so left ear rests on looks blocks"
+      },
+      {
+        "name": "Cobblers Look Left",
+        "duration": 4,
+        "description": "place right ear on blocks, look left."
+      },
+      {
+        "name": "Wide Leg Forward Fold Right",
+        "duration": 4,
+        "description": "With Legs apart place right elbow on inside of knee, twist and reach left arm overhead toward toes"
+      },
+      {
+        "name": "Wide Leg Forward Fold Left",
+        "duration": 4,
+        "description": "Other side."
+      },
+      {
+        "name": "Wide leg forward fold center",
+        "duration": 4,
+        "description": "with legs apart bend forward reach hands toward toes"
+      },
+      {
+        "type": "superset",
+        "totalDuration": 60,
+        "poses": [
+          {
+            "name": "Half Splits",
+            "duration": 4,
+            "description": "Right leg forward, left leg bent.  Rock forward and back"
+          },
+          {
+            "name": "Splits, right leg forward",
+            "duration": 4,
+            "description": "Enter splits with right leg forward, option to use block for stability."
+          },
+          {
+            "name": "Half Splits, left leg",
+            "duration": 4,
+            "description": "Right leg forward, left leg bent.  Rock forward and back"
+          },
+          {
+            "name": "Splits",
+            "duration": 4,
+            "description": "Left leg is forward"
+          }
+        ],
+        "progressText": "Splits"
+      },
+      {
+        "type": "superset",
+        "totalDuration": 60,
+        "poses": [
+          {
+            "name": "Three legged dog",
+            "duration": 4,
+            "description": "from down dog lift right leg (option to bind right arm). raise and lift leg 10 times."
+          },
+          {
+            "name": "Pigeon Right Leg",
+            "duration": 4,
+            "description": "From three legged dog enter to active pigeon."
+          },
+          {
+            "name": "active pigeon, left arm",
+            "duration": 4,
+            "description": "reach for the extended leg's foot with left hand"
+          },
+          {
+            "name": "active pigeon, right arm",
+            "duration": 4,
+            "description": "reach for the extended leg's foot with right hand"
+          },
+          {
+            "name": "resting pigeon",
+            "duration": 4,
+            "description": "lay forward on either blocks or elbows for a resting pigeon."
+          },
+          {
+            "name": "3 legged dog, left leg",
+            "duration": 4,
+            "description": "sweep folded leg back and up, peddle out your dog and then lift left leg.  same options, lift 10 times."
+          },
+          {
+            "name": "active pigeon, left leg",
+            "duration": 4,
+            "description": "From 3 legged dog sweep into an active pigeon."
+          },
+          {
+            "name": "Pigeon, right arm",
+            "duration": 4,
+            "description": "Reach for the extended leg's foot with right hand"
+          },
+          {
+            "name": "Pigeon, left arm",
+            "duration": 4,
+            "description": "Reach for the extended leg's foot with left hand"
+          },
+          {
+            "name": "Resting Pigeon",
+            "duration": 4,
+            "description": "Lay forward on either blocks or elbows for a resting pigeon."
+          },
+          {
+            "name": "Return to Dog",
+            "duration": 4,
+            "description": "Sweep folded leg back and up, peddle out your dog."
+          }
+        ],
+        "progressText": "Pigeon Set"
+      },
+      {
+        "name": "Swam",
+        "duration": 4,
+        "description": "gracefully lift crest from floor"
+      },
+      {
+        "name": "Bow (outside)",
+        "duration": 4,
+        "description": "Grab feet on outsides"
+      },
+      {
+        "name": "Bow (inside)",
+        "duration": 4,
+        "description": "Grab feet on the inside of sole."
+      },
+      {
+        "name": "Locust",
+        "duration": 4,
+        "description": "clasp hands behind back and lift chest and legs."
+      },
+      {
+        "name": "Childs",
+        "duration": 4,
+        "description": "Childs or puppy dog"
+      },
+      {
+        "name": "Cat Cow",
+        "duration": 4
+      },
+      {
+        "name": "Thread needle right arm",
+        "duration": 4,
+        "description": "Raise right arm and thread needle"
+      },
+      {
+        "name": "Thread needle left arm",
+        "duration": 4,
+        "description": "unwind right arm and do other side. "
+      },
+      {
+        "name": "Wrists",
+        "duration": 4,
+        "description": "From Table Top lift finger tips."
+      },
+      {
+        "name": "Lion's pose",
+        "duration": 4,
+        "description": "extend tongue and take deep breathes."
+      },
+      {
+        "type": "superset",
+        "totalDuration": 60,
+        "poses": [
+          {
+            "name": "Cow Face right leg top",
+            "duration": 4
+          }
+        ],
+        "progressText": "Cow Face"
+      }
+    ]
+  }
+]

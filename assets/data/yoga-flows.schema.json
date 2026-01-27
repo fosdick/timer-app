@@ -1,0 +1,109 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Yoga Flows",
+  "description": "Schema for yoga flow sequences",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "required": ["id", "name", "description", "items", "totalDuration"],
+    "properties": {
+      "id": {
+        "type": "string",
+        "description": "Unique identifier for the flow (e.g., 'sun-salutation-a')"
+      },
+      "name": {
+        "type": "string",
+        "description": "Display name of the flow"
+      },
+      "description": {
+        "type": "string",
+        "description": "Brief description of the flow"
+      },
+      "totalDuration": {
+        "type": "number",
+        "description": "Total duration in seconds (sum of all items)"
+      },
+      "items": {
+        "type": "array",
+        "description": "Sequence of poses or supersets",
+        "items": {
+          "oneOf": [
+            {
+              "type": "object",
+              "description": "Individual yoga pose",
+              "required": ["name", "duration"],
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Name of the pose"
+                },
+                "duration": {
+                  "type": "number",
+                  "description": "Duration in seconds"
+                },
+                "description": {
+                  "type": "string",
+                  "description": "Optional instruction for the pose"
+                },
+                "progressText": {
+                  "type": "string",
+                  "description": "Optional progress indicator (e.g., 'Pose 1 of 10')"
+                },
+                "assetId": {
+                  "type": "string",
+                  "description": "Optional asset ID referencing SVG/image/video"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "description": "Superset - group of poses with shared duration",
+              "required": ["type", "totalDuration", "poses"],
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "const": "superset",
+                  "description": "Must be 'superset'"
+                },
+                "totalDuration": {
+                  "type": "number",
+                  "description": "Total duration for all poses in this superset"
+                },
+                "poses": {
+                  "type": "array",
+                  "description": "Array of poses within the superset",
+                  "items": {
+                    "type": "object",
+                    "required": ["name", "duration"],
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      },
+                      "duration": {
+                        "type": "number"
+                      },
+                      "description": {
+                        "type": "string"
+                      },
+                      "assetId": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                "progressText": {
+                  "type": "string",
+                  "description": "Optional progress text for the entire superset"
+                },
+                "assetId": {
+                  "type": "string",
+                  "description": "Optional default asset for all poses in superset (can be overridden per pose)"
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+}
