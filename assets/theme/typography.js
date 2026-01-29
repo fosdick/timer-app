@@ -80,12 +80,11 @@ export const yogaTypography = {
   progressText: {
     fontSize: 20,
     fontWeight: fontWeights.bold,
-    color: yogaColors.instructionalText,
+    color: yogaColors.progressText,
     textAlign: "center",
     opacity: 0.8,
     lineHeight: 20,
     marginTop: 10,
-    color: yogaColors.progressText,
   },
   progressTextLabel: {
     fontSize: 14,
