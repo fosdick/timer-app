@@ -1,5 +1,5 @@
 import React from "react";
-import { Image, View } from "react-native";
+import { Image } from "react-native";
 import { Video, ResizeMode } from "expo-av";
 import { getYogaAsset } from "@/assets/data/yoga-assets";
 
@@ -8,7 +8,8 @@ interface YogaAssetRendererProps {
   width: number;
   height: number;
   color?: string;
-  style?: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  style?: any; // Style can be for SVG, Image, or Video components
   isPlaying?: boolean; // for video control
 }
 

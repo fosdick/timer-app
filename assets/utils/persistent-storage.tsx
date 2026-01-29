@@ -1,24 +1,24 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 type storageData = {
-  key: any;
-  numberRounds: any;
-  workoutTime: any;
-  restTime: any;
-  yogaIntervalTime: any;
-  beatInterval: any;
-  beatCount: any;
-  totalTime: any;
-  yogaTotalInterval: any;
-  selectedFlowId: string;
-  removeAds: boolean;
-  appUserId: string;
-  message: string;
+  key?: string;
+  numberRounds?: number;
+  workoutTime?: number;
+  restTime?: number;
+  yogaIntervalTime?: number;
+  beatInterval?: number;
+  beatCount?: number;
+  totalTime?: number;
+  yogaTotalInterval?: number;
+  selectedFlowId?: string;
+  removeAds?: boolean;
+  appUserId?: string;
+  message?: string;
 };
 const storeData = async (key: string, value: Partial<storageData>) => {
   try {
     const jsonValue = JSON.stringify(value);
     await AsyncStorage.setItem(key, jsonValue);
-  } catch (e) {
+  } catch {
     // saving error
   }
 };
@@ -27,7 +27,7 @@ const getData = async (key: string | undefined) => {
     try {
       const jsonValue = await AsyncStorage.getItem(key);
       return jsonValue != null ? JSON.parse(jsonValue) : null;
-    } catch (e) {
+    } catch {
       // error reading value
     }
   }

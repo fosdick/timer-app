@@ -43,7 +43,7 @@ export default function HittView() {
   const resetAllEmit = () => {
     hittTimerEventController.emit(RESET_ALL_EVENT);
   };
-  const [totalIntervalTimeString, setTotalIntervalTimeString] = useState<any>(
+  const [totalIntervalTimeString, setTotalIntervalTimeString] = useState<string>(
     formatMinutesSeconds(
       getTimePartsMinSec(
         DEFAULT_NUMBER_ROUNDS * (DEFAULT_WORKOUT_TIME + DEFAULT_REST_TIME)
@@ -52,11 +52,11 @@ export default function HittView() {
   );
 
   const [workoutIntervalDisplayString, setWorkoutIntervalDisplayString] =
-    useState<any>(
+    useState<string>(
       formatMinutesSeconds(getTimePartsMinSec(DEFAULT_WORKOUT_TIME))
     );
   const [restIntervalDisplayString, setRestIntervalDisplayString] =
-    useState<any>(formatMinutesSeconds(getTimePartsMinSec(DEFAULT_REST_TIME)));
+    useState<string>(formatMinutesSeconds(getTimePartsMinSec(DEFAULT_REST_TIME)));
 
   const [initialWorkoutTotalTime, setInitialWorkoutTotalTime] =
     useState<number>(DEFAULT_WORKOUT_TIME);
@@ -142,7 +142,11 @@ export default function HittView() {
     _initialWorkoutTotalTime,
     _initialRestTotalTime,
     _numberRounds,
-  }: any) => {
+  }: {
+    _initialWorkoutTotalTime?: number;
+    _initialRestTotalTime?: number;
+    _numberRounds?: number;
+  }) => {
     const ms =
       ((_initialWorkoutTotalTime || initialWorkoutTotalTime) +
         (_initialRestTotalTime || initialRestTotalTime)) *
@@ -181,6 +185,7 @@ export default function HittView() {
     setIsStop(true);
   };
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (doResetAll) {
       resetInitalState({
@@ -192,7 +197,7 @@ export default function HittView() {
       setIsStop(true);
       setDoResetAll(false);
     }
-    const intervalId: any = setTimeout(() => {
+    const intervalId = setTimeout(() => {
       if (!isStop && roundsRemaining >= 0 && totalTime >= 0) {
         setTotalTime(totalTime - 1);
         setTotalIntervalTimeString(formatTime(getTimeRemaining()));

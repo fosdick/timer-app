@@ -1,18 +1,10 @@
 import React, { useContext, useEffect, useState } from "react";
-import { DisplayAdsContext, DisplayAdsProvider } from "./display-ads-context";
-import { getData, storeData } from "../assets/utils/persistent-storage";
+import { DisplayAdsContext } from "./display-ads-context";
+import { storeData } from "../assets/utils/persistent-storage";
 import { Constants } from "@/constants/constants";
 
-import {
-  View,
-  Text,
-  FlatList,
-  Button,
-  Linking,
-  StyleSheet,
-  Alert,
-} from "react-native";
-import Purchases from "react-native-purchases";
+import { View, Text, FlatList, StyleSheet, Alert } from "react-native";
+import Purchases, { PurchasesPackage } from "react-native-purchases";
 import PackageItem from "./package-item";
 /*
  An example paywall that uses the current offering.
@@ -21,8 +13,7 @@ const PaywallScreen = () => {
   const { displayAds, setDisplayAds } = useContext(DisplayAdsContext);
 
   // - State for all available package
-  const [packages, setPackages] = useState<any>([]);
-  const [offerings2, setOfferings] = useState<any>();
+  const [packages, setPackages] = useState<PurchasesPackage[]>([]);
   // - State for displaying an overlay view
   const [isPurchasing, setIsPurchasing] = useState(false);
   useEffect(() => {
@@ -37,9 +28,10 @@ const PaywallScreen = () => {
         ) {
           setPackages(offerings.current.availablePackages);
         }
-      } catch (e: any) {
-        Alert.alert(e.message);
-        console.error("Error getting offers", e.message);
+      } catch (e: unknown) {
+        const errorMessage = e instanceof Error ? e.message : 'An error occurred';
+        Alert.alert(errorMessage);
+        console.error("Error getting offers", errorMessage);
       }
     };
 
@@ -58,12 +50,13 @@ const PaywallScreen = () => {
           // save in cache
           await storeData(Constants.REMOVE_ADS_DATA_KEY, { removeAds: true });
         }
-      } catch (e: any) {
-        console.error("Error fetching customer info", e.message);
+      } catch (e: unknown) {
+        const errorMessage = e instanceof Error ? e.message : 'Unknown error';
+        console.error("Error fetching customer info", errorMessage);
       }
     };
     checkPurchases();
-  }, []);
+  }, [setDisplayAds]);
 
   return (
     <View>

@@ -1,6 +1,5 @@
 import React, { useContext } from "react";
-import { View, Text, Button, Linking } from "react-native";
-import { colorTheme } from "@/assets/styles/timer-app";
+import { View, Text, Button, Linking, StyleSheet } from "react-native";
 import { Constants } from "@/constants/constants";
 import { DisplayAdsContext } from "./display-ads-context";
 const Support = () => {
@@ -62,10 +61,7 @@ App User Id: ${customerInfoData?.originalAppUserId}
   );
 };
 
-import { StyleSheet } from "react-native";
-
 const tintColorLight = "#0a7ea4";
-const tintColorDark = "#fff";
 
 const styles = StyleSheet.create({
   container: {

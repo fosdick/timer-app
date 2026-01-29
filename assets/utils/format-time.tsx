@@ -1,5 +1,3 @@
-import { TimerPickerProps } from "react-native-timer-picker";
-
 export const formatTime = ({ hours, minutes, seconds }: TimeParts): string => {
   const timeParts = [];
   if (hours !== undefined) {

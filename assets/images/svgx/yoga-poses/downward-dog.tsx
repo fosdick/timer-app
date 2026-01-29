@@ -1,7 +1,7 @@
 import * as React from "react";
-import Svg, { Path, Circle } from "react-native-svg";
+import Svg, { Path, Circle, SvgProps } from "react-native-svg";
 
-const DownwardDogSvg = (props: any) => {
+const DownwardDogSvg = (props: SvgProps) => {
   return (
     <Svg
       viewBox="0 0 32 32"

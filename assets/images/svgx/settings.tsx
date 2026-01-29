@@ -1,9 +1,9 @@
 import * as React from "react";
-import Svg, { Path } from "react-native-svg";
-import { View, StyleSheet } from "react-native";
+import Svg, { Path, SvgProps } from "react-native-svg";
+import { View } from "react-native";
 import { Link } from "expo-router";
 
-const SettingsSvg = (props: any) => {
+const SettingsSvg = (props: SvgProps) => {
   return (
     <View>
       <Link href="/settings">

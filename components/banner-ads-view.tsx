@@ -1,14 +1,7 @@
 // NavBar.js
-import React, { useContext, useEffect } from "react";
-import { DisplayAdsContext, DisplayAdsProvider } from "./display-ads-context";
-import {
-  Text,
-  View,
-  Pressable,
-  StyleSheet,
-  Alert,
-  SafeAreaView,
-} from "react-native";
+import React, { useContext } from "react";
+import { DisplayAdsContext } from "./display-ads-context";
+import { StyleSheet, SafeAreaView } from "react-native";
 import { Constants } from "@/constants/constants";
 import {
   BannerAdSize,

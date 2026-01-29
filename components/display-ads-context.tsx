@@ -1,12 +1,12 @@
 import React, { createContext, useState } from "react";
 import { Constants } from "@/constants/constants";
-import Purchases from "react-native-purchases";
-import { getData, storeData } from "../assets/utils/persistent-storage";
+import Purchases, { CustomerInfo } from "react-native-purchases";
+import { getData } from "../assets/utils/persistent-storage";
 
 type DisplayAdsContextType = {
   displayAds: boolean;
-  setDisplayAds?: any;
-  customerInfoData?: any;
+  setDisplayAds?: (value: boolean) => void;
+  customerInfoData?: CustomerInfo;
 };
 const DisplayAdsContext = createContext<DisplayAdsContextType>({
   displayAds: true,
@@ -16,7 +16,7 @@ const DisplayAdsProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [displayAds, setDisplayAds] = useState(true);
-  const [customerInfoData, setCustomerInfoData] = useState<any>();
+  const [customerInfoData, setCustomerInfoData] = useState<CustomerInfo>();
 
   const value: DisplayAdsContextType = {
     displayAds,
@@ -37,8 +37,9 @@ const DisplayAdsProvider: React.FC<{ children: React.ReactNode }> = ({
         // do not show adds
         setDisplayAds(false);
       }
-    } catch (e: any) {
-      console.error("Error fetching customer info", e.message);
+    } catch (e: unknown) {
+      const errorMessage = e instanceof Error ? e.message : 'Unknown error';
+      console.error("Error fetching customer info", errorMessage);
     } finally {
       // check local storage
       // maybe off line

@@ -1,3 +1,6 @@
+// Import flow data from JSON
+import flowsData from "./yoga-flows.json";
+
 export interface YogaPose {
   name: string;
   duration: number; // seconds
@@ -28,9 +31,6 @@ export interface YogaFlow {
 export const isSuperset = (item: YogaFlowItem): item is YogaSuperset => {
   return (item as YogaSuperset).type === "superset";
 };
-
-// Import flow data from JSON
-import flowsData from "./yoga-flows.json";
 
 // Type-cast imported JSON to ensure type safety
 export const YOGA_FLOWS: YogaFlow[] = flowsData as YogaFlow[];

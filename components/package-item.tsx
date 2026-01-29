@@ -1,15 +1,22 @@
 import React, { useContext, useState } from "react";
 import { View, Text, Pressable, Alert } from "react-native";
-import Purchases from "react-native-purchases";
+import Purchases, { PurchasesPackage } from "react-native-purchases";
 import { Constants } from "@/constants/constants";
-import { getData, storeData } from "../assets/utils/persistent-storage";
-import { DisplayAdsContext, DisplayAdsProvider } from "./display-ads-context";
+import { storeData } from "../assets/utils/persistent-storage";
+import { DisplayAdsContext } from "./display-ads-context";
 
-const PackageItem = ({ purchasePackage, setIsPurchasing }: any) => {
+import { StyleSheet } from "react-native";
+
+interface PackageItemProps {
+  purchasePackage: PurchasesPackage;
+  setIsPurchasing: (value: boolean) => void;
+}
+
+const PackageItem = ({ purchasePackage, setIsPurchasing }: PackageItemProps) => {
   const {
     product: { title, description, priceString },
   } = purchasePackage;
-  const { displayAds, setDisplayAds } = useContext(DisplayAdsContext);
+  const { setDisplayAds } = useContext(DisplayAdsContext);
   const [msg, setMsg] = useState("debug: ");
   const onSelection = async () => {
     setIsPurchasing(true);
@@ -30,8 +37,9 @@ const PackageItem = ({ purchasePackage, setIsPurchasing }: any) => {
           message: JSON.stringify(customerInfo),
         });
       }
-    } catch (e: any) {
-      Alert.alert(e.message);
+    } catch (e: unknown) {
+      const errorMessage = e instanceof Error ? e.message : 'An error occurred';
+      Alert.alert(errorMessage);
     } finally {
       setIsPurchasing(false);
     }
@@ -54,8 +62,6 @@ const PackageItem = ({ purchasePackage, setIsPurchasing }: any) => {
     </View>
   );
 };
-
-import { StyleSheet } from "react-native";
 
 const styles = StyleSheet.create({
   container: {

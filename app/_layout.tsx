@@ -1,14 +1,8 @@
-import {
-  DarkTheme,
-  DefaultTheme,
-  ThemeProvider,
-} from "@react-navigation/native";
 import { useFonts } from "expo-font";
-import { Stack, Navigator } from "expo-router";
+import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
-import { Component, useEffect } from "react";
+import { useEffect } from "react";
 import "react-native-reanimated";
-import { useColorScheme } from "@/hooks/useColorScheme";
 import Purchases from "react-native-purchases";
 import { Platform, Alert } from "react-native";
 
@@ -16,15 +10,11 @@ import { Platform, Alert } from "react-native";
 import { Constants } from "@/constants/constants";
 import { SettingsSvg } from "@/assets/images/svgx/settings";
 import { colorTheme } from "@/assets/styles/timer-app";
-import {
-  DisplayAdsContext,
-  DisplayAdsProvider,
-} from "../components/display-ads-context";
+import { DisplayAdsProvider } from "../components/display-ads-context";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
   const [loaded] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
   });
@@ -32,8 +22,10 @@ export default function RootLayout() {
     if (Platform.OS === "ios") {
       try {
         Purchases.configure({ apiKey: Constants.PURCHASES_API_KEY });
-      } catch (e: any) {
-        Alert.alert(e.message);
+      } catch (e: unknown) {
+        const errorMessage =
+          e instanceof Error ? e.message : "An error occurred";
+        Alert.alert(errorMessage);
         console.error("Could not cofigure purchases", e);
       }
     }

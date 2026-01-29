@@ -5,26 +5,22 @@ import { useEffect, useState} from 'react';
 import { useKeepAwake } from 'expo-keep-awake';
 
 import { Audio } from 'expo-av';
+import { TouchableOpacity } from 'react-native';
 
 Audio.setAudioModeAsync({
     playsInSilentModeIOS: true,
 });
-import { TouchableOpacity } from 'react-native';
-const SEC: number = 1000;
-
 
 export default function Beats()  {
-  
-    const playBeat = () => {
 
-        // const [sound, setSound] = useState();
-    
+    const playBeat = () => {
         async function playSound() {
             console.log('Loading Sound');
-            const { sound } = await Audio.Sound.createAsync( require('../assets/sounds/sticks-low-1.wav')
+            // eslint-disable-next-line @typescript-eslint/no-var-requires
+            await Audio.Sound.createAsync( require('../assets/sounds/sticks-low-1.wav')
             );
             // setSound(sound);
-        
+
             // console.log('Playing Sound', sound);
             // await sound.playAsync();
           }
@@ -32,11 +28,9 @@ export default function Beats()  {
         console.log('mock sound')
     }
     const [currentTime, setCurrentTime] = useState(new Date());
-    const [count, setCount] = useState(4);
-    
 
   useEffect(() => {
-    const intervalid: any = setTimeout(() => {
+    const intervalid = setTimeout(() => {
       setCurrentTime(new Date());
       playBeat();
     }, 4000);

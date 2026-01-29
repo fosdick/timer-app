@@ -109,6 +109,7 @@ export default function YogaView() {
     }, 1000);
 
     return () => clearTimeout(intervalId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     isRunning,
     timeRemaining,

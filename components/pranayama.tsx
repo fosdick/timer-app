@@ -1,18 +1,12 @@
 import { LinearGradient } from "expo-linear-gradient"; // or `import LinearGradient from "react-native-linear-gradient"`
 
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useEffect, useState } from "react";
-import { StyleSheet, Switch, Text, TouchableOpacity, View } from "react-native";
+import { Switch, Text, TouchableOpacity, View } from "react-native";
 import Slider from "@react-native-community/slider";
 import { TimerPickerModal } from "react-native-timer-picker";
 import { TimerStyles, colorTheme } from "@/assets/styles/timer-app";
 import { formatTime, getTimeParts } from "../assets/utils/format-time";
-import {
-  playBeat,
-  playEndChime,
-  playSnap,
-  playStart,
-} from "../assets/utils/sounds";
+import { playEndChime, playSnap, playStart } from "../assets/utils/sounds";
 import { Audio } from "expo-av";
 import { getData, storeData } from "../assets/utils/persistent-storage";
 
@@ -23,7 +17,7 @@ const DEFAULT_BEAT_COUNT = 0;
 const DEFAULT_METRONOME_ON = true;
 const DEFAULT_TIMER_LENGTH = 300;
 
-export default function Pranayama(props: any) {
+export default function Pranayama() {
   const [isMetronomeEnabled, setIsMetronomeEnabled] =
     useState(DEFAULT_METRONOME_ON);
   const toggleMetronomeEnabled = () => {
@@ -72,7 +66,7 @@ export default function Pranayama(props: any) {
     }
   });
   useEffect(() => {
-    const intervalId: any = setTimeout(() => {
+    const intervalId = setTimeout(() => {
       if (!isStop && totalTime >= 0) {
         setTotalTime(totalTime - 1);
         setBeatCount(beatCount + 1);

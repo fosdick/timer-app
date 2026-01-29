@@ -1,9 +1,6 @@
 import { Tabs } from "expo-router";
-import React, { useEffect, useState } from "react";
-import { StyleSheet, View, Alert, Text } from "react-native";
-import { TabBarIcon } from "@/components/navigation/TabBarIcon";
-import { Colors } from "@/constants/Colors";
-import { useColorScheme } from "@/hooks/useColorScheme";
+import React from "react";
+import { StyleSheet, View } from "react-native";
 // import { useKeepAwake } from "expo-keep-awake";
 import { YogaSvg } from "@/assets/images/svgx/yoga";
 import { PranayamaSvg } from "@/assets/images/svgx/pranayama";
@@ -11,7 +8,6 @@ import { HittSvg } from "@/assets/images/svgx/hitt";
 import { colorTheme } from "@/assets/styles/timer-app";
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
   // useKeepAwake();
 
   return (
@@ -40,7 +36,7 @@ export default function TabLayout() {
           name="index"
           options={{
             title: "Pranayama",
-            tabBarIcon: ({ color, focused }) => <PranayamaSvg color={color} />,
+            tabBarIcon: ({ color }) => <PranayamaSvg color={color} />,
           }}
         />
         <Tabs.Screen

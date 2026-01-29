@@ -10,10 +10,18 @@ import {
   getTimePartsMinSec,
 } from "../assets/utils/format-time";
 
-export default function HittIntervalPicker(props: any) {
+interface HittIntervalPickerProps {
+  textTitle: string;
+  pickerDisplayTimeString: string;
+  initialTotalTime: { initialTotalTime: number };
+  setIntervalDisplayString: { setIntervalDisplayString: (value: string) => void };
+  setInitialTotalTime: { setInitialTotalTime: (value: number) => void };
+  setCurrentTotalTime: { setCurrentTotalTime: (value: number) => void };
+  resetAllEmit: { resetAllEmit: () => void };
+}
+
+export default function HittIntervalPicker(props: HittIntervalPickerProps) {
   const [showPicker, setShowPicker] = useState(false);
-  const [pickerDisplayTimeString, setPickerDisplayTimeString] =
-    useState<string>(props.pickerDisplayTimeString || "00:00");
 
   return (
     <View style={TimerStyles.vertBox}>
@@ -22,7 +30,7 @@ export default function HittIntervalPicker(props: any) {
       </Text>
       <TouchableOpacity activeOpacity={0.7} onPress={() => setShowPicker(true)}>
         <View style={{ alignItems: "center" }}>
-          {pickerDisplayTimeString !== null ? (
+          {props.pickerDisplayTimeString !== null ? (
             <Text style={TimerStyles.timerFace}>
               {props.pickerDisplayTimeString}
             </Text>

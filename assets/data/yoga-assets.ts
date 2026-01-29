@@ -8,6 +8,7 @@ export type YogaAssetType = "svg" | "image" | "video";
 export interface YogaAsset {
   id: string;
   type: YogaAssetType;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   asset: any; // React component for SVG, require() for image/video
 }
 

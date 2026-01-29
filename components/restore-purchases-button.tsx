@@ -14,15 +14,15 @@ const RestorePurchasesButton = () => {
   const restorePurchases = async () => {
     try {
       setErrorMsg("restoring");
-      const r = await Purchases.restorePurchases();
+      await Purchases.restorePurchases();
       setErrorMsg("");
-    } catch (e: any) {
+    } catch (e: unknown) {
       eventController.emit(Constants.REMOVE_ADS_EVENT);
-      setErrorMsg(e.message);
-      console.error("Error restoring purchases", e.message);
+      const errorMessage = e instanceof Error ? e.message : "An error occurred";
+      setErrorMsg(errorMessage);
+      console.error("Error restoring purchases", errorMessage);
     }
   };
-  const tintColorLight = "#0a7ea4";
   const styles = StyleSheet.create({
     button: {
       marginTop: "auto",

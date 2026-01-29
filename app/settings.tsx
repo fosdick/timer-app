@@ -1,22 +1,9 @@
-import Ionicons from "@expo/vector-icons/Ionicons";
-import {
-  StyleSheet,
-  Image,
-  Platform,
-  View,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  TextInput,
-  Button,
-  Alert,
-} from "react-native";
+import { StyleSheet, View } from "react-native";
 import { useContext } from "react";
 import PaywallScreen from "@/components/paywall-screen";
 import RestorePurchasesButton from "@/components/restore-purchases-button";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { DisplayAdsContext } from "../components/display-ads-context";
-import { activateKeepAwake, deactivateKeepAwake } from "expo-keep-awake";
+import { deactivateKeepAwake } from "expo-keep-awake";
 
 import Support from "@/components/support";
 export default function TabTwoScreen() {

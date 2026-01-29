@@ -1,4 +1,16 @@
-export const Constants: any = {
+interface ConstantsType {
+  PURCHASES_API_KEY: string;
+  ENTITLEMENT_ID: string;
+  ENTITLEMENT_IDENTIFIER: string;
+  USER_SETTINGS_DATA: string;
+  ADMOD_ADUNIT_ID: string;
+  SUPPORT_EMAIL: string;
+  REMOVE_ADS_DATA_KEY: string;
+  CONTACT_EMAIL: string;
+  REMOVE_ADS_EVENT?: string;
+}
+
+export const Constants: ConstantsType = {
   PURCHASES_API_KEY: "appl_UyuTSCzlxJTScOsnzdZYXCsGfQn",
   ENTITLEMENT_ID: "entl72b320c7d4", //remove ads entitlement
   ENTITLEMENT_IDENTIFIER: "timer-app-yoga-no-ads",

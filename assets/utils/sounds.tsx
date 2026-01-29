@@ -5,6 +5,8 @@ Audio.setAudioModeAsync({
   interruptionModeIOS: 2,
 });
 
+/* eslint-disable @typescript-eslint/no-var-requires */
+
 export const playBeat = () => {
   async function playSound() {
     const { sound } = await Audio.Sound.createAsync(
@@ -59,7 +61,7 @@ export const playStart = () => {
   }
   playSound();
 };
-export const playYogaTransition = (): any => {
+export const playYogaTransition = (): void => {
   async function playSound() {
     const { sound } = await Audio.Sound.createAsync(
       require("../sounds/733936__creator_gt__swoosh-04.wav")
@@ -68,3 +70,5 @@ export const playYogaTransition = (): any => {
   }
   playSound();
 };
+
+/* eslint-enable @typescript-eslint/no-var-requires */

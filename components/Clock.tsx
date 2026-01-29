@@ -1,15 +1,15 @@
-import {StyleSheet, Text, View} from 'react-native';
+import { Text, View } from 'react-native';
 
 import { useEffect, useState} from 'react';
 import { TimerStyles } from '@/assets/styles/timer-app'
 // import { useKeepAwake } from 'expo-keep-awake';
 
 export default function Clock()  {
-  
+
     const [currentTime, setCurrentTime] = useState(new Date());
 
   useEffect(() => {
-    const intervalid: any = setTimeout(() => {
+    const intervalid = setTimeout(() => {
       setCurrentTime(new Date());
     }, 1000);
       return () => clearInterval(intervalid);
@@ -25,13 +25,3 @@ export default function Clock()  {
     </View>
   )
 }
-
-const styles = StyleSheet.create({
-    clockFace: {
-      fontSize: 42,
-      lineHeight: 60,
-      fontWeight: '600'
-    }
-});
-
-

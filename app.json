@@ -14,7 +14,8 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.example.timer-app"
+      "bundleIdentifier": "com.example.timer-app",
+      "backgroundColor": "#080B0c"
     },
     "android": {
       "adaptiveIcon": {
