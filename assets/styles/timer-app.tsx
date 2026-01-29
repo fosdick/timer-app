@@ -76,7 +76,7 @@ export const TimerStyles = StyleSheet.create({
     justifyContent: "center",
   },
   marginTop: {
-    marginTop: 30,
+    marginTop: 10,
   },
   marginTopXL: {
     marginTop: 70,

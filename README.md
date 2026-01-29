@@ -11,10 +11,10 @@
 2. Start the app
 
    ```bash
-    npx expo prebuild && npx expo run:ios
+    i
    ```
 
-## goodle adds
+## google adds
 
 ```bash
 # Install the admob module and config plugin

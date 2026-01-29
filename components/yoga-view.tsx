@@ -1,7 +1,10 @@
 import { useEffect, useState } from "react";
 import { Text, TouchableOpacity, View, Modal, StyleSheet } from "react-native";
 import { TimerStyles, colorTheme } from "@/assets/styles/timer-app";
-import { formatMinutesSeconds, getTimePartsMinSec } from "../assets/utils/format-time";
+import {
+  formatMinutesSeconds,
+  getTimePartsMinSec,
+} from "../assets/utils/format-time";
 import { getData, storeData } from "../assets/utils/persistent-storage";
 import { playStart, playYogaTransition } from "../assets/utils/sounds";
 import YogaFlowSelect from "./yoga-flow-select";
@@ -15,6 +18,7 @@ import {
   isSuperset,
   getFlowById,
 } from "@/assets/data/yoga-flows";
+import { yogaColors, yogaTypography } from "@/assets/theme";
 
 const YOGA_TIMER_APP_DATA = "yoga_timer_app_data";
 const DEFAULT_INITIAL_TOTAL_TIME = 30;
@@ -28,8 +32,12 @@ export default function YogaView() {
 
   // Timer state
   const [isRunning, setIsRunning] = useState<boolean>(false);
-  const [timeRemaining, setTimeRemaining] = useState<number>(DEFAULT_INITIAL_TOTAL_TIME);
-  const [initialTotalTime, setInitialTotalTime] = useState<number>(DEFAULT_INITIAL_TOTAL_TIME);
+  const [timeRemaining, setTimeRemaining] = useState<number>(
+    DEFAULT_INITIAL_TOTAL_TIME,
+  );
+  const [initialTotalTime, setInitialTotalTime] = useState<number>(
+    DEFAULT_INITIAL_TOTAL_TIME,
+  );
 
   // UI state
   const [showFlowSelect, setShowFlowSelect] = useState<boolean>(false);
@@ -45,7 +53,8 @@ export default function YogaView() {
         if (savedData.selectedFlowId === "manual") {
           setIsManualMode(true);
           setSelectedFlow(null);
-          const savedTime = savedData.yogaTotalInterval || DEFAULT_INITIAL_TOTAL_TIME;
+          const savedTime =
+            savedData.yogaTotalInterval || DEFAULT_INITIAL_TOTAL_TIME;
           setInitialTotalTime(savedTime);
           setTimeRemaining(savedTime);
         } else {
@@ -100,7 +109,14 @@ export default function YogaView() {
     }, 1000);
 
     return () => clearTimeout(intervalId);
-  }, [isRunning, timeRemaining, selectedFlow, currentItemIndex, currentPoseInSuperset, isManualMode]);
+  }, [
+    isRunning,
+    timeRemaining,
+    selectedFlow,
+    currentItemIndex,
+    currentPoseInSuperset,
+    isManualMode,
+  ]);
 
   const advanceToNextPose = () => {
     if (!selectedFlow) return;
@@ -331,7 +347,10 @@ export default function YogaView() {
     const currentItem = selectedFlow.items[currentItemIndex];
 
     // If in superset and not last pose, show next in superset
-    if (isSuperset(currentItem) && currentPoseInSuperset < currentItem.poses.length - 1) {
+    if (
+      isSuperset(currentItem) &&
+      currentPoseInSuperset < currentItem.poses.length - 1
+    ) {
       return currentItem.poses[currentPoseInSuperset + 1];
     }
 
@@ -353,7 +372,10 @@ export default function YogaView() {
     const currentItem = selectedFlow.items[currentItemIndex];
 
     // If in superset and not last pose, get asset from next pose in superset
-    if (isSuperset(currentItem) && currentPoseInSuperset < currentItem.poses.length - 1) {
+    if (
+      isSuperset(currentItem) &&
+      currentPoseInSuperset < currentItem.poses.length - 1
+    ) {
       const pose = currentItem.poses[currentPoseInSuperset + 1];
       return pose.assetId || currentItem.assetId;
     }
@@ -408,14 +430,14 @@ export default function YogaView() {
       {/* Timer display - moved to top */}
       <View style={TimerStyles.vertBox}>
         <View style={TimerStyles.marginTop}>
-          <Text style={TimerStyles.valueText}>Remaining</Text>
+          <Text style={styles.timerLabel}>Remaining</Text>
         </View>
         <TouchableOpacity
           activeOpacity={isManualMode ? 0.7 : 1}
           onPress={handleTimerPress}
           disabled={!isManualMode}
         >
-          <Text style={TimerStyles.timerFace}>
+          <Text style={styles.timerCountdown}>
             {formatMinutesSeconds(getTimePartsMinSec(timeRemaining))}
           </Text>
         </TouchableOpacity>
@@ -424,16 +446,13 @@ export default function YogaView() {
       {/* Flow name */}
       <View style={styles.flowNameContainer}>
         <Text style={styles.flowName}>
-          {isManualMode ? "Manual Timer" : selectedFlow ? selectedFlow.name : "Select Flow"}
+          {isManualMode
+            ? "Manual Timer"
+            : selectedFlow
+              ? selectedFlow.name
+              : "Select Flow"}
         </Text>
       </View>
-
-      {/* Progress text */}
-      {progressText && (
-        <View style={styles.progressTextContainer}>
-          <Text style={styles.progressText}>{progressText}</Text>
-        </View>
-      )}
 
       {/* Horizontal pose layout - only show if not in manual mode */}
       {!isManualMode && (
@@ -450,7 +469,7 @@ export default function YogaView() {
                 assetId={previousAssetId}
                 width={50}
                 height={50}
-                color={colorTheme.fontColor}
+                color={yogaColors.poseNavIcon}
                 style={styles.sideIcon}
               />
             )}
@@ -467,7 +486,7 @@ export default function YogaView() {
                 assetId={currentAssetId}
                 width={120}
                 height={120}
-                color={colorTheme.borderColor}
+                color={yogaColors.poseCurrentIcon}
                 isPlaying={isRunning}
               />
             ) : (
@@ -475,7 +494,7 @@ export default function YogaView() {
                 assetId={undefined}
                 width={120}
                 height={120}
-                color={colorTheme.fontColor}
+                color={yogaColors.poseNavIcon}
                 style={{ opacity: 0.3 }}
               />
             )}
@@ -493,7 +512,7 @@ export default function YogaView() {
                 assetId={nextAssetId}
                 width={50}
                 height={50}
-                color={colorTheme.fontColor}
+                color={yogaColors.poseNavIcon}
                 style={styles.sideIcon}
               />
             )}
@@ -515,7 +534,7 @@ export default function YogaView() {
               assetId={undefined}
               width={120}
               height={120}
-              color={colorTheme.fontColor}
+              color={yogaColors.poseNavIcon}
               style={{ opacity: 0.3 }}
             />
           </TouchableOpacity>
@@ -524,26 +543,49 @@ export default function YogaView() {
         </View>
       )}
 
-      {/* Pose name and description */}
-      {currentPose && (
-        <View style={styles.poseInfoContainer}>
-          <Text style={styles.poseName}>{currentPose.name}</Text>
-          {currentPose.description && (
-            <Text style={styles.poseDescription}>{currentPose.description}</Text>
+      {/* Pose name and description - fixed height container */}
+      <View style={styles.poseInfoContainer}>
+        {/* Progress text - always reserve space */}
+        <View style={styles.progressTextContainer}>
+          {progressText ? (
+            <Text style={styles.progressText}>
+              {progressText}{" "}
+              <Text style={styles.progressTextLabel}>(Super Set)</Text>
+            </Text>
+          ) : (
+            <View style={styles.progressTextPlaceholder} />
           )}
         </View>
-      )}
+
+        {currentPose ? (
+          <>
+            <Text style={styles.poseName}>{currentPose.name}</Text>
+            {currentPose.description && (
+              <Text style={styles.poseDescription}>
+                {currentPose.description}
+              </Text>
+            )}
+          </>
+        ) : (
+          <View style={styles.poseInfoPlaceholder} />
+        )}
+      </View>
 
       {/* Current time */}
       <View style={TimerStyles.vertBox}>
-        <Text style={TimerStyles.valueText}>Current Time</Text>
-        <Text style={TimerStyles.timerFaceSmall}>
-          {h}:{m}:{s} <Text style={TimerStyles.small}>{pam}</Text>
+        <Text style={styles.currentTimeLabel}>Current Time</Text>
+        <Text style={styles.currentTime}>
+          {h}:{m}:{s} <Text style={styles.currentTimePeriod}>{pam}</Text>
         </Text>
       </View>
 
       {/* Start/Stop button */}
-      <View style={[TimerStyles.vertBox, { alignSelf: "baseline", marginBottom: 32 }]}>
+      <View
+        style={[
+          TimerStyles.vertBox,
+          { alignSelf: "baseline", marginBottom: 80 },
+        ]}
+      >
         <TouchableOpacity activeOpacity={0.7} onPress={handleStartStop}>
           <View style={TimerStyles.marginTop}>
             <Text style={TimerStyles.startButton}>
@@ -641,27 +683,58 @@ export default function YogaView() {
 }
 
 const styles = StyleSheet.create({
+  // Layout
+  flowContentArea: {
+    flex: 1,
+  },
+  bottomSection: {
+    marginTop: "auto",
+  },
+
+  // Timer Styles
+  timerLabel: {
+    ...yogaTypography.timerLabel,
+  },
+  timerCountdown: {
+    ...yogaTypography.timerCountdown,
+  },
+  currentTimeLabel: {
+    ...yogaTypography.currentTimeLabel,
+  },
+  currentTime: {
+    ...yogaTypography.currentTime,
+  },
+  currentTimePeriod: {
+    ...yogaTypography.currentTimePeriod,
+  },
+
+  // Flow Name
   flowNameContainer: {
-    marginTop: 20,
+    marginTop: 35,
     paddingHorizontal: 20,
   },
   flowName: {
-    fontSize: 24,
-    fontWeight: "600",
-    color: colorTheme.fontColor,
-    textAlign: "center",
+    ...yogaTypography.flowName,
   },
+
+  // Progress Text
   progressTextContainer: {
-    marginTop: 10,
+    marginBottom: 10,
     paddingHorizontal: 30,
+    minHeight: 30,
+    justifyContent: "center",
   },
   progressText: {
-    fontSize: 14,
-    color: colorTheme.fontColor,
-    opacity: 0.7,
-    textAlign: "center",
-    lineHeight: 20,
+    ...yogaTypography.progressText,
   },
+  progressTextLabel: {
+    ...yogaTypography.progressTextLabel,
+  },
+  progressTextPlaceholder: {
+    height: 1,
+  },
+
+  // Pose Container
   poseContainer: {
     flexDirection: "row",
     alignItems: "center",
@@ -675,30 +748,31 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   sideIcon: {
-    opacity: 0.5,
+    opacity: yogaColors.poseNavIconOpacity,
   },
   centerIconContainer: {
     marginHorizontal: 20,
     alignItems: "center",
     justifyContent: "center",
   },
+
+  // Pose Info
   poseInfoContainer: {
-    marginTop: 20,
+    marginTop: 0,
     paddingHorizontal: 30,
+    maxHeight: 180,
+    minHeight: 180,
+    overflow: "hidden",
+  },
+  poseInfoPlaceholder: {
+    height: 1,
   },
   poseName: {
-    fontSize: 20,
-    fontWeight: "500",
-    color: colorTheme.fontColor,
-    textAlign: "center",
+    ...yogaTypography.poseName,
     marginBottom: 8,
   },
   poseDescription: {
-    fontSize: 16,
-    color: colorTheme.fontColor,
-    opacity: 0.6,
-    textAlign: "center",
-    lineHeight: 22,
+    ...yogaTypography.instructionalCues,
   },
   modalContainer: {
     flex: 1,
