@@ -322,4 +322,16 @@ export const screenStyles = StyleSheet.create({
   viewBody: {
     flex: 1,
   },
+  // Shared layout styles for consistent button positioning
+  contentContainer: {
+    flex: 1,
+    alignItems: "center",
+    width: "100%",
+  },
+  buttonContainer: {
+    marginTop: "auto",
+    marginBottom: 80, // Fixed spacing above banner
+    alignItems: "center",
+    width: "100%",
+  },
 });

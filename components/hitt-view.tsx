@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import Slider from "@react-native-community/slider";
 
-import { TimerStyles, HiitStyles, colorTheme } from "@/assets/styles/timer-app";
+import { TimerStyles, HiitStyles, colorTheme, screenStyles } from "@/assets/styles/timer-app";
 import { playLevelComplete, playHittStart } from "@/assets/utils/sounds";
 import HittIntervalPicker from "@/components/hitt-time-picker";
 
@@ -253,7 +253,7 @@ export default function HittView() {
   const isRestActive = currentWorkoutTotalTime === 0 && currentRestTotalTime > 0;
 
   return (
-    <View style={TimerStyles.vertBox}>
+    <View style={screenStyles.contentContainer}>
       <HittIntervalPicker
         textTitle="Workout"
         pickerDisplayTimeString={workoutIntervalDisplayString}
@@ -326,7 +326,7 @@ export default function HittView() {
           {totalIntervalTimeString}
         </Text>
       </View>
-      <View style={[TimerStyles.vertBox, { paddingBottom: 40 }]}>
+      <View style={screenStyles.buttonContainer}>
         <TouchableOpacity
           activeOpacity={0.7}
           onPress={() => {

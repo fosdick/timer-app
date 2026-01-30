@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Text, TouchableOpacity, View, Modal, StyleSheet } from "react-native";
-import { TimerStyles, colorTheme } from "@/assets/styles/timer-app";
+import { TimerStyles, colorTheme, screenStyles } from "@/assets/styles/timer-app";
 import {
   formatMinutesSeconds,
   getTimePartsMinSec,
@@ -427,7 +427,7 @@ export default function YogaView() {
   const [h, m, s, pam] = formatedTime.split(/:|\s/);
 
   return (
-    <View style={TimerStyles.vertBox}>
+    <View style={screenStyles.contentContainer}>
       {/* Timer display - moved to top */}
       <View style={TimerStyles.vertBox}>
         <View style={TimerStyles.marginTop}>
@@ -581,14 +581,9 @@ export default function YogaView() {
       </View>
 
       {/* Start/Stop button */}
-      <View
-        style={[
-          TimerStyles.vertBox,
-          { alignSelf: "baseline", marginBottom: 80 },
-        ]}
-      >
+      <View style={screenStyles.buttonContainer}>
         <TouchableOpacity activeOpacity={0.7} onPress={handleStartStop}>
-          <View style={TimerStyles.marginTop}>
+          <View>
             <Text style={TimerStyles.startButton}>
               {isRunning ? "Stop" : "Start"}
             </Text>

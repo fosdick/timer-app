@@ -10,7 +10,16 @@ Audio.setAudioModeAsync({
 export const playBeat = () => {
   async function playSound() {
     const { sound } = await Audio.Sound.createAsync(
-      require("../sounds/sticks-low-1.wav")
+      require("../sounds/sticks-low-1.wav"),
+    );
+    await sound.playAsync();
+  }
+  playSound();
+};
+export const playHalfway = () => {
+  async function playSound() {
+    const { sound } = await Audio.Sound.createAsync(
+      require("../sounds/sticks-low-1.wav"),
     );
     await sound.playAsync();
   }
@@ -19,7 +28,7 @@ export const playBeat = () => {
 export const playEndChime = () => {
   async function playSound() {
     const { sound } = await Audio.Sound.createAsync(
-      require("../sounds/end-bell.wav")
+      require("../sounds/end-bell.wav"),
     );
     await sound.playAsync();
   }
@@ -28,7 +37,7 @@ export const playEndChime = () => {
 export const playLevelComplete = () => {
   async function playSound() {
     const { sound } = await Audio.Sound.createAsync(
-      require("../sounds/yay-ending.wav")
+      require("../sounds/yay-ending.wav"),
     );
     await sound.playAsync();
   }
@@ -37,7 +46,7 @@ export const playLevelComplete = () => {
 export const playSnap = () => {
   async function playSound() {
     const { sound } = await Audio.Sound.createAsync(
-      require("../sounds/snap.wav")
+      require("../sounds/snap.wav"),
     );
     await sound.playAsync();
   }
@@ -46,7 +55,7 @@ export const playSnap = () => {
 export const playHittStart = () => {
   async function playSound() {
     const { sound } = await Audio.Sound.createAsync(
-      require("../sounds/hitt-start.wav")
+      require("../sounds/hitt-start.wav"),
     );
     await sound.playAsync();
   }
@@ -55,7 +64,7 @@ export const playHittStart = () => {
 export const playStart = () => {
   async function playSound() {
     const { sound } = await Audio.Sound.createAsync(
-      require("../sounds/350548__fairhavencollection__bell-hit.wav")
+      require("../sounds/350548__fairhavencollection__bell-hit.wav"),
     );
     await sound.playAsync();
   }
@@ -64,7 +73,7 @@ export const playStart = () => {
 export const playYogaTransition = (): void => {
   async function playSound() {
     const { sound } = await Audio.Sound.createAsync(
-      require("../sounds/733936__creator_gt__swoosh-04.wav")
+      require("../sounds/733936__creator_gt__swoosh-04.wav"),
     );
     await sound.playAsync();
   }

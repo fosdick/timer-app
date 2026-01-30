@@ -8,6 +8,7 @@ import {
   TimerStyles,
   PranayamaStyles,
   colorTheme,
+  screenStyles,
 } from "@/assets/styles/timer-app";
 import { formatTime, getTimeParts } from "../assets/utils/format-time";
 import { playEndChime, playSnap, playStart } from "../assets/utils/sounds";
@@ -93,7 +94,7 @@ export default function Pranayama() {
   });
 
   return (
-    <View style={TimerStyles.vertBox}>
+    <View style={screenStyles.contentContainer}>
       <View style={TimerStyles.vertBox}>
         <View style={TimerStyles.marginTop}>
           <Text style={PranayamaStyles.mainLabel}>Remaining</Text>
@@ -201,7 +202,7 @@ export default function Pranayama() {
           Metronome {isMetronomeEnabled ? "On" : "Off"}
         </Text>
       </View>
-      <View style={[TimerStyles.vertBox, { paddingBottom: 36 }]}>
+      <View style={screenStyles.buttonContainer}>
         <TouchableOpacity
           activeOpacity={0.7}
           onPress={() => {
@@ -211,7 +212,7 @@ export default function Pranayama() {
             }
           }}
         >
-          <View style={TimerStyles.marginTop}>
+          <View>
             <Text style={TimerStyles.startButton}>
               {isStop === true ? "Start" : "Stop"}
             </Text>
