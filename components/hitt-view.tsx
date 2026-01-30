@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import Slider from "@react-native-community/slider";
 
-import { TimerStyles, colorTheme } from "@/assets/styles/timer-app";
+import { TimerStyles, HiitStyles, colorTheme } from "@/assets/styles/timer-app";
 import { playLevelComplete, playHittStart } from "@/assets/utils/sounds";
 import HittIntervalPicker from "@/components/hitt-time-picker";
 
@@ -215,7 +215,7 @@ export default function HittView() {
           playHittStart();
         }
 
-        if (currentWorkoutTotalTime > 0 && currentRestTotalTime > 0) {
+        if (currentWorkoutTotalTime > 0 && currentRestTotalTime === initialRestTotalTime) {
           setCurrentWorkoutTotalTime(currentWorkoutTotalTime - 1);
         }
         if (
@@ -245,6 +245,13 @@ export default function HittView() {
     return () => clearInterval(intervalId);
   });
 
+  // Determine which timer is active
+  // FIX: Workout is active when it's counting down (> 0)
+  // Rest is active only when workout is finished (=== 0) and rest is still counting (> 0)
+  // This ensures transition happens at 00:00, not 00:01
+  const isWorkoutActive = currentWorkoutTotalTime > 0;
+  const isRestActive = currentWorkoutTotalTime === 0 && currentRestTotalTime > 0;
+
   return (
     <View style={TimerStyles.vertBox}>
       <HittIntervalPicker
@@ -261,6 +268,7 @@ export default function HittView() {
         }}
         resetAllEmit={{ resetAllEmit }}
         initialTotalTime={{ initialTotalTime: initialWorkoutTotalTime }}
+        isActive={isWorkoutActive}
       ></HittIntervalPicker>
       <HittIntervalPicker
         textTitle="Rest"
@@ -272,13 +280,14 @@ export default function HittView() {
         setCurrentTotalTime={{ setCurrentTotalTime: setCurrentRestTotalTime }}
         resetAllEmit={{ resetAllEmit }}
         initialTotalTime={{ initialTotalTime: initialRestTotalTime }}
+        isActive={isRestActive}
       ></HittIntervalPicker>
       <View style={[TimerStyles.marginTop, TimerStyles.vertBox]}>
-        <Text style={[TimerStyles.marginTop, TimerStyles.valueText]}>
+        <Text style={[TimerStyles.marginTop, HiitStyles.roundsLabel]}>
           Rounds
         </Text>
         <View>
-          <Text style={TimerStyles.timerFaceSmall}>{roundsRemaining}</Text>
+          <Text style={HiitStyles.roundsNumber}>{roundsRemaining}</Text>
         </View>
 
         <Slider
@@ -287,9 +296,9 @@ export default function HittView() {
           maximumValue={50}
           step={1}
           value={numberRounds}
-          minimumTrackTintColor={colorTheme.minimumTrackTintColor}
-          maximumTrackTintColor={colorTheme.maximumTrackTintColor}
-          thumbTintColor={colorTheme.thumbTintColor}
+          minimumTrackTintColor={colorTheme.controlActive}
+          maximumTrackTintColor={colorTheme.controlInactive}
+          thumbTintColor={colorTheme.controlActive}
           onValueChange={(val) => {
             setNumberRounds(val);
             setRoundsRemaining(val);
@@ -312,8 +321,8 @@ export default function HittView() {
         />
       </View>
       <View style={[TimerStyles.marginTop, TimerStyles.vertBox]}>
-        <Text style={[{ paddingTop: 0 }, TimerStyles.valueText]}>Total</Text>
-        <Text style={TimerStyles.timerFaceSmall}>
+        <Text style={[{ paddingTop: 0 }, HiitStyles.totalLabel]}>Total</Text>
+        <Text style={HiitStyles.totalTime}>
           {totalIntervalTimeString}
         </Text>
       </View>

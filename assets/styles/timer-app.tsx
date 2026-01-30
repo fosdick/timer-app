@@ -41,6 +41,29 @@ if (BlueTheme) {
   tabBarInActiveTintColor = "#687076";
 }
 
+// New Design System Colors
+export const designColors = {
+  // Primary - Active elements
+  activeTimerPrimary: "#CDDC39", // Bright Lime - main countdowns
+  activeNumberSecondary: "#CDDC39", // Same - configuration numbers
+
+  // Secondary - Dimmed elements
+  activeTimerDimmed: "#7CB342", // Muted Lime - HIIT inactive timer
+
+  // Tertiary - Labels
+  labelPrimary: "#689F38", // Muted Olive - standard labels
+  labelSecondary: "#546E7A", // Blue-Gray - subtle labels
+
+  // Interactive Controls
+  controlActive: "#CDDC39", // Slider fill, switch on
+  controlInactive: "#546E7A", // Slider track, switch off
+  controlInactiveOpacity: "rgba(84, 110, 122, 0.3)", // 30% opacity version
+
+  // Backgrounds
+  backgroundPrimary: "#000000",
+  backgroundHeader: "#E8F5E9",
+};
+
 export const colorTheme = {
   borderColor,
   fontColor,
@@ -53,6 +76,8 @@ export const colorTheme = {
   headerLiteShade,
   tabBarActiveTintColor,
   tabBarInActiveTintColor,
+  // Add new design system colors
+  ...designColors,
 };
 
 export const Settings = StyleSheet.create({
@@ -70,10 +95,11 @@ export const Settings = StyleSheet.create({
 
 export const TimerStyles = StyleSheet.create({
   vertBox: {
-    flex: 2,
+    // flex: 1,
     alignItems: "center",
     width: "100%",
     justifyContent: "center",
+    verticalAlign: "middle",
   },
   marginTop: {
     marginTop: 10,
@@ -160,6 +186,120 @@ export const TimerStyles = StyleSheet.create({
     fontSize: 16,
   },
 });
+
+// Pranayama Screen Styles
+export const PranayamaStyles = StyleSheet.create({
+  mainCountdown: {
+    fontSize: 72,
+    fontWeight: "300",
+    color: "#CDDC39",
+    textAlign: "center",
+    letterSpacing: -2,
+    fontVariant: ["tabular-nums"],
+  },
+  mainLabel: {
+    fontSize: 14,
+    fontWeight: "400",
+    color: "#689F38",
+    textAlign: "center",
+  },
+  metronomeCount: {
+    fontSize: 56,
+    fontWeight: "400",
+    color: "#CDDC39",
+    textAlign: "center",
+    fontVariant: ["tabular-nums"],
+    marginBottom: 16, // Tighten connection to slider
+  },
+  metronomeCountContainer: {
+    width: "80%",
+    alignSelf: "center",
+    marginBottom: 40,
+    marginTop: 40,
+  },
+  metronomeLabel: {
+    fontSize: 14,
+    fontWeight: "400",
+    color: "#689F38",
+    textAlign: "center",
+    marginBottom: 30,
+  },
+  toggleLabel: {
+    fontSize: 16,
+    fontWeight: "400",
+    color: "#689F38",
+    textAlign: "center",
+  },
+  sliderContainer: {
+    width: "80%",
+    alignSelf: "center",
+  },
+  toggleContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 12, // Space before Start button
+    marginTop: 36,
+  },
+  toggleSwitch: {
+    marginBottom: 12, // Space between toggle and its label
+    justifyContent: "center",
+  },
+});
+
+// HIIT Screen Styles
+export const HiitStyles = StyleSheet.create({
+  activeTimer: {
+    fontSize: 72,
+    fontWeight: "300",
+    color: "#CDDC39",
+    textAlign: "center",
+    letterSpacing: -2,
+    fontVariant: ["tabular-nums"],
+  },
+  inactiveTimer: {
+    fontSize: 72,
+    fontWeight: "300",
+    color: "#7CB342",
+    textAlign: "center",
+    letterSpacing: -2,
+    opacity: 0.6,
+    fontVariant: ["tabular-nums"],
+  },
+  timerLabel: {
+    fontSize: 14,
+    fontWeight: "400",
+    color: "#689F38",
+    textAlign: "center",
+  },
+  roundsNumber: {
+    fontSize: 56,
+    fontWeight: "400",
+    color: "#CDDC39",
+    textAlign: "center",
+    fontVariant: ["tabular-nums"],
+  },
+  roundsLabel: {
+    fontSize: 14,
+    fontWeight: "400",
+    color: "#689F38",
+    textAlign: "center",
+  },
+  totalTime: {
+    fontSize: 52,
+    fontWeight: "300",
+    color: "#CDDC39",
+    textAlign: "center",
+    letterSpacing: -1,
+    fontVariant: ["tabular-nums"],
+  },
+  totalLabel: {
+    fontSize: 14,
+    fontWeight: "400",
+    color: "#546E7A",
+    textAlign: "center",
+  },
+});
+
 export const screenStyles = StyleSheet.create({
   headerImage: {
     color: "#808080",

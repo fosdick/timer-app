@@ -4,7 +4,11 @@ import { useEffect, useState } from "react";
 import { Switch, Text, TouchableOpacity, View } from "react-native";
 import Slider from "@react-native-community/slider";
 import { TimerPickerModal } from "react-native-timer-picker";
-import { TimerStyles, colorTheme } from "@/assets/styles/timer-app";
+import {
+  TimerStyles,
+  PranayamaStyles,
+  colorTheme,
+} from "@/assets/styles/timer-app";
 import { formatTime, getTimeParts } from "../assets/utils/format-time";
 import { playEndChime, playSnap, playStart } from "../assets/utils/sounds";
 import { Audio } from "expo-av";
@@ -40,7 +44,7 @@ export default function Pranayama() {
 
   const [showPicker, setShowPicker] = useState(false);
   const [alarmString, setAlarmString] = useState<string | null>(
-    formatTime(getRemainingTime())
+    formatTime(getRemainingTime()),
   );
 
   const [beatInterval, setBeatInterval] = useState(DEFAULT_BEAT_INTERVAL);
@@ -92,7 +96,7 @@ export default function Pranayama() {
     <View style={TimerStyles.vertBox}>
       <View style={TimerStyles.vertBox}>
         <View style={TimerStyles.marginTop}>
-          <Text style={TimerStyles.valueText}>Remaining</Text>
+          <Text style={PranayamaStyles.mainLabel}>Remaining</Text>
         </View>
         <TouchableOpacity
           activeOpacity={0.7}
@@ -100,7 +104,7 @@ export default function Pranayama() {
         >
           <View style={{ alignItems: "center" }}>
             {alarmString !== null ? (
-              <Text style={TimerStyles.timerFace}>{alarmString}</Text>
+              <Text style={PranayamaStyles.mainCountdown}>{alarmString}</Text>
             ) : null}
           </View>
         </TouchableOpacity>
@@ -112,12 +116,12 @@ export default function Pranayama() {
             setTotalTime(
               pickedDuration.hours * 3600 +
                 pickedDuration.minutes * 60 +
-                pickedDuration.seconds
+                pickedDuration.seconds,
             );
             setInitialTotalTime(
               pickedDuration.hours * 3600 +
                 pickedDuration.minutes * 60 +
-                pickedDuration.seconds
+                pickedDuration.seconds,
             );
             setAlarmString(formatTime(pickedDuration));
             setShowPicker(false);
@@ -126,7 +130,7 @@ export default function Pranayama() {
             saveStoredData(
               pickedDuration.hours * 3600 +
                 pickedDuration.minutes * 60 +
-                pickedDuration.seconds
+                pickedDuration.seconds,
             );
           }}
           modalTitle="Set Alarm"
@@ -142,49 +146,60 @@ export default function Pranayama() {
           }}
         />
       </View>
-
-      <View style={[TimerStyles.vertBox, TimerStyles.marginTop]}>
-        <Text style={TimerStyles.metronome}>Metronome Count (seconds)</Text>
-
-        <View>
-          <Text style={TimerStyles.timerFaceSmall}>{beatInterval}</Text>
-        </View>
-      </View>
-      <View style={TimerStyles.vertBox}>
-        <Slider
-          style={{ width: 200, height: 40 }}
-          minimumValue={1}
-          maximumValue={20}
-          step={1}
-          value={DEFAULT_BEAT_INTERVAL}
-          minimumTrackTintColor={colorTheme.minimumTrackTintColor}
-          maximumTrackTintColor={colorTheme.maximumTrackTintColor}
-          onValueChange={(val) => {
-            setBeatInterval(val);
-            setBeatCount(0);
-            saveStoredData();
-          }}
-          onSlidingComplete={(val) => {
-            setBeatInterval(val);
-            setBeatCount(0);
-            saveStoredData();
-          }}
-          thumbTintColor={colorTheme.thumbTintColor}
-        />
-        <View>
-          <Text style={TimerStyles.valueText}>
-            Metronome {isMetronomeEnabled ? "On" : "Off"}
+      <View style={[PranayamaStyles.metronomeCountContainer]}>
+        <View style={[TimerStyles.vertBox]}>
+          <View>
+            <Text style={PranayamaStyles.metronomeCount}>{beatInterval}</Text>
+          </View>
+          <Text style={PranayamaStyles.metronomeLabel}>
+            Metronome Count (seconds)
           </Text>
         </View>
-        <Switch
-          trackColor={{
-            false: colorTheme.thumbColorDisabled,
-            true: colorTheme.minimumTrackTintColor,
+        <View style={PranayamaStyles.sliderContainer}>
+          <Slider
+            style={{ width: "100%", height: 40 }}
+            minimumValue={1}
+            maximumValue={20}
+            step={1}
+            value={DEFAULT_BEAT_INTERVAL}
+            minimumTrackTintColor={colorTheme.controlActive}
+            maximumTrackTintColor={colorTheme.controlInactive}
+            onValueChange={(val) => {
+              setBeatInterval(val);
+              setBeatCount(0);
+              saveStoredData();
+            }}
+            onSlidingComplete={(val) => {
+              setBeatInterval(val);
+              setBeatCount(0);
+              saveStoredData();
+            }}
+            thumbTintColor={colorTheme.controlActive}
+          />
+        </View>
+      </View>
+      <View style={PranayamaStyles.toggleContainer}>
+        <View
+          style={{
+            alignItems: "center",
+            justifyContent: "center",
           }}
-          thumbColor={colorTheme.trackColorFalse}
-          onValueChange={toggleMetronomeEnabled}
-          value={isMetronomeEnabled}
-        />
+        >
+          <Switch
+            style={PranayamaStyles.toggleSwitch}
+            trackColor={{
+              false: colorTheme.controlInactive,
+              true: colorTheme.controlActive,
+            }}
+            thumbColor="#FFFFFF"
+            ios_backgroundColor={colorTheme.controlInactive}
+            onValueChange={toggleMetronomeEnabled}
+            value={isMetronomeEnabled}
+          />
+        </View>
+        <Text style={PranayamaStyles.toggleLabel}>
+          Metronome {isMetronomeEnabled ? "On" : "Off"}
+        </Text>
       </View>
       <View style={[TimerStyles.vertBox, { paddingBottom: 36 }]}>
         <TouchableOpacity

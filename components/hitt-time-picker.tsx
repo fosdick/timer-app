@@ -1,5 +1,5 @@
 import { TimerPickerModal } from "react-native-timer-picker";
-import { TimerStyles } from "@/assets/styles/timer-app";
+import { TimerStyles, HiitStyles } from "@/assets/styles/timer-app";
 import { LinearGradient } from "expo-linear-gradient"; // or `import LinearGradient from "react-native-linear-gradient"`
 
 import { useState } from "react";
@@ -18,20 +18,22 @@ interface HittIntervalPickerProps {
   setInitialTotalTime: { setInitialTotalTime: (value: number) => void };
   setCurrentTotalTime: { setCurrentTotalTime: (value: number) => void };
   resetAllEmit: { resetAllEmit: () => void };
+  isActive?: boolean;
 }
 
 export default function HittIntervalPicker(props: HittIntervalPickerProps) {
   const [showPicker, setShowPicker] = useState(false);
+  const timerStyle = props.isActive ? HiitStyles.activeTimer : HiitStyles.inactiveTimer;
 
   return (
     <View style={TimerStyles.vertBox}>
-      <Text style={[TimerStyles.marginTop, TimerStyles.valueText]}>
+      <Text style={[TimerStyles.marginTop, HiitStyles.timerLabel]}>
         {props.textTitle}
       </Text>
       <TouchableOpacity activeOpacity={0.7} onPress={() => setShowPicker(true)}>
         <View style={{ alignItems: "center" }}>
           {props.pickerDisplayTimeString !== null ? (
-            <Text style={TimerStyles.timerFace}>
+            <Text style={timerStyle}>
               {props.pickerDisplayTimeString}
             </Text>
           ) : null}
