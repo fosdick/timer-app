@@ -7,14 +7,17 @@ export interface YogaPose {
   description?: string;
   progressText?: string;
   assetId?: string;
+  halfwayChime?: boolean; // Enable halfway point sound notification
 }
 
 export interface YogaSuperset {
   type: "superset";
-  totalDuration: number; // seconds - user self-paces through poses
+  name: string; // Superset name (required) - displayed during flow
+  totalDuration: number; // seconds - will be auto-calculated from poses
   poses: YogaPose[];
-  progressText?: string;
+  progressText?: string; // DEPRECATED: Use 'name' instead (kept for backward compatibility)
   assetId?: string;
+  halfwayChime?: boolean; // Default halfway chime for all poses in superset
 }
 
 export type YogaFlowItem = YogaPose | YogaSuperset;
@@ -48,4 +51,14 @@ export const calculateFlowDuration = (items: YogaFlowItem[]): number => {
     }
     return total + item.duration;
   }, 0);
+};
+
+// Helper to calculate superset duration from child poses
+export const getSupersetDuration = (superset: YogaSuperset): number => {
+  return superset.poses.reduce((sum, pose) => sum + pose.duration, 0);
+};
+
+// Helper to get superset name (supports backward compatibility)
+export const getSupersetName = (superset: YogaSuperset): string => {
+  return superset.name || superset.progressText || "Superset";
 };

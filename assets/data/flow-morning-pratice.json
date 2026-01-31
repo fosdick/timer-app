@@ -3,24 +3,22 @@
     "id": "morning-daily-basic",
     "name": "Daily Practice",
     "description": "Foundational full body deep stretch.",
-    "totalDuration": 2365,
+    "totalDuration": 1770,
     "items": [
       {
         "name": "Easy Seat Right Side",
-        "duration": 10,
-        "description": "criss cross seat with feet as far past knees as possible.",
-        "halfwayChime": true
+        "duration": 30,
+        "description": "criss cross seat with feet as far past knees as possible."
       },
       {
         "name": "Easy Seat Left Side",
-        "duration": 10,
+        "duration": 30,
         "description": "Use blocks to rest forehead in gentle forward bend"
       },
       {
         "name": "Fire Log Right",
-        "duration": 10,
-        "description": "From easy seat place ankle on knee.",
-        "halfwayChime": true
+        "duration": 30,
+        "description": "From easy seat place ankle on knee."
       },
       {
         "name": "Fire Log Left",
@@ -58,8 +56,7 @@
       },
       {
         "type": "superset",
-        "name": "Splits",
-        "totalDuration": 120,
+        "totalDuration": 60,
         "poses": [
           {
             "name": "Half Splits",
@@ -81,12 +78,12 @@
             "duration": 30,
             "description": "Left leg is forward"
           }
-        ]
+        ],
+        "progressText": "Splits"
       },
       {
         "type": "superset",
-        "name": "Pigeon Set",
-        "totalDuration": 345,
+        "totalDuration": 60,
         "poses": [
           {
             "name": "Three legged dog",
@@ -143,7 +140,8 @@
             "duration": 30,
             "description": "Sweep folded leg back and up, peddle out your dog."
           }
-        ]
+        ],
+        "progressText": "Pigeon Set"
       },
       {
         "name": "Swam",
@@ -196,8 +194,7 @@
       },
       {
         "type": "superset",
-        "name": "Cow Face",
-        "totalDuration": 180,
+        "totalDuration": 60,
         "poses": [
           {
             "name": "Cow Face right leg top",
@@ -229,7 +226,8 @@
             "duration": 30,
             "description": "reach arms forward and fold at the hips."
           }
-        ]
+        ],
+        "progressText": "Cow Face"
       },
       {
         "name": "Garland",
@@ -243,15 +241,15 @@
       },
       {
         "type": "superset",
-        "name": "Cow Face left leg top",
-        "totalDuration": 30,
+        "totalDuration": 60,
         "poses": [
           {
             "name": "Cow Face",
             "duration": 30,
             "description": "From Garland, resume "
           }
-        ]
+        ],
+        "progressText": "Cow Face left leg top"
       },
       {
         "name": "Scale",
@@ -289,8 +287,7 @@
       },
       {
         "type": "superset",
-        "name": "Balance Poses",
-        "totalDuration": 130,
+        "totalDuration": 60,
         "poses": [
           {
             "name": "Right hand to right leg toe",
@@ -320,12 +317,12 @@
             "duration": 30,
             "description": "Bring foot to rest on inner thigh or calf.  Caution to not push on knee joint."
           }
-        ]
+        ],
+        "progressText": "Balance Poses"
       },
       {
         "type": "superset",
-        "name": "Pole Sequence",
-        "totalDuration": 210,
+        "totalDuration": 60,
         "poses": [
           {
             "name": "Palms down overhead",
@@ -362,7 +359,8 @@
             "duration": 30,
             "description": "With the pole along the shoulders, and legs in wide legged stance.  Fold forward and rotate opposite end of pole to opposite side of body.  End of pole taps floor beyond the foot."
           }
-        ]
+        ],
+        "progressText": "Pole Sequence"
       },
       {
         "name": "Headstand (inversion)",

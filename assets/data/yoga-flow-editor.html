@@ -223,6 +223,20 @@
   <p>Create and edit yoga flow sequences. Generate JSON to copy into <code>yoga-flows.json</code></p>
 
   <div class="section">
+    <h2>Import Existing Flow</h2>
+    <p>Paste an existing flow JSON here to edit it. Supports backward compatibility.</p>
+
+    <div class="form-group">
+      <label for="importJson">Paste Flow JSON Array <span class="optional">(optional)</span></label>
+      <textarea id="importJson" placeholder='[{"id": "flow-id", "name": "Flow Name", ...}]' style="min-height: 120px;"></textarea>
+      <div class="helper-text">Paste the entire flow array from yoga-flows.json</div>
+    </div>
+
+    <button onclick="importJSON()" class="secondary">📥 Import Flow</button>
+    <button onclick="clearImport()" class="danger small" style="margin-left: 10px;">Clear</button>
+  </div>
+
+  <div class="section">
     <h2>Flow Information</h2>
 
     <div class="form-group">
@@ -291,7 +305,8 @@
         duration: 30,
         description: '',
         progressText: '',
-        assetId: ''
+        assetId: '',
+        halfwayChime: false
       };
       items.push(item);
       renderItems();
@@ -302,11 +317,12 @@
       const item = {
         id: itemIdCounter++,
         type: 'superset',
-        totalDuration: 60,
-        progressText: '',
+        name: '',
+        totalDuration: 60, // Will be auto-calculated
         assetId: '',
+        halfwayChime: false,
         poses: [
-          { name: '', duration: 30, description: '', assetId: '' }
+          { name: '', duration: 30, description: '', assetId: '', halfwayChime: false }
         ]
       };
       items.push(item);
@@ -341,7 +357,7 @@
     function addPoseToSuperset(itemId) {
       const item = items.find(i => i.id === itemId);
       if (item && item.type === 'superset') {
-        item.poses.push({ name: '', duration: 30, description: '', assetId: '' });
+        item.poses.push({ name: '', duration: 30, description: '', assetId: '', halfwayChime: false });
         renderItems();
         updateTotalDuration();
       }
@@ -359,7 +375,13 @@
     function updatePoseField(itemId, field, value) {
       const item = items.find(i => i.id === itemId);
       if (item) {
-        item[field] = field === 'duration' || field === 'totalDuration' ? parseInt(value) || 0 : value;
+        if (field === 'duration' || field === 'totalDuration') {
+          item[field] = parseInt(value) || 0;
+        } else if (field === 'halfwayChime') {
+          item[field] = value; // Boolean value
+        } else {
+          item[field] = value;
+        }
         updateTotalDuration();
       }
     }
@@ -367,15 +389,28 @@
     function updateSupersetPoseField(itemId, poseIndex, field, value) {
       const item = items.find(i => i.id === itemId);
       if (item && item.type === 'superset') {
-        item.poses[poseIndex][field] = field === 'duration' ? parseInt(value) || 0 : value;
+        if (field === 'duration') {
+          item.poses[poseIndex][field] = parseInt(value) || 0;
+        } else if (field === 'halfwayChime') {
+          item.poses[poseIndex][field] = value; // Boolean value
+        } else {
+          item.poses[poseIndex][field] = value;
+        }
         updateTotalDuration();
       }
+    }
+
+    function calculateSupersetDuration(superset) {
+      return superset.poses.reduce((sum, pose) => sum + (pose.duration || 0), 0);
     }
 
     function updateTotalDuration() {
       const total = items.reduce((sum, item) => {
         if (item.type === 'superset') {
-          return sum + (item.totalDuration || 0);
+          // Auto-calculate from poses
+          const supersetDuration = calculateSupersetDuration(item);
+          item.totalDuration = supersetDuration; // Update the stored value
+          return sum + supersetDuration;
         }
         return sum + (item.duration || 0);
       }, 0);
@@ -442,6 +477,14 @@
                   placeholder="e.g., mountain-pose" />
                 <div class="helper-text">Must match an ID in yoga-assets.ts</div>
               </div>
+
+              <div class="form-group">
+                <label>
+                  <input type="checkbox" ${item.halfwayChime ? 'checked' : ''}
+                    onchange="updatePoseField(${item.id}, 'halfwayChime', this.checked)" />
+                  Halfway Chime (play sound at 50% of duration)
+                </label>
+              </div>
             </div>
           `;
         } else {
@@ -457,18 +500,20 @@
               </div>
 
               <div class="form-group">
-                <label>Total Duration (seconds)</label>
-                <input type="number" value="${item.totalDuration}"
-                  oninput="updatePoseField(${item.id}, 'totalDuration', this.value)"
-                  min="0" />
-                <div class="helper-text">Total time for all poses in this superset</div>
+                <label>Superset Name <span class="optional">(required)</span></label>
+                <input type="text" value="${item.name || ''}"
+                  oninput="updatePoseField(${item.id}, 'name', this.value)"
+                  placeholder="e.g., Warrior Sequence" />
+                <div class="helper-text">Displayed during flow playback</div>
               </div>
 
               <div class="form-group">
-                <label>Progress Text <span class="optional">(optional)</span></label>
-                <input type="text" value="${item.progressText}"
-                  oninput="updatePoseField(${item.id}, 'progressText', this.value)"
-                  placeholder="e.g., Both sides - hold each for 60 seconds" />
+                <label>Total Duration (seconds) - Auto-Calculated</label>
+                <input type="number" value="${calculateSupersetDuration(item)}"
+                  readonly
+                  style="background: #f0f0f0; cursor: not-allowed;"
+                  min="0" />
+                <div class="helper-text">Automatically calculated from all poses in this superset</div>
               </div>
 
               <div class="form-group">
@@ -477,6 +522,15 @@
                   oninput="updatePoseField(${item.id}, 'assetId', this.value)"
                   placeholder="e.g., warrior-1" />
                 <div class="helper-text">Used for all poses unless overridden</div>
+              </div>
+
+              <div class="form-group">
+                <label>
+                  <input type="checkbox" ${item.halfwayChime ? 'checked' : ''}
+                    onchange="updatePoseField(${item.id}, 'halfwayChime', this.checked)" />
+                  Halfway Chime (default for all poses in superset)
+                </label>
+                <div class="helper-text">Individual poses can override this setting</div>
               </div>
 
               <div class="nested-poses">
@@ -512,9 +566,17 @@
 
                     <div class="form-group">
                       <label>Asset ID <span class="optional">(optional, overrides superset default)</span></label>
-                      <input type="text" value="${pose.assetId}"
+                      <input type="text" value="${pose.assetId || ''}"
                         oninput="updateSupersetPoseField(${item.id}, ${poseIndex}, 'assetId', this.value)"
                         placeholder="Leave blank to use superset default" />
+                    </div>
+
+                    <div class="form-group">
+                      <label>
+                        <input type="checkbox" ${pose.halfwayChime ? 'checked' : ''}
+                          onchange="updateSupersetPoseField(${item.id}, ${poseIndex}, 'halfwayChime', this.checked)" />
+                        Halfway Chime (overrides superset default)
+                      </label>
                     </div>
                   </div>
                 `).join('')}
@@ -524,6 +586,103 @@
           `;
         }
       }).join('');
+    }
+
+    function importJSON() {
+      const jsonText = document.getElementById('importJson').value.trim();
+
+      if (!jsonText) {
+        alert('Please paste a flow JSON array to import');
+        return;
+      }
+
+      try {
+        const flows = JSON.parse(jsonText);
+
+        // Validate it's an array with at least one flow
+        if (!Array.isArray(flows) || flows.length === 0) {
+          alert('Invalid format. Please paste a JSON array containing at least one flow.');
+          return;
+        }
+
+        const flow = flows[0]; // Import the first flow in the array
+
+        // Validate required fields
+        if (!flow.id || !flow.name || !flow.description || !flow.items) {
+          alert('Invalid flow format. Missing required fields (id, name, description, or items).');
+          return;
+        }
+
+        // Populate flow information fields
+        document.getElementById('flowId').value = flow.id || '';
+        document.getElementById('flowName').value = flow.name || '';
+        document.getElementById('flowDescription').value = flow.description || '';
+
+        // Reset items array
+        items = [];
+        itemIdCounter = 0;
+
+        // Convert flow items to editor format
+        flow.items.forEach(item => {
+          if (item.type === 'superset') {
+            // Handle superset with backward compatibility
+            const superset = {
+              id: itemIdCounter++,
+              type: 'superset',
+              // Backward compatibility: use 'name' if present, otherwise fall back to 'progressText'
+              name: item.name || item.progressText || '',
+              totalDuration: item.totalDuration || 0,
+              assetId: item.assetId || '',
+              halfwayChime: item.halfwayChime || false,
+              poses: (item.poses || []).map(pose => ({
+                name: pose.name || '',
+                duration: pose.duration || 30,
+                description: pose.description || '',
+                assetId: pose.assetId || '',
+                halfwayChime: pose.halfwayChime || false
+              }))
+            };
+
+            // Ensure at least one pose in the superset
+            if (superset.poses.length === 0) {
+              superset.poses.push({ name: '', duration: 30, description: '', assetId: '', halfwayChime: false });
+            }
+
+            items.push(superset);
+          } else {
+            // Handle regular pose
+            const pose = {
+              id: itemIdCounter++,
+              type: 'pose',
+              name: item.name || '',
+              duration: item.duration || 30,
+              description: item.description || '',
+              progressText: item.progressText || '',
+              assetId: item.assetId || '',
+              halfwayChime: item.halfwayChime || false
+            };
+            items.push(pose);
+          }
+        });
+
+        // Re-render with imported data
+        renderItems();
+        updateTotalDuration();
+
+        // Show success message
+        alert(`Successfully imported flow: "${flow.name}"\n\n` +
+              `${items.length} item(s) loaded. ` +
+              (flows.length > 1 ? `\n\nNote: Only the first flow was imported. The array contained ${flows.length} flows.` : ''));
+
+      } catch (error) {
+        alert('Failed to parse JSON. Please check the format.\n\nError: ' + error.message);
+      }
+    }
+
+    function clearImport() {
+      if (confirm('Clear the import textarea?')) {
+        document.getElementById('importJson').value = '';
+      }
     }
 
     function generateJSON() {
@@ -538,7 +697,7 @@
 
       const totalDuration = items.reduce((sum, item) => {
         if (item.type === 'superset') {
-          return sum + (item.totalDuration || 0);
+          return sum + calculateSupersetDuration(item);
         }
         return sum + (item.duration || 0);
       }, 0);
@@ -552,11 +711,13 @@
           if (item.description) pose.description = item.description;
           if (item.progressText) pose.progressText = item.progressText;
           if (item.assetId) pose.assetId = item.assetId;
+          if (item.halfwayChime) pose.halfwayChime = item.halfwayChime;
           return pose;
         } else {
           const superset = {
             type: 'superset',
-            totalDuration: item.totalDuration,
+            name: item.name,
+            totalDuration: calculateSupersetDuration(item),
             poses: item.poses.map(p => {
               const pose = {
                 name: p.name,
@@ -564,11 +725,12 @@
               };
               if (p.description) pose.description = p.description;
               if (p.assetId) pose.assetId = p.assetId;
+              if (p.halfwayChime) pose.halfwayChime = p.halfwayChime;
               return pose;
             })
           };
-          if (item.progressText) superset.progressText = item.progressText;
           if (item.assetId) superset.assetId = item.assetId;
+          if (item.halfwayChime) superset.halfwayChime = item.halfwayChime;
           return superset;
         }
       });

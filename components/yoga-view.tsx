@@ -6,7 +6,7 @@ import {
   getTimePartsMinSec,
 } from "../assets/utils/format-time";
 import { getData, storeData } from "../assets/utils/persistent-storage";
-import { playStart, playYogaTransition } from "../assets/utils/sounds";
+import { playStart, playYogaTransition, playHalfway } from "../assets/utils/sounds";
 import YogaFlowSelect from "./yoga-flow-select";
 import YogaAssetRenderer from "./yoga-asset-renderer";
 import { Audio } from "expo-av";
@@ -15,13 +15,17 @@ import { TimerPickerModal } from "react-native-timer-picker";
 import {
   YogaFlow,
   YogaPose,
+  YogaSuperset,
   isSuperset,
   getFlowById,
+  getSupersetName,
+  getSupersetDuration,
 } from "@/assets/data/yoga-flows";
 import { yogaColors, yogaTypography } from "@/assets/theme";
 
 const YOGA_TIMER_APP_DATA = "yoga_timer_app_data";
 const DEFAULT_INITIAL_TOTAL_TIME = 30;
+const TRANSITION_DELAY_SECONDS = 5; // Delay between poses for transition
 
 export default function YogaView() {
   // Flow state
@@ -38,6 +42,17 @@ export default function YogaView() {
   const [initialTotalTime, setInitialTotalTime] = useState<number>(
     DEFAULT_INITIAL_TOTAL_TIME,
   );
+
+  // Superset timer state
+  const [supersetTimeRemaining, setSupersetTimeRemaining] = useState<number>(0);
+  const [supersetTotalDuration, setSupersetTotalDuration] = useState<number>(0);
+
+  // Transition delay state
+  const [isInTransition, setIsInTransition] = useState<boolean>(false);
+  const [transitionTimeRemaining, setTransitionTimeRemaining] = useState<number>(0);
+
+  // Halfway chime state
+  const [halfwayChimePlayed, setHalfwayChimePlayed] = useState<boolean>(false);
 
   // UI state
   const [showFlowSelect, setShowFlowSelect] = useState<boolean>(false);
@@ -74,12 +89,20 @@ export default function YogaView() {
   const initializeFirstPose = (flow: YogaFlow) => {
     const firstItem = flow.items[0];
     if (isSuperset(firstItem)) {
-      setTimeRemaining(firstItem.totalDuration);
+      // FIX: Set to first POSE duration, not superset total
+      // Calculate superset duration dynamically from poses
+      const calculatedDuration = getSupersetDuration(firstItem);
+      setTimeRemaining(firstItem.poses[0].duration);
+      setSupersetTimeRemaining(calculatedDuration);
+      setSupersetTotalDuration(calculatedDuration);
     } else {
       setTimeRemaining(firstItem.duration);
+      setSupersetTimeRemaining(0);
+      setSupersetTotalDuration(0);
     }
     setCurrentItemIndex(0);
     setCurrentPoseInSuperset(0);
+    setHalfwayChimePlayed(false);
   };
 
   // Current time clock - always updates regardless of timer state
@@ -94,16 +117,72 @@ export default function YogaView() {
   // Timer tick
   useEffect(() => {
     const intervalId = setTimeout(() => {
-      if (isRunning && timeRemaining > 0) {
-        setTimeRemaining(timeRemaining - 1);
-      } else if (isRunning && timeRemaining === 0) {
-        if (isManualMode) {
-          // Manual mode: just stop when timer reaches 0
-          setIsRunning(false);
-          playYogaTransition();
-        } else if (selectedFlow) {
-          // Flow mode: auto-advance to next pose
-          advanceToNextPose();
+      if (!isRunning) return;
+
+      // Handle transition delay countdown
+      if (isInTransition) {
+        if (transitionTimeRemaining > 1) {
+          // Still in transition, keep counting down
+          setTransitionTimeRemaining(transitionTimeRemaining - 1);
+        } else {
+          // Transition complete (was at 1, now ending), resume normal timer immediately
+          setIsInTransition(false);
+          setTransitionTimeRemaining(0);
+        }
+        return;
+      }
+
+      // Normal timer logic (only runs when NOT in transition)
+      if (timeRemaining > 0) {
+        // Check for halfway chime before decrementing
+        if (!isManualMode && selectedFlow) {
+          const currentItem = selectedFlow.items[currentItemIndex];
+          let currentPose: YogaPose | null = null;
+          let poseDuration = 0;
+
+          if (isSuperset(currentItem)) {
+            currentPose = currentItem.poses[currentPoseInSuperset];
+            poseDuration = currentPose.duration;
+          } else {
+            currentPose = currentItem;
+            poseDuration = currentItem.duration;
+          }
+
+          // Check if halfway chime is enabled (pose setting takes precedence)
+          let chimeEnabled = false;
+          if (currentPose.halfwayChime !== undefined) {
+            chimeEnabled = currentPose.halfwayChime;
+          } else if (isSuperset(currentItem) && currentItem.halfwayChime !== undefined) {
+            chimeEnabled = currentItem.halfwayChime;
+          }
+
+          // Play chime at halfway point
+          const halfwayPoint = Math.ceil(poseDuration / 2);
+          if (chimeEnabled && !halfwayChimePlayed && timeRemaining === halfwayPoint) {
+            playHalfway();
+            setHalfwayChimePlayed(true);
+          }
+        }
+
+        // Decrement the timer
+        const newTime = timeRemaining - 1;
+        setTimeRemaining(newTime);
+
+        // Also decrement superset timer if we're in a superset
+        if (supersetTimeRemaining > 0) {
+          setSupersetTimeRemaining(supersetTimeRemaining - 1);
+        }
+
+        // If we just hit 0, advance to next pose immediately (no extra tick)
+        if (newTime === 0) {
+          if (isManualMode) {
+            // Manual mode: just stop when timer reaches 0
+            setIsRunning(false);
+            playYogaTransition();
+          } else if (selectedFlow) {
+            // Flow mode: auto-advance to next pose
+            advanceToNextPose();
+          }
         }
       }
     }, 1000);
@@ -113,14 +192,25 @@ export default function YogaView() {
   }, [
     isRunning,
     timeRemaining,
+    supersetTimeRemaining,
     selectedFlow,
     currentItemIndex,
     currentPoseInSuperset,
     isManualMode,
+    halfwayChimePlayed,
+    isInTransition,
+    transitionTimeRemaining,
   ]);
 
-  const advanceToNextPose = () => {
+  const advanceToNextPose = (useTransition: boolean = true) => {
     if (!selectedFlow) return;
+
+    // Only play transition sound and delay for automatic advancement
+    if (useTransition) {
+      playYogaTransition();
+      setIsInTransition(true);
+      setTransitionTimeRemaining(TRANSITION_DELAY_SECONDS);
+    }
 
     const currentItem = selectedFlow.items[currentItemIndex];
 
@@ -131,7 +221,8 @@ export default function YogaView() {
         // Move to next pose in superset
         setCurrentPoseInSuperset(nextPoseIndex);
         setTimeRemaining(currentItem.poses[nextPoseIndex].duration);
-        playYogaTransition();
+        setHalfwayChimePlayed(false); // Reset for new pose
+        // Superset timer continues counting
         return;
       }
     }
@@ -142,24 +233,33 @@ export default function YogaView() {
       const nextItem = selectedFlow.items[nextItemIndex];
       setCurrentItemIndex(nextItemIndex);
       setCurrentPoseInSuperset(0);
+      setHalfwayChimePlayed(false); // Reset for new pose
 
       if (isSuperset(nextItem)) {
-        setTimeRemaining(nextItem.totalDuration);
+        // FIX: Set to first POSE duration, not superset total
+        // Calculate superset duration dynamically from poses
+        const calculatedDuration = getSupersetDuration(nextItem);
+        setTimeRemaining(nextItem.poses[0].duration);
+        setSupersetTimeRemaining(calculatedDuration);
+        setSupersetTotalDuration(calculatedDuration);
       } else {
         setTimeRemaining(nextItem.duration);
+        setSupersetTimeRemaining(0);
+        setSupersetTotalDuration(0);
       }
-
-      playYogaTransition();
     } else {
       // Flow complete
       setIsRunning(false);
+      setHalfwayChimePlayed(false);
       initializeFirstPose(selectedFlow);
-      playYogaTransition();
     }
   };
 
   const goToPreviousPose = () => {
     if (isManualMode || !selectedFlow) return;
+
+    // Manual navigation - pause timer, no transition sound or delay
+    setIsRunning(false);
 
     const currentItem = selectedFlow.items[currentItemIndex];
 
@@ -168,6 +268,12 @@ export default function YogaView() {
       const prevPoseIndex = currentPoseInSuperset - 1;
       setCurrentPoseInSuperset(prevPoseIndex);
       setTimeRemaining(currentItem.poses[prevPoseIndex].duration);
+      setHalfwayChimePlayed(false); // Reset for new pose
+      // Recalculate superset remaining time
+      const remainingDuration = currentItem.poses
+        .slice(prevPoseIndex)
+        .reduce((sum, pose) => sum + pose.duration, 0);
+      setSupersetTimeRemaining(remainingDuration);
       return;
     }
 
@@ -176,21 +282,29 @@ export default function YogaView() {
       const prevItemIndex = currentItemIndex - 1;
       const prevItem = selectedFlow.items[prevItemIndex];
       setCurrentItemIndex(prevItemIndex);
+      setHalfwayChimePlayed(false); // Reset for new pose
 
       if (isSuperset(prevItem)) {
         // Go to last pose in previous superset
+        const calculatedDuration = getSupersetDuration(prevItem);
         setCurrentPoseInSuperset(prevItem.poses.length - 1);
         setTimeRemaining(prevItem.poses[prevItem.poses.length - 1].duration);
+        setSupersetTimeRemaining(prevItem.poses[prevItem.poses.length - 1].duration);
+        setSupersetTotalDuration(calculatedDuration);
       } else {
         setCurrentPoseInSuperset(0);
         setTimeRemaining(prevItem.duration);
+        setSupersetTimeRemaining(0);
+        setSupersetTotalDuration(0);
       }
     }
   };
 
   const goToNextPose = () => {
     if (isManualMode || !selectedFlow) return;
-    advanceToNextPose();
+    // Manual navigation - pause timer, skip transition
+    setIsRunning(false);
+    advanceToNextPose(false);
   };
 
   const handleSelectFlow = (flow: YogaFlow) => {
@@ -240,17 +354,21 @@ export default function YogaView() {
 
   const handleStartStop = () => {
     if (isRunning) {
-      // Stop
+      // Pause (preserve all state)
       setIsRunning(false);
-      if (isManualMode) {
-        setTimeRemaining(initialTotalTime);
-      } else if (selectedFlow) {
-        initializeFirstPose(selectedFlow);
-      }
     } else {
-      // Start
+      // Start or Resume
       setIsRunning(true);
-      playStart();
+      // Only play start sound if starting from beginning
+      if (isManualMode && timeRemaining === initialTotalTime) {
+        playStart();
+      } else if (!isManualMode && selectedFlow) {
+        const firstItem = selectedFlow.items[0];
+        const firstPoseDuration = isSuperset(firstItem) ? firstItem.poses[0].duration : firstItem.duration;
+        if (currentItemIndex === 0 && currentPoseInSuperset === 0 && timeRemaining === firstPoseDuration) {
+          playStart();
+        }
+      }
     }
   };
 
@@ -455,6 +573,24 @@ export default function YogaView() {
         </Text>
       </View>
 
+      {/* Superset info - always reserve space, show content only when in superset */}
+      {!isManualMode && selectedFlow && (
+        <View style={styles.supersetInfoContainer}>
+          {isSuperset(selectedFlow.items[currentItemIndex]) ? (
+            <>
+              <Text style={styles.supersetLabel}>
+                {getSupersetName(selectedFlow.items[currentItemIndex] as YogaSuperset)} (pose {currentPoseInSuperset + 1} of {(selectedFlow.items[currentItemIndex] as YogaSuperset).poses.length} in superset)
+              </Text>
+              <Text style={styles.supersetTimer}>
+                {formatMinutesSeconds(getTimePartsMinSec(supersetTimeRemaining))} remaining
+              </Text>
+            </>
+          ) : (
+            <View style={styles.supersetPlaceholder} />
+          )}
+        </View>
+      )}
+
       {/* Horizontal pose layout - only show if not in manual mode */}
       {!isManualMode && (
         <View style={styles.poseContainer}>
@@ -580,12 +716,12 @@ export default function YogaView() {
         </Text>
       </View>
 
-      {/* Start/Stop button */}
+      {/* Start/Stop/Resume button */}
       <View style={screenStyles.buttonContainer}>
         <TouchableOpacity activeOpacity={0.7} onPress={handleStartStop}>
           <View>
             <Text style={TimerStyles.startButton}>
-              {isRunning ? "Stop" : "Start"}
+              {isRunning ? "Stop" : (timeRemaining > 0 && (isManualMode ? timeRemaining < initialTotalTime : true)) ? "Resume" : "Start"}
             </Text>
           </View>
         </TouchableOpacity>
@@ -629,7 +765,7 @@ export default function YogaView() {
               activeOpacity={0.7}
               onPress={handleStopFromPause}
             >
-              <Text style={styles.pauseButtonText}>Stop</Text>
+              <Text style={styles.pauseButtonText}>Reset</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -711,6 +847,30 @@ const styles = StyleSheet.create({
   },
   flowName: {
     ...yogaTypography.flowName,
+  },
+
+  // Superset Info
+  supersetInfoContainer: {
+    marginTop: 20,
+    paddingHorizontal: 20,
+    alignItems: "center" as const,
+    minHeight: 50, // Reserve space to prevent layout shift
+  },
+  supersetLabel: {
+    fontSize: 14,
+    fontWeight: "400" as const,
+    color: yogaColors.timerLabel,
+    textAlign: "center" as const,
+    marginBottom: 4,
+  },
+  supersetTimer: {
+    fontSize: 18,
+    fontWeight: "300" as const,
+    color: yogaColors.timerCountdown,
+    textAlign: "center" as const,
+  },
+  supersetPlaceholder: {
+    height: 50, // Match minHeight to maintain consistent spacing
   },
 
   // Progress Text
