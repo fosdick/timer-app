@@ -128,6 +128,11 @@ export default function YogaView() {
           // Transition complete (was at 1, now ending), resume normal timer immediately
           setIsInTransition(false);
           setTransitionTimeRemaining(0);
+
+          // If in manual mode, reset to initial time to repeat
+          if (isManualMode) {
+            setTimeRemaining(initialTotalTime);
+          }
         }
         return;
       }
@@ -176,9 +181,11 @@ export default function YogaView() {
         // If we just hit 0, advance to next pose immediately (no extra tick)
         if (newTime === 0) {
           if (isManualMode) {
-            // Manual mode: just stop when timer reaches 0
-            setIsRunning(false);
+            // Manual mode: trigger transition, then repeat
             playYogaTransition();
+            setIsInTransition(true);
+            setTransitionTimeRemaining(TRANSITION_DELAY_SECONDS);
+            // Timer will reset to initialTotalTime after transition completes
           } else if (selectedFlow) {
             // Flow mode: auto-advance to next pose
             advanceToNextPose();
