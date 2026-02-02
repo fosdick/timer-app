@@ -25,6 +25,15 @@ export const playHalfway = () => {
   }
   playSound();
 };
+export const playManualModeHalfwayChime = () => {
+  async function playSound() {
+    const { sound } = await Audio.Sound.createAsync(
+      require("../sounds/sticks-low-1.wav"),
+    );
+    await sound.playAsync();
+  }
+  playSound();
+};
 export const playEndChime = () => {
   async function playSound() {
     const { sound } = await Audio.Sound.createAsync(

@@ -11,7 +11,7 @@
 2. Start the app
 
    ```bash
-    i
+    npx expo prebuild && npx expo run:ios
    ```
 
 ## google adds

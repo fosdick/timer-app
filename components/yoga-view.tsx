@@ -6,7 +6,7 @@ import {
   getTimePartsMinSec,
 } from "../assets/utils/format-time";
 import { getData, storeData } from "../assets/utils/persistent-storage";
-import { playStart, playYogaTransition, playHalfway } from "../assets/utils/sounds";
+import { playStart, playYogaTransition, playHalfway, playManualModeHalfwayChime } from "../assets/utils/sounds";
 import YogaFlowSelect from "./yoga-flow-select";
 import YogaAssetRenderer from "./yoga-asset-renderer";
 import { Audio } from "expo-av";
@@ -19,13 +19,12 @@ import {
   isSuperset,
   getFlowById,
   getSupersetName,
-  getSupersetDuration,
+  TRANSITION_DELAY_SECONDS,
 } from "@/assets/data/yoga-flows";
 import { yogaColors, yogaTypography } from "@/assets/theme";
 
 const YOGA_TIMER_APP_DATA = "yoga_timer_app_data";
 const DEFAULT_INITIAL_TOTAL_TIME = 30;
-const TRANSITION_DELAY_SECONDS = 5; // Delay between poses for transition
 
 export default function YogaView() {
   // Flow state
@@ -33,6 +32,7 @@ export default function YogaView() {
   const [currentItemIndex, setCurrentItemIndex] = useState<number>(0);
   const [currentPoseInSuperset, setCurrentPoseInSuperset] = useState<number>(0);
   const [isManualMode, setIsManualMode] = useState<boolean>(true); // Start in manual mode
+  const [durationMultiplier, setDurationMultiplier] = useState<number>(1);
 
   // Timer state
   const [isRunning, setIsRunning] = useState<boolean>(false);
@@ -60,6 +60,13 @@ export default function YogaView() {
   const [showPicker, setShowPicker] = useState<boolean>(false);
   const [currentTime, setCurrentTime] = useState(new Date());
 
+  // Helper to scale duration by multiplier (minimum 1 second)
+  const getScaledDuration = (duration: number, multiplier: number = durationMultiplier) =>
+    Math.max(1, Math.round(duration * multiplier));
+
+  const getScaledSupersetDuration = (superset: YogaSuperset, multiplier: number = durationMultiplier) =>
+    superset.poses.reduce((sum, pose) => sum + Math.max(1, Math.round(pose.duration * multiplier)), 0);
+
   // Load saved flow on mount
   useEffect(() => {
     const loadSavedFlow = async () => {
@@ -75,9 +82,11 @@ export default function YogaView() {
         } else {
           const flow = getFlowById(savedData.selectedFlowId);
           if (flow) {
+            const savedMultiplier = savedData.durationMultiplier || 1;
+            setDurationMultiplier(savedMultiplier);
             setIsManualMode(false);
             setSelectedFlow(flow);
-            initializeFirstPose(flow);
+            initializeFirstPose(flow, savedMultiplier);
           }
         }
       }
@@ -86,17 +95,17 @@ export default function YogaView() {
   }, []);
 
   // Initialize first pose when flow is selected
-  const initializeFirstPose = (flow: YogaFlow) => {
+  const initializeFirstPose = (flow: YogaFlow, multiplier?: number) => {
+    const mult = multiplier !== undefined ? multiplier : durationMultiplier;
     const firstItem = flow.items[0];
     if (isSuperset(firstItem)) {
-      // FIX: Set to first POSE duration, not superset total
-      // Calculate superset duration dynamically from poses
-      const calculatedDuration = getSupersetDuration(firstItem);
-      setTimeRemaining(firstItem.poses[0].duration);
-      setSupersetTimeRemaining(calculatedDuration);
-      setSupersetTotalDuration(calculatedDuration);
+      const scaledPoseDuration = getScaledDuration(firstItem.poses[0].duration, mult);
+      const scaledTotal = getScaledSupersetDuration(firstItem, mult);
+      setTimeRemaining(scaledPoseDuration);
+      setSupersetTimeRemaining(scaledTotal);
+      setSupersetTotalDuration(scaledTotal);
     } else {
-      setTimeRemaining(firstItem.duration);
+      setTimeRemaining(getScaledDuration(firstItem.duration, mult));
       setSupersetTimeRemaining(0);
       setSupersetTotalDuration(0);
     }
@@ -132,6 +141,7 @@ export default function YogaView() {
           // If in manual mode, reset to initial time to repeat
           if (isManualMode) {
             setTimeRemaining(initialTotalTime);
+            setHalfwayChimePlayed(false);
           }
         }
         return;
@@ -139,7 +149,16 @@ export default function YogaView() {
 
       // Normal timer logic (only runs when NOT in transition)
       if (timeRemaining > 0) {
-        // Check for halfway chime before decrementing
+        // Manual mode halfway chime - always plays
+        if (isManualMode) {
+          const halfwayPoint = Math.ceil(initialTotalTime / 2);
+          if (!halfwayChimePlayed && timeRemaining === halfwayPoint) {
+            playManualModeHalfwayChime();
+            setHalfwayChimePlayed(true);
+          }
+        }
+
+        // Flow mode halfway chime
         if (!isManualMode && selectedFlow) {
           const currentItem = selectedFlow.items[currentItemIndex];
           let currentPose: YogaPose | null = null;
@@ -161,8 +180,9 @@ export default function YogaView() {
             chimeEnabled = currentItem.halfwayChime;
           }
 
-          // Play chime at halfway point
-          const halfwayPoint = Math.ceil(poseDuration / 2);
+          // Play chime at halfway point (using scaled duration)
+          const scaledDuration = getScaledDuration(poseDuration);
+          const halfwayPoint = Math.ceil(scaledDuration / 2);
           if (chimeEnabled && !halfwayChimePlayed && timeRemaining === halfwayPoint) {
             playHalfway();
             setHalfwayChimePlayed(true);
@@ -207,6 +227,7 @@ export default function YogaView() {
     halfwayChimePlayed,
     isInTransition,
     transitionTimeRemaining,
+    durationMultiplier,
   ]);
 
   const advanceToNextPose = (useTransition: boolean = true) => {
@@ -227,7 +248,7 @@ export default function YogaView() {
       if (nextPoseIndex < currentItem.poses.length) {
         // Move to next pose in superset
         setCurrentPoseInSuperset(nextPoseIndex);
-        setTimeRemaining(currentItem.poses[nextPoseIndex].duration);
+        setTimeRemaining(getScaledDuration(currentItem.poses[nextPoseIndex].duration));
         setHalfwayChimePlayed(false); // Reset for new pose
         // Superset timer continues counting
         return;
@@ -243,14 +264,12 @@ export default function YogaView() {
       setHalfwayChimePlayed(false); // Reset for new pose
 
       if (isSuperset(nextItem)) {
-        // FIX: Set to first POSE duration, not superset total
-        // Calculate superset duration dynamically from poses
-        const calculatedDuration = getSupersetDuration(nextItem);
-        setTimeRemaining(nextItem.poses[0].duration);
-        setSupersetTimeRemaining(calculatedDuration);
-        setSupersetTotalDuration(calculatedDuration);
+        const scaledTotal = getScaledSupersetDuration(nextItem);
+        setTimeRemaining(getScaledDuration(nextItem.poses[0].duration));
+        setSupersetTimeRemaining(scaledTotal);
+        setSupersetTotalDuration(scaledTotal);
       } else {
-        setTimeRemaining(nextItem.duration);
+        setTimeRemaining(getScaledDuration(nextItem.duration));
         setSupersetTimeRemaining(0);
         setSupersetTotalDuration(0);
       }
@@ -274,12 +293,12 @@ export default function YogaView() {
     if (isSuperset(currentItem) && currentPoseInSuperset > 0) {
       const prevPoseIndex = currentPoseInSuperset - 1;
       setCurrentPoseInSuperset(prevPoseIndex);
-      setTimeRemaining(currentItem.poses[prevPoseIndex].duration);
+      setTimeRemaining(getScaledDuration(currentItem.poses[prevPoseIndex].duration));
       setHalfwayChimePlayed(false); // Reset for new pose
       // Recalculate superset remaining time
       const remainingDuration = currentItem.poses
         .slice(prevPoseIndex)
-        .reduce((sum, pose) => sum + pose.duration, 0);
+        .reduce((sum, pose) => sum + getScaledDuration(pose.duration), 0);
       setSupersetTimeRemaining(remainingDuration);
       return;
     }
@@ -293,14 +312,14 @@ export default function YogaView() {
 
       if (isSuperset(prevItem)) {
         // Go to last pose in previous superset
-        const calculatedDuration = getSupersetDuration(prevItem);
+        const calculatedDuration = getScaledSupersetDuration(prevItem);
         setCurrentPoseInSuperset(prevItem.poses.length - 1);
-        setTimeRemaining(prevItem.poses[prevItem.poses.length - 1].duration);
-        setSupersetTimeRemaining(prevItem.poses[prevItem.poses.length - 1].duration);
+        setTimeRemaining(getScaledDuration(prevItem.poses[prevItem.poses.length - 1].duration));
+        setSupersetTimeRemaining(getScaledDuration(prevItem.poses[prevItem.poses.length - 1].duration));
         setSupersetTotalDuration(calculatedDuration);
       } else {
         setCurrentPoseInSuperset(0);
-        setTimeRemaining(prevItem.duration);
+        setTimeRemaining(getScaledDuration(prevItem.duration));
         setSupersetTimeRemaining(0);
         setSupersetTotalDuration(0);
       }
@@ -314,16 +333,18 @@ export default function YogaView() {
     advanceToNextPose(false);
   };
 
-  const handleSelectFlow = (flow: YogaFlow) => {
+  const handleSelectFlow = (flow: YogaFlow, multiplier: number = 1) => {
+    setDurationMultiplier(multiplier);
     setSelectedFlow(flow);
     setIsManualMode(false);
     setShowFlowSelect(false);
     setIsRunning(false);
-    initializeFirstPose(flow);
+    initializeFirstPose(flow, multiplier);
 
     // Save to storage
     storeData(YOGA_TIMER_APP_DATA, {
       selectedFlowId: flow.id,
+      durationMultiplier: multiplier,
     });
   };
 
@@ -371,7 +392,9 @@ export default function YogaView() {
         playStart();
       } else if (!isManualMode && selectedFlow) {
         const firstItem = selectedFlow.items[0];
-        const firstPoseDuration = isSuperset(firstItem) ? firstItem.poses[0].duration : firstItem.duration;
+        const firstPoseDuration = isSuperset(firstItem)
+          ? getScaledDuration(firstItem.poses[0].duration)
+          : getScaledDuration(firstItem.duration);
         if (currentItemIndex === 0 && currentPoseInSuperset === 0 && timeRemaining === firstPoseDuration) {
           playStart();
         }
@@ -553,6 +576,8 @@ export default function YogaView() {
 
   return (
     <View style={screenStyles.contentContainer}>
+      {/* Content area - flex to prevent pushing button off screen */}
+      <View style={styles.contentArea}>
       {/* Timer display - moved to top */}
       <View style={TimerStyles.vertBox}>
         <View style={TimerStyles.marginTop}>
@@ -722,6 +747,7 @@ export default function YogaView() {
           {h}:{m}:{s} <Text style={styles.currentTimePeriod}>{pam}</Text>
         </Text>
       </View>
+      </View>
 
       {/* Start/Stop/Resume button */}
       <View style={screenStyles.buttonContainer}>
@@ -823,6 +849,11 @@ export default function YogaView() {
 
 const styles = StyleSheet.create({
   // Layout
+  contentArea: {
+    flex: 1,
+    alignItems: "center" as const,
+    width: "100%",
+  },
   flowContentArea: {
     flex: 1,
   },
@@ -849,7 +880,7 @@ const styles = StyleSheet.create({
 
   // Flow Name
   flowNameContainer: {
-    marginTop: 35,
+    marginTop: 4,
     paddingHorizontal: 20,
   },
   flowName: {
@@ -858,10 +889,10 @@ const styles = StyleSheet.create({
 
   // Superset Info
   supersetInfoContainer: {
-    marginTop: 20,
+    marginTop: 8,
     paddingHorizontal: 20,
     alignItems: "center" as const,
-    minHeight: 50, // Reserve space to prevent layout shift
+    minHeight: 40, // Reserve space to prevent layout shift
   },
   supersetLabel: {
     fontSize: 14,
@@ -877,14 +908,14 @@ const styles = StyleSheet.create({
     textAlign: "center" as const,
   },
   supersetPlaceholder: {
-    height: 50, // Match minHeight to maintain consistent spacing
+    height: 40, // Match minHeight to maintain consistent spacing
   },
 
   // Progress Text
   progressTextContainer: {
-    marginBottom: 10,
+    marginBottom: 4,
     paddingHorizontal: 30,
-    minHeight: 30,
+    minHeight: 20,
     justifyContent: "center",
   },
   progressText: {
@@ -902,7 +933,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    marginTop: 30,
+    marginTop: 12,
     paddingHorizontal: 20,
   },
   sideIconContainer: {
@@ -924,7 +955,6 @@ const styles = StyleSheet.create({
     marginTop: 0,
     paddingHorizontal: 30,
     maxHeight: 180,
-    minHeight: 180,
     overflow: "hidden",
   },
   poseInfoPlaceholder: {

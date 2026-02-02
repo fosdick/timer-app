@@ -10,6 +10,7 @@ type storageData = {
   totalTime?: number;
   yogaTotalInterval?: number;
   selectedFlowId?: string;
+  durationMultiplier?: number;
   removeAds?: boolean;
   appUserId?: string;
   message?: string;

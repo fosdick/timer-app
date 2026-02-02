@@ -62,3 +62,32 @@ export const getSupersetDuration = (superset: YogaSuperset): number => {
 export const getSupersetName = (superset: YogaSuperset): string => {
   return superset.name || superset.progressText || "Superset";
 };
+
+export const TRANSITION_DELAY_SECONDS = 5;
+
+// Count total individual poses in a flow (including poses within supersets)
+export const getTotalPoseCount = (flow: YogaFlow): number => {
+  return flow.items.reduce((count, item) => {
+    if (isSuperset(item)) {
+      return count + item.poses.length;
+    }
+    return count + 1;
+  }, 0);
+};
+
+// Calculate total flow duration including transitions and optional duration multiplier
+export const calculateFlowDurationWithTransitions = (
+  flow: YogaFlow,
+  durationMultiplier: number = 1,
+): number => {
+  const scaledDuration = flow.items.reduce((total, item) => {
+    if (isSuperset(item)) {
+      return total + item.poses.reduce(
+        (sum, pose) => sum + Math.round(pose.duration * durationMultiplier), 0
+      );
+    }
+    return total + Math.round(item.duration * durationMultiplier);
+  }, 0);
+  const totalPoses = getTotalPoseCount(flow);
+  return scaledDuration + (TRANSITION_DELAY_SECONDS * (totalPoses - 1));
+};
