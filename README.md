@@ -1,6 +1,14 @@
 # Timer App Yoga
 
+##
+
+<b> If you want to get a test to the phone <b>
+`eas build --profile development`
+follow the prompts.
+
 ## Get started
+
+### this is very thin documentation
 
 1. Install dependencies
 

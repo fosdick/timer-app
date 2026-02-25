@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SVG Trace Tester</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: system-ui, sans-serif;
+      background: #0f0f0f;
+      color: #e0e0e0;
+      min-height: 100vh;
+      padding: 32px 24px;
+    }
+
+    h1 { font-size: 1.4rem; font-weight: 600; margin-bottom: 4px; color: #fff; }
+    .subtitle { font-size: 0.85rem; color: #888; margin-bottom: 28px; }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      gap: 24px;
+      max-width: 1100px;
+    }
+
+    /* ── Controls ─────────────────────────────────────────────── */
+    .controls {
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 12px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .section-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #555;
+      margin-bottom: 4px;
+    }
+
+    .drop-zone {
+      border: 2px dashed #333;
+      border-radius: 8px;
+      padding: 24px 16px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+      font-size: 0.85rem;
+      color: #666;
+    }
+    .drop-zone:hover, .drop-zone.drag-over {
+      border-color: #81C784;
+      background: rgba(129, 199, 132, 0.04);
+      color: #81C784;
+    }
+    .drop-zone .filename {
+      margin-top: 8px;
+      font-size: 0.78rem;
+      color: #81C784;
+    }
+    #file-input { display: none; }
+
+    .param { display: flex; flex-direction: column; gap: 4px; }
+    .param label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.82rem;
+      color: #bbb;
+    }
+    .param label span { color: #81C784; font-weight: 600; min-width: 30px; text-align: right; }
+    .param input[type=range] {
+      width: 100%;
+      accent-color: #81C784;
+    }
+    .param .hint { font-size: 0.72rem; color: #555; }
+
+    .tracer-badge {
+      display: inline-block;
+      font-size: 0.72rem;
+      padding: 2px 8px;
+      border-radius: 99px;
+      background: #222;
+      color: #888;
+    }
+    .tracer-badge.potrace { background: rgba(129,199,132,0.15); color: #81C784; }
+
+    .submit-btn {
+      background: #81C784;
+      color: #0f0f0f;
+      border: none;
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .submit-btn:hover { opacity: 0.85; }
+    .submit-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+    .status {
+      font-size: 0.8rem;
+      color: #888;
+      min-height: 1.2em;
+      text-align: center;
+    }
+    .status.error { color: #e57373; }
+    .status.ok    { color: #81C784; }
+
+    /* ── Preview ──────────────────────────────────────────────── */
+    .preview-area {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .preview-panels {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      flex: 1;
+    }
+
+    .panel {
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .panel-header {
+      padding: 10px 16px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: #666;
+      border-bottom: 1px solid #222;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .panel-body {
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 320px;
+      background: #fff;  /* white bg so SVG lines are visible */
+    }
+    .panel-body.dark-bg { background: #111; }
+
+    .panel-body img {
+      max-width: 100%;
+      max-height: 400px;
+      object-fit: contain;
+    }
+    .panel-body svg {
+      max-width: 100%;
+      max-height: 400px;
+    }
+    .empty-hint {
+      color: #ccc;
+      font-size: 0.82rem;
+      background: transparent;
+    }
+
+    .download-btn {
+      display: none;
+      background: #1a1a1a;
+      border: 1px solid #333;
+      color: #81C784;
+      border-radius: 6px;
+      padding: 6px 14px;
+      font-size: 0.78rem;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .download-btn:hover { background: #222; }
+
+    /* checkerboard bg option for svg */
+    .checker {
+      background-image:
+        linear-gradient(45deg, #ddd 25%, transparent 25%),
+        linear-gradient(-45deg, #ddd 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #ddd 75%),
+        linear-gradient(-45deg, transparent 75%, #ddd 75%);
+      background-size: 16px 16px;
+      background-position: 0 0, 0 8px, 8px -8px, -8px 0px;
+      background-color: #fff;
+    }
+  </style>
+</head>
+<body>
+
+<h1>SVG Trace Tester</h1>
+<p class="subtitle">Upload a sketch photo → get a traceable SVG back from the python-api</p>
+
+<div class="layout">
+
+  <!-- ── Controls ───────────────────────────────────────────── -->
+  <div class="controls">
+
+    <!-- Server URL -->
+    <div>
+      <div class="section-label">API URL</div>
+      <input id="api-url" type="text" value="http://localhost:8001/trace"
+        style="width:100%;background:#111;border:1px solid #333;color:#e0e0e0;
+               border-radius:6px;padding:6px 10px;font-size:0.82rem;" />
+    </div>
+
+    <!-- File drop -->
+    <div>
+      <div class="section-label">Sketch Photo</div>
+      <div class="drop-zone" id="drop-zone">
+        Drop image here or click to browse
+        <div class="filename" id="filename-display" style="display:none"></div>
+      </div>
+      <input type="file" id="file-input" accept="image/jpeg,image/png,image/webp" />
+    </div>
+
+    <!-- Tracer info -->
+    <div>
+      <div class="section-label">Active tracer</div>
+      <span class="tracer-badge" id="tracer-badge">checking…</span>
+    </div>
+
+    <!-- Preprocessing params -->
+    <div>
+      <div class="section-label">Preprocessing</div>
+
+      <div class="param">
+        <label>Threshold C <span id="threshold-val">8</span></label>
+        <input type="range" id="threshold" min="0" max="50" value="8"
+               oninput="document.getElementById('threshold-val').textContent=this.value" />
+        <div class="hint">Lower = capture more ink. Try 5–12 for clean sketches.</div>
+      </div>
+
+      <div class="param" style="margin-top:10px">
+        <label>Blur radius <span id="blur-val">3</span></label>
+        <input type="range" id="blur-radius" min="0" max="21" step="2" value="3"
+               oninput="document.getElementById('blur-val').textContent=this.value" />
+        <div class="hint">0 = off. Use 3–7 to soften JPEG noise before thresholding.</div>
+      </div>
+    </div>
+
+    <!-- Tracing params -->
+    <div id="potrace-params">
+      <div class="section-label">potrace options</div>
+      <div class="param">
+        <label>Turd size <span id="turd-val">10</span></label>
+        <input type="range" id="turdsize" min="0" max="500" value="10"
+               oninput="document.getElementById('turd-val').textContent=this.value" />
+        <div class="hint">Remove speckles smaller than this area (px²).</div>
+      </div>
+      <div class="param" style="margin-top:10px">
+        <label>Alpha max <span id="alpha-val">1.0</span></label>
+        <input type="range" id="alphamax" min="0" max="1.34" step="0.01" value="1.0"
+               oninput="document.getElementById('alpha-val').textContent=parseFloat(this.value).toFixed(2)" />
+        <div class="hint">0 = sharp corners · 1.34 = all smooth curves.</div>
+      </div>
+    </div>
+
+    <div id="opencv-params" style="display:none">
+      <div class="section-label">OpenCV options</div>
+      <div class="param">
+        <label>Simplify <span id="simplify-val">2.0</span></label>
+        <input type="range" id="simplify" min="0.1" max="20" step="0.1" value="2.0"
+               oninput="document.getElementById('simplify-val').textContent=parseFloat(this.value).toFixed(1)" />
+        <div class="hint">Higher = fewer path points, smoother but less detail.</div>
+      </div>
+      <div class="param" style="margin-top:10px">
+        <label>Min area <span id="minarea-val">50</span></label>
+        <input type="range" id="min-area" min="0" max="2000" step="10" value="50"
+               oninput="document.getElementById('minarea-val').textContent=this.value" />
+        <div class="hint">Discard contours smaller than this (px²). Removes noise.</div>
+      </div>
+    </div>
+
+    <button class="submit-btn" id="submit-btn" disabled>Trace →</button>
+    <div class="status" id="status">Upload an image to begin.</div>
+  </div>
+
+  <!-- ── Preview ─────────────────────────────────────────────── -->
+  <div class="preview-area">
+    <div class="preview-panels">
+
+      <div class="panel">
+        <div class="panel-header">
+          Original
+          <span style="color:#555;font-weight:400">input photo</span>
+        </div>
+        <div class="panel-body dark-bg" id="original-panel">
+          <span class="empty-hint" style="color:#444">No image yet</span>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          SVG result
+          <a class="download-btn" id="download-btn" download="pose.svg">↓ Download</a>
+        </div>
+        <div class="panel-body checker" id="svg-panel">
+          <span class="empty-hint">Waiting for trace…</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const apiUrlInput  = document.getElementById('api-url');
+  const dropZone     = document.getElementById('drop-zone');
+  const fileInput    = document.getElementById('file-input');
+  const filenameDisp = document.getElementById('filename-display');
+  const submitBtn    = document.getElementById('submit-btn');
+  const statusEl     = document.getElementById('status');
+  const originalPanel = document.getElementById('original-panel');
+  const svgPanel     = document.getElementById('svg-panel');
+  const downloadBtn  = document.getElementById('download-btn');
+  const tracerBadge  = document.getElementById('tracer-badge');
+  const potraceParams = document.getElementById('potrace-params');
+  const opencvParams  = document.getElementById('opencv-params');
+
+  let selectedFile = null;
+
+  // ── Health check ───────────────────────────────────────────────────────────
+  async function checkHealth() {
+    const base = apiUrlInput.value.replace(/\/trace$/, '');
+    try {
+      const res = await fetch(`${base}/health`);
+      const data = await res.json();
+      const isPotrace = data.tracer === 'potrace';
+      tracerBadge.textContent = isPotrace ? '✓ potrace' : '⚠ opencv (fallback)';
+      tracerBadge.className = 'tracer-badge' + (isPotrace ? ' potrace' : '');
+      potraceParams.style.display = isPotrace ? '' : 'none';
+      opencvParams.style.display  = isPotrace ? 'none' : '';
+    } catch {
+      tracerBadge.textContent = '✗ API offline';
+      tracerBadge.className = 'tracer-badge';
+    }
+  }
+  checkHealth();
+  apiUrlInput.addEventListener('change', checkHealth);
+
+  // ── File selection ─────────────────────────────────────────────────────────
+  dropZone.addEventListener('click', () => fileInput.click());
+  fileInput.addEventListener('change', () => setFile(fileInput.files[0]));
+
+  dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+  dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+  dropZone.addEventListener('drop', e => {
+    e.preventDefault();
+    dropZone.classList.remove('drag-over');
+    setFile(e.dataTransfer.files[0]);
+  });
+
+  function setFile(file) {
+    if (!file) return;
+    selectedFile = file;
+    filenameDisp.textContent = file.name;
+    filenameDisp.style.display = 'block';
+    submitBtn.disabled = false;
+    setStatus('', '');
+
+    // Show original preview
+    const reader = new FileReader();
+    reader.onload = e => {
+      originalPanel.innerHTML = `<img src="${e.target.result}" alt="original" />`;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  // ── Submit ─────────────────────────────────────────────────────────────────
+  submitBtn.addEventListener('click', async () => {
+    if (!selectedFile) return;
+
+    submitBtn.disabled = true;
+    setStatus('Tracing…', '');
+    svgPanel.innerHTML = '<span class="empty-hint">Processing…</span>';
+    downloadBtn.style.display = 'none';
+
+    const form = new FormData();
+    form.append('file', selectedFile);
+    form.append('threshold',    document.getElementById('threshold').value);
+    form.append('blur_radius',  document.getElementById('blur-radius').value);
+    form.append('turdsize',     document.getElementById('turdsize').value);
+    form.append('alphamax',     document.getElementById('alphamax').value);
+    form.append('opttolerance', '0.2');
+    form.append('simplify',     document.getElementById('simplify').value);
+    form.append('min_area',     document.getElementById('min-area').value);
+
+    try {
+      const res = await fetch(apiUrlInput.value, { method: 'POST', body: form });
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({ detail: res.statusText }));
+        throw new Error(err.detail || res.statusText);
+      }
+
+      const svgText = await res.text();
+
+      // Inline SVG preview
+      svgPanel.innerHTML = svgText;
+      const svgEl = svgPanel.querySelector('svg');
+      if (svgEl) {
+        svgEl.style.maxWidth = '100%';
+        svgEl.style.maxHeight = '400px';
+      }
+
+      // Download link
+      const blob = new Blob([svgText], { type: 'image/svg+xml' });
+      const url  = URL.createObjectURL(blob);
+      const fname = selectedFile.name.replace(/\.[^.]+$/, '') + '.svg';
+      downloadBtn.href = url;
+      downloadBtn.download = fname;
+      downloadBtn.style.display = 'inline-block';
+
+      setStatus(`Done — ${(svgText.length / 1024).toFixed(1)} KB`, 'ok');
+    } catch (e) {
+      setStatus(`Error: ${e.message}`, 'error');
+      svgPanel.innerHTML = '<span class="empty-hint" style="color:#e57373">Trace failed</span>';
+    } finally {
+      submitBtn.disabled = false;
+    }
+  });
+
+  function setStatus(msg, cls) {
+    statusEl.textContent = msg;
+    statusEl.className = 'status' + (cls ? ` ${cls}` : '');
+  }
+</script>
+</body>
+</html>
