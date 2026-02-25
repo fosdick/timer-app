@@ -35,7 +35,7 @@ export default function RootLayout() {
       // OR: if building for Amazon, be sure to follow the installation instructions then:
        Purchases.configure({ apiKey: <revenuecat_project_amazon_api_key>, useAmazon: true });
     } */
-  });
+  }, []);
   useEffect(() => {
     if (loaded) {
       SplashScreen.hideAsync();

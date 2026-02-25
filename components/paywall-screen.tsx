@@ -21,7 +21,6 @@ const PaywallScreen = () => {
     const getPackages = async () => {
       try {
         const offerings = await Purchases.getOfferings();
-        setOfferings(offerings);
         if (
           offerings.current !== null &&
           offerings.current.availablePackages.length !== 0

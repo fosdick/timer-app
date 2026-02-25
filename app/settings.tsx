@@ -1,5 +1,5 @@
 import { StyleSheet, View } from "react-native";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import PaywallScreen from "@/components/paywall-screen";
 import RestorePurchasesButton from "@/components/restore-purchases-button";
 import { DisplayAdsContext } from "../components/display-ads-context";
@@ -7,7 +7,12 @@ import { deactivateKeepAwake } from "expo-keep-awake";
 
 import Support from "@/components/support";
 export default function TabTwoScreen() {
-  deactivateKeepAwake();
+  useEffect(() => {
+    // deactivateKeepAwake is async on web (Wake Lock API) — use .catch() not try/catch
+    deactivateKeepAwake().catch(() => {
+      // Wake lock may not have been activated yet (e.g. on web or direct navigation)
+    });
+  }, []);
   const { displayAds } = useContext(DisplayAdsContext);
 
   return (

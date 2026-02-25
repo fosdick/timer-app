@@ -6,7 +6,7 @@ export const fontWeights = {
   regular: "400",
   medium: "500",
   bold: "700",
-};
+} as const;
 
 // Typography Scales
 export const yogaTypography = {
@@ -15,7 +15,7 @@ export const yogaTypography = {
     fontSize: 18,
     fontWeight: fontWeights.regular,
     color: yogaColors.flowName,
-    textAlign: "center",
+    textAlign: "center" as const,
   },
 
   // Pose Name (Primary - Memory Trigger)
@@ -23,7 +23,7 @@ export const yogaTypography = {
     fontSize: 24,
     fontWeight: fontWeights.bold,
     color: yogaColors.poseCurrentName,
-    textAlign: "center",
+    textAlign: "center" as const,
   },
 
   // Instructional Cues (Secondary - Support)
@@ -31,7 +31,7 @@ export const yogaTypography = {
     fontSize: 16,
     fontWeight: fontWeights.regular,
     color: yogaColors.instructionalText,
-    textAlign: "center",
+    textAlign: "center" as const,
     lineHeight: 24,
   },
 
@@ -40,7 +40,7 @@ export const yogaTypography = {
     fontSize: 14,
     fontWeight: fontWeights.regular,
     color: yogaColors.timerLabel,
-    textAlign: "center",
+    textAlign: "center" as const,
     marginTop: 20,
   },
 
@@ -48,7 +48,7 @@ export const yogaTypography = {
     fontSize: 14,
     fontWeight: fontWeights.regular,
     color: yogaColors.currentTimeLabel,
-    textAlign: "center",
+    textAlign: "center" as const,
   },
 
   // Timer Countdown (00:04)
@@ -56,7 +56,7 @@ export const yogaTypography = {
     fontSize: 72,
     fontWeight: fontWeights.light,
     color: yogaColors.timerCountdown,
-    textAlign: "center",
+    textAlign: "center" as const,
     letterSpacing: -2,
   },
 
@@ -65,7 +65,7 @@ export const yogaTypography = {
     fontSize: 52,
     fontWeight: fontWeights.light,
     color: yogaColors.timerCountdown,
-    textAlign: "center",
+    textAlign: "center" as const,
     letterSpacing: -1,
     fontVariant: ["tabular-nums"],
   },
@@ -81,7 +81,7 @@ export const yogaTypography = {
     fontSize: 20,
     fontWeight: fontWeights.bold,
     color: yogaColors.progressText,
-    textAlign: "center",
+    textAlign: "center" as const,
     opacity: 0.8,
     lineHeight: 20,
     marginTop: 10,
@@ -95,7 +95,7 @@ export const yogaTypography = {
     fontSize: 12,
     fontWeight: fontWeights.regular,
     color: yogaColors.poseNavIcon,
-    textAlign: "center",
+    textAlign: "center" as const,
     opacity: 0.6,
   },
 };

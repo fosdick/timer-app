@@ -147,6 +147,8 @@ export const TimerStyles = StyleSheet.create({
   startButton: {
     paddingVertical: 18,
     paddingHorizontal: 48,
+    minWidth: 160,
+    textAlign: "center",
     borderWidth: 1,
     borderRadius: 10,
     fontSize: 16,

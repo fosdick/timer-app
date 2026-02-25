@@ -14,6 +14,10 @@ type storageData = {
   removeAds?: boolean;
   appUserId?: string;
   message?: string;
+  // Timer settings panel (durations + toggle; sounds are NOT persisted)
+  transitionPauseMs?: number;
+  halfMarkPauseMs?: number;
+  halfMarkEnabled?: boolean;
 };
 const storeData = async (key: string, value: Partial<storageData>) => {
   try {
