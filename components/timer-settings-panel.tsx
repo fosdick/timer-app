@@ -24,11 +24,25 @@ import { Audio } from "expo-av";
 import { yogaColors } from "@/assets/theme";
 
 // ─── Sound preview helper ─────────────────────────────────────────────────────
+// Module-level ref so only one preview plays at a time and we can stop it
+// when the picker or panel closes (important for long sounds like ocean wave).
+
+let _previewSound: Audio.Sound | null = null;
+
+const stopPreviewSound = () => {
+  if (_previewSound) {
+    const s = _previewSound;
+    _previewSound = null;
+    s.stopAsync().catch(() => {}).finally(() => s.unloadAsync().catch(() => {}));
+  }
+};
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 const playPreviewSound = (requireResult: any) => {
+  stopPreviewSound(); // stop any currently-playing preview first
   const play = async () => {
     const { sound } = await Audio.Sound.createAsync(requireResult);
+    _previewSound = sound;
     await sound.playAsync();
   };
   play();
@@ -310,6 +324,12 @@ export const TimerSettingsPanel = ({
   const [showTransitionPicker, setShowTransitionPicker] = useState(false);
   const [showHalfMarkPicker, setShowHalfMarkPicker] = useState(false);
 
+  // Stop any preview sound before closing the panel
+  const handleClose = () => {
+    stopPreviewSound();
+    onClose();
+  };
+
   // Slide-down animation
   const slideAnim = useRef(new Animated.Value(-300)).current;
 
@@ -329,7 +349,7 @@ export const TimerSettingsPanel = ({
       <TouchableOpacity
         style={styles.backdrop}
         activeOpacity={1}
-        onPress={onClose}
+        onPress={handleClose}
       />
 
       {/* Panel — slides down from top, above the backdrop */}
@@ -340,7 +360,7 @@ export const TimerSettingsPanel = ({
         <View style={styles.panelHeader}>
           <Text style={styles.panelTitle}>Timer Settings</Text>
           <TouchableOpacity
-            onPress={onClose}
+            onPress={handleClose}
             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
             activeOpacity={0.6}
           >
@@ -379,7 +399,7 @@ export const TimerSettingsPanel = ({
         options={TRANSITION_SOUNDS}
         selected={transitionSound}
         onSelect={onTransitionSoundChange}
-        onClose={() => setShowTransitionPicker(false)}
+        onClose={() => { stopPreviewSound(); setShowTransitionPicker(false); }}
       />
 
       <SoundPickerModal
@@ -388,7 +408,7 @@ export const TimerSettingsPanel = ({
         options={HALF_MARK_SOUNDS}
         selected={halfMarkSound}
         onSelect={onHalfMarkSoundChange}
-        onClose={() => setShowHalfMarkPicker(false)}
+        onClose={() => { stopPreviewSound(); setShowHalfMarkPicker(false); }}
       />
     </>
   );
