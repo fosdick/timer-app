@@ -245,6 +245,177 @@
       color: #81C784;
     }
 
+    /* ── Claude panel ─────────────────────────────────────────── */
+    .claude-panel {
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 12px;
+      overflow: hidden;
+      margin-top: 4px;
+    }
+
+    .claude-header {
+      padding: 10px 16px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: #666;
+      border-bottom: 1px solid #222;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .claude-body {
+      padding: 16px;
+    }
+
+    .analyze-btn {
+      background: #1a1a1a;
+      border: 1px solid #444;
+      color: #c5a3ff;
+      border-radius: 8px;
+      padding: 9px 18px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .analyze-btn:hover:not(:disabled) {
+      border-color: #c5a3ff;
+      background: rgba(197,163,255,0.06);
+    }
+    .analyze-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+    .claude-status {
+      font-size: 0.78rem;
+      color: #666;
+      margin-top: 6px;
+      min-height: 1.1em;
+    }
+    .claude-status.error { color: #e57373; }
+    .claude-status.ok    { color: #c5a3ff; }
+
+    .claude-results {
+      display: none;
+      margin-top: 16px;
+      display: none;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .claude-results.visible { display: flex; }
+
+    .pose-card {
+      background: #111;
+      border: 1px solid #2a2a2a;
+      border-radius: 8px;
+      padding: 14px 16px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: flex-start;
+    }
+
+    .pose-name {
+      flex: 1;
+      min-width: 160px;
+    }
+    .pose-name h3 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 2px;
+    }
+    .pose-name .sanskrit {
+      font-size: 0.78rem;
+      color: #888;
+      font-style: italic;
+    }
+
+    .confidence-badge {
+      font-size: 0.7rem;
+      padding: 3px 9px;
+      border-radius: 99px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      align-self: flex-start;
+      margin-top: 2px;
+    }
+    .confidence-badge.high   { background: rgba(129,199,132,0.15); color: #81C784; }
+    .confidence-badge.medium { background: rgba(255,183,77,0.15);  color: #FFB74D; }
+    .confidence-badge.low    { background: rgba(229,115,115,0.15); color: #E57373; }
+
+    .pose-notes {
+      width: 100%;
+      font-size: 0.8rem;
+      color: #888;
+      line-height: 1.5;
+      border-top: 1px solid #222;
+      padding-top: 10px;
+      margin-top: 2px;
+    }
+
+    .changes-note {
+      font-size: 0.75rem;
+      color: #555;
+      font-style: italic;
+    }
+
+    .claude-svg-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .mini-panel {
+      background: #fff;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .mini-panel-header {
+      background: #f0f0f0;
+      padding: 6px 10px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: #666;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+    .mini-panel-body {
+      padding: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 180px;
+    }
+    .mini-panel-body svg, .mini-panel-body img {
+      max-width: 100%;
+      max-height: 240px;
+      object-fit: contain;
+    }
+
+    .dl-refined-btn {
+      font-size: 0.68rem;
+      background: #1a1a1a;
+      border: 1px solid #333;
+      color: #c5a3ff;
+      border-radius: 4px;
+      padding: 3px 8px;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .dl-refined-btn:hover { background: #222; }
+
+    /* token usage micro-label */
+    .token-info {
+      font-size: 0.68rem;
+      color: #444;
+      text-align: right;
+    }
+
     /* checkerboard bg for svg */
     .checker {
       background-image:
@@ -271,7 +442,7 @@
     <!-- Server URL -->
     <div>
       <div class="section-label">API URL</div>
-      <input id="api-url" type="text" value="http://localhost:8001/trace"
+      <input id="api-url" type="text" value="/api/trace"
         style="width:100%;background:#111;border:1px solid #333;color:#e0e0e0;
                border-radius:6px;padding:6px 10px;font-size:0.82rem;" />
     </div>
@@ -416,7 +587,58 @@
       </div>
 
     </div>
-  </div>
+
+    <!-- ── Claude analysis panel ─────────────────────────── -->
+    <div class="claude-panel">
+      <div class="claude-header">
+        ✦ Claude Analysis
+        <span style="color:#444;font-weight:400;font-size:0.7rem">pose ID + SVG refinement</span>
+      </div>
+      <div class="claude-body">
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+          <button class="analyze-btn" id="analyze-btn" disabled>Analyze with Claude ✦</button>
+          <div class="claude-status" id="claude-status">Trace an image first.</div>
+        </div>
+
+        <!-- Results (hidden until analysis completes) -->
+        <div class="claude-results" id="claude-results">
+
+          <!-- Pose identification card -->
+          <div class="pose-card" id="pose-card">
+            <div class="pose-name">
+              <h3 id="pose-name-text">—</h3>
+              <div class="sanskrit" id="pose-sanskrit-text"></div>
+            </div>
+            <span class="confidence-badge" id="confidence-badge">—</span>
+            <div class="pose-notes" id="pose-notes-text"></div>
+          </div>
+
+          <!-- Original SVG vs Refined SVG -->
+          <div class="claude-svg-row">
+            <div class="mini-panel">
+              <div class="mini-panel-header">Before</div>
+              <div class="mini-panel-body checker" id="before-panel"></div>
+            </div>
+            <div class="mini-panel">
+              <div class="mini-panel-header">
+                After (refined)
+                <a class="dl-refined-btn" id="dl-refined-btn" download="pose-refined.svg">↓ Download</a>
+              </div>
+              <div class="mini-panel-body checker" id="after-panel"></div>
+            </div>
+          </div>
+
+          <!-- Changes + token info -->
+          <div style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:8px">
+            <div class="changes-note" id="changes-note"></div>
+            <div class="token-info" id="token-info"></div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /preview-area -->
 
 </div>
 
@@ -440,8 +662,23 @@
   const normOptions   = document.getElementById('norm-options');
   const normTag       = document.getElementById('norm-tag');
 
-  let selectedFile = null;
-  let selectedKpFile = null;
+  let selectedFile    = null;
+  let selectedKpFile  = null;
+  let currentSvgText  = null;   // set after each successful trace
+
+  // Claude panel elements
+  const analyzeBtn     = document.getElementById('analyze-btn');
+  const claudeStatus   = document.getElementById('claude-status');
+  const claudeResults  = document.getElementById('claude-results');
+  const poseNameText   = document.getElementById('pose-name-text');
+  const poseSanskrit   = document.getElementById('pose-sanskrit-text');
+  const confidenceBadge = document.getElementById('confidence-badge');
+  const poseNotesText  = document.getElementById('pose-notes-text');
+  const beforePanel    = document.getElementById('before-panel');
+  const afterPanel     = document.getElementById('after-panel');
+  const dlRefinedBtn   = document.getElementById('dl-refined-btn');
+  const changesNote    = document.getElementById('changes-note');
+  const tokenInfo      = document.getElementById('token-info');
 
   // ── Health check ───────────────────────────────────────────────────────────
   async function checkHealth() {
@@ -570,6 +807,12 @@
       }
 
       const svgText = await res.text();
+      currentSvgText = svgText;                 // store for Claude
+      analyzeBtn.disabled = false;
+      claudeStatus.textContent = 'Ready — click Analyze with Claude ✦';
+      claudeStatus.className = 'claude-status';
+      claudeResults.classList.remove('visible'); // reset previous results
+
       const wasNormalised = res.headers.get('X-Normalised') === 'true';
       const normError     = res.headers.get('X-Normalisation-Error');
 
@@ -615,6 +858,80 @@
     statusEl.textContent = msg;
     statusEl.className = 'status' + (cls ? ` ${cls}` : '');
   }
+
+  // ── Claude analyze ─────────────────────────────────────────────────────────
+  analyzeBtn.addEventListener('click', async () => {
+    if (!currentSvgText) return;
+
+    analyzeBtn.disabled = true;
+    claudeStatus.textContent = 'Sending to Claude…';
+    claudeStatus.className = 'claude-status';
+    claudeResults.classList.remove('visible');
+
+    // Derive Claude endpoint from the current trace URL:
+    // strip /trace suffix and replace with /claude/analyze
+    const base = apiUrlInput.value.replace(/\/trace$/, '').replace(/\/api$/, '');
+    const claudeUrl = `${base}/api/claude/analyze`;
+
+    try {
+      const body = {
+        svg: currentSvgText,
+      };
+
+      const res = await fetch(claudeUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({ error: res.statusText }));
+        throw new Error(err.error || err.detail || res.statusText);
+      }
+
+      const data = await res.json();
+
+      // ── Pose card ──────────────────────────────────────────────────────────
+      poseNameText.textContent  = data.pose.name || '—';
+      poseSanskrit.textContent  = data.pose.sanskrit || '';
+      poseNotesText.textContent = data.pose.notes || '';
+
+      const conf = data.pose.confidence || 'low';
+      confidenceBadge.textContent = conf;
+      confidenceBadge.className = `confidence-badge ${conf}`;
+
+      // ── Before / after SVG ─────────────────────────────────────────────────
+      function inlineSvg(container, svgText) {
+        container.innerHTML = svgText;
+        const el = container.querySelector('svg');
+        if (el) { el.style.maxWidth = '100%'; el.style.maxHeight = '240px'; }
+      }
+      inlineSvg(beforePanel, currentSvgText);
+      inlineSvg(afterPanel, data.refinedSvg);
+
+      // ── Download refined ───────────────────────────────────────────────────
+      const blob = new Blob([data.refinedSvg], { type: 'image/svg+xml' });
+      dlRefinedBtn.href = URL.createObjectURL(blob);
+      const baseName = (selectedFile?.name || 'pose').replace(/\.[^.]+$/, '');
+      dlRefinedBtn.download = `${baseName}-refined.svg`;
+
+      // ── Footer ─────────────────────────────────────────────────────────────
+      changesNote.textContent = data.changes ? `Changes: ${data.changes}` : '';
+      tokenInfo.textContent   = data.usage
+        ? `${data.usage.inputTokens + data.usage.outputTokens} tokens · ${data.model}`
+        : '';
+
+      claudeResults.classList.add('visible');
+      claudeStatus.textContent = `✓ ${data.pose.name}`;
+      claudeStatus.className = 'claude-status ok';
+
+    } catch (e) {
+      claudeStatus.textContent = `Error: ${e.message}`;
+      claudeStatus.className = 'claude-status error';
+    } finally {
+      analyzeBtn.disabled = false;
+    }
+  });
 </script>
 </body>
 </html>

@@ -17,26 +17,29 @@ function useApiHealth(): ApiStatus {
   return status;
 }
 
-// ── Nav tabs ───────────────────────────────────────────────
+// ── Tabs ───────────────────────────────────────────────────
 
 const TABS = [
-  { id: "flow-editor", label: "Flow Editor" },
+  { id: "flow-editor", label: "Flow Editor",  src: "/pages/flow-editor.html" },
+  { id: "svg-tracer",  label: "SVG Tracer",   src: "/pages/svg-tracer.html"  },
 ] as const;
 
 type TabId = (typeof TABS)[number]["id"];
 
-// ── Placeholder pages ──────────────────────────────────────
+// ── Full-height iframe page ────────────────────────────────
 
-function FlowEditorPlaceholder() {
+function IframePage({ src, title }: { src: string; title: string }) {
   return (
-    <div className="placeholder-card">
-      <h2>Flow Editor</h2>
-      <p>
-        Yoga flow JSON editor — coming soon.
-        <br />
-        This will be a port of <code>assets/data/yoga-flow-editor.html</code>.
-      </p>
-    </div>
+    <iframe
+      src={src}
+      title={title}
+      style={{
+        width: "100%",
+        height: "100%",
+        border: "none",
+        display: "block",
+      }}
+    />
   );
 }
 
@@ -47,11 +50,11 @@ function App() {
   const apiStatus = useApiHealth();
 
   const statusLabel =
-    apiStatus === "checking"
-      ? "API …"
-      : apiStatus === "ok"
-      ? "API ✓"
-      : "API ✗";
+    apiStatus === "checking" ? "API …"
+    : apiStatus === "ok"     ? "API ✓"
+    :                          "API ✗";
+
+  const activeTabDef = TABS.find((t) => t.id === activeTab)!;
 
   return (
     <div className="admin-layout">
@@ -81,9 +84,9 @@ function App() {
         ))}
       </nav>
 
-      {/* Content */}
+      {/* Content — full-height iframe */}
       <main className="admin-main">
-        {activeTab === "flow-editor" && <FlowEditorPlaceholder />}
+        <IframePage src={activeTabDef.src} title={activeTabDef.label} />
       </main>
     </div>
   );

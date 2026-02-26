@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Yoga Flow Editor</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 20px;
+      background: #f5f5f5;
+      color: #333;
+    }
+
+    h1, h2, h3 {
+      color: #629231;
+    }
+
+    .section {
+      background: white;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 5px;
+      color: #555;
+    }
+
+    label .optional {
+      font-weight: 400;
+      color: #999;
+      font-size: 0.9em;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    textarea,
+    select {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 14px;
+      font-family: inherit;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 60px;
+    }
+
+    button {
+      background: #629231;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      transition: background 0.2s;
+    }
+
+    button:hover {
+      background: #4b6806;
+    }
+
+    button.secondary {
+      background: #91BD27;
+    }
+
+    button.secondary:hover {
+      background: #629231;
+    }
+
+    button.danger {
+      background: #dc3545;
+    }
+
+    button.danger:hover {
+      background: #c82333;
+    }
+
+    button.small {
+      padding: 6px 12px;
+      font-size: 13px;
+    }
+
+    .item-card {
+      border: 2px solid #e0e0e0;
+      border-radius: 6px;
+      padding: 15px;
+      margin-bottom: 15px;
+      background: #fafafa;
+      position: relative;
+    }
+
+    .item-card.superset {
+      border-color: #91BD27;
+      background: #f9fdf5;
+    }
+
+    .item-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    .item-controls {
+      display: flex;
+      gap: 8px;
+    }
+
+    .pose-badge {
+      display: inline-block;
+      background: #629231;
+      color: white;
+      padding: 4px 12px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .superset-badge {
+      background: #91BD27;
+    }
+
+    .nested-poses {
+      margin-left: 20px;
+      padding-left: 20px;
+      border-left: 3px solid #91BD27;
+      margin-top: 15px;
+    }
+
+    .nested-pose {
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      padding: 12px;
+      margin-bottom: 10px;
+      background: white;
+    }
+
+    .add-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .output-section {
+      background: #2d2d2d;
+      color: #f8f8f2;
+      border-radius: 8px;
+      padding: 20px;
+      margin-top: 30px;
+    }
+
+    .output-section h2 {
+      color: #91BD27;
+      margin-top: 0;
+    }
+
+    pre {
+      background: #1e1e1e;
+      padding: 15px;
+      border-radius: 4px;
+      overflow-x: auto;
+      margin: 15px 0;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .copy-button {
+      margin-top: 10px;
+    }
+
+    .helper-text {
+      font-size: 12px;
+      color: #666;
+      margin-top: 5px;
+      font-style: italic;
+    }
+
+    .asset-id-list {
+      background: #f0f7e8;
+      padding: 10px;
+      border-radius: 4px;
+      margin-top: 5px;
+      font-size: 12px;
+      color: #555;
+    }
+
+    .duration-calc {
+      background: #fff3cd;
+      border: 1px solid #ffc107;
+      padding: 10px;
+      border-radius: 4px;
+      margin-bottom: 15px;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <h1>🧘 Yoga Flow Editor</h1>
+  <p>Create and edit yoga flow sequences. Generate JSON to copy into <code>yoga-flows.json</code></p>
+
+  <div class="section">
+    <h2>Import Existing Flow</h2>
+    <p>Paste an existing flow JSON here to edit it. Supports backward compatibility.</p>
+
+    <div class="form-group">
+      <label for="importJson">Paste Flow JSON Array <span class="optional">(optional)</span></label>
+      <textarea id="importJson" placeholder='[{"id": "flow-id", "name": "Flow Name", ...}]' style="min-height: 120px;"></textarea>
+      <div class="helper-text">Paste the entire flow array from yoga-flows.json</div>
+    </div>
+
+    <button onclick="importJSON()" class="secondary">📥 Import Flow</button>
+    <button onclick="clearImport()" class="danger small" style="margin-left: 10px;">Clear</button>
+  </div>
+
+  <div class="section">
+    <h2>Flow Information</h2>
+
+    <div class="form-group">
+      <label for="flowId">Flow ID <span class="optional">(required)</span></label>
+      <input type="text" id="flowId" placeholder="e.g., morning-energizer" />
+      <div class="helper-text">Use lowercase with hyphens (kebab-case)</div>
+    </div>
+
+    <div class="form-group">
+      <label for="flowName">Flow Name <span class="optional">(required)</span></label>
+      <input type="text" id="flowName" placeholder="e.g., Morning Energizer" />
+    </div>
+
+    <div class="form-group">
+      <label for="flowDescription">Description <span class="optional">(required)</span></label>
+      <textarea id="flowDescription" placeholder="e.g., A 20-minute energizing sequence to start your day"></textarea>
+    </div>
+
+    <div class="duration-calc">
+      <strong>Total Duration:</strong> <span id="totalDuration">0</span> seconds (<span id="totalMinutes">0:00</span>)
+      <div class="helper-text">Auto-calculated from all poses below</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Flow Sequence</h2>
+    <p>Add poses and supersets in order. Drag to reorder.</p>
+
+    <div id="itemsList"></div>
+
+    <div class="add-buttons">
+      <button onclick="addPose()" class="secondary">+ Add Pose</button>
+      <button onclick="addSuperset()" class="secondary">+ Add Superset</button>
+    </div>
+  </div>
+
+  <div class="output-section">
+    <h2>Generated JSON</h2>
+    <button onclick="generateJSON()" class="secondary">🔄 Generate JSON</button>
+    <pre id="jsonOutput">Click "Generate JSON" to see output</pre>
+    <button onclick="copyToClipboard()" class="copy-button">📋 Copy to Clipboard</button>
+  </div>
+
+  <div class="section">
+    <h3>Available Asset IDs</h3>
+    <div class="asset-id-list">
+      <strong>Current assets:</strong> generic, mountain-pose, downward-dog, warrior-1
+      <br><em>Leave blank or use "generic" for default yoga icon</em>
+    </div>
+  </div>
+
+  <script>
+    let items = [];
+    let itemIdCounter = 0;
+
+    // Initialize with one empty pose
+    window.addEventListener('DOMContentLoaded', () => {
+      addPose();
+    });
+
+    function addPose() {
+      const item = {
+        id: itemIdCounter++,
+        type: 'pose',
+        name: '',
+        duration: 30,
+        description: '',
+        progressText: '',
+        assetId: '',
+        halfwayChime: false
+      };
+      items.push(item);
+      renderItems();
+      updateTotalDuration();
+    }
+
+    function addSuperset() {
+      const item = {
+        id: itemIdCounter++,
+        type: 'superset',
+        name: '',
+        totalDuration: 60, // Will be auto-calculated
+        assetId: '',
+        halfwayChime: false,
+        poses: [
+          { name: '', duration: 30, description: '', assetId: '', halfwayChime: false }
+        ]
+      };
+      items.push(item);
+      renderItems();
+      updateTotalDuration();
+    }
+
+    function removeItem(id) {
+      if (confirm('Remove this item?')) {
+        items = items.filter(item => item.id !== id);
+        renderItems();
+        updateTotalDuration();
+      }
+    }
+
+    function moveItemUp(id) {
+      const index = items.findIndex(item => item.id === id);
+      if (index > 0) {
+        [items[index], items[index - 1]] = [items[index - 1], items[index]];
+        renderItems();
+      }
+    }
+
+    function moveItemDown(id) {
+      const index = items.findIndex(item => item.id === id);
+      if (index < items.length - 1) {
+        [items[index], items[index + 1]] = [items[index + 1], items[index]];
+        renderItems();
+      }
+    }
+
+    function addPoseToSuperset(itemId) {
+      const item = items.find(i => i.id === itemId);
+      if (item && item.type === 'superset') {
+        item.poses.push({ name: '', duration: 30, description: '', assetId: '', halfwayChime: false });
+        renderItems();
+        updateTotalDuration();
+      }
+    }
+
+    function removePoseFromSuperset(itemId, poseIndex) {
+      const item = items.find(i => i.id === itemId);
+      if (item && item.type === 'superset' && item.poses.length > 1) {
+        item.poses.splice(poseIndex, 1);
+        renderItems();
+        updateTotalDuration();
+      }
+    }
+
+    function updatePoseField(itemId, field, value) {
+      const item = items.find(i => i.id === itemId);
+      if (item) {
+        if (field === 'duration' || field === 'totalDuration') {
+          item[field] = parseInt(value) || 0;
+        } else if (field === 'halfwayChime') {
+          item[field] = value; // Boolean value
+        } else {
+          item[field] = value;
+        }
+        updateTotalDuration();
+      }
+    }
+
+    function updateSupersetPoseField(itemId, poseIndex, field, value) {
+      const item = items.find(i => i.id === itemId);
+      if (item && item.type === 'superset') {
+        if (field === 'duration') {
+          item.poses[poseIndex][field] = parseInt(value) || 0;
+        } else if (field === 'halfwayChime') {
+          item.poses[poseIndex][field] = value; // Boolean value
+        } else {
+          item.poses[poseIndex][field] = value;
+        }
+        updateTotalDuration();
+      }
+    }
+
+    function calculateSupersetDuration(superset) {
+      return superset.poses.reduce((sum, pose) => sum + (pose.duration || 0), 0);
+    }
+
+    function updateTotalDuration() {
+      const total = items.reduce((sum, item) => {
+        if (item.type === 'superset') {
+          // Auto-calculate from poses
+          const supersetDuration = calculateSupersetDuration(item);
+          item.totalDuration = supersetDuration; // Update the stored value
+          return sum + supersetDuration;
+        }
+        return sum + (item.duration || 0);
+      }, 0);
+
+      document.getElementById('totalDuration').textContent = total;
+      const minutes = Math.floor(total / 60);
+      const seconds = total % 60;
+      document.getElementById('totalMinutes').textContent =
+        `${minutes}:${seconds.toString().padStart(2, '0')}`;
+    }
+
+    function renderItems() {
+      const container = document.getElementById('itemsList');
+
+      if (items.length === 0) {
+        container.innerHTML = '<p style="color: #999;">No items yet. Add a pose or superset above.</p>';
+        return;
+      }
+
+      container.innerHTML = items.map((item, index) => {
+        if (item.type === 'pose') {
+          return `
+            <div class="item-card">
+              <div class="item-header">
+                <span class="pose-badge">Pose ${index + 1}</span>
+                <div class="item-controls">
+                  <button class="small secondary" onclick="moveItemUp(${item.id})" ${index === 0 ? 'disabled' : ''}>↑</button>
+                  <button class="small secondary" onclick="moveItemDown(${item.id})" ${index === items.length - 1 ? 'disabled' : ''}>↓</button>
+                  <button class="small danger" onclick="removeItem(${item.id})">✕</button>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label>Pose Name</label>
+                <input type="text" value="${item.name}"
+                  oninput="updatePoseField(${item.id}, 'name', this.value)"
+                  placeholder="e.g., Mountain Pose" />
+              </div>
+
+              <div class="form-group">
+                <label>Duration (seconds)</label>
+                <input type="number" value="${item.duration}"
+                  oninput="updatePoseField(${item.id}, 'duration', this.value)"
+                  min="0" />
+              </div>
+
+              <div class="form-group">
+                <label>Description <span class="optional">(optional)</span></label>
+                <textarea oninput="updatePoseField(${item.id}, 'description', this.value)"
+                  placeholder="e.g., Stand tall with feet together">${item.description}</textarea>
+              </div>
+
+              <div class="form-group">
+                <label>Progress Text <span class="optional">(optional)</span></label>
+                <input type="text" value="${item.progressText}"
+                  oninput="updatePoseField(${item.id}, 'progressText', this.value)"
+                  placeholder="e.g., Pose 1 of 10" />
+              </div>
+
+              <div class="form-group">
+                <label>Asset ID <span class="optional">(optional)</span></label>
+                <input type="text" value="${item.assetId}"
+                  oninput="updatePoseField(${item.id}, 'assetId', this.value)"
+                  placeholder="e.g., mountain-pose" />
+                <div class="helper-text">Must match an ID in yoga-assets.ts</div>
+              </div>
+
+              <div class="form-group">
+                <label>
+                  <input type="checkbox" ${item.halfwayChime ? 'checked' : ''}
+                    onchange="updatePoseField(${item.id}, 'halfwayChime', this.checked)" />
+                  Halfway Chime (play sound at 50% of duration)
+                </label>
+              </div>
+            </div>
+          `;
+        } else {
+          return `
+            <div class="item-card superset">
+              <div class="item-header">
+                <span class="pose-badge superset-badge">Superset ${index + 1}</span>
+                <div class="item-controls">
+                  <button class="small secondary" onclick="moveItemUp(${item.id})" ${index === 0 ? 'disabled' : ''}>↑</button>
+                  <button class="small secondary" onclick="moveItemDown(${item.id})" ${index === items.length - 1 ? 'disabled' : ''}>↓</button>
+                  <button class="small danger" onclick="removeItem(${item.id})">✕</button>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label>Superset Name <span class="optional">(required)</span></label>
+                <input type="text" value="${item.name || ''}"
+                  oninput="updatePoseField(${item.id}, 'name', this.value)"
+                  placeholder="e.g., Warrior Sequence" />
+                <div class="helper-text">Displayed during flow playback</div>
+              </div>
+
+              <div class="form-group">
+                <label>Total Duration (seconds) - Auto-Calculated</label>
+                <input type="number" value="${calculateSupersetDuration(item)}"
+                  readonly
+                  style="background: #f0f0f0; cursor: not-allowed;"
+                  min="0" />
+                <div class="helper-text">Automatically calculated from all poses in this superset</div>
+              </div>
+
+              <div class="form-group">
+                <label>Default Asset ID <span class="optional">(optional)</span></label>
+                <input type="text" value="${item.assetId}"
+                  oninput="updatePoseField(${item.id}, 'assetId', this.value)"
+                  placeholder="e.g., warrior-1" />
+                <div class="helper-text">Used for all poses unless overridden</div>
+              </div>
+
+              <div class="form-group">
+                <label>
+                  <input type="checkbox" ${item.halfwayChime ? 'checked' : ''}
+                    onchange="updatePoseField(${item.id}, 'halfwayChime', this.checked)" />
+                  Halfway Chime (default for all poses in superset)
+                </label>
+                <div class="helper-text">Individual poses can override this setting</div>
+              </div>
+
+              <div class="nested-poses">
+                <h4>Poses in Superset</h4>
+                ${item.poses.map((pose, poseIndex) => `
+                  <div class="nested-pose">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                      <strong>Pose ${poseIndex + 1}</strong>
+                      ${item.poses.length > 1 ? `
+                        <button class="small danger" onclick="removePoseFromSuperset(${item.id}, ${poseIndex})">Remove</button>
+                      ` : ''}
+                    </div>
+
+                    <div class="form-group">
+                      <label>Name</label>
+                      <input type="text" value="${pose.name}"
+                        oninput="updateSupersetPoseField(${item.id}, ${poseIndex}, 'name', this.value)"
+                        placeholder="e.g., Warrior I - Right" />
+                    </div>
+
+                    <div class="form-group">
+                      <label>Duration (seconds)</label>
+                      <input type="number" value="${pose.duration}"
+                        oninput="updateSupersetPoseField(${item.id}, ${poseIndex}, 'duration', this.value)"
+                        min="0" />
+                    </div>
+
+                    <div class="form-group">
+                      <label>Description <span class="optional">(optional)</span></label>
+                      <textarea oninput="updateSupersetPoseField(${item.id}, ${poseIndex}, 'description', this.value)"
+                        placeholder="e.g., Right foot forward, arms up">${pose.description}</textarea>
+                    </div>
+
+                    <div class="form-group">
+                      <label>Asset ID <span class="optional">(optional, overrides superset default)</span></label>
+                      <input type="text" value="${pose.assetId || ''}"
+                        oninput="updateSupersetPoseField(${item.id}, ${poseIndex}, 'assetId', this.value)"
+                        placeholder="Leave blank to use superset default" />
+                    </div>
+
+                    <div class="form-group">
+                      <label>
+                        <input type="checkbox" ${pose.halfwayChime ? 'checked' : ''}
+                          onchange="updateSupersetPoseField(${item.id}, ${poseIndex}, 'halfwayChime', this.checked)" />
+                        Halfway Chime (overrides superset default)
+                      </label>
+                    </div>
+                  </div>
+                `).join('')}
+                <button class="small secondary" onclick="addPoseToSuperset(${item.id})">+ Add Pose to Superset</button>
+              </div>
+            </div>
+          `;
+        }
+      }).join('');
+    }
+
+    function importJSON() {
+      const jsonText = document.getElementById('importJson').value.trim();
+
+      if (!jsonText) {
+        alert('Please paste a flow JSON array to import');
+        return;
+      }
+
+      try {
+        const flows = JSON.parse(jsonText);
+
+        // Validate it's an array with at least one flow
+        if (!Array.isArray(flows) || flows.length === 0) {
+          alert('Invalid format. Please paste a JSON array containing at least one flow.');
+          return;
+        }
+
+        const flow = flows[0]; // Import the first flow in the array
+
+        // Validate required fields
+        if (!flow.id || !flow.name || !flow.description || !flow.items) {
+          alert('Invalid flow format. Missing required fields (id, name, description, or items).');
+          return;
+        }
+
+        // Populate flow information fields
+        document.getElementById('flowId').value = flow.id || '';
+        document.getElementById('flowName').value = flow.name || '';
+        document.getElementById('flowDescription').value = flow.description || '';
+
+        // Reset items array
+        items = [];
+        itemIdCounter = 0;
+
+        // Convert flow items to editor format
+        flow.items.forEach(item => {
+          if (item.type === 'superset') {
+            // Handle superset with backward compatibility
+            const superset = {
+              id: itemIdCounter++,
+              type: 'superset',
+              // Backward compatibility: use 'name' if present, otherwise fall back to 'progressText'
+              name: item.name || item.progressText || '',
+              totalDuration: item.totalDuration || 0,
+              assetId: item.assetId || '',
+              halfwayChime: item.halfwayChime || false,
+              poses: (item.poses || []).map(pose => ({
+                name: pose.name || '',
+                duration: pose.duration || 30,
+                description: pose.description || '',
+                assetId: pose.assetId || '',
+                halfwayChime: pose.halfwayChime || false
+              }))
+            };
+
+            // Ensure at least one pose in the superset
+            if (superset.poses.length === 0) {
+              superset.poses.push({ name: '', duration: 30, description: '', assetId: '', halfwayChime: false });
+            }
+
+            items.push(superset);
+          } else {
+            // Handle regular pose
+            const pose = {
+              id: itemIdCounter++,
+              type: 'pose',
+              name: item.name || '',
+              duration: item.duration || 30,
+              description: item.description || '',
+              progressText: item.progressText || '',
+              assetId: item.assetId || '',
+              halfwayChime: item.halfwayChime || false
+            };
+            items.push(pose);
+          }
+        });
+
+        // Re-render with imported data
+        renderItems();
+        updateTotalDuration();
+
+        // Show success message
+        alert(`Successfully imported flow: "${flow.name}"\n\n` +
+              `${items.length} item(s) loaded. ` +
+              (flows.length > 1 ? `\n\nNote: Only the first flow was imported. The array contained ${flows.length} flows.` : ''));
+
+      } catch (error) {
+        alert('Failed to parse JSON. Please check the format.\n\nError: ' + error.message);
+      }
+    }
+
+    function clearImport() {
+      if (confirm('Clear the import textarea?')) {
+        document.getElementById('importJson').value = '';
+      }
+    }
+
+    function generateJSON() {
+      const flowId = document.getElementById('flowId').value.trim();
+      const flowName = document.getElementById('flowName').value.trim();
+      const flowDescription = document.getElementById('flowDescription').value.trim();
+
+      if (!flowId || !flowName || !flowDescription) {
+        alert('Please fill in Flow ID, Name, and Description');
+        return;
+      }
+
+      const totalDuration = items.reduce((sum, item) => {
+        if (item.type === 'superset') {
+          return sum + calculateSupersetDuration(item);
+        }
+        return sum + (item.duration || 0);
+      }, 0);
+
+      const flowItems = items.map(item => {
+        if (item.type === 'pose') {
+          const pose = {
+            name: item.name,
+            duration: item.duration
+          };
+          if (item.description) pose.description = item.description;
+          if (item.progressText) pose.progressText = item.progressText;
+          if (item.assetId) pose.assetId = item.assetId;
+          if (item.halfwayChime) pose.halfwayChime = item.halfwayChime;
+          return pose;
+        } else {
+          const superset = {
+            type: 'superset',
+            name: item.name,
+            totalDuration: calculateSupersetDuration(item),
+            poses: item.poses.map(p => {
+              const pose = {
+                name: p.name,
+                duration: p.duration
+              };
+              if (p.description) pose.description = p.description;
+              if (p.assetId) pose.assetId = p.assetId;
+              if (p.halfwayChime) pose.halfwayChime = p.halfwayChime;
+              return pose;
+            })
+          };
+          if (item.assetId) superset.assetId = item.assetId;
+          if (item.halfwayChime) superset.halfwayChime = item.halfwayChime;
+          return superset;
+        }
+      });
+
+      const flow = {
+        id: flowId,
+        name: flowName,
+        description: flowDescription,
+        totalDuration: totalDuration,
+        items: flowItems
+      };
+
+      const json = JSON.stringify([flow], null, 2);
+      document.getElementById('jsonOutput').textContent = json;
+    }
+
+    function copyToClipboard() {
+      const jsonText = document.getElementById('jsonOutput').textContent;
+
+      if (jsonText === 'Click "Generate JSON" to see output') {
+        alert('Please generate JSON first');
+        return;
+      }
+
+      navigator.clipboard.writeText(jsonText).then(() => {
+        const btn = event.target;
+        const originalText = btn.textContent;
+        btn.textContent = '✓ Copied!';
+        setTimeout(() => {
+          btn.textContent = originalText;
+        }, 2000);
+      }).catch(err => {
+        alert('Failed to copy. Please copy manually from the text above.');
+      });
+    }
+  </script>
+</body>
+</html>

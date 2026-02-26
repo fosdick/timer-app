@@ -8,6 +8,8 @@ import swaggerOptions from "./swaggerOptions"; // Import the options created abo
 
 import flowsRouter from "./routes/flows";
 import healthRouter from "./routes/health";
+import traceRouter from "./routes/trace";
+import claudeRouter from "./routes/claude";
 
 dotenv.config();
 
@@ -25,6 +27,8 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
 // API routes
 app.use("/api", healthRouter);
 app.use("/api", flowsRouter);
+app.use("/api", traceRouter);
+app.use("/api", claudeRouter);
 
 // Serve static web build in production
 if (process.env.NODE_ENV === "production") {
