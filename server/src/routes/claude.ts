@@ -91,9 +91,42 @@ const ANALYSIS_TOOL: Anthropic.Tool = {
   },
 };
 
-// ── System prompt ─────────────────────────────────────────────────────────────
+// ── System prompts ────────────────────────────────────────────────────────────
 
-const SYSTEM_PROMPT = `You are an expert yoga teacher and SVG developer.
+// Used when MediaPipe keypoints are available — much more reliable for pose ID.
+const SYSTEM_PROMPT_WITH_KEYPOINTS = `You are an expert yoga teacher and SVG developer.
+
+You will receive:
+  1. A JSON array of 33 MediaPipe pose landmarks for a yoga pose held by a person
+     on video. Each landmark has: id, name, x (0–1 left→right), y (0–1 top→bottom),
+     z (depth), visibility (0–1 confidence).
+  2. A traced SVG of a hand-drawn sketch of that same pose, for you to clean up.
+
+Key landmark IDs for pose identification:
+  0  nose          11 left_shoulder   12 right_shoulder
+  13 left_elbow    14 right_elbow     15 left_wrist    16 right_wrist
+  23 left_hip      24 right_hip       25 left_knee     26 right_knee
+  27 left_ankle    28 right_ankle
+
+To identify the pose, use the landmark coordinates:
+  - Compute joint angles (e.g. angle at knee = vectors thigh→knee and shin→knee).
+  - Check stance width (hip-to-ankle horizontal spread).
+  - Check arm position (wrists above/below/level with shoulders).
+  - Check weight distribution (are both feet on the ground? one leg raised?).
+  - Ignore landmarks with visibility < 0.4.
+
+To clean the SVG:
+  - DO NOT alter any <path d="..."> geometry data.
+  - DO remove entire <path> or <g> elements that are clearly noise
+    (tiny isolated specks whose bounding box is < 1% of the main figure).
+  - DO ensure all paths have fill="black" and no stroke attribute.
+  - DO set a tight viewBox that crops to the figure with ~10% padding.
+  - Return the complete, valid SVG string.
+
+Call report_pose_analysis with your findings.`;
+
+// Fallback when no keypoints provided — SVG geometry only.
+const SYSTEM_PROMPT_SVG_ONLY = `You are an expert yoga teacher and SVG developer.
 
 You will receive a traced SVG of a hand-drawn yoga pose sketch.
 
@@ -119,6 +152,16 @@ Call report_pose_analysis with your findings.`;
 
 interface AnalyzeRequest {
   svg: string;
+  keypoints?: Array<{           // MediaPipe landmark array (from *_keypoints.json)
+    id: number;
+    name: string;
+    x: number;
+    y: number;
+    z: number;
+    visibility: number;
+  }>;
+  userPrompt?: string;          // Custom system prompt written by the user in the UI
+  overlayImage?: string;        // Base64 data URL of keypoint skeleton drawn over the photo
   model?: string;
 }
 
@@ -169,7 +212,7 @@ export interface PoseAnalysis {
  *         description: ANTHROPIC_API_KEY not configured
  */
 router.post("/claude/analyze", async (req: Request, res: Response) => {
-  const { svg, model } = req.body as AnalyzeRequest;
+  const { svg, keypoints, userPrompt, overlayImage, model } = req.body as AnalyzeRequest;
 
   if (!svg || typeof svg !== "string" || svg.trim().length === 0) {
     res.status(400).json({ error: "Missing required field: svg (string)" });
@@ -190,14 +233,60 @@ router.post("/claude/analyze", async (req: Request, res: Response) => {
     process.env.CLAUDE_MODEL ||
     "claude-sonnet-4-5-20250929";
 
-  // ── Build message content (SVG text only) ─────────────────────────────────
+  const hasKeypoints = Array.isArray(keypoints) && keypoints.length > 0;
+  const hasOverlay   = typeof overlayImage === "string" && overlayImage.length > 0;
+  console.log(
+    `[claude/analyze] model=${resolvedModel} svg=${(svg.length/1024).toFixed(1)}kb` +
+    ` keypoints=${hasKeypoints ? keypoints!.length : "none"}` +
+    ` overlay=${hasOverlay ? (overlayImage!.length / 1024).toFixed(0) + "kb" : "none"}` +
+    ` prompt=${userPrompt ? "custom" : "preset"}`
+  );
 
-  const userContent: Anthropic.MessageParam["content"] = [
-    {
-      type: "text",
-      text: `Here is the traced SVG of a hand-drawn yoga pose sketch:\n\n${svg}\n\nAnalyse the path geometry to identify the pose, then return a cleaned SVG.`,
-    },
-  ];
+  // ── Build message content ──────────────────────────────────────────────────
+
+  // User-supplied prompt takes priority over the built-in presets.
+  // Append the mandatory tool-call instruction so the route always gets
+  // structured output it can parse — the user doesn't need to know about this.
+  const TOOL_CALL_SUFFIX = "\n\nCall report_pose_analysis with your findings.";
+
+  const systemPrompt = userPrompt
+    ? userPrompt.trimEnd() + TOOL_CALL_SUFFIX
+    : hasKeypoints
+      ? SYSTEM_PROMPT_WITH_KEYPOINTS
+      : SYSTEM_PROMPT_SVG_ONLY;
+
+  const userParts: string[] = [];
+
+  if (hasOverlay) {
+    userParts.push("The annotated photo above shows the MediaPipe skeleton overlay (blue = left side, orange = right side). Use it to understand the pose geometry.");
+  }
+
+  if (hasKeypoints) {
+    // Filter to visible landmarks only to keep the prompt concise
+    const visible = keypoints!.filter(k => k.visibility >= 0.4);
+    userParts.push(
+      `MediaPipe landmarks (${visible.length} visible, visibility ≥ 0.4):\n` +
+      JSON.stringify(visible, null, 2)
+    );
+  }
+
+  userParts.push(
+    `Traced SVG${hasKeypoints ? " (use for SVG cleanup, landmarks above for pose ID)" : " (use for both pose ID and cleanup)"}:\n\n${svg}`
+  );
+
+  // Build content array — overlay image goes first so Claude sees it before the text
+  const userContent: Anthropic.MessageParam["content"] = [];
+
+  if (hasOverlay) {
+    // Strip data URL prefix if present (e.g. "data:image/jpeg;base64,")
+    const b64 = overlayImage!.replace(/^data:image\/\w+;base64,/, "");
+    userContent.push({
+      type: "image",
+      source: { type: "base64", media_type: "image/jpeg", data: b64 },
+    } as Anthropic.ImageBlockParam);
+  }
+
+  userContent.push({ type: "text", text: userParts.join("\n\n---\n\n") });
 
   // ── Call Claude ────────────────────────────────────────────────────────────
 
@@ -206,14 +295,33 @@ router.post("/claude/analyze", async (req: Request, res: Response) => {
     message = await client.messages.create({
       model: resolvedModel,
       max_tokens: 8096,
-      system: SYSTEM_PROMPT,
+      system: systemPrompt,
       tools: [ANALYSIS_TOOL],
       tool_choice: { type: "tool", name: "report_pose_analysis" },
       messages: [{ role: "user", content: userContent }],
     });
   } catch (err: unknown) {
-    const msg = err instanceof Error ? err.message : String(err);
-    res.status(502).json({ error: "Claude API error", detail: msg });
+    // Surface the full Anthropic error — status code, type, and message
+    const isAnthropicError = err instanceof Anthropic.APIError;
+    const status  = isAnthropicError ? err.status  : undefined;
+    const type    = isAnthropicError ? err.name    : undefined;
+    const message = err instanceof Error ? err.message : String(err);
+
+    console.error("[claude/analyze] Anthropic API error:", {
+      status,
+      type,
+      message,
+      model: resolvedModel,
+      svgLength: svg.length,
+    });
+
+    res.status(502).json({
+      error:   message,
+      status,
+      type,
+      model:   resolvedModel,
+      svgKb:   (svg.length / 1024).toFixed(1),
+    });
     return;
   }
 

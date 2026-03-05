@@ -20,8 +20,9 @@ function useApiHealth(): ApiStatus {
 // ── Tabs ───────────────────────────────────────────────────
 
 const TABS = [
-  { id: "flow-editor", label: "Flow Editor",  src: "/pages/flow-editor.html" },
-  { id: "svg-tracer",  label: "SVG Tracer",   src: "/pages/svg-tracer.html"  },
+  { id: "pose-library",  label: "Pose Library",   src: "/pages/pose-library.html" },
+  { id: "flow-editor",   label: "Flow Editor",   src: "/pages/flow-editor.html"  },
+  { id: "svg-tracer",    label: "SVG Tracer",     src: "/pages/svg-tracer.html"   },
 ] as const;
 
 type TabId = (typeof TABS)[number]["id"];
@@ -46,7 +47,7 @@ function IframePage({ src, title }: { src: string; title: string }) {
 // ── App shell ──────────────────────────────────────────────
 
 function App() {
-  const [activeTab, setActiveTab] = useState<TabId>("flow-editor");
+  const [activeTab, setActiveTab] = useState<TabId>("pose-library");
   const apiStatus = useApiHealth();
 
   const statusLabel =

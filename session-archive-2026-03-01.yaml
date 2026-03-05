@@ -1,0 +1,174 @@
+# ── Session Archive ────────────────────────────────────────────────────────────
+# Date: 2026-02-28 → 2026-03-01
+# Thread: Pose Library build-out (3 sessions, compacted)
+# Load this file at the start of the next thread alongside project-brief.yaml
+# ──────────────────────────────────────────────────────────────────────────────
+
+session:
+  dates: [2026-02-28, 2026-03-01]
+  focus: Pose Library admin UI + server routes — full CRUD, SVG pipeline integration, reference images
+
+# ── What we built ────────────────────────────────────────────────────────────
+
+built:
+
+  pose_library_html:
+    location: admin/public/pages/pose-library.html
+    status: beta — ready for sketch import and data entry
+    features:
+      - Grid view with search, status filters (draft/traced/analyzed/production-ready)
+      - Stat badges (total, per-status counts)
+      - Pose detail slide-out panel with full metadata editing
+      - SVG variant system (front, back, side-left, side-right, annotated-*)
+      - Inline variant label editing (double-click)
+      - Auto-trace on sketch upload (compress → POST /api/trace → crop → preview)
+      - Rotation controls: 90° button + fine-tune input (0.5° steps)
+      - Rotation uses original SVG + cumulative angle → crop (no drift)
+      - Bounding-box crop after trace and rotation (offscreen getBBox)
+      - Set primary variant (determines grid thumbnail)
+      - "Open in Tracer" button → links to svg-tracer with poseId/variantId
+      - Save traced SVG → updates variant + pose status, refreshes grid + detail
+      - White background on SVG thumbnails (admin-side fix for black contours)
+      - Reference images section: multi-upload, grid display, delete
+      - Claude text review: grammar/spelling check on all text fields
+      - Apply/dismiss review suggestions
+    line_count: ~1850
+
+  pose_library_types:
+    location: assets/data/pose-library.ts
+    changes:
+      - Moved keypointsJson and overlay from PoseAssets to PoseVariant (variant-level)
+      - Removed pose-level claudeAnalysis (now per-variant)
+      - Added ClaudeAnalysis interface
+      - Helpers: createBlankVariant, createBlankPose, computePoseStatus, etc.
+
+  pose_library_json:
+    location: assets/data/pose-library.json
+    version: "1.2"
+    schema_changes:
+      - Variant-level keypointsJson, overlay, claudeAnalysis
+      - Each variant has independent status pipeline
+
+  server_poses_routes:
+    location: server/src/routes/poses.ts
+    routes:
+      - GET    /api/poses                                          — Full library
+      - GET    /api/poses/:poseId                                  — Single pose
+      - POST   /api/poses                                          — Create pose (draft)
+      - PUT    /api/poses/:poseId                                  — Update metadata/status (deep merge variants)
+      - POST   /api/poses/:poseId/variants/:variantId/upload-sketch — Upload sketch photo
+      - GET    /api/poses/:poseId/variants/:variantId/assets/:file — Serve variant asset
+      - PUT    /api/poses/:poseId/variants/:variantId/assets/:file — Save variant asset (traced.svg, production.svg, etc.)
+      - GET    /api/poses/:poseId/references                       — List reference images
+      - POST   /api/poses/:poseId/references                       — Upload reference image
+      - GET    /api/poses/:poseId/references/:filename             — Serve reference image
+      - DELETE /api/poses/:poseId/references/:filename             — Delete reference image
+      - POST   /api/poses/:poseId/review-text                     — Claude text review (grammar/spelling)
+    notes:
+      - Express 5 params return string|string[] — param() helper handles this
+      - Deep merge on PUT /poses/:poseId for incremental variant updates
+      - Reference images stored in svg-pipeline/poses/{poseId}/references/
+      - Text review uses Anthropic SDK with structured tool output
+
+  svg_tracer_updates:
+    location: admin/public/pages/svg-tracer.html
+    changes:
+      - Added bounding-box crop after tracing
+      - Rotation: 90° button + fine-tune input (0.5° steps)
+      - Rotation always from original SVG (no cumulative drift)
+      - Library integration: auto-load sketch when opened with ?poseId&variantId
+      - "Save to Library" button (writes traced.svg + updates status)
+      - "Save Refined to Library" button (writes production.svg + Claude analysis)
+      - Green "Linked to Library" banner when opened from pose library
+
+# ── Directory convention ─────────────────────────────────────────────────────
+
+asset_layout:
+  svg-pipeline/poses/{poseId}/:
+    references/:
+      - "{name}_{timestamp}.jpg"     # book pages, analog text sources
+    {variantId}/:
+      - sketch.jpg                   # compressed hand-drawn sketch
+      - traced.svg                   # potrace output, cropped to content
+      - production.svg               # Claude-refined final SVG
+      - keypoints.json               # MediaPipe 33-landmark file
+      - overlay.jpg                  # keypoint skeleton visualization
+
+# ── Key design decisions ─────────────────────────────────────────────────────
+
+decisions:
+  variant_level_pipeline:
+    note: >
+      Each variant (front, back, side-left, etc.) has its own independent
+      sketch → traced → analyzed → production pipeline. Status tracked per-variant.
+      Pose-level status is the aggregate.
+
+  json_source_of_truth:
+    note: >
+      pose-library.json is the single source of truth for metadata.
+      Asset files on disk are referenced by convention path (poses/{poseId}/{variantId}/...).
+      Server reads JSON for metadata, serves files from disk for assets.
+
+  svg_fill_color_strategy:
+    note: >
+      Traced SVGs have fill="black" paths (black contours on white).
+      Admin: white background on thumbnail containers (CSS).
+      App: needs CSS fill override — use `svg path { fill: currentColor }` or
+      `filter: invert(1)` to match dark theme. NOT YET IMPLEMENTED in app.
+      This is a TODO for when SVGs are integrated into the mobile app.
+
+  reference_images:
+    note: >
+      Book pages and analog text sources uploaded at pose level.
+      Stored in references/ directory. OCR/text extraction is future work.
+      For now they serve as visual reference during manual data entry.
+      Future: scan images → markdown/yaml → auto-populate text fields.
+
+  claude_text_review:
+    note: >
+      Text-only review (no images). Checks grammar, spelling, Sanskrit
+      transliteration, cue formatting, medical terminology.
+      Returns structured suggestions with field-by-field diffs.
+      User can apply all or dismiss. Must click Save to persist.
+
+  rotation_approach:
+    note: >
+      Always rotates from original un-rotated SVG to prevent cumulative
+      transform drift. Stores original SVG + cumulative angle separately.
+      After rotation, crops to content bounding box (offscreen getBBox).
+      Supports 90° jumps and arbitrary fine-tune (0.5° increments).
+
+# ── Known issues / TODO ──────────────────────────────────────────────────────
+
+known_issues:
+  - SVG fill color for dark app theme (see decisions.svg_fill_color_strategy)
+  - OCR for reference images not yet implemented (upload-only for now)
+  - Claude text review requires ANTHROPIC_API_KEY in server/.env
+  - No batch import yet — poses added one at a time through UI
+
+# ── What's next ──────────────────────────────────────────────────────────────
+
+next_priorities:
+  immediate:
+    - Start importing sketches through pose library UI
+    - Fill in text metadata (english name, sanskrit, cues, contraindications)
+    - Use reference images as visual aid during data entry
+    - Test Claude text review on populated poses
+  soon:
+    - OCR pipeline for reference images → markdown/yaml
+    - SVG fill color solution for mobile app dark theme
+    - Batch import tooling (if needed after manual import experience)
+    - Wire pose library into mobile app flow playback
+  later:
+    - Match existing extracted_poses/ keypoints to hand-drawn sketches
+    - Production SVG refinement with Claude + keypoints
+    - Flow editor ↔ pose library integration
+
+# ── Working relationship note ─────────────────────────────────────────────────
+
+relationship:
+  note: >
+    Unchanged from previous session. Jarvis holds the value: 75 drawings,
+    teaching knowledge, artistic intent, pose sequencing logic.
+    Don't over-help. Don't name poses. Don't make artistic calls.
+    Ask before assuming. Execute when direction is clear.

@@ -405,5 +405,97 @@
         "description": "Remove blanket and extend legs long.  Tuck in the shoulder blades and place arms long along the sides of the body.  Breathe slowly with intent and relax.  You Did it!"
       }
     ]
+  },
+  {
+    "id": "test-svg",
+    "name": "Test SVG",
+    "description": "Test flow for evaluating traced SVG poses in-app. All 14 library poses with random durations.",
+    "totalDuration": 106,
+    "items": [
+      {
+        "name": "Easy Seat",
+        "duration": 2,
+        "description": "",
+        "assetId": "easy-seat"
+      },
+      {
+        "name": "Staff",
+        "duration": 9,
+        "description": "",
+        "assetId": "staff"
+      },
+      {
+        "name": "Cobblers",
+        "duration": 11,
+        "description": "",
+        "assetId": "cobblers"
+      },
+      {
+        "name": "Halfway Lift",
+        "duration": 2,
+        "description": "",
+        "assetId": "halfway-lift"
+      },
+      {
+        "name": "Mountain Overhead",
+        "duration": 8,
+        "description": "",
+        "assetId": "mountain-overhead"
+      },
+      {
+        "name": "Standing Prayer",
+        "duration": 6,
+        "description": "",
+        "assetId": "standing-prayer"
+      },
+      {
+        "name": "Mountain Pose",
+        "duration": 11,
+        "description": "Stand tall with feet hip-width apart, arms relaxed at sides.",
+        "assetId": "mountain-pose"
+      },
+      {
+        "name": "Fire Log",
+        "duration": 10,
+        "description": "",
+        "assetId": "fire-log"
+      },
+      {
+        "name": "Plank",
+        "duration": 9,
+        "description": "Hands rooted under shoulders, heels pressing to the wall behind you.",
+        "assetId": "plank"
+      },
+      {
+        "name": "Seated Wide Legged Forward Fold",
+        "duration": 11,
+        "description": "",
+        "assetId": "seated-wide-legged-forward-fold"
+      },
+      {
+        "name": "Upward Facing Dog",
+        "duration": 6,
+        "description": "Look forward and open the chest",
+        "assetId": "upward-facing-dog"
+      },
+      {
+        "name": "Downward-Facing Dog",
+        "duration": 2,
+        "description": "Inverted V-shape with hands and feet on the ground, hips pressing up and back.",
+        "assetId": "downward-dog"
+      },
+      {
+        "name": "Forward Fold",
+        "duration": 11,
+        "description": "",
+        "assetId": "forward-fold"
+      },
+      {
+        "name": "Chaturanga",
+        "duration": 8,
+        "description": "",
+        "assetId": "chaturanga"
+      }
+    ]
   }
 ]

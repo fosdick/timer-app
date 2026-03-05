@@ -1,7 +1,18 @@
 import { YogaSvg } from "@/assets/images/svgx/yoga";
 import { MountainPoseSvg } from "@/assets/images/svgx/yoga-poses/mountain-pose";
 import { DownwardDogSvg } from "@/assets/images/svgx/yoga-poses/downward-dog";
-import { Warrior1Svg } from "@/assets/images/svgx/yoga-poses/warrior-1";
+import { MountainOverheadSvg } from "@/assets/images/svgx/yoga-poses/mountain-overhead";
+import { UpwardFacingDogSvg } from "@/assets/images/svgx/yoga-poses/upward-facing-dog";
+import { PlankSvg } from "@/assets/images/svgx/yoga-poses/plank";
+import { ChaturangaSvg } from "@/assets/images/svgx/yoga-poses/chaturanga";
+import { ForwardFoldSvg } from "@/assets/images/svgx/yoga-poses/forward-fold";
+import { HalfwayLiftSvg } from "@/assets/images/svgx/yoga-poses/halfway-lift";
+import { StandingPrayerSvg } from "@/assets/images/svgx/yoga-poses/standing-prayer";
+import { StaffSvg } from "@/assets/images/svgx/yoga-poses/staff";
+import { EasySeatSvg } from "@/assets/images/svgx/yoga-poses/easy-seat";
+import { FireLogSvg } from "@/assets/images/svgx/yoga-poses/fire-log";
+import { SeatedWideLeggedForwardFoldSvg } from "@/assets/images/svgx/yoga-poses/seated-wide-legged-forward-fold";
+import { CobblersSvg } from "@/assets/images/svgx/yoga-poses/cobblers";
 
 export type YogaAssetType = "svg" | "image" | "video";
 
@@ -28,10 +39,65 @@ export const YOGA_ASSETS: Record<string, YogaAsset> = {
     type: "svg",
     asset: DownwardDogSvg,
   },
-  "warrior-1": {
-    id: "warrior-1",
+  "mountain-overhead": {
+    id: "mountain-overhead",
     type: "svg",
-    asset: Warrior1Svg,
+    asset: MountainOverheadSvg,
+  },
+  "upward-facing-dog": {
+    id: "upward-facing-dog",
+    type: "svg",
+    asset: UpwardFacingDogSvg,
+  },
+  "plank": {
+    id: "plank",
+    type: "svg",
+    asset: PlankSvg,
+  },
+  "chaturanga": {
+    id: "chaturanga",
+    type: "svg",
+    asset: ChaturangaSvg,
+  },
+  "forward-fold": {
+    id: "forward-fold",
+    type: "svg",
+    asset: ForwardFoldSvg,
+  },
+  "halfway-lift": {
+    id: "halfway-lift",
+    type: "svg",
+    asset: HalfwayLiftSvg,
+  },
+  "standing-prayer": {
+    id: "standing-prayer",
+    type: "svg",
+    asset: StandingPrayerSvg,
+  },
+  "staff": {
+    id: "staff",
+    type: "svg",
+    asset: StaffSvg,
+  },
+  "easy-seat": {
+    id: "easy-seat",
+    type: "svg",
+    asset: EasySeatSvg,
+  },
+  "fire-log": {
+    id: "fire-log",
+    type: "svg",
+    asset: FireLogSvg,
+  },
+  "seated-wide-legged-forward-fold": {
+    id: "seated-wide-legged-forward-fold",
+    type: "svg",
+    asset: SeatedWideLeggedForwardFoldSvg,
+  },
+  "cobblers": {
+    id: "cobblers",
+    type: "svg",
+    asset: CobblersSvg,
   },
 };
 

@@ -1,0 +1,111 @@
+# ── Session Archive ────────────────────────────────────────────────────────────
+# Date: 2026-02-26
+# Thread: SVG pipeline revival + keypoint visualization
+# Load this file at the start of the next thread alongside project-brief.yaml
+# ──────────────────────────────────────────────────────────────────────────────
+
+session:
+  date: 2026-02-26
+  focus: SVG pipeline context recovery, keypoint visualization, sketch-to-SVG direction
+
+# ── What we loaded ────────────────────────────────────────────────────────────
+context_loaded:
+  - project-brief.yaml              # top-level app overview
+  - svg-pipeline YAML (inline)      # full pipeline spec, pasted by Jarvis
+  - archived-process-research/      # full folder survey
+
+# ── What the archive showed ───────────────────────────────────────────────────
+archive_findings:
+  files/:
+    role: Original Stage 1 prototype — video → MediaPipe keypoints
+    scripts: pose_extractor.py, visualize_keypoints.py
+    note: >
+      visualize_keypoints.py was the missing piece Jarvis was trying to rediscover.
+      It reads a keypoints JSON and renders a skeleton overlay for visual verification.
+
+  wheel/:
+    role: Proof-of-concept milestone
+    note: >
+      Full multi-modal pipeline validated end-to-end:
+      video → keypoints → hand sketch → Claude → SVG.
+      This was the stress test. Wheel pose. It worked.
+
+  iteration_folders:
+    - files-extractor, files-extractor-fix
+    - files-contour
+    - files-pose-detector-update
+    note: Evolution of working scripts — codec fixes, silhouette vs contour experiments.
+
+  current_live_scripts:
+    files-detector/: pose_transition_detector.py
+    files-potrace/:  sketch_to_svg_potrace.py
+
+# ── What we built this session ────────────────────────────────────────────────
+built:
+  visualize_keypoints.py:
+    location: svg-pipeline/files-detector/visualize_keypoints.py
+    status: live, yoga-tuned
+    v1_problems:
+      - 11 face landmarks clustered at head — noisy, visually dominant
+      - All joints same color — couldn't read left/right body split
+    v2_changes:
+      - Face landmarks suppressed — replaced with single head circle
+        (radius estimated from shoulder width)
+      - Left side = blue, Right side = orange
+      - Key yoga joints labelled: shoulders, elbows, wrists, hips, knees, ankles
+      - Secondary joints (hands, feet) small unlabelled dots
+      - Info bar: LEFT/RIGHT legend + pose number, frame, timestamp, stability, kp count
+    usage:
+      single: "python3 visualize_keypoints.py extracted_poses/pose_01_keypoints.json"
+      batch:  "python3 visualize_keypoints.py extracted_poses/"
+
+  overlays_generated:
+    location: svg-pipeline/files-detector/extracted_poses/
+    files: pose_01_overlay.jpg → pose_55_overlay.jpg (55 total)
+    format: yoga-tuned v2
+
+# ── Key decisions made ────────────────────────────────────────────────────────
+decisions:
+  pose_naming: off
+    note: >
+      Keypoints are geometry, not labels. Do not attempt to identify or name poses
+      from keypoint data or images. That's Jarvis's domain.
+
+  sketch_first: confirmed
+    note: >
+      Direction is sketch-first. Hand drawings skip stages 1 & 2 entirely.
+      Goes straight to: threshold (Otsu) → potrace → SVG.
+      Video pipeline remains available for bulk/reference but sketch is primary.
+
+  keypoints_role:
+    note: >
+      Keypoints are spatial ground truth — joint angles, proportions, left/right accuracy.
+      They do NOT drive the artistic character of the SVG.
+      Recommended approach: potrace the sketch first (preserves Jarvis's hand),
+      then pass SVG + keypoints JSON to Claude for proportion/position correction.
+      This is the approach proven with the wheel pose in the archive.
+
+  svg_approach: sketch + Claude cleanup (proven)
+    options_considered:
+      1: Sketch-only potrace (artistic, no correction)
+      2: Sketch + Claude cleanup using keypoints (RECOMMENDED — proven with wheel)
+      3: Keypoints-first programmatic skeleton + sketch style overlay
+
+# ── What didn't happen yet ────────────────────────────────────────────────────
+pending:
+  - pose_17 hand sketch → SVG
+      note: >
+        Jarvis uploaded a sketch of pose_17 but it didn't come through.
+        Needs re-upload. Run through: threshold → potrace → Claude analyze with keypoints.
+  - Validate normalize_svg() rotation (from project-brief next priorities)
+  - Test keypoints → Claude /api/claude/analyze (from project-brief next priorities)
+
+# ── Working relationship note ─────────────────────────────────────────────────
+relationship:
+  note: >
+    Jarvis holds the value: 75 drawings, teaching knowledge, artistic intent,
+    pose sequencing logic. Claude holds the tools: pipeline execution, script
+    writing, batch processing, debugging.
+    The work only happens at the intersection.
+    Don't over-help. Don't name poses. Don't make artistic calls.
+    Ask before assuming. Execute when direction is clear.

@@ -1,0 +1,2404 @@
+{
+  "version": "1.2",
+  "lastUpdated": "2026-03-05T02:23:08.932Z",
+  "poses": {
+    "mountain-pose": {
+      "poseId": "mountain-pose",
+      "englishName": "Mountain Pose",
+      "sanskritName": "Tadasana",
+      "difficulty": 1,
+      "categories": [
+        "standing",
+        "foundational"
+      ],
+      "description": "Stand tall with feet hip-width apart, arms relaxed at sides.",
+      "cues": [
+        "Root down through all four corners of the feet",
+        "Engage the quadriceps gently",
+        "Stack shoulders over hips over ankles",
+        "Crown of the head reaches toward the sky"
+      ],
+      "contraindications": [],
+      "assets": {
+        "variants": {
+          "front": {
+            "variantId": "front",
+            "label": "Front View",
+            "viewType": "front",
+            "sketch": "poses/mountain-pose/front/sketch.jpg",
+            "tracedSvg": "poses/mountain-pose/front/traced.svg",
+            "productionSvg": "poses/mountain-pose/front/production.svg",
+            "keypointsJson": "poses/mountain-pose/front/keypoints.json",
+            "overlay": "poses/mountain-pose/front/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": true,
+            "metadata": {}
+          },
+          "new-pose": {
+            "variantId": "new-pose",
+            "label": "Front View",
+            "viewType": "front",
+            "sketch": "poses/mountain-pose/new-pose/sketch.jpg",
+            "tracedSvg": "poses/mountain-pose/new-pose/traced.svg",
+            "productionSvg": "poses/mountain-pose/new-pose/production.svg",
+            "keypointsJson": "poses/mountain-pose/new-pose/keypoints.json",
+            "overlay": "poses/mountain-pose/new-pose/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "draft",
+            "isPrimary": false,
+            "metadata": {}
+          }
+        }
+      },
+      "status": "traced",
+      "timestamps": {
+        "created": "2026-02-28T00:00:00Z",
+        "updated": "2026-03-02T17:33:21.605Z"
+      },
+      "metadata": {}
+    },
+    "downward-dog": {
+      "poseId": "downward-dog",
+      "englishName": "Downward-Facing Dog",
+      "sanskritName": "Adho Mukha Svanasana",
+      "difficulty": 2,
+      "categories": [
+        "standing",
+        "inversion",
+        "foundational"
+      ],
+      "description": "Inverted V-shape with hands and feet on the ground, hips pressing up and back.",
+      "cues": [
+        "Spread fingers wide, press through the whole hand",
+        "Rotate upper arms outward to broaden the shoulders",
+        "Press thighbones back, let the heels sink toward the floor",
+        "Keep a slight bend in the knees if hamstrings are tight"
+      ],
+      "contraindications": [
+        "carpal tunnel syndrome",
+        "late-term pregnancy",
+        "high blood pressure (uncontrolled)"
+      ],
+      "assets": {
+        "variants": {
+          "side": {
+            "variantId": "side",
+            "label": "Side View",
+            "viewType": "side-left",
+            "sketch": "poses/downward-dog/side/sketch.jpg",
+            "tracedSvg": "poses/downward-dog/side/traced.svg",
+            "productionSvg": "poses/downward-dog/side/production.svg",
+            "keypointsJson": "poses/downward-dog/side/keypoints.json",
+            "overlay": "poses/downward-dog/side/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": true,
+            "metadata": {}
+          }
+        }
+      },
+      "status": "production-ready",
+      "timestamps": {
+        "created": "2026-02-28T00:00:00Z",
+        "updated": "2026-03-02T17:49:44.027Z"
+      },
+      "metadata": {}
+    },
+    "child-pose": {
+      "poseId": "child-pose",
+      "englishName": "Child's Pose",
+      "sanskritName": "Balasana",
+      "difficulty": 1,
+      "categories": [
+        "prone",
+        "resting",
+        "foundational"
+      ],
+      "description": "Kneeling forward fold with arms extended or alongside the body.",
+      "cues": [
+        "Knees together or wide apart depending on variation",
+        "Sink hips back toward heels",
+        "Walk hands forward to lengthen the spine",
+        "Forehead rests on the mat"
+      ],
+      "contraindications": [
+        "knee injury",
+        "pregnancy (modify with wide knees)"
+      ],
+      "assets": {
+        "variants": {
+          "side": {
+            "variantId": "side",
+            "label": "Side View",
+            "viewType": "side-left",
+            "sketch": "poses/child-pose/side/sketch.jpg",
+            "tracedSvg": "poses/child-pose/side/traced.svg",
+            "productionSvg": "poses/child-pose/side/production.svg",
+            "keypointsJson": "poses/child-pose/side/keypoints.json",
+            "overlay": "poses/child-pose/side/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": true,
+            "metadata": {}
+          }
+        }
+      },
+      "status": "production-ready",
+      "timestamps": {
+        "created": "2026-02-28T00:00:00Z",
+        "updated": "2026-03-02T22:07:14.183Z"
+      },
+      "metadata": {}
+    },
+    "mountain-overhead": {
+      "poseId": "mountain-overhead",
+      "englishName": "Mountain Overhead",
+      "sanskritName": "Urdhva Hastasana",
+      "difficulty": 1,
+      "categories": [],
+      "description": "",
+      "cues": [],
+      "contraindications": [],
+      "assets": {
+        "variants": {
+          "front": {
+            "variantId": "front",
+            "label": "Front View",
+            "viewType": "front",
+            "sketch": "poses/mountain-overhead/front/sketch.jpg",
+            "tracedSvg": "poses/mountain-overhead/front/traced.svg",
+            "productionSvg": "poses/mountain-overhead/front/production.svg",
+            "keypointsJson": "poses/mountain-overhead/front/keypoints.json",
+            "overlay": "poses/mountain-overhead/front/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": true,
+            "metadata": {}
+          },
+          "mountain-overhead": {
+            "variantId": "mountain-overhead",
+            "label": "Behind",
+            "viewType": "back",
+            "sketch": "poses/mountain-overhead/mountain-overhead/sketch.jpg",
+            "tracedSvg": "poses/mountain-overhead/mountain-overhead/traced.svg",
+            "productionSvg": "poses/mountain-overhead/mountain-overhead/production.svg",
+            "keypointsJson": "poses/mountain-overhead/mountain-overhead/keypoints.json",
+            "overlay": "poses/mountain-overhead/mountain-overhead/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": false,
+            "metadata": {}
+          }
+        }
+      },
+      "status": "production-ready",
+      "timestamps": {
+        "created": "2026-03-02T17:11:17.608Z",
+        "updated": "2026-03-02T17:23:15.486Z"
+      },
+      "metadata": {}
+    },
+    "upward-facing-dog": {
+      "poseId": "upward-facing-dog",
+      "englishName": "Upward Facing Dog",
+      "sanskritName": "Urdhva Mukha Svanasana",
+      "difficulty": 1,
+      "categories": [],
+      "description": "",
+      "cues": [
+        "Look forward and open the chest",
+        "Engage the core and thighs",
+        "Extend fully through the spine",
+        "Avoid dumping weight into the lower back"
+      ],
+      "contraindications": [],
+      "assets": {
+        "variants": {
+          "front": {
+            "variantId": "front",
+            "label": "Front View",
+            "viewType": "front",
+            "sketch": "poses/upward-facing-dog/front/sketch.jpg",
+            "tracedSvg": "poses/upward-facing-dog/front/traced.svg",
+            "productionSvg": "poses/upward-facing-dog/front/production.svg",
+            "keypointsJson": "poses/upward-facing-dog/front/keypoints.json",
+            "overlay": "poses/upward-facing-dog/front/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": true,
+            "metadata": {}
+          }
+        }
+      },
+      "status": "production-ready",
+      "timestamps": {
+        "created": "2026-03-02T17:45:19.559Z",
+        "updated": "2026-03-02T22:10:58.757Z"
+      },
+      "metadata": {}
+    },
+    "plank": {
+      "poseId": "plank",
+      "englishName": "Plank",
+      "sanskritName": "Kumbhakasana",
+      "difficulty": 1,
+      "categories": [],
+      "description": "",
+      "cues": [
+        "Hands rooted under shoulders, heels pressing to the wall behind you."
+      ],
+      "contraindications": [],
+      "assets": {
+        "variants": {
+          "front": {
+            "variantId": "front",
+            "label": "Front View",
+            "viewType": "front",
+            "sketch": "poses/plank/front/sketch.jpg",
+            "tracedSvg": "poses/plank/front/traced.svg",
+            "productionSvg": "poses/plank/front/production.svg",
+            "keypointsJson": "poses/plank/front/keypoints.json",
+            "overlay": "poses/plank/front/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": true,
+            "metadata": {}
+          }
+        }
+      },
+      "status": "production-ready",
+      "timestamps": {
+        "created": "2026-03-02T18:01:04.438Z",
+        "updated": "2026-03-02T18:06:19.271Z"
+      },
+      "metadata": {}
+    },
+    "chaturanga": {
+      "poseId": "chaturanga",
+      "englishName": "Chaturanga",
+      "sanskritName": "Chaturanga Dandasana",
+      "difficulty": 1,
+      "categories": [],
+      "description": "",
+      "cues": [],
+      "contraindications": [],
+      "assets": {
+        "variants": {
+          "front": {
+            "variantId": "front",
+            "label": "Front View",
+            "viewType": "front",
+            "sketch": "poses/chaturanga/front/sketch.jpg",
+            "tracedSvg": "poses/chaturanga/front/traced.svg",
+            "productionSvg": "poses/chaturanga/front/production.svg",
+            "keypointsJson": "poses/chaturanga/front/keypoints.json",
+            "overlay": "poses/chaturanga/front/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": true,
+            "metadata": {}
+          }
+        }
+      },
+      "status": "production-ready",
+      "timestamps": {
+        "created": "2026-03-02T18:10:04.074Z",
+        "updated": "2026-03-02T18:11:29.298Z"
+      },
+      "metadata": {}
+    },
+    "forward-fold": {
+      "poseId": "forward-fold",
+      "englishName": "Forward Fold",
+      "sanskritName": "Uttanasana",
+      "difficulty": 1,
+      "categories": [],
+      "description": "",
+      "cues": [],
+      "contraindications": [],
+      "assets": {
+        "variants": {
+          "front": {
+            "variantId": "front",
+            "label": "Front View",
+            "viewType": "front",
+            "sketch": "poses/forward-fold/front/sketch.jpg",
+            "tracedSvg": "poses/forward-fold/front/traced.svg",
+            "productionSvg": "poses/forward-fold/front/production.svg",
+            "keypointsJson": "poses/forward-fold/front/keypoints.json",
+            "overlay": "poses/forward-fold/front/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": false,
+            "metadata": {}
+          },
+          "forward-fold": {
+            "variantId": "forward-fold",
+            "label": "Front View",
+            "viewType": "front",
+            "sketch": "poses/forward-fold/forward-fold/sketch.jpg",
+            "tracedSvg": "poses/forward-fold/forward-fold/traced.svg",
+            "productionSvg": "poses/forward-fold/forward-fold/production.svg",
+            "keypointsJson": "poses/forward-fold/forward-fold/keypoints.json",
+            "overlay": "poses/forward-fold/forward-fold/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": true,
+            "metadata": {}
+          }
+        }
+      },
+      "status": "production-ready",
+      "timestamps": {
+        "created": "2026-03-02T18:45:48.790Z",
+        "updated": "2026-03-02T18:53:12.027Z"
+      },
+      "metadata": {}
+    },
+    "halfway-lift": {
+      "poseId": "halfway-lift",
+      "englishName": "Halfway Lift",
+      "sanskritName": "Ardha Uttanasana",
+      "difficulty": 1,
+      "categories": [],
+      "description": "",
+      "cues": [],
+      "contraindications": [],
+      "assets": {
+        "variants": {
+          "front": {
+            "variantId": "front",
+            "label": "Front View",
+            "viewType": "front",
+            "sketch": "poses/halfway-lift/front/sketch.jpg",
+            "tracedSvg": "poses/halfway-lift/front/traced.svg",
+            "productionSvg": "poses/halfway-lift/front/production.svg",
+            "keypointsJson": "poses/halfway-lift/front/keypoints.json",
+            "overlay": "poses/halfway-lift/front/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": true,
+            "metadata": {}
+          },
+          "halfway-lift": {
+            "variantId": "halfway-lift",
+            "label": "Back View",
+            "viewType": "back",
+            "sketch": "poses/halfway-lift/halfway-lift/sketch.jpg",
+            "tracedSvg": "poses/halfway-lift/halfway-lift/traced.svg",
+            "productionSvg": "poses/halfway-lift/halfway-lift/production.svg",
+            "keypointsJson": "poses/halfway-lift/halfway-lift/keypoints.json",
+            "overlay": "poses/halfway-lift/halfway-lift/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": false,
+            "metadata": {}
+          }
+        }
+      },
+      "status": "production-ready",
+      "timestamps": {
+        "created": "2026-03-02T18:54:04.428Z",
+        "updated": "2026-03-02T18:56:42.016Z"
+      },
+      "metadata": {}
+    },
+    "standing-prayer": {
+      "poseId": "standing-prayer",
+      "englishName": "Standing Prayer",
+      "sanskritName": "Pranamasana",
+      "difficulty": 1,
+      "categories": [],
+      "description": "",
+      "cues": [],
+      "contraindications": [],
+      "assets": {
+        "variants": {
+          "front": {
+            "variantId": "front",
+            "label": "Front View",
+            "viewType": "front",
+            "sketch": "poses/standing-prayer/front/sketch.jpg",
+            "tracedSvg": "poses/standing-prayer/front/traced.svg",
+            "productionSvg": "poses/standing-prayer/front/production.svg",
+            "keypointsJson": "poses/standing-prayer/front/keypoints.json",
+            "overlay": "poses/standing-prayer/front/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": true,
+            "metadata": {}
+          },
+          "equal-standing": {
+            "variantId": "equal-standing",
+            "label": "Back View",
+            "viewType": "back",
+            "sketch": "poses/standing-prayer/equal-standing/sketch.jpg",
+            "tracedSvg": "poses/standing-prayer/equal-standing/traced.svg",
+            "productionSvg": "poses/standing-prayer/equal-standing/production.svg",
+            "keypointsJson": "poses/standing-prayer/equal-standing/keypoints.json",
+            "overlay": "poses/standing-prayer/equal-standing/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": false,
+            "metadata": {}
+          }
+        }
+      },
+      "status": "production-ready",
+      "timestamps": {
+        "created": "2026-03-02T18:57:42.911Z",
+        "updated": "2026-03-02T19:01:09.496Z"
+      },
+      "metadata": {}
+    },
+    "staff": {
+      "poseId": "staff",
+      "englishName": "Staff",
+      "sanskritName": "Dandasana",
+      "difficulty": 1,
+      "categories": [],
+      "description": "",
+      "cues": [],
+      "contraindications": [],
+      "assets": {
+        "variants": {
+          "front": {
+            "variantId": "front",
+            "label": "side view",
+            "viewType": "front",
+            "sketch": "poses/staff/front/sketch.jpg",
+            "tracedSvg": "poses/staff/front/traced.svg",
+            "productionSvg": "poses/staff/front/production.svg",
+            "keypointsJson": "poses/staff/front/keypoints.json",
+            "overlay": "poses/staff/front/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": false,
+            "metadata": {}
+          },
+          "staff": {
+            "variantId": "staff",
+            "label": "arms up",
+            "viewType": "annotated-motion",
+            "sketch": "poses/staff/staff/sketch.jpg",
+            "tracedSvg": "poses/staff/staff/traced.svg",
+            "productionSvg": "poses/staff/staff/production.svg",
+            "keypointsJson": "poses/staff/staff/keypoints.json",
+            "overlay": "poses/staff/staff/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": true,
+            "metadata": {}
+          },
+          "staff-motion": {
+            "variantId": "staff-motion",
+            "label": "swan like",
+            "viewType": "annotated-motion",
+            "sketch": "poses/staff/staff-motion/sketch.jpg",
+            "tracedSvg": "poses/staff/staff-motion/traced.svg",
+            "productionSvg": "poses/staff/staff-motion/production.svg",
+            "keypointsJson": "poses/staff/staff-motion/keypoints.json",
+            "overlay": "poses/staff/staff-motion/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": false,
+            "metadata": {}
+          },
+          "upright-swan": {
+            "variantId": "upright-swan",
+            "label": "inhale swan",
+            "viewType": "annotated-motion",
+            "sketch": "poses/staff/upright-swan/sketch.jpg",
+            "tracedSvg": "poses/staff/upright-swan/traced.svg",
+            "productionSvg": "poses/staff/upright-swan/production.svg",
+            "keypointsJson": "poses/staff/upright-swan/keypoints.json",
+            "overlay": "poses/staff/upright-swan/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": false,
+            "metadata": {}
+          }
+        }
+      },
+      "status": "production-ready",
+      "timestamps": {
+        "created": "2026-03-02T19:34:06.464Z",
+        "updated": "2026-03-03T01:08:18.898Z"
+      },
+      "metadata": {}
+    },
+    "easy-seat": {
+      "poseId": "easy-seat",
+      "englishName": "Easy Seat",
+      "sanskritName": "Sukhasana",
+      "difficulty": 1,
+      "categories": [],
+      "description": "",
+      "cues": [],
+      "contraindications": [],
+      "assets": {
+        "variants": {
+          "front": {
+            "variantId": "front",
+            "label": "Front View",
+            "viewType": "front",
+            "sketch": "poses/easy-seat/front/sketch.jpg",
+            "tracedSvg": "poses/easy-seat/front/traced.svg",
+            "productionSvg": "poses/easy-seat/front/production.svg",
+            "keypointsJson": "poses/easy-seat/front/keypoints.json",
+            "overlay": "poses/easy-seat/front/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": true,
+            "metadata": {}
+          },
+          "easy-seat-other-leg": {
+            "variantId": "easy-seat-other-leg",
+            "label": "Front View",
+            "viewType": "front",
+            "sketch": "poses/easy-seat/easy-seat-other-leg/sketch.jpg",
+            "tracedSvg": "poses/easy-seat/easy-seat-other-leg/traced.svg",
+            "productionSvg": "poses/easy-seat/easy-seat-other-leg/production.svg",
+            "keypointsJson": "poses/easy-seat/easy-seat-other-leg/keypoints.json",
+            "overlay": "poses/easy-seat/easy-seat-other-leg/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": false,
+            "metadata": {}
+          },
+          "easy-seat-fold": {
+            "variantId": "easy-seat-fold",
+            "label": "forward fold easy seat",
+            "viewType": "front",
+            "sketch": "poses/easy-seat/easy-seat-fold/sketch.jpg",
+            "tracedSvg": "poses/easy-seat/easy-seat-fold/traced.svg",
+            "productionSvg": "poses/easy-seat/easy-seat-fold/production.svg",
+            "keypointsJson": "poses/easy-seat/easy-seat-fold/keypoints.json",
+            "overlay": "poses/easy-seat/easy-seat-fold/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": false,
+            "metadata": {}
+          },
+          "easy-seat-fold-other-leg": {
+            "variantId": "easy-seat-fold-other-leg",
+            "label": "forward fold other leg",
+            "viewType": "front",
+            "sketch": "poses/easy-seat/easy-seat-fold-other-leg/sketch.jpg",
+            "tracedSvg": "poses/easy-seat/easy-seat-fold-other-leg/traced.svg",
+            "productionSvg": "poses/easy-seat/easy-seat-fold-other-leg/production.svg",
+            "keypointsJson": "poses/easy-seat/easy-seat-fold-other-leg/keypoints.json",
+            "overlay": "poses/easy-seat/easy-seat-fold-other-leg/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": false,
+            "metadata": {}
+          }
+        }
+      },
+      "status": "production-ready",
+      "timestamps": {
+        "created": "2026-03-02T19:42:12.818Z",
+        "updated": "2026-03-02T19:47:21.394Z"
+      },
+      "metadata": {}
+    },
+    "fire-log": {
+      "poseId": "fire-log",
+      "englishName": "Fire Log",
+      "sanskritName": "Agnistambhasana",
+      "difficulty": 1,
+      "categories": [],
+      "description": "",
+      "cues": [],
+      "contraindications": [],
+      "assets": {
+        "variants": {
+          "front": {
+            "variantId": "front",
+            "label": "Front View",
+            "viewType": "front",
+            "sketch": "poses/fire-log/front/sketch.jpg",
+            "tracedSvg": "poses/fire-log/front/traced.svg",
+            "productionSvg": "poses/fire-log/front/production.svg",
+            "keypointsJson": "poses/fire-log/front/keypoints.json",
+            "overlay": "poses/fire-log/front/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": false,
+            "metadata": {}
+          },
+          "fire-log-other-side": {
+            "variantId": "fire-log-other-side",
+            "label": "fire log other side",
+            "viewType": "front",
+            "sketch": "poses/fire-log/fire-log-other-side/sketch.jpg",
+            "tracedSvg": "poses/fire-log/fire-log-other-side/traced.svg",
+            "productionSvg": "poses/fire-log/fire-log-other-side/production.svg",
+            "keypointsJson": "poses/fire-log/fire-log-other-side/keypoints.json",
+            "overlay": "poses/fire-log/fire-log-other-side/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": true,
+            "metadata": {}
+          }
+        }
+      },
+      "status": "production-ready",
+      "timestamps": {
+        "created": "2026-03-02T19:48:41.987Z",
+        "updated": "2026-03-02T19:53:42.497Z"
+      },
+      "metadata": {}
+    },
+    "seated-wide-legged-forward-fold": {
+      "poseId": "seated-wide-legged-forward-fold",
+      "englishName": "Seated Wide Legged Forward Fold",
+      "sanskritName": "Upavistha Konasana",
+      "difficulty": 1,
+      "categories": [],
+      "description": "",
+      "cues": [],
+      "contraindications": [],
+      "assets": {
+        "variants": {
+          "front": {
+            "variantId": "front",
+            "label": "Front View",
+            "viewType": "front",
+            "sketch": "poses/seated-wide-legged-forward-fold/front/sketch.jpg",
+            "tracedSvg": "poses/seated-wide-legged-forward-fold/front/traced.svg",
+            "productionSvg": "poses/seated-wide-legged-forward-fold/front/production.svg",
+            "keypointsJson": "poses/seated-wide-legged-forward-fold/front/keypoints.json",
+            "overlay": "poses/seated-wide-legged-forward-fold/front/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": true,
+            "metadata": {}
+          },
+          "seated-wide-legged-forward-fold-relax": {
+            "variantId": "seated-wide-legged-forward-fold-relax",
+            "label": "seated wide legged forward fold relaxed",
+            "viewType": "front",
+            "sketch": "poses/seated-wide-legged-forward-fold/seated-wide-legged-forward-fold-relax/sketch.jpg",
+            "tracedSvg": "poses/seated-wide-legged-forward-fold/seated-wide-legged-forward-fold-relax/traced.svg",
+            "productionSvg": "poses/seated-wide-legged-forward-fold/seated-wide-legged-forward-fold-relax/production.svg",
+            "keypointsJson": "poses/seated-wide-legged-forward-fold/seated-wide-legged-forward-fold-relax/keypoints.json",
+            "overlay": "poses/seated-wide-legged-forward-fold/seated-wide-legged-forward-fold-relax/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": false,
+            "metadata": {}
+          }
+        }
+      },
+      "status": "production-ready",
+      "timestamps": {
+        "created": "2026-03-02T19:54:53.317Z",
+        "updated": "2026-03-02T19:59:40.966Z"
+      },
+      "metadata": {}
+    },
+    "cobblers": {
+      "poseId": "cobblers",
+      "englishName": "Cobblers",
+      "sanskritName": "Baddha Konasana",
+      "difficulty": 1,
+      "categories": [],
+      "description": "",
+      "cues": [],
+      "contraindications": [],
+      "assets": {
+        "variants": {
+          "front": {
+            "variantId": "front",
+            "label": "Front View",
+            "viewType": "front",
+            "sketch": "poses/cobblers/front/sketch.jpg",
+            "tracedSvg": "poses/cobblers/front/traced.svg",
+            "productionSvg": "poses/cobblers/front/production.svg",
+            "keypointsJson": "poses/cobblers/front/keypoints.json",
+            "overlay": "poses/cobblers/front/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": true,
+            "metadata": {}
+          },
+          "cobblers-foward-fold": {
+            "variantId": "cobblers-foward-fold",
+            "label": "cobblers foward fold",
+            "viewType": "front",
+            "sketch": "poses/cobblers/cobblers-foward-fold/sketch.jpg",
+            "tracedSvg": "poses/cobblers/cobblers-foward-fold/traced.svg",
+            "productionSvg": "poses/cobblers/cobblers-foward-fold/production.svg",
+            "keypointsJson": "poses/cobblers/cobblers-foward-fold/keypoints.json",
+            "overlay": "poses/cobblers/cobblers-foward-fold/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": false,
+            "metadata": {}
+          }
+        }
+      },
+      "status": "production-ready",
+      "timestamps": {
+        "created": "2026-03-02T20:00:44.822Z",
+        "updated": "2026-03-02T20:04:54.528Z"
+      },
+      "metadata": {}
+    },
+    "camel": {
+      "poseId": "camel",
+      "englishName": "Camel",
+      "sanskritName": "Ustrasana",
+      "difficulty": 1,
+      "categories": [],
+      "description": "",
+      "cues": [],
+      "contraindications": [],
+      "assets": {
+        "variants": {
+          "front": {
+            "variantId": "front",
+            "label": "Front View",
+            "viewType": "front",
+            "sketch": "poses/camel/front/sketch.jpg",
+            "tracedSvg": "poses/camel/front/traced.svg",
+            "productionSvg": "poses/camel/front/production.svg",
+            "keypointsJson": "poses/camel/front/keypoints.json",
+            "overlay": "poses/camel/front/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": true,
+            "metadata": {}
+          }
+        }
+      },
+      "status": "traced",
+      "timestamps": {
+        "created": "2026-03-02T21:08:26.019Z",
+        "updated": "2026-03-02T23:40:45.428Z"
+      },
+      "metadata": {}
+    },
+    "splits": {
+      "poseId": "splits",
+      "englishName": "Splits",
+      "sanskritName": "Hanumanasana",
+      "difficulty": 1,
+      "categories": [],
+      "description": "",
+      "cues": [],
+      "contraindications": [],
+      "assets": {
+        "variants": {
+          "front": {
+            "variantId": "front",
+            "label": "half splits front",
+            "viewType": "front",
+            "sketch": "poses/splits/front/sketch.jpg",
+            "tracedSvg": "poses/splits/front/traced.svg",
+            "productionSvg": "poses/splits/front/production.svg",
+            "keypointsJson": "poses/splits/front/keypoints.json",
+            "overlay": "poses/splits/front/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": true,
+            "metadata": {}
+          },
+          "half-splits-front-other-side": {
+            "variantId": "half-splits-front-other-side",
+            "label": "half splits front other side",
+            "viewType": "front",
+            "sketch": "poses/splits/half-splits-front-other-side/sketch.jpg",
+            "tracedSvg": "poses/splits/half-splits-front-other-side/traced.svg",
+            "productionSvg": "poses/splits/half-splits-front-other-side/production.svg",
+            "keypointsJson": "poses/splits/half-splits-front-other-side/keypoints.json",
+            "overlay": "poses/splits/half-splits-front-other-side/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": false,
+            "metadata": {}
+          },
+          "full-splits": {
+            "variantId": "full-splits",
+            "label": "full splits",
+            "viewType": "front",
+            "sketch": "poses/splits/full-splits/sketch.jpg",
+            "tracedSvg": "poses/splits/full-splits/traced.svg",
+            "productionSvg": "poses/splits/full-splits/production.svg",
+            "keypointsJson": "poses/splits/full-splits/keypoints.json",
+            "overlay": "poses/splits/full-splits/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": false,
+            "metadata": {}
+          },
+          "full-splits-other-side": {
+            "variantId": "full-splits-other-side",
+            "label": "full splits other side",
+            "viewType": "side-left",
+            "sketch": "poses/splits/full-splits-other-side/sketch.jpg",
+            "tracedSvg": "poses/splits/full-splits-other-side/traced.svg",
+            "productionSvg": "poses/splits/full-splits-other-side/production.svg",
+            "keypointsJson": "poses/splits/full-splits-other-side/keypoints.json",
+            "overlay": "poses/splits/full-splits-other-side/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": false,
+            "metadata": {}
+          }
+        }
+      },
+      "status": "production-ready",
+      "timestamps": {
+        "created": "2026-03-02T21:20:21.226Z",
+        "updated": "2026-03-02T21:32:13.292Z"
+      },
+      "metadata": {}
+    },
+    "puppy-dog": {
+      "poseId": "puppy-dog",
+      "englishName": "Puppy Dog",
+      "sanskritName": "Uttana Shishosana",
+      "difficulty": 1,
+      "categories": [],
+      "description": "",
+      "cues": [
+        "from table top walk your arms out long and keep your hips square to your knees.  legs at 90°"
+      ],
+      "contraindications": [],
+      "assets": {
+        "variants": {
+          "front": {
+            "variantId": "front",
+            "label": "Front View",
+            "viewType": "front",
+            "sketch": "poses/puppy-dog/front/sketch.jpg",
+            "tracedSvg": "poses/puppy-dog/front/traced.svg",
+            "productionSvg": "poses/puppy-dog/front/production.svg",
+            "keypointsJson": "poses/puppy-dog/front/keypoints.json",
+            "overlay": "poses/puppy-dog/front/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": false,
+            "metadata": {}
+          },
+          "puppy-dog-side": {
+            "variantId": "puppy-dog-side",
+            "label": "puppy dog side",
+            "viewType": "side-left",
+            "sketch": "poses/puppy-dog/puppy-dog-side/sketch.jpg",
+            "tracedSvg": "poses/puppy-dog/puppy-dog-side/traced.svg",
+            "productionSvg": "poses/puppy-dog/puppy-dog-side/production.svg",
+            "keypointsJson": "poses/puppy-dog/puppy-dog-side/keypoints.json",
+            "overlay": "poses/puppy-dog/puppy-dog-side/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": true,
+            "metadata": {}
+          }
+        }
+      },
+      "status": "traced",
+      "timestamps": {
+        "created": "2026-03-02T22:04:28.166Z",
+        "updated": "2026-03-04T23:54:25.069Z"
+      },
+      "metadata": {}
+    },
+    "pigeon": {
+      "poseId": "pigeon",
+      "englishName": "Pigeon",
+      "sanskritName": "Eka Pada Rajakapotasana",
+      "difficulty": 1,
+      "categories": [],
+      "description": "",
+      "cues": [],
+      "contraindications": [],
+      "assets": {
+        "variants": {
+          "front": {
+            "variantId": "front",
+            "label": "pigeon - normal",
+            "viewType": "front",
+            "sketch": "poses/pigeon/front/sketch.jpg",
+            "tracedSvg": "poses/pigeon/front/traced.svg",
+            "productionSvg": "poses/pigeon/front/production.svg",
+            "keypointsJson": "poses/pigeon/front/keypoints.json",
+            "overlay": "poses/pigeon/front/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": false,
+            "metadata": {}
+          },
+          "pigeon-forward-fold": {
+            "variantId": "pigeon-forward-fold",
+            "label": "pigeon forward fold",
+            "viewType": "back",
+            "sketch": "poses/pigeon/pigeon-forward-fold/sketch.jpg",
+            "tracedSvg": "poses/pigeon/pigeon-forward-fold/traced.svg",
+            "productionSvg": "poses/pigeon/pigeon-forward-fold/production.svg",
+            "keypointsJson": "poses/pigeon/pigeon-forward-fold/keypoints.json",
+            "overlay": "poses/pigeon/pigeon-forward-fold/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": false,
+            "metadata": {}
+          },
+          "pigeon-hand-to-foot": {
+            "variantId": "pigeon-hand-to-foot",
+            "label": "pigeon - left arm right foot",
+            "viewType": "back",
+            "sketch": "poses/pigeon/pigeon-hand-to-foot/sketch.jpg",
+            "tracedSvg": "poses/pigeon/pigeon-hand-to-foot/traced.svg",
+            "productionSvg": "poses/pigeon/pigeon-hand-to-foot/production.svg",
+            "keypointsJson": "poses/pigeon/pigeon-hand-to-foot/keypoints.json",
+            "overlay": "poses/pigeon/pigeon-hand-to-foot/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": false,
+            "metadata": {}
+          },
+          "pigeon-hand-to-foot-other-side": {
+            "variantId": "pigeon-hand-to-foot-other-side",
+            "label": "pigeon - forward fold - other side",
+            "viewType": "back",
+            "sketch": "poses/pigeon/pigeon-hand-to-foot-other-side/sketch.jpg",
+            "tracedSvg": "poses/pigeon/pigeon-hand-to-foot-other-side/traced.svg",
+            "productionSvg": "poses/pigeon/pigeon-hand-to-foot-other-side/production.svg",
+            "keypointsJson": "poses/pigeon/pigeon-hand-to-foot-other-side/keypoints.json",
+            "overlay": "poses/pigeon/pigeon-hand-to-foot-other-side/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": false,
+            "metadata": {}
+          },
+          "pigeon-normal-other-side": {
+            "variantId": "pigeon-normal-other-side",
+            "label": "pigeon - normal - other side",
+            "viewType": "back",
+            "sketch": "poses/pigeon/pigeon-normal-other-side/sketch.jpg",
+            "tracedSvg": "poses/pigeon/pigeon-normal-other-side/traced.svg",
+            "productionSvg": "poses/pigeon/pigeon-normal-other-side/production.svg",
+            "keypointsJson": "poses/pigeon/pigeon-normal-other-side/keypoints.json",
+            "overlay": "poses/pigeon/pigeon-normal-other-side/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": false,
+            "metadata": {}
+          },
+          "pigeon-v": {
+            "variantId": "pigeon-v",
+            "label": "pigeon - right arm right foot",
+            "viewType": "side-right",
+            "sketch": "poses/pigeon/pigeon-v/sketch.jpg",
+            "tracedSvg": "poses/pigeon/pigeon-v/traced.svg",
+            "productionSvg": "poses/pigeon/pigeon-v/production.svg",
+            "keypointsJson": "poses/pigeon/pigeon-v/keypoints.json",
+            "overlay": "poses/pigeon/pigeon-v/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": false,
+            "metadata": {}
+          },
+          "pigeon-right-arm-left-foot": {
+            "variantId": "pigeon-right-arm-left-foot",
+            "label": "pigeon - left arm right foot",
+            "viewType": "back",
+            "sketch": "poses/pigeon/pigeon-right-arm-left-foot/sketch.jpg",
+            "tracedSvg": "poses/pigeon/pigeon-right-arm-left-foot/traced.svg",
+            "productionSvg": "poses/pigeon/pigeon-right-arm-left-foot/production.svg",
+            "keypointsJson": "poses/pigeon/pigeon-right-arm-left-foot/keypoints.json",
+            "overlay": "poses/pigeon/pigeon-right-arm-left-foot/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": false,
+            "metadata": {}
+          },
+          "pigeon-left-arm-left-foot": {
+            "variantId": "pigeon-left-arm-left-foot",
+            "label": "pigeon - right arm - right foot 2",
+            "viewType": "back",
+            "sketch": "poses/pigeon/pigeon-left-arm-left-foot/sketch.jpg",
+            "tracedSvg": "poses/pigeon/pigeon-left-arm-left-foot/traced.svg",
+            "productionSvg": "poses/pigeon/pigeon-left-arm-left-foot/production.svg",
+            "keypointsJson": "poses/pigeon/pigeon-left-arm-left-foot/keypoints.json",
+            "overlay": "poses/pigeon/pigeon-left-arm-left-foot/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": true,
+            "metadata": {}
+          }
+        }
+      },
+      "status": "traced",
+      "timestamps": {
+        "created": "2026-03-02T22:11:08.504Z",
+        "updated": "2026-03-02T23:20:25.743Z"
+      },
+      "metadata": {}
+    },
+    "swan": {
+      "poseId": "swan",
+      "englishName": "Swan",
+      "sanskritName": "",
+      "difficulty": 1,
+      "categories": [],
+      "description": "",
+      "cues": [],
+      "contraindications": [],
+      "assets": {
+        "variants": {
+          "front": {
+            "variantId": "front",
+            "label": "Front View",
+            "viewType": "front",
+            "sketch": "poses/swan/front/sketch.jpg",
+            "tracedSvg": "poses/swan/front/traced.svg",
+            "productionSvg": "poses/swan/front/production.svg",
+            "keypointsJson": "poses/swan/front/keypoints.json",
+            "overlay": "poses/swan/front/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": true,
+            "metadata": {}
+          }
+        }
+      },
+      "status": "production-ready",
+      "timestamps": {
+        "created": "2026-03-02T22:25:57.859Z",
+        "updated": "2026-03-02T22:27:00.061Z"
+      },
+      "metadata": {},
+      "reviewFlags": [
+        {
+          "field": "sanskritName",
+          "note": "Could not confirm Sanskrit name — left blank"
+        }
+      ]
+    },
+    "3-legged-dog": {
+      "poseId": "3-legged-dog",
+      "englishName": "3 Legged Dog",
+      "sanskritName": "Tri Pada Adho Mukha Svanasana",
+      "difficulty": 1,
+      "categories": [],
+      "description": "",
+      "cues": [],
+      "contraindications": [],
+      "assets": {
+        "variants": {
+          "front": {
+            "variantId": "front",
+            "label": "three legged dog left leg up",
+            "viewType": "front",
+            "sketch": "poses/3-legged-dog/front/sketch.jpg",
+            "tracedSvg": "poses/3-legged-dog/front/traced.svg",
+            "productionSvg": "poses/3-legged-dog/front/production.svg",
+            "keypointsJson": "poses/3-legged-dog/front/keypoints.json",
+            "overlay": "poses/3-legged-dog/front/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": true,
+            "metadata": {}
+          },
+          "three-legged-dog-other-side": {
+            "variantId": "three-legged-dog-other-side",
+            "label": "three legged dog other side",
+            "viewType": "back",
+            "sketch": "poses/3-legged-dog/three-legged-dog-other-side/sketch.jpg",
+            "tracedSvg": "poses/3-legged-dog/three-legged-dog-other-side/traced.svg",
+            "productionSvg": "poses/3-legged-dog/three-legged-dog-other-side/production.svg",
+            "keypointsJson": "poses/3-legged-dog/three-legged-dog-other-side/keypoints.json",
+            "overlay": "poses/3-legged-dog/three-legged-dog-other-side/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": false,
+            "metadata": {}
+          }
+        }
+      },
+      "status": "production-ready",
+      "timestamps": {
+        "created": "2026-03-02T22:27:15.528Z",
+        "updated": "2026-03-03T01:07:47.314Z"
+      },
+      "metadata": {}
+    },
+    "thread-the-needle": {
+      "poseId": "thread-the-needle",
+      "englishName": "Thread The Needle",
+      "sanskritName": "Parsva Balasana",
+      "difficulty": 1,
+      "categories": [],
+      "description": "",
+      "cues": [],
+      "contraindications": [],
+      "assets": {
+        "variants": {
+          "front": {
+            "variantId": "front",
+            "label": "Front View",
+            "viewType": "front",
+            "sketch": "poses/thread-the-needle/front/sketch.jpg",
+            "tracedSvg": "poses/thread-the-needle/front/traced.svg",
+            "productionSvg": "poses/thread-the-needle/front/production.svg",
+            "keypointsJson": "poses/thread-the-needle/front/keypoints.json",
+            "overlay": "poses/thread-the-needle/front/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": true,
+            "metadata": {}
+          },
+          "thread-the-needle-arm-to-sky": {
+            "variantId": "thread-the-needle-arm-to-sky",
+            "label": "thread the needle arms to sky",
+            "viewType": "back",
+            "sketch": "poses/thread-the-needle/thread-the-needle-arm-to-sky/sketch.jpg",
+            "tracedSvg": "poses/thread-the-needle/thread-the-needle-arm-to-sky/traced.svg",
+            "productionSvg": "poses/thread-the-needle/thread-the-needle-arm-to-sky/production.svg",
+            "keypointsJson": "poses/thread-the-needle/thread-the-needle-arm-to-sky/keypoints.json",
+            "overlay": "poses/thread-the-needle/thread-the-needle-arm-to-sky/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": false,
+            "metadata": {}
+          },
+          "thread-the-needle-other-side": {
+            "variantId": "thread-the-needle-other-side",
+            "label": "thread the needle half bind",
+            "viewType": "side-left",
+            "sketch": "poses/thread-the-needle/thread-the-needle-other-side/sketch.jpg",
+            "tracedSvg": "poses/thread-the-needle/thread-the-needle-other-side/traced.svg",
+            "productionSvg": "poses/thread-the-needle/thread-the-needle-other-side/production.svg",
+            "keypointsJson": "poses/thread-the-needle/thread-the-needle-other-side/keypoints.json",
+            "overlay": "poses/thread-the-needle/thread-the-needle-other-side/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": false,
+            "metadata": {}
+          },
+          "thread-the-needle-arm-to-sky-other-side": {
+            "variantId": "thread-the-needle-arm-to-sky-other-side",
+            "label": "thread the needle arm to sky other side",
+            "viewType": "side-right",
+            "sketch": "poses/thread-the-needle/thread-the-needle-arm-to-sky-other-side/sketch.jpg",
+            "tracedSvg": "poses/thread-the-needle/thread-the-needle-arm-to-sky-other-side/traced.svg",
+            "productionSvg": "poses/thread-the-needle/thread-the-needle-arm-to-sky-other-side/production.svg",
+            "keypointsJson": "poses/thread-the-needle/thread-the-needle-arm-to-sky-other-side/keypoints.json",
+            "overlay": "poses/thread-the-needle/thread-the-needle-arm-to-sky-other-side/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": false,
+            "metadata": {}
+          }
+        }
+      },
+      "status": "production-ready",
+      "timestamps": {
+        "created": "2026-03-02T22:35:34.839Z",
+        "updated": "2026-03-02T22:48:38.458Z"
+      },
+      "metadata": {}
+    },
+    "locus": {
+      "poseId": "locus",
+      "englishName": "Locust",
+      "sanskritName": "Salabhasana",
+      "difficulty": 1,
+      "categories": [],
+      "description": "",
+      "cues": [],
+      "contraindications": [],
+      "assets": {
+        "variants": {
+          "front": {
+            "variantId": "front",
+            "label": "Front View",
+            "viewType": "front",
+            "sketch": "poses/locus/front/sketch.jpg",
+            "tracedSvg": "poses/locus/front/traced.svg",
+            "productionSvg": "poses/locus/front/production.svg",
+            "keypointsJson": "poses/locus/front/keypoints.json",
+            "overlay": "poses/locus/front/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": true,
+            "metadata": {}
+          }
+        }
+      },
+      "status": "production-ready",
+      "timestamps": {
+        "created": "2026-03-02T22:51:42.460Z",
+        "updated": "2026-03-02T22:52:18.428Z"
+      },
+      "metadata": {}
+    },
+    "cat-cow": {
+      "poseId": "cat-cow",
+      "englishName": "Cat Cow",
+      "sanskritName": "Marjaryasana-Bitilasana",
+      "difficulty": 1,
+      "categories": [],
+      "description": "",
+      "cues": [],
+      "contraindications": [],
+      "assets": {
+        "variants": {
+          "front": {
+            "variantId": "front",
+            "label": "Front View",
+            "viewType": "front",
+            "sketch": "poses/cat-cow/front/sketch.jpg",
+            "tracedSvg": "poses/cat-cow/front/traced.svg",
+            "productionSvg": "poses/cat-cow/front/production.svg",
+            "keypointsJson": "poses/cat-cow/front/keypoints.json",
+            "overlay": "poses/cat-cow/front/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": true,
+            "metadata": {}
+          },
+          "cat": {
+            "variantId": "cat",
+            "label": "cat",
+            "viewType": "front",
+            "sketch": "poses/cat-cow/cat/sketch.jpg",
+            "tracedSvg": "poses/cat-cow/cat/traced.svg",
+            "productionSvg": "poses/cat-cow/cat/production.svg",
+            "keypointsJson": "poses/cat-cow/cat/keypoints.json",
+            "overlay": "poses/cat-cow/cat/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": false,
+            "metadata": {}
+          },
+          "cow": {
+            "variantId": "cow",
+            "label": "cow",
+            "viewType": "front",
+            "sketch": "poses/cat-cow/cow/sketch.jpg",
+            "tracedSvg": "poses/cat-cow/cow/traced.svg",
+            "productionSvg": "poses/cat-cow/cow/production.svg",
+            "keypointsJson": "poses/cat-cow/cow/keypoints.json",
+            "overlay": "poses/cat-cow/cow/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": false,
+            "metadata": {}
+          }
+        }
+      },
+      "status": "traced",
+      "timestamps": {
+        "created": "2026-03-02T23:22:27.112Z",
+        "updated": "2026-03-02T23:30:35.261Z"
+      },
+      "metadata": {}
+    },
+    "bow": {
+      "poseId": "bow",
+      "englishName": "Bow",
+      "sanskritName": "Dhanurasana",
+      "difficulty": 1,
+      "categories": [],
+      "description": "",
+      "cues": [],
+      "contraindications": [],
+      "assets": {
+        "variants": {
+          "front": {
+            "variantId": "front",
+            "label": "Front View",
+            "viewType": "front",
+            "sketch": "poses/bow/front/sketch.jpg",
+            "tracedSvg": "poses/bow/front/traced.svg",
+            "productionSvg": "poses/bow/front/production.svg",
+            "keypointsJson": "poses/bow/front/keypoints.json",
+            "overlay": "poses/bow/front/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": false,
+            "metadata": {}
+          },
+          "bow-hands-outside-edge-of-foot": {
+            "variantId": "bow-hands-outside-edge-of-foot",
+            "label": "bow - hands outside edge of foot",
+            "viewType": "back",
+            "sketch": "poses/bow/bow-hands-outside-edge-of-foot/sketch.jpg",
+            "tracedSvg": "poses/bow/bow-hands-outside-edge-of-foot/traced.svg",
+            "productionSvg": "poses/bow/bow-hands-outside-edge-of-foot/production.svg",
+            "keypointsJson": "poses/bow/bow-hands-outside-edge-of-foot/keypoints.json",
+            "overlay": "poses/bow/bow-hands-outside-edge-of-foot/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": true,
+            "metadata": {}
+          }
+        }
+      },
+      "status": "production-ready",
+      "timestamps": {
+        "created": "2026-03-02T23:23:18.584Z",
+        "updated": "2026-03-02T23:25:31.340Z"
+      },
+      "metadata": {}
+    },
+    "table-top-and-wrists": {
+      "poseId": "table-top-and-wrists",
+      "englishName": "Table Top And Wrists",
+      "sanskritName": "",
+      "difficulty": 1,
+      "categories": [],
+      "description": "",
+      "cues": [],
+      "contraindications": [],
+      "assets": {
+        "variants": {
+          "front": {
+            "variantId": "front",
+            "label": "Front View",
+            "viewType": "front",
+            "sketch": "poses/table-top-and-wrists/front/sketch.jpg",
+            "tracedSvg": "poses/table-top-and-wrists/front/traced.svg",
+            "productionSvg": "poses/table-top-and-wrists/front/production.svg",
+            "keypointsJson": "poses/table-top-and-wrists/front/keypoints.json",
+            "overlay": "poses/table-top-and-wrists/front/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": false,
+            "metadata": {}
+          },
+          "table-top-fingures-out": {
+            "variantId": "table-top-fingures-out",
+            "label": "table top - fingures out",
+            "viewType": "front",
+            "sketch": "poses/table-top-and-wrists/table-top-fingures-out/sketch.jpg",
+            "tracedSvg": "poses/table-top-and-wrists/table-top-fingures-out/traced.svg",
+            "productionSvg": "poses/table-top-and-wrists/table-top-fingures-out/production.svg",
+            "keypointsJson": "poses/table-top-and-wrists/table-top-fingures-out/keypoints.json",
+            "overlay": "poses/table-top-and-wrists/table-top-fingures-out/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": false,
+            "metadata": {}
+          },
+          "table-top-wrists-inward": {
+            "variantId": "table-top-wrists-inward",
+            "label": "table top - wrists inward",
+            "viewType": "front",
+            "sketch": "poses/table-top-and-wrists/table-top-wrists-inward/sketch.jpg",
+            "tracedSvg": "poses/table-top-and-wrists/table-top-wrists-inward/traced.svg",
+            "productionSvg": "poses/table-top-and-wrists/table-top-wrists-inward/production.svg",
+            "keypointsJson": "poses/table-top-and-wrists/table-top-wrists-inward/keypoints.json",
+            "overlay": "poses/table-top-and-wrists/table-top-wrists-inward/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": false,
+            "metadata": {}
+          },
+          "table-top-wrists-toward-knees": {
+            "variantId": "table-top-wrists-toward-knees",
+            "label": "table top - wrists toward knees",
+            "viewType": "front",
+            "sketch": "poses/table-top-and-wrists/table-top-wrists-toward-knees/sketch.jpg",
+            "tracedSvg": "poses/table-top-and-wrists/table-top-wrists-toward-knees/traced.svg",
+            "productionSvg": "poses/table-top-and-wrists/table-top-wrists-toward-knees/production.svg",
+            "keypointsJson": "poses/table-top-and-wrists/table-top-wrists-toward-knees/keypoints.json",
+            "overlay": "poses/table-top-and-wrists/table-top-wrists-toward-knees/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": false,
+            "metadata": {}
+          },
+          "table-top-knees-on-inverted-writs-each-side": {
+            "variantId": "table-top-knees-on-inverted-writs-each-side",
+            "label": "table top - knees on inverted writs - each side",
+            "viewType": "front",
+            "sketch": "poses/table-top-and-wrists/table-top-knees-on-inverted-writs-each-side/sketch.jpg",
+            "tracedSvg": "poses/table-top-and-wrists/table-top-knees-on-inverted-writs-each-side/traced.svg",
+            "productionSvg": "poses/table-top-and-wrists/table-top-knees-on-inverted-writs-each-side/production.svg",
+            "keypointsJson": "poses/table-top-and-wrists/table-top-knees-on-inverted-writs-each-side/keypoints.json",
+            "overlay": "poses/table-top-and-wrists/table-top-knees-on-inverted-writs-each-side/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": false,
+            "metadata": {}
+          },
+          "table-top": {
+            "variantId": "table-top",
+            "label": "table top - knees on inverted writs - each side",
+            "viewType": "front",
+            "sketch": "poses/table-top-and-wrists/table-top/sketch.jpg",
+            "tracedSvg": "poses/table-top-and-wrists/table-top/traced.svg",
+            "productionSvg": "poses/table-top-and-wrists/table-top/production.svg",
+            "keypointsJson": "poses/table-top-and-wrists/table-top/keypoints.json",
+            "overlay": "poses/table-top-and-wrists/table-top/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": true,
+            "metadata": {}
+          }
+        }
+      },
+      "status": "production-ready",
+      "timestamps": {
+        "created": "2026-03-02T23:26:18.550Z",
+        "updated": "2026-03-02T23:38:18.517Z"
+      },
+      "metadata": {},
+      "reviewFlags": [
+        {
+          "field": "sanskritName",
+          "note": "Could not confirm Sanskrit name — left blank"
+        }
+      ]
+    },
+    "cow-face": {
+      "poseId": "cow-face",
+      "englishName": "Cow Face",
+      "sanskritName": "Gomukhasana",
+      "difficulty": 1,
+      "categories": [],
+      "description": "",
+      "cues": [],
+      "contraindications": [],
+      "assets": {
+        "variants": {
+          "front": {
+            "variantId": "front",
+            "label": "cow face - 1",
+            "viewType": "front",
+            "sketch": "poses/cow-face/front/sketch.jpg",
+            "tracedSvg": "poses/cow-face/front/traced.svg",
+            "productionSvg": "poses/cow-face/front/production.svg",
+            "keypointsJson": "poses/cow-face/front/keypoints.json",
+            "overlay": "poses/cow-face/front/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": false,
+            "metadata": {}
+          },
+          "cow-face-2": {
+            "variantId": "cow-face-2",
+            "label": "cow face - left arm top - right arm - right left top",
+            "viewType": "front",
+            "sketch": "poses/cow-face/cow-face-2/sketch.jpg",
+            "tracedSvg": "poses/cow-face/cow-face-2/traced.svg",
+            "productionSvg": "poses/cow-face/cow-face-2/production.svg",
+            "keypointsJson": "poses/cow-face/cow-face-2/keypoints.json",
+            "overlay": "poses/cow-face/cow-face-2/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": false,
+            "metadata": {}
+          },
+          "cow-face-3": {
+            "variantId": "cow-face-3",
+            "label": "cow face - hold your brain left",
+            "viewType": "front",
+            "sketch": "poses/cow-face/cow-face-3/sketch.jpg",
+            "tracedSvg": "poses/cow-face/cow-face-3/traced.svg",
+            "productionSvg": "poses/cow-face/cow-face-3/production.svg",
+            "keypointsJson": "poses/cow-face/cow-face-3/keypoints.json",
+            "overlay": "poses/cow-face/cow-face-3/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": false,
+            "metadata": {}
+          },
+          "cow-face-hold-your-brain-right": {
+            "variantId": "cow-face-hold-your-brain-right",
+            "label": "Cow face   hold your brain right",
+            "viewType": "front",
+            "sketch": "poses/cow-face/cow-face-hold-your-brain-right/sketch.jpg",
+            "tracedSvg": "poses/cow-face/cow-face-hold-your-brain-right/traced.svg",
+            "productionSvg": "poses/cow-face/cow-face-hold-your-brain-right/production.svg",
+            "keypointsJson": "poses/cow-face/cow-face-hold-your-brain-right/keypoints.json",
+            "overlay": "poses/cow-face/cow-face-hold-your-brain-right/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": false,
+            "metadata": {}
+          },
+          "cow-face-5": {
+            "variantId": "cow-face-5",
+            "label": "cow face - twist to left",
+            "viewType": "front",
+            "sketch": "poses/cow-face/cow-face-5/sketch.jpg",
+            "tracedSvg": "poses/cow-face/cow-face-5/traced.svg",
+            "productionSvg": "poses/cow-face/cow-face-5/production.svg",
+            "keypointsJson": "poses/cow-face/cow-face-5/keypoints.json",
+            "overlay": "poses/cow-face/cow-face-5/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": false,
+            "metadata": {}
+          },
+          "cow-face-6": {
+            "variantId": "cow-face-6",
+            "label": "cow face - 6",
+            "viewType": "front",
+            "sketch": "poses/cow-face/cow-face-6/sketch.jpg",
+            "tracedSvg": "poses/cow-face/cow-face-6/traced.svg",
+            "productionSvg": "poses/cow-face/cow-face-6/production.svg",
+            "keypointsJson": "poses/cow-face/cow-face-6/keypoints.json",
+            "overlay": "poses/cow-face/cow-face-6/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": false,
+            "metadata": {}
+          },
+          "cow-face-7": {
+            "variantId": "cow-face-7",
+            "label": "cow face - 7",
+            "viewType": "front",
+            "sketch": "poses/cow-face/cow-face-7/sketch.jpg",
+            "tracedSvg": "poses/cow-face/cow-face-7/traced.svg",
+            "productionSvg": "poses/cow-face/cow-face-7/production.svg",
+            "keypointsJson": "poses/cow-face/cow-face-7/keypoints.json",
+            "overlay": "poses/cow-face/cow-face-7/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": false,
+            "metadata": {}
+          },
+          "cow-face-8": {
+            "variantId": "cow-face-8",
+            "label": "cow face - 8",
+            "viewType": "front",
+            "sketch": "poses/cow-face/cow-face-8/sketch.jpg",
+            "tracedSvg": "poses/cow-face/cow-face-8/traced.svg",
+            "productionSvg": "poses/cow-face/cow-face-8/production.svg",
+            "keypointsJson": "poses/cow-face/cow-face-8/keypoints.json",
+            "overlay": "poses/cow-face/cow-face-8/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": false,
+            "metadata": {}
+          },
+          "cow-face-9": {
+            "variantId": "cow-face-9",
+            "label": "cow face 9 - twist",
+            "viewType": "front",
+            "sketch": "poses/cow-face/cow-face-9/sketch.jpg",
+            "tracedSvg": "poses/cow-face/cow-face-9/traced.svg",
+            "productionSvg": "poses/cow-face/cow-face-9/production.svg",
+            "keypointsJson": "poses/cow-face/cow-face-9/keypoints.json",
+            "overlay": "poses/cow-face/cow-face-9/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": false,
+            "metadata": {}
+          },
+          "cow-face-10": {
+            "variantId": "cow-face-10",
+            "label": "cow face - hold your brain left",
+            "viewType": "front",
+            "sketch": "poses/cow-face/cow-face-10/sketch.jpg",
+            "tracedSvg": "poses/cow-face/cow-face-10/traced.svg",
+            "productionSvg": "poses/cow-face/cow-face-10/production.svg",
+            "keypointsJson": "poses/cow-face/cow-face-10/keypoints.json",
+            "overlay": "poses/cow-face/cow-face-10/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": false,
+            "metadata": {}
+          },
+          "cow-face-11": {
+            "variantId": "cow-face-11",
+            "label": "Front View",
+            "viewType": "front",
+            "sketch": "poses/cow-face/cow-face-11/sketch.jpg",
+            "tracedSvg": "poses/cow-face/cow-face-11/traced.svg",
+            "productionSvg": "poses/cow-face/cow-face-11/production.svg",
+            "keypointsJson": "poses/cow-face/cow-face-11/keypoints.json",
+            "overlay": "poses/cow-face/cow-face-11/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": false,
+            "metadata": {}
+          },
+          "cow-face-12": {
+            "variantId": "cow-face-12",
+            "label": "Front View",
+            "viewType": "front",
+            "sketch": "poses/cow-face/cow-face-12/sketch.jpg",
+            "tracedSvg": "poses/cow-face/cow-face-12/traced.svg",
+            "productionSvg": "poses/cow-face/cow-face-12/production.svg",
+            "keypointsJson": "poses/cow-face/cow-face-12/keypoints.json",
+            "overlay": "poses/cow-face/cow-face-12/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": true,
+            "metadata": {}
+          }
+        }
+      },
+      "status": "production-ready",
+      "timestamps": {
+        "created": "2026-03-03T00:28:11.922Z",
+        "updated": "2026-03-03T02:28:26.547Z"
+      },
+      "metadata": {}
+    },
+    "scale": {
+      "poseId": "scale",
+      "englishName": "Scale",
+      "sanskritName": "Tolasana",
+      "difficulty": 1,
+      "categories": [],
+      "description": "",
+      "cues": [],
+      "contraindications": [],
+      "assets": {
+        "variants": {
+          "front": {
+            "variantId": "front",
+            "label": "Front View",
+            "viewType": "front",
+            "sketch": "poses/scale/front/sketch.jpg",
+            "tracedSvg": "poses/scale/front/traced.svg",
+            "productionSvg": "poses/scale/front/production.svg",
+            "keypointsJson": "poses/scale/front/keypoints.json",
+            "overlay": "poses/scale/front/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": true,
+            "metadata": {}
+          }
+        }
+      },
+      "status": "production-ready",
+      "timestamps": {
+        "created": "2026-03-04T20:16:36.170Z",
+        "updated": "2026-03-04T20:42:05.474Z"
+      },
+      "metadata": {}
+    },
+    "garland": {
+      "poseId": "garland",
+      "englishName": "Garland",
+      "sanskritName": "Malasana",
+      "difficulty": 1,
+      "categories": [],
+      "description": "",
+      "cues": [],
+      "contraindications": [],
+      "assets": {
+        "variants": {
+          "front": {
+            "variantId": "front",
+            "label": "Front View",
+            "viewType": "front",
+            "sketch": "poses/garland/front/sketch.jpg",
+            "tracedSvg": "poses/garland/front/traced.svg",
+            "productionSvg": "poses/garland/front/production.svg",
+            "keypointsJson": "poses/garland/front/keypoints.json",
+            "overlay": "poses/garland/front/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": true,
+            "metadata": {}
+          },
+          "twist-left": {
+            "variantId": "twist-left",
+            "label": "twist left",
+            "viewType": "front",
+            "sketch": "poses/garland/twist-left/sketch.jpg",
+            "tracedSvg": "poses/garland/twist-left/traced.svg",
+            "productionSvg": "poses/garland/twist-left/production.svg",
+            "keypointsJson": "poses/garland/twist-left/keypoints.json",
+            "overlay": "poses/garland/twist-left/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": false,
+            "metadata": {}
+          },
+          "twist-right": {
+            "variantId": "twist-right",
+            "label": "twist right",
+            "viewType": "side-left",
+            "sketch": "poses/garland/twist-right/sketch.jpg",
+            "tracedSvg": "poses/garland/twist-right/traced.svg",
+            "productionSvg": "poses/garland/twist-right/production.svg",
+            "keypointsJson": "poses/garland/twist-right/keypoints.json",
+            "overlay": "poses/garland/twist-right/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": false,
+            "metadata": {}
+          }
+        }
+      },
+      "status": "production-ready",
+      "timestamps": {
+        "created": "2026-03-04T20:22:02.012Z",
+        "updated": "2026-03-04T20:43:16.978Z"
+      },
+      "metadata": {}
+    },
+    "reverse-plank": {
+      "poseId": "reverse-plank",
+      "englishName": "Reverse Plank",
+      "sanskritName": "Purvottanasana",
+      "difficulty": 1,
+      "categories": [],
+      "description": "",
+      "cues": [],
+      "contraindications": [],
+      "assets": {
+        "variants": {
+          "front": {
+            "variantId": "front",
+            "label": "Front View",
+            "viewType": "front",
+            "sketch": "poses/reverse-plank/front/sketch.jpg",
+            "tracedSvg": "poses/reverse-plank/front/traced.svg",
+            "productionSvg": "poses/reverse-plank/front/production.svg",
+            "keypointsJson": "poses/reverse-plank/front/keypoints.json",
+            "overlay": "poses/reverse-plank/front/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": true,
+            "metadata": {}
+          }
+        }
+      },
+      "status": "production-ready",
+      "timestamps": {
+        "created": "2026-03-04T22:10:25.194Z",
+        "updated": "2026-03-04T22:11:58.501Z"
+      },
+      "metadata": {}
+    },
+    "bridge": {
+      "poseId": "bridge",
+      "englishName": "Bridge",
+      "sanskritName": "Setu Bandha Sarvangasana",
+      "difficulty": 1,
+      "categories": [],
+      "description": "",
+      "cues": [],
+      "contraindications": [],
+      "assets": {
+        "variants": {
+          "front": {
+            "variantId": "front",
+            "label": "Front View",
+            "viewType": "front",
+            "sketch": "poses/bridge/front/sketch.jpg",
+            "tracedSvg": "poses/bridge/front/traced.svg",
+            "productionSvg": "poses/bridge/front/production.svg",
+            "keypointsJson": "poses/bridge/front/keypoints.json",
+            "overlay": "poses/bridge/front/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": true,
+            "metadata": {}
+          },
+          "bridge-raise-one-leg": {
+            "variantId": "bridge-raise-one-leg",
+            "label": "bridge - raise one leg",
+            "viewType": "front",
+            "sketch": "poses/bridge/bridge-raise-one-leg/sketch.jpg",
+            "tracedSvg": "poses/bridge/bridge-raise-one-leg/traced.svg",
+            "productionSvg": "poses/bridge/bridge-raise-one-leg/production.svg",
+            "keypointsJson": "poses/bridge/bridge-raise-one-leg/keypoints.json",
+            "overlay": "poses/bridge/bridge-raise-one-leg/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": false,
+            "metadata": {}
+          },
+          "bridge-raise-one-leg-other-side": {
+            "variantId": "bridge-raise-one-leg-other-side",
+            "label": "bridge - raise one leg other side",
+            "viewType": "front",
+            "sketch": "poses/bridge/bridge-raise-one-leg-other-side/sketch.jpg",
+            "tracedSvg": "poses/bridge/bridge-raise-one-leg-other-side/traced.svg",
+            "productionSvg": "poses/bridge/bridge-raise-one-leg-other-side/production.svg",
+            "keypointsJson": "poses/bridge/bridge-raise-one-leg-other-side/keypoints.json",
+            "overlay": "poses/bridge/bridge-raise-one-leg-other-side/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": false,
+            "metadata": {}
+          }
+        }
+      },
+      "status": "production-ready",
+      "timestamps": {
+        "created": "2026-03-04T22:12:31.150Z",
+        "updated": "2026-03-04T22:22:42.547Z"
+      },
+      "metadata": {}
+    },
+    "boat": {
+      "poseId": "boat",
+      "englishName": "Boat",
+      "sanskritName": "Navasana",
+      "difficulty": 1,
+      "categories": [],
+      "description": "",
+      "cues": [],
+      "contraindications": [],
+      "assets": {
+        "variants": {
+          "front": {
+            "variantId": "front",
+            "label": "Front View",
+            "viewType": "front",
+            "sketch": "poses/boat/front/sketch.jpg",
+            "tracedSvg": "poses/boat/front/traced.svg",
+            "productionSvg": "poses/boat/front/production.svg",
+            "keypointsJson": "poses/boat/front/keypoints.json",
+            "overlay": "poses/boat/front/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": true,
+            "metadata": {}
+          },
+          "low-boat": {
+            "variantId": "low-boat",
+            "label": "low boat",
+            "viewType": "front",
+            "sketch": "poses/boat/low-boat/sketch.jpg",
+            "tracedSvg": "poses/boat/low-boat/traced.svg",
+            "productionSvg": "poses/boat/low-boat/production.svg",
+            "keypointsJson": "poses/boat/low-boat/keypoints.json",
+            "overlay": "poses/boat/low-boat/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": false,
+            "metadata": {}
+          }
+        }
+      },
+      "status": "production-ready",
+      "timestamps": {
+        "created": "2026-03-04T22:13:48.797Z",
+        "updated": "2026-03-04T22:19:23.603Z"
+      },
+      "metadata": {}
+    },
+    "one-legged-mountain": {
+      "poseId": "one-legged-mountain",
+      "englishName": "One Legged Mountain",
+      "sanskritName": "",
+      "difficulty": 1,
+      "categories": [],
+      "description": "",
+      "cues": [],
+      "contraindications": [],
+      "assets": {
+        "variants": {
+          "front": {
+            "variantId": "front",
+            "label": "Front View",
+            "viewType": "front",
+            "sketch": "poses/one-legged-mountain/front/sketch.jpg",
+            "tracedSvg": "poses/one-legged-mountain/front/traced.svg",
+            "productionSvg": "poses/one-legged-mountain/front/production.svg",
+            "keypointsJson": "poses/one-legged-mountain/front/keypoints.json",
+            "overlay": "poses/one-legged-mountain/front/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": true,
+            "metadata": {}
+          },
+          "one-legged-mountain-other-side": {
+            "variantId": "one-legged-mountain-other-side",
+            "label": "one legged mountain other side",
+            "viewType": "front",
+            "sketch": "poses/one-legged-mountain/one-legged-mountain-other-side/sketch.jpg",
+            "tracedSvg": "poses/one-legged-mountain/one-legged-mountain-other-side/traced.svg",
+            "productionSvg": "poses/one-legged-mountain/one-legged-mountain-other-side/production.svg",
+            "keypointsJson": "poses/one-legged-mountain/one-legged-mountain-other-side/keypoints.json",
+            "overlay": "poses/one-legged-mountain/one-legged-mountain-other-side/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": false,
+            "metadata": {}
+          }
+        }
+      },
+      "status": "production-ready",
+      "timestamps": {
+        "created": "2026-03-04T22:15:13.907Z",
+        "updated": "2026-03-04T22:17:03.163Z"
+      },
+      "metadata": {},
+      "reviewFlags": [
+        {
+          "field": "sanskritName",
+          "note": "Could not confirm Sanskrit name — left blank"
+        }
+      ]
+    },
+    "headstand": {
+      "poseId": "headstand",
+      "englishName": "Headstand",
+      "sanskritName": "Sirsasana",
+      "difficulty": 1,
+      "categories": [],
+      "description": "",
+      "cues": [],
+      "contraindications": [],
+      "assets": {
+        "variants": {
+          "front": {
+            "variantId": "front",
+            "label": "Front View",
+            "viewType": "front",
+            "sketch": "poses/headstand/front/sketch.jpg",
+            "tracedSvg": "poses/headstand/front/traced.svg",
+            "productionSvg": "poses/headstand/front/production.svg",
+            "keypointsJson": "poses/headstand/front/keypoints.json",
+            "overlay": "poses/headstand/front/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": true,
+            "metadata": {}
+          }
+        }
+      },
+      "status": "traced",
+      "timestamps": {
+        "created": "2026-03-04T22:17:16.891Z",
+        "updated": "2026-03-04T22:17:49.956Z"
+      },
+      "metadata": {}
+    },
+    "standing-wide-leg-forward-fold": {
+      "poseId": "standing-wide-leg-forward-fold",
+      "englishName": "Standing Wide Leg Forward Fold",
+      "sanskritName": "Prasarita Padottanasana",
+      "difficulty": 1,
+      "categories": [],
+      "description": "",
+      "cues": [],
+      "contraindications": [],
+      "assets": {
+        "variants": {
+          "front": {
+            "variantId": "front",
+            "label": "Front View",
+            "viewType": "front",
+            "sketch": "poses/standing-wide-leg-forward-fold/front/sketch.jpg",
+            "tracedSvg": "poses/standing-wide-leg-forward-fold/front/traced.svg",
+            "productionSvg": "poses/standing-wide-leg-forward-fold/front/production.svg",
+            "keypointsJson": "poses/standing-wide-leg-forward-fold/front/keypoints.json",
+            "overlay": "poses/standing-wide-leg-forward-fold/front/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": true,
+            "metadata": {}
+          },
+          "standing-wide-leg-forward-fold-open-chest": {
+            "variantId": "standing-wide-leg-forward-fold-open-chest",
+            "label": "standing wide leg forward fold open chest",
+            "viewType": "front",
+            "sketch": "poses/standing-wide-leg-forward-fold/standing-wide-leg-forward-fold-open-chest/sketch.jpg",
+            "tracedSvg": "poses/standing-wide-leg-forward-fold/standing-wide-leg-forward-fold-open-chest/traced.svg",
+            "productionSvg": "poses/standing-wide-leg-forward-fold/standing-wide-leg-forward-fold-open-chest/production.svg",
+            "keypointsJson": "poses/standing-wide-leg-forward-fold/standing-wide-leg-forward-fold-open-chest/keypoints.json",
+            "overlay": "poses/standing-wide-leg-forward-fold/standing-wide-leg-forward-fold-open-chest/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": false,
+            "metadata": {}
+          }
+        }
+      },
+      "status": "production-ready",
+      "timestamps": {
+        "created": "2026-03-04T22:23:03.646Z",
+        "updated": "2026-03-04T22:24:36.801Z"
+      },
+      "metadata": {}
+    },
+    "savasana": {
+      "poseId": "savasana",
+      "englishName": "Savasana",
+      "sanskritName": "Savasana",
+      "difficulty": 1,
+      "categories": [],
+      "description": "",
+      "cues": [],
+      "contraindications": [],
+      "assets": {
+        "variants": {
+          "front": {
+            "variantId": "front",
+            "label": "Front View",
+            "viewType": "front",
+            "sketch": "poses/savasana/front/sketch.jpg",
+            "tracedSvg": "poses/savasana/front/traced.svg",
+            "productionSvg": "poses/savasana/front/production.svg",
+            "keypointsJson": "poses/savasana/front/keypoints.json",
+            "overlay": "poses/savasana/front/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": true,
+            "metadata": {}
+          }
+        }
+      },
+      "status": "production-ready",
+      "timestamps": {
+        "created": "2026-03-04T23:25:44.841Z",
+        "updated": "2026-03-04T23:28:17.983Z"
+      },
+      "metadata": {}
+    },
+    "wind-relief-pose": {
+      "poseId": "wind-relief-pose",
+      "englishName": "Wind Relief Pose",
+      "sanskritName": "Pavanamuktasana",
+      "difficulty": 1,
+      "categories": [],
+      "description": "",
+      "cues": [],
+      "contraindications": [],
+      "assets": {
+        "variants": {
+          "front": {
+            "variantId": "front",
+            "label": "Front View",
+            "viewType": "front",
+            "sketch": "poses/wind-relief-pose/front/sketch.jpg",
+            "tracedSvg": "poses/wind-relief-pose/front/traced.svg",
+            "productionSvg": "poses/wind-relief-pose/front/production.svg",
+            "keypointsJson": "poses/wind-relief-pose/front/keypoints.json",
+            "overlay": "poses/wind-relief-pose/front/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": true,
+            "metadata": {}
+          },
+          "wind-relief-pose-other-side": {
+            "variantId": "wind-relief-pose-other-side",
+            "label": "wind relief pose - other side",
+            "viewType": "front",
+            "sketch": "poses/wind-relief-pose/wind-relief-pose-other-side/sketch.jpg",
+            "tracedSvg": "poses/wind-relief-pose/wind-relief-pose-other-side/traced.svg",
+            "productionSvg": "poses/wind-relief-pose/wind-relief-pose-other-side/production.svg",
+            "keypointsJson": "poses/wind-relief-pose/wind-relief-pose-other-side/keypoints.json",
+            "overlay": "poses/wind-relief-pose/wind-relief-pose-other-side/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": false,
+            "metadata": {}
+          }
+        }
+      },
+      "status": "traced",
+      "timestamps": {
+        "created": "2026-03-04T23:28:36.581Z",
+        "updated": "2026-03-04T23:30:58.531Z"
+      },
+      "metadata": {}
+    },
+    "supine-twist": {
+      "poseId": "supine-twist",
+      "englishName": "Supine Twist",
+      "sanskritName": "Supta Matsyendrasana",
+      "difficulty": 1,
+      "categories": [],
+      "description": "",
+      "cues": [],
+      "contraindications": [],
+      "assets": {
+        "variants": {
+          "front": {
+            "variantId": "front",
+            "label": "Front View",
+            "viewType": "front",
+            "sketch": "poses/supine-twist/front/sketch.jpg",
+            "tracedSvg": "poses/supine-twist/front/traced.svg",
+            "productionSvg": "poses/supine-twist/front/production.svg",
+            "keypointsJson": "poses/supine-twist/front/keypoints.json",
+            "overlay": "poses/supine-twist/front/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": true,
+            "metadata": {}
+          },
+          "supine-twist-other-side": {
+            "variantId": "supine-twist-other-side",
+            "label": "supine twist - other side",
+            "viewType": "front",
+            "sketch": "poses/supine-twist/supine-twist-other-side/sketch.jpg",
+            "tracedSvg": "poses/supine-twist/supine-twist-other-side/traced.svg",
+            "productionSvg": "poses/supine-twist/supine-twist-other-side/production.svg",
+            "keypointsJson": "poses/supine-twist/supine-twist-other-side/keypoints.json",
+            "overlay": "poses/supine-twist/supine-twist-other-side/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": false,
+            "metadata": {}
+          },
+          "supine-twist-long-leg": {
+            "variantId": "supine-twist-long-leg",
+            "label": "supine twist - long leg",
+            "viewType": "front",
+            "sketch": "poses/supine-twist/supine-twist-long-leg/sketch.jpg",
+            "tracedSvg": "poses/supine-twist/supine-twist-long-leg/traced.svg",
+            "productionSvg": "poses/supine-twist/supine-twist-long-leg/production.svg",
+            "keypointsJson": "poses/supine-twist/supine-twist-long-leg/keypoints.json",
+            "overlay": "poses/supine-twist/supine-twist-long-leg/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": false,
+            "metadata": {}
+          },
+          "supine-twist-long-leg-other-side": {
+            "variantId": "supine-twist-long-leg-other-side",
+            "label": "supine twist - long leg -other side",
+            "viewType": "front",
+            "sketch": "poses/supine-twist/supine-twist-long-leg-other-side/sketch.jpg",
+            "tracedSvg": "poses/supine-twist/supine-twist-long-leg-other-side/traced.svg",
+            "productionSvg": "poses/supine-twist/supine-twist-long-leg-other-side/production.svg",
+            "keypointsJson": "poses/supine-twist/supine-twist-long-leg-other-side/keypoints.json",
+            "overlay": "poses/supine-twist/supine-twist-long-leg-other-side/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": false,
+            "metadata": {}
+          }
+        }
+      },
+      "status": "production-ready",
+      "timestamps": {
+        "created": "2026-03-04T23:31:15.823Z",
+        "updated": "2026-03-04T23:36:18.755Z"
+      },
+      "metadata": {}
+    },
+    "happy-baby": {
+      "poseId": "happy-baby",
+      "englishName": "Happy Baby",
+      "sanskritName": "Ananda Balasana",
+      "difficulty": 1,
+      "categories": [],
+      "description": "",
+      "cues": [],
+      "contraindications": [],
+      "assets": {
+        "variants": {
+          "front": {
+            "variantId": "front",
+            "label": "Front View",
+            "viewType": "front",
+            "sketch": "poses/happy-baby/front/sketch.jpg",
+            "tracedSvg": "poses/happy-baby/front/traced.svg",
+            "productionSvg": "poses/happy-baby/front/production.svg",
+            "keypointsJson": "poses/happy-baby/front/keypoints.json",
+            "overlay": "poses/happy-baby/front/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": true,
+            "metadata": {}
+          }
+        }
+      },
+      "status": "production-ready",
+      "timestamps": {
+        "created": "2026-03-04T23:36:55.073Z",
+        "updated": "2026-03-04T23:37:30.673Z"
+      },
+      "metadata": {}
+    },
+    "huge-knees-to-chest": {
+      "poseId": "huge-knees-to-chest",
+      "englishName": "Knees to Chest",
+      "sanskritName": "Apanasana",
+      "difficulty": 1,
+      "categories": [],
+      "description": "",
+      "cues": [],
+      "contraindications": [],
+      "assets": {
+        "variants": {
+          "front": {
+            "variantId": "front",
+            "label": "Front View",
+            "viewType": "front",
+            "sketch": "poses/huge-knees-to-chest/front/sketch.jpg",
+            "tracedSvg": "poses/huge-knees-to-chest/front/traced.svg",
+            "productionSvg": "poses/huge-knees-to-chest/front/production.svg",
+            "keypointsJson": "poses/huge-knees-to-chest/front/keypoints.json",
+            "overlay": "poses/huge-knees-to-chest/front/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": true,
+            "metadata": {}
+          }
+        }
+      },
+      "status": "production-ready",
+      "timestamps": {
+        "created": "2026-03-04T23:38:01.975Z",
+        "updated": "2026-03-04T23:38:33.544Z"
+      },
+      "metadata": {}
+    },
+    "drink-water": {
+      "poseId": "drink-water",
+      "englishName": "Drink Water",
+      "sanskritName": null,
+      "difficulty": 1,
+      "categories": [],
+      "description": "drink tea, coffee or water depending on your mood.",
+      "cues": [],
+      "contraindications": [],
+      "assets": {
+        "variants": {
+          "front": {
+            "variantId": "front",
+            "label": "Front View",
+            "viewType": "front",
+            "sketch": "poses/drink-water/front/sketch.jpg",
+            "tracedSvg": "poses/drink-water/front/traced.svg",
+            "productionSvg": "poses/drink-water/front/production.svg",
+            "keypointsJson": "poses/drink-water/front/keypoints.json",
+            "overlay": "poses/drink-water/front/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": false,
+            "metadata": {}
+          },
+          "drink-water": {
+            "variantId": "drink-water",
+            "label": "drink water",
+            "viewType": "front",
+            "sketch": "poses/drink-water/drink-water/sketch.jpg",
+            "tracedSvg": "poses/drink-water/drink-water/traced.svg",
+            "productionSvg": "poses/drink-water/drink-water/production.svg",
+            "keypointsJson": "poses/drink-water/drink-water/keypoints.json",
+            "overlay": "poses/drink-water/drink-water/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": true,
+            "metadata": {}
+          },
+          "drink-water-more": {
+            "variantId": "drink-water-more",
+            "label": "drink water more",
+            "viewType": "front",
+            "sketch": "poses/drink-water/drink-water-more/sketch.jpg",
+            "tracedSvg": "poses/drink-water/drink-water-more/traced.svg",
+            "productionSvg": "poses/drink-water/drink-water-more/production.svg",
+            "keypointsJson": "poses/drink-water/drink-water-more/keypoints.json",
+            "overlay": "poses/drink-water/drink-water-more/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": false,
+            "metadata": {}
+          },
+          "drink-coffee-more": {
+            "variantId": "drink-coffee-more",
+            "label": "drink coffee more",
+            "viewType": "front",
+            "sketch": "poses/drink-water/drink-coffee-more/sketch.jpg",
+            "tracedSvg": "poses/drink-water/drink-coffee-more/traced.svg",
+            "productionSvg": "poses/drink-water/drink-coffee-more/production.svg",
+            "keypointsJson": "poses/drink-water/drink-coffee-more/keypoints.json",
+            "overlay": "poses/drink-water/drink-coffee-more/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": false,
+            "metadata": {}
+          },
+          "drink-coffee-more-other-side": {
+            "variantId": "drink-coffee-more-other-side",
+            "label": "drink coffee more other side",
+            "viewType": "front",
+            "sketch": "poses/drink-water/drink-coffee-more-other-side/sketch.jpg",
+            "tracedSvg": "poses/drink-water/drink-coffee-more-other-side/traced.svg",
+            "productionSvg": "poses/drink-water/drink-coffee-more-other-side/production.svg",
+            "keypointsJson": "poses/drink-water/drink-coffee-more-other-side/keypoints.json",
+            "overlay": "poses/drink-water/drink-coffee-more-other-side/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": false,
+            "metadata": {}
+          },
+          "drink-water-all-the-time": {
+            "variantId": "drink-water-all-the-time",
+            "label": "drink water all the time",
+            "viewType": "front",
+            "sketch": "poses/drink-water/drink-water-all-the-time/sketch.jpg",
+            "tracedSvg": "poses/drink-water/drink-water-all-the-time/traced.svg",
+            "productionSvg": "poses/drink-water/drink-water-all-the-time/production.svg",
+            "keypointsJson": "poses/drink-water/drink-water-all-the-time/keypoints.json",
+            "overlay": "poses/drink-water/drink-water-all-the-time/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": false,
+            "metadata": {}
+          },
+          "drink-water-because-its-good": {
+            "variantId": "drink-water-because-its-good",
+            "label": "drink water because its good",
+            "viewType": "front",
+            "sketch": "poses/drink-water/drink-water-because-its-good/sketch.jpg",
+            "tracedSvg": "poses/drink-water/drink-water-because-its-good/traced.svg",
+            "productionSvg": "poses/drink-water/drink-water-because-its-good/production.svg",
+            "keypointsJson": "poses/drink-water/drink-water-because-its-good/keypoints.json",
+            "overlay": "poses/drink-water/drink-water-because-its-good/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": false,
+            "metadata": {}
+          }
+        }
+      },
+      "status": "production-ready",
+      "timestamps": {
+        "created": "2026-03-04T23:54:57.972Z",
+        "updated": "2026-03-05T00:03:42.060Z"
+      },
+      "metadata": {}
+    },
+    "lotus-flower": {
+      "poseId": "lotus-flower",
+      "englishName": "Lotus Flower",
+      "sanskritName": null,
+      "difficulty": 1,
+      "categories": [],
+      "description": "a lotus flower to calm your mind.",
+      "cues": [],
+      "contraindications": [],
+      "assets": {
+        "variants": {
+          "front": {
+            "variantId": "front",
+            "label": "Front View",
+            "viewType": "front",
+            "sketch": "poses/lotus-flower/front/sketch.jpg",
+            "tracedSvg": "poses/lotus-flower/front/traced.svg",
+            "productionSvg": "poses/lotus-flower/front/production.svg",
+            "keypointsJson": "poses/lotus-flower/front/keypoints.json",
+            "overlay": "poses/lotus-flower/front/overlay.jpg",
+            "claudeAnalysis": null,
+            "status": "traced",
+            "isPrimary": true,
+            "metadata": {}
+          }
+        }
+      },
+      "status": "production-ready",
+      "timestamps": {
+        "created": "2026-03-05T00:22:05.135Z",
+        "updated": "2026-03-05T00:23:55.363Z"
+      },
+      "metadata": {}
+    }
+  }
+}

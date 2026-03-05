@@ -1,0 +1,2226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pose Library</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: system-ui, sans-serif;
+      background: #0f0f0f;
+      color: #e0e0e0;
+      min-height: 100vh;
+      padding: 24px;
+    }
+
+    /* ── Header ──────────────────────────────────────────────── */
+    .page-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    .page-header h1 { font-size: 1.4rem; font-weight: 600; color: #fff; }
+    .stats {
+      display: flex;
+      gap: 12px;
+      font-size: 0.75rem;
+      color: #888;
+    }
+    .stat-badge {
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 6px;
+      padding: 4px 10px;
+    }
+    .stat-badge .count { font-weight: 700; color: #e0e0e0; }
+
+    /* ── Toolbar ─────────────────────────────────────────────── */
+    .toolbar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .search-input {
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 8px;
+      padding: 8px 14px;
+      color: #e0e0e0;
+      font-size: 0.85rem;
+      width: 260px;
+      outline: none;
+    }
+    .search-input:focus { border-color: #81C784; }
+    .search-input::placeholder { color: #555; }
+
+    .filter-btn {
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 6px;
+      padding: 6px 12px;
+      color: #888;
+      font-size: 0.78rem;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .filter-btn:hover { border-color: #555; color: #ccc; }
+    .filter-btn.active { border-color: #81C784; color: #81C784; background: rgba(129,199,132,0.08); }
+
+    .spacer { flex: 1; }
+
+    .btn {
+      padding: 8px 16px;
+      border-radius: 8px;
+      border: none;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .btn-primary {
+      background: #81C784;
+      color: #0f0f0f;
+    }
+    .btn-primary:hover { background: #66BB6A; }
+    .btn-secondary {
+      background: #2a2a2a;
+      color: #e0e0e0;
+    }
+    .btn-secondary:hover { background: #333; }
+    .btn-danger {
+      background: #c62828;
+      color: #fff;
+    }
+    .btn-danger:hover { background: #e53935; }
+
+    /* ── Crop Modal ─────────────────────────────────────────── */
+    .crop-modal {
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 12px;
+      padding: 24px;
+      width: 900px;
+      max-width: 90vw;
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .crop-modal h3 {
+      font-size: 1.1rem;
+      color: #fff;
+      margin-bottom: 12px;
+    }
+    .crop-canvas-wrapper {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      max-height: 65vh;
+      background: #111;
+      border-radius: 8px;
+      border: 1px solid #2a2a2a;
+    }
+    #crop-canvas {
+      cursor: crosshair;
+      display: block;
+      max-width: 100%;
+      max-height: 65vh;
+    }
+    .crop-info {
+      font-size: 0.78rem;
+      color: #888;
+      padding: 8px 0;
+      text-align: center;
+    }
+    .crop-toolbar {
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+      margin-top: 4px;
+    }
+
+    .btn-small {
+      padding: 5px 10px;
+      font-size: 0.78rem;
+    }
+
+    /* ── Grid View ───────────────────────────────────────────── */
+    .pose-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 16px;
+    }
+    .pose-card {
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 12px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: border-color 0.15s, transform 0.1s;
+    }
+    .pose-card:hover { border-color: #444; transform: translateY(-2px); }
+    .pose-card.active { border-color: #81C784; }
+
+    .card-thumb {
+      width: 100%;
+      height: 160px;
+      background: #111;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .card-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+    .card-thumb .placeholder {
+      font-size: 2.5rem;
+      opacity: 0.15;
+    }
+    .card-thumb .status-dot {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+    .status-dot.draft { background: #666; }
+    .status-dot.traced { background: #FFB74D; }
+    .status-dot.analyzed { background: #64B5F6; }
+    .status-dot.production-ready { background: #81C784; }
+
+    .card-body {
+      padding: 12px;
+    }
+    .card-body .pose-name {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 2px;
+    }
+    .card-body .pose-sanskrit {
+      font-size: 0.78rem;
+      color: #888;
+      font-style: italic;
+      margin-bottom: 6px;
+    }
+    .card-meta {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .tag {
+      font-size: 0.68rem;
+      background: #222;
+      border: 1px solid #333;
+      border-radius: 4px;
+      padding: 2px 6px;
+      color: #999;
+    }
+    .difficulty-dots {
+      display: flex;
+      gap: 2px;
+      margin-left: auto;
+    }
+    .difficulty-dots .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #333;
+    }
+    .difficulty-dots .dot.filled { background: #FFB74D; }
+
+    /* ── Detail Panel (slide-in overlay) ─────────────────────── */
+    .detail-overlay {
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 600px;
+      background: #141414;
+      border-left: 1px solid #2a2a2a;
+      z-index: 100;
+      transform: translateX(100%);
+      transition: transform 0.25s ease;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .detail-overlay.open { transform: translateX(0); }
+
+    .detail-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      border-bottom: 1px solid #2a2a2a;
+      position: sticky;
+      top: 0;
+      background: #141414;
+      z-index: 1;
+    }
+    .detail-header h2 { font-size: 1.1rem; font-weight: 600; color: #fff; }
+    .close-btn {
+      background: none;
+      border: none;
+      color: #888;
+      font-size: 1.4rem;
+      cursor: pointer;
+      padding: 4px;
+      line-height: 1;
+    }
+    .close-btn:hover { color: #fff; }
+
+    .detail-body {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      flex: 1;
+      overflow-y: auto;
+      min-height: 0;
+    }
+
+    /* ── Detail: Variants section ────────────────────────────── */
+    .variants-section {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .variants-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .variant-card {
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 8px;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .variant-card.primary { border-color: #81C784; }
+    .variant-top-row {
+      display: grid;
+      grid-template-columns: 80px 80px 1fr;
+      gap: 10px;
+      align-items: center;
+    }
+    .variant-thumb {
+      width: 80px;
+      height: 60px;
+      background: #111;
+      border-radius: 4px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    .variant-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+    .variant-thumb .no-file {
+      font-size: 0.65rem;
+      color: #444;
+    }
+    .variant-info {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .variant-info .variant-name {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #e0e0e0;
+      cursor: pointer;
+    }
+    .variant-info .variant-name:hover { color: #81C784; }
+    .variant-name-edit {
+      font-size: 0.85rem;
+      background: #222;
+      border: 1px solid #81C784;
+      border-radius: 4px;
+      color: #e0e0e0;
+      padding: 2px 6px;
+      font-family: inherit;
+      outline: none;
+      width: 100%;
+    }
+    .variant-info .variant-meta {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      font-size: 0.72rem;
+    }
+    .variant-info .variant-meta .tag { font-size: 0.65rem; }
+    .variant-actions {
+      display: flex;
+      gap: 4px;
+      flex-wrap: wrap;
+    }
+    .variant-upload-input { display: none; }
+    .primary-badge {
+      font-size: 0.65rem;
+      background: rgba(129,199,132,0.15);
+      color: #81C784;
+      padding: 1px 6px;
+      border-radius: 3px;
+    }
+
+    /* ── Variant trace preview (auto-trace result) ───────────── */
+    .variant-trace-preview {
+      display: none;
+      background: #111;
+      border: 1px solid #333;
+      border-radius: 6px;
+      padding: 8px;
+      align-items: center;
+      gap: 8px;
+    }
+    .variant-trace-preview.visible { display: flex; }
+    .variant-trace-preview .trace-svg-container {
+      flex: 1;
+      max-height: 120px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .variant-trace-preview .trace-svg-container svg {
+      max-width: 100%;
+      max-height: 120px;
+    }
+    .variant-trace-preview .trace-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .rotate-btn {
+      background: #333;
+      border: 1px solid #444;
+      border-radius: 4px;
+      color: #ccc;
+      padding: 4px 8px;
+      font-size: 0.72rem;
+      cursor: pointer;
+    }
+    .rotate-btn:hover { background: #444; color: #fff; }
+    .fine-rotate-input {
+      width: 58px;
+      background: #222;
+      border: 1px solid #444;
+      border-radius: 4px;
+      color: #ccc;
+      padding: 3px 4px;
+      font-size: 0.7rem;
+      text-align: center;
+      font-family: inherit;
+      outline: none;
+    }
+    .fine-rotate-input:focus { border-color: #81C784; }
+
+    /* ── SVG white background for admin (black contours on white) ─ */
+    .card-thumb img[src*="traced.svg"],
+    .card-thumb img[src*="production.svg"] {
+      background: #fff;
+      border-radius: 4px;
+    }
+    .variant-thumb img[src*="traced.svg"],
+    .variant-thumb img[src*="production.svg"] {
+      background: #fff;
+    }
+    .variant-trace-preview .trace-svg-container {
+      background: #fff;
+      border-radius: 4px;
+    }
+    .variant-trace-preview .trace-svg-container svg {
+      display: block;
+    }
+
+    /* ── Reference images section ─────────────────────────────── */
+    .ref-images-section {
+      border: 1px solid #2a2a2a;
+      border-radius: 8px;
+      padding: 10px;
+      background: #141414;
+    }
+    .ref-images-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .ref-img-card {
+      position: relative;
+      border-radius: 6px;
+      overflow: hidden;
+      border: 1px solid #2a2a2a;
+      background: #1a1a1a;
+      cursor: pointer;
+    }
+    .ref-img-card img {
+      width: 100%;
+      height: 80px;
+      object-fit: cover;
+    }
+    .ref-img-card .ref-img-name {
+      font-size: 0.6rem;
+      color: #888;
+      padding: 3px 5px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .ref-img-card .ref-img-delete {
+      position: absolute;
+      top: 2px;
+      right: 2px;
+      background: rgba(0,0,0,0.7);
+      color: #EF5350;
+      border: none;
+      border-radius: 50%;
+      width: 18px;
+      height: 18px;
+      font-size: 0.65rem;
+      cursor: pointer;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+    .ref-img-card:hover .ref-img-delete { display: flex; }
+    .ref-upload-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 80px;
+      border: 2px dashed #333;
+      border-radius: 6px;
+      color: #555;
+      font-size: 1.5rem;
+      cursor: pointer;
+      transition: border-color 0.15s, color 0.15s;
+    }
+    .ref-upload-btn:hover { border-color: #81C784; color: #81C784; }
+
+    /* ── Claude text review section ────────────────────────────── */
+    .claude-review-section {
+      border: 1px solid #2a2a2a;
+      border-radius: 8px;
+      padding: 10px;
+      background: #141414;
+    }
+    .claude-review-result {
+      display: none;
+      margin-top: 8px;
+      padding: 10px;
+      background: #1a1a2a;
+      border: 1px solid #333;
+      border-radius: 6px;
+      font-size: 0.82rem;
+      color: #ccc;
+      line-height: 1.5;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+    .claude-review-result.visible { display: block; }
+    .claude-review-result .suggestion {
+      margin-bottom: 8px;
+      padding: 6px 8px;
+      background: #222;
+      border-radius: 4px;
+      border-left: 3px solid #64B5F6;
+    }
+    .claude-review-result .suggestion .field-name {
+      font-weight: 600;
+      color: #64B5F6;
+      font-size: 0.75rem;
+    }
+    .claude-review-result .suggestion .original {
+      color: #EF5350;
+      text-decoration: line-through;
+      font-size: 0.78rem;
+    }
+    .claude-review-result .suggestion .revised {
+      color: #81C784;
+      font-size: 0.78rem;
+    }
+    .claude-review-actions {
+      display: flex;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    /* ── Claude analysis per-variant ─────────────────────────── */
+    .variant-claude {
+      background: #111;
+      border: 1px solid #333;
+      border-radius: 6px;
+      padding: 8px;
+      font-size: 0.78rem;
+    }
+    .confidence-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+    .confidence-badge.high { background: rgba(129,199,132,0.15); color: #81C784; }
+    .confidence-badge.medium { background: rgba(255,183,77,0.15); color: #FFB74D; }
+    .confidence-badge.low { background: rgba(239,83,80,0.15); color: #EF5350; }
+
+    /* ── Add variant inline form ─────────────────────────────── */
+    .add-variant-row {
+      display: none;
+      gap: 8px;
+      align-items: end;
+    }
+    .add-variant-row.open { display: flex; }
+    .add-variant-row .field-group { flex: 1; }
+
+    /* ── Detail: Form fields ─────────────────────────────────── */
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .field-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #555;
+    }
+    .field-input, .field-textarea, .field-select {
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 6px;
+      padding: 8px 12px;
+      color: #e0e0e0;
+      font-size: 0.85rem;
+      font-family: inherit;
+      outline: none;
+    }
+    .field-input:focus, .field-textarea:focus, .field-select:focus {
+      border-color: #81C784;
+    }
+    .field-textarea {
+      resize: vertical;
+      min-height: 60px;
+    }
+    .field-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .status-select {
+      display: flex;
+      gap: 8px;
+    }
+    .status-option {
+      flex: 1;
+      text-align: center;
+      padding: 6px 0;
+      border-radius: 6px;
+      border: 1px solid #2a2a2a;
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: all 0.15s;
+      background: #1a1a1a;
+      color: #888;
+    }
+    .status-option:hover { border-color: #444; }
+    .status-option.active.draft { border-color: #666; color: #ccc; background: #222; }
+    .status-option.active.traced { border-color: #FFB74D; color: #FFB74D; background: rgba(255,183,77,0.08); }
+    .status-option.active.analyzed { border-color: #64B5F6; color: #64B5F6; background: rgba(100,181,246,0.08); }
+    .status-option.active.production-ready { border-color: #81C784; color: #81C784; background: rgba(129,199,132,0.08); }
+
+    /* ── Detail: Action buttons ──────────────────────────────── */
+    .action-bar {
+      display: flex;
+      gap: 8px;
+      padding-top: 8px;
+      border-top: 1px solid #2a2a2a;
+    }
+
+    /* ── New Pose Modal ──────────────────────────────────────── */
+    .modal-backdrop {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.6);
+      z-index: 200;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-backdrop.open { display: flex; }
+    .modal {
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 12px;
+      padding: 24px;
+      width: 400px;
+      max-width: 90vw;
+    }
+    .modal h3 {
+      font-size: 1.1rem;
+      color: #fff;
+      margin-bottom: 16px;
+    }
+    .modal .field-group { margin-bottom: 12px; }
+    .modal-actions {
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+      margin-top: 20px;
+    }
+
+    /* ── Empty state ─────────────────────────────────────────── */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #555;
+    }
+    .empty-state .icon { font-size: 3rem; margin-bottom: 12px; opacity: 0.3; }
+    .empty-state p { font-size: 0.9rem; }
+
+    /* ── Toast notification ──────────────────────────────────── */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #2a2a2a;
+      border: 1px solid #444;
+      border-radius: 8px;
+      padding: 10px 16px;
+      font-size: 0.85rem;
+      color: #e0e0e0;
+      z-index: 300;
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.25s;
+    }
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .toast.success { border-color: #81C784; }
+    .toast.error { border-color: #EF5350; }
+  </style>
+</head>
+<body>
+
+  <!-- ── Header ──────────────────────────────────────────────── -->
+  <div class="page-header">
+    <h1>Pose Library</h1>
+    <div class="stats" id="stats"></div>
+  </div>
+
+  <!-- ── Toolbar ─────────────────────────────────────────────── -->
+  <div class="toolbar">
+    <input type="text" class="search-input" id="search" placeholder="Search poses..." />
+    <button class="filter-btn active" data-filter="all">All</button>
+    <button class="filter-btn" data-filter="draft">Draft</button>
+    <button class="filter-btn" data-filter="traced">Traced</button>
+    <button class="filter-btn" data-filter="analyzed">Analyzed</button>
+    <button class="filter-btn" data-filter="production-ready">Ready</button>
+    <div class="spacer"></div>
+    <button class="btn btn-primary" id="btn-new-pose">+ New Pose</button>
+  </div>
+
+  <!-- ── Grid ────────────────────────────────────────────────── -->
+  <div class="pose-grid" id="pose-grid"></div>
+  <div class="empty-state" id="empty-state" style="display:none;">
+    <div class="icon">&#x1F9D8;</div>
+    <p>No poses found. Click <strong>+ New Pose</strong> to get started.</p>
+  </div>
+
+  <!-- ── Detail Panel ────────────────────────────────────────── -->
+  <div class="detail-overlay" id="detail-panel">
+    <div class="detail-header">
+      <h2 id="detail-title">Pose Detail</h2>
+      <button class="close-btn" id="btn-close-detail">&times;</button>
+    </div>
+    <div class="detail-body">
+      <!-- SVG Variants -->
+      <div class="variants-section">
+        <div class="variants-header">
+          <label class="field-label">SVG Variants</label>
+          <button class="btn btn-small btn-secondary" id="btn-add-variant">+ Add Variant</button>
+        </div>
+        <div class="add-variant-row" id="add-variant-row">
+          <div class="field-group">
+            <label class="field-label">Variant ID</label>
+            <input type="text" class="field-input" id="new-variant-id" placeholder="side-left" style="font-size:0.8rem;" />
+          </div>
+          <div class="field-group">
+            <label class="field-label">Label</label>
+            <input type="text" class="field-input" id="new-variant-label" placeholder="Side View (Left)" style="font-size:0.8rem;" />
+          </div>
+          <div class="field-group">
+            <label class="field-label">View Type</label>
+            <select class="field-select" id="new-variant-viewtype" style="font-size:0.8rem;">
+              <option value="front">Front</option>
+              <option value="back">Back</option>
+              <option value="side-left">Side Left</option>
+              <option value="side-right">Side Right</option>
+              <option value="three-quarter">Three-Quarter</option>
+              <option value="annotated-motion">Annotated: Motion</option>
+              <option value="annotated-alignment">Annotated: Alignment</option>
+              <option value="annotated-muscles">Annotated: Muscles</option>
+            </select>
+          </div>
+          <button class="btn btn-primary btn-small" id="btn-confirm-variant">Add</button>
+        </div>
+        <div id="variants-list"></div>
+      </div>
+
+      <!-- Status -->
+      <div class="field-group">
+        <label class="field-label">Status</label>
+        <div class="status-select" id="status-select">
+          <div class="status-option draft" data-status="draft">Draft</div>
+          <div class="status-option traced" data-status="traced">Traced</div>
+          <div class="status-option analyzed" data-status="analyzed">Analyzed</div>
+          <div class="status-option production-ready" data-status="production-ready">Ready</div>
+        </div>
+      </div>
+
+      <!-- Core fields -->
+      <div class="field-row">
+        <div class="field-group">
+          <label class="field-label">Pose ID</label>
+          <input type="text" class="field-input" id="field-poseId" readonly style="color:#666;" />
+        </div>
+        <div class="field-group">
+          <label class="field-label">Difficulty (1-5)</label>
+          <input type="number" class="field-input" id="field-difficulty" min="1" max="5" />
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field-group">
+          <label class="field-label">English Name</label>
+          <input type="text" class="field-input" id="field-englishName" />
+        </div>
+        <div class="field-group">
+          <label class="field-label">Sanskrit Name</label>
+          <input type="text" class="field-input" id="field-sanskritName" />
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Description</label>
+        <textarea class="field-textarea" id="field-description" rows="2"></textarea>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Categories (comma-separated)</label>
+        <input type="text" class="field-input" id="field-categories" placeholder="standing, balance, foundational" />
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Cues (one per line)</label>
+        <textarea class="field-textarea" id="field-cues" rows="4"></textarea>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Contraindications (one per line)</label>
+        <textarea class="field-textarea" id="field-contraindications" rows="2"></textarea>
+      </div>
+
+      <!-- Reference Images (book pages, analog text sources) -->
+      <div class="ref-images-section">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <label class="field-label">Reference Images</label>
+          <span style="font-size:0.65rem;color:#555;">Book pages, text sources — for OCR &amp; data entry</span>
+        </div>
+        <div class="ref-images-grid" id="ref-images-grid">
+          <!-- populated dynamically -->
+        </div>
+        <input type="file" id="ref-image-upload" accept="image/*" multiple style="display:none;" />
+      </div>
+
+      <!-- Claude Text Review -->
+      <div class="claude-review-section">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <label class="field-label">Claude Text Review</label>
+          <button class="btn btn-small btn-secondary" id="btn-claude-review">Review Grammar &amp; Spelling</button>
+        </div>
+        <div class="claude-review-result" id="claude-review-result"></div>
+        <div class="claude-review-actions" id="claude-review-actions" style="display:none;">
+          <button class="btn btn-small btn-primary" id="btn-apply-suggestions">Apply All Suggestions</button>
+          <button class="btn btn-small btn-secondary" id="btn-dismiss-review">Dismiss</button>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="action-bar" style="display:flex;justify-content:space-between;align-items:center;">
+        <button class="btn btn-primary" id="btn-save">Save</button>
+        <button class="btn btn-danger btn-small" id="btn-delete-pose">Delete Pose</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── New Pose Modal ──────────────────────────────────────── -->
+  <div class="modal-backdrop" id="new-pose-modal">
+    <div class="modal">
+      <h3>New Pose</h3>
+      <div class="field-group">
+        <label class="field-label">English Name</label>
+        <input type="text" class="field-input" id="new-englishName" placeholder="Warrior II" />
+      </div>
+      <div class="field-group">
+        <label class="field-label">Pose ID (auto-generated)</label>
+        <input type="text" class="field-input" id="new-poseId" readonly style="color:#666;" />
+      </div>
+      <div class="field-group">
+        <label class="field-label">Sanskrit Name (optional)</label>
+        <input type="text" class="field-input" id="new-sanskritName" placeholder="Virabhadrasana II" />
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" id="btn-cancel-new">Cancel</button>
+        <button class="btn btn-primary" id="btn-create-pose">Create</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Crop Modal ─────────────────────────────────────────── -->
+  <div class="modal-backdrop" id="crop-modal">
+    <div class="crop-modal">
+      <h3>Crop Sketch</h3>
+      <div class="crop-canvas-wrapper">
+        <canvas id="crop-canvas"></canvas>
+      </div>
+      <div class="crop-info" id="crop-info">Click and drag to select crop region</div>
+      <div class="crop-toolbar">
+        <button class="btn btn-secondary" id="crop-btn-cancel">Cancel</button>
+        <button class="btn btn-secondary" id="crop-btn-skip">Skip &mdash; Upload Original</button>
+        <button class="btn btn-primary" id="crop-btn-confirm" disabled>Crop &amp; Upload</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Toast ───────────────────────────────────────────────── -->
+  <div class="toast" id="toast"></div>
+
+<script>
+// ── State ─────────────────────────────────────────────────────
+
+let library = { version: "1.0", lastUpdated: "", poses: {} };
+let activePoseId = null;
+let activeFilter = "all";
+
+// Track per-variant auto-trace SVG text (not yet saved)
+// Key: variantId, Value: svgText
+let pendingTraceSvgs = {};
+let originalTraceSvgs = {};  // store un-rotated originals for clean rotation
+let rotationAngles = {};     // track cumulative rotation per variant
+
+// ── API helpers ───────────────────────────────────────────────
+
+const API = "/api";
+
+async function fetchLibrary() {
+  const res = await fetch(`${API}/poses`);
+  if (!res.ok) throw new Error("Failed to load library");
+  library = await res.json();
+  render();
+}
+
+async function savePose(poseId, data) {
+  const res = await fetch(`${API}/poses/${poseId}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) throw new Error("Failed to save pose");
+  const updated = await res.json();
+  library.poses[poseId] = updated;
+  return updated;
+}
+
+async function createPose(data) {
+  const res = await fetch(`${API}/poses`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err.error || "Failed to create pose");
+  }
+  const newPose = await res.json();
+  library.poses[newPose.poseId] = newPose;
+  return newPose;
+}
+
+async function uploadVariantSketch(poseId, variantId, file) {
+  const form = new FormData();
+  form.append("file", file);
+  const res = await fetch(`${API}/poses/${poseId}/variants/${variantId}/upload-sketch`, {
+    method: "POST",
+    body: form,
+  });
+  if (!res.ok) throw new Error("Failed to upload sketch");
+  return res.json();
+}
+
+async function saveVariantAsset(poseId, variantId, filename, content, status) {
+  const res = await fetch(`${API}/poses/${poseId}/variants/${variantId}/assets/${filename}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ content, status }),
+  });
+  if (!res.ok) throw new Error("Failed to save asset");
+  return res.json();
+}
+
+async function addVariantToLibrary(poseId, variantId, label, viewType) {
+  const pose = library.poses[poseId];
+  if (!pose) throw new Error("Pose not found");
+  const isPrimary = !pose.assets.variants || Object.keys(pose.assets.variants).length === 0;
+  const variant = {
+    variantId,
+    label,
+    viewType,
+    sketch: `poses/${poseId}/${variantId}/sketch.jpg`,
+    tracedSvg: `poses/${poseId}/${variantId}/traced.svg`,
+    productionSvg: `poses/${poseId}/${variantId}/production.svg`,
+    keypointsJson: `poses/${poseId}/${variantId}/keypoints.json`,
+    overlay: `poses/${poseId}/${variantId}/overlay.jpg`,
+    claudeAnalysis: null,
+    status: "draft",
+    isPrimary,
+    metadata: {},
+  };
+  return savePose(poseId, {
+    assets: { variants: { [variantId]: variant } },
+  });
+}
+
+// ── Auto-trace helper (calls the trace API) ──────────────────
+
+async function autoTraceSketch(poseId, variantId) {
+  // Fetch the sketch as a blob
+  const sketchUrl = `${API}/poses/${poseId}/variants/${variantId}/assets/sketch.jpg`;
+  const sketchRes = await fetch(sketchUrl);
+  if (!sketchRes.ok) throw new Error("Sketch not found");
+  const sketchBlob = await sketchRes.blob();
+
+  // Build form with default trace params
+  const form = new FormData();
+  form.append("file", sketchBlob, "sketch.jpg");
+  form.append("threshold", "200");
+  form.append("blur_radius", "2");
+  form.append("edge_margin", "10");
+  form.append("turdsize", "20");
+  form.append("alphamax", "1.0");
+  form.append("opttolerance", "0.2");
+  form.append("simplify", "0.001");
+  form.append("min_area", "100");
+  form.append("max_area_fraction", "0.95");
+
+  // Also try to send keypoints if available
+  try {
+    const kpUrl = `${API}/poses/${poseId}/variants/${variantId}/assets/keypoints.json`;
+    const kpRes = await fetch(kpUrl);
+    if (kpRes.ok) {
+      const kpBlob = await kpRes.blob();
+      form.append("keypoints_file", kpBlob, "keypoints.json");
+    }
+  } catch (_) { /* no keypoints — that's fine */ }
+
+  const traceRes = await fetch("/api/trace", { method: "POST", body: form });
+  if (!traceRes.ok) {
+    const err = await traceRes.json().catch(() => ({ detail: traceRes.statusText }));
+    throw new Error(err.detail || "Trace failed");
+  }
+  return traceRes.text();
+}
+
+// ── Helpers ───────────────────────────────────────────────────
+
+function toPoseId(name) {
+  return name.toLowerCase()
+    .replace(/['']/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
+function toast(msg, type = "success") {
+  const el = document.getElementById("toast");
+  el.textContent = msg;
+  el.className = `toast ${type} show`;
+  setTimeout(() => el.classList.remove("show"), 2500);
+}
+
+function posesArray() {
+  return Object.values(library.poses);
+}
+
+// ── Render ────────────────────────────────────────────────────
+
+function render() {
+  renderStats();
+  renderGrid();
+}
+
+function renderStats() {
+  const poses = posesArray();
+  const counts = { total: poses.length, draft: 0, traced: 0, analyzed: 0, "production-ready": 0 };
+  poses.forEach(p => { if (counts[p.status] !== undefined) counts[p.status]++; });
+
+  document.getElementById("stats").innerHTML = `
+    <span class="stat-badge"><span class="count">${counts.total}</span> total</span>
+    <span class="stat-badge"><span class="count">${counts.draft}</span> draft</span>
+    <span class="stat-badge"><span class="count">${counts.traced}</span> traced</span>
+    <span class="stat-badge"><span class="count">${counts.analyzed}</span> analyzed</span>
+    <span class="stat-badge"><span class="count">${counts["production-ready"]}</span> ready</span>
+  `;
+}
+
+function renderGrid() {
+  const grid = document.getElementById("pose-grid");
+  const empty = document.getElementById("empty-state");
+  const search = document.getElementById("search").value.toLowerCase();
+
+  let poses = posesArray();
+
+  // Filter by status
+  if (activeFilter !== "all") {
+    poses = poses.filter(p => p.status === activeFilter);
+  }
+
+  // Filter by search
+  if (search) {
+    poses = poses.filter(p =>
+      p.englishName.toLowerCase().includes(search) ||
+      p.sanskritName.toLowerCase().includes(search) ||
+      p.poseId.includes(search) ||
+      p.categories.some(c => c.includes(search))
+    );
+  }
+
+  poses.sort((a, b) => a.englishName.localeCompare(b.englishName));
+
+  if (poses.length === 0) {
+    grid.style.display = "none";
+    empty.style.display = "block";
+    return;
+  }
+
+  grid.style.display = "grid";
+  empty.style.display = "none";
+
+  grid.innerHTML = poses.map(p => {
+    const variants = (p.assets && p.assets.variants) ? Object.values(p.assets.variants) : [];
+    const primary = variants.find(v => v.isPrimary) || variants[0];
+    const variantCount = variants.length;
+    let thumbUrl = "";
+    if (primary) {
+      let file = "sketch.jpg";
+      if (primary.status === "production-ready" || primary.status === "analyzed") {
+        file = "production.svg";
+      } else if (primary.status === "traced") {
+        file = "traced.svg";
+      }
+      thumbUrl = `${API}/poses/${p.poseId}/variants/${primary.variantId}/assets/${file}?t=${Date.now()}`;
+    }
+    return `
+    <div class="pose-card ${activePoseId === p.poseId ? 'active' : ''}" data-pose-id="${p.poseId}">
+      <div class="card-thumb">
+        ${thumbUrl ? `<img src="${thumbUrl}" onerror="this.style.display='none'; this.parentNode.querySelector('.placeholder').style.display='block';" />` : ''}
+        <div class="placeholder" ${thumbUrl ? 'style="display:none;"' : ''}>&#x1F9D8;</div>
+        <div class="status-dot ${p.status}"></div>
+      </div>
+      <div class="card-body">
+        <div class="pose-name">${p.englishName}</div>
+        ${p.sanskritName ? `<div class="pose-sanskrit">${p.sanskritName}</div>` : ''}
+        <div class="card-meta">
+          ${variantCount > 1 ? `<span class="tag">${variantCount} views</span>` : ''}
+          ${p.categories.slice(0, 2).map(c => `<span class="tag">${c}</span>`).join('')}
+          <div class="difficulty-dots">
+            ${[1,2,3,4,5].map(i => `<div class="dot ${i <= p.difficulty ? 'filled' : ''}"></div>`).join('')}
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }).join("");
+
+  grid.querySelectorAll(".pose-card").forEach(card => {
+    card.addEventListener("click", () => openDetail(card.dataset.poseId));
+  });
+}
+
+// ── Detail Panel ──────────────────────────────────────────────
+
+function openDetail(poseId) {
+  activePoseId = poseId;
+  pendingTraceSvgs = {};
+  originalTraceSvgs = {};
+  rotationAngles = {};
+  const pose = library.poses[poseId];
+  if (!pose) return;
+
+  document.getElementById("detail-title").textContent = pose.englishName;
+  document.getElementById("field-poseId").value = pose.poseId;
+  document.getElementById("field-englishName").value = pose.englishName;
+  document.getElementById("field-sanskritName").value = pose.sanskritName || "";
+  document.getElementById("field-difficulty").value = pose.difficulty || 1;
+  document.getElementById("field-description").value = pose.description || "";
+  document.getElementById("field-categories").value = (pose.categories || []).join(", ");
+  document.getElementById("field-cues").value = (pose.cues || []).join("\n");
+  document.getElementById("field-contraindications").value = (pose.contraindications || []).join("\n");
+
+  // Status
+  document.querySelectorAll("#status-select .status-option").forEach(el => {
+    el.classList.toggle("active", el.dataset.status === pose.status);
+  });
+
+  // Render variants
+  renderVariantsList(pose);
+
+  // Reset add-variant row
+  document.getElementById("add-variant-row").classList.remove("open");
+
+  // Load reference images
+  loadRefImages(poseId);
+
+  // Reset Claude review panel
+  document.getElementById("claude-review-result").className = "claude-review-result";
+  document.getElementById("claude-review-actions").style.display = "none";
+
+  document.getElementById("detail-panel").classList.add("open");
+  renderGrid();
+}
+
+function closeDetail() {
+  activePoseId = null;
+  pendingTraceSvgs = {};
+  originalTraceSvgs = {};
+  rotationAngles = {};
+  document.getElementById("detail-panel").classList.remove("open");
+  renderGrid();
+}
+
+// ── Save handler ──────────────────────────────────────────────
+
+async function handleSave() {
+  if (!activePoseId) return;
+
+  const activeStatusEl = document.querySelector("#status-select .status-option.active");
+  const status = activeStatusEl ? activeStatusEl.dataset.status : "draft";
+
+  const cuesRaw = document.getElementById("field-cues").value;
+  const contraindicationsRaw = document.getElementById("field-contraindications").value;
+
+  const data = {
+    englishName: document.getElementById("field-englishName").value,
+    sanskritName: document.getElementById("field-sanskritName").value,
+    difficulty: parseInt(document.getElementById("field-difficulty").value) || 1,
+    description: document.getElementById("field-description").value,
+    categories: document.getElementById("field-categories").value
+      .split(",").map(s => s.trim()).filter(Boolean),
+    cues: cuesRaw.split("\n").map(s => s.trim()).filter(Boolean),
+    contraindications: contraindicationsRaw.split("\n").map(s => s.trim()).filter(Boolean),
+    status,
+  };
+
+  try {
+    await savePose(activePoseId, data);
+    toast("Pose saved");
+    render();
+    document.getElementById("detail-title").textContent = data.englishName;
+  } catch (e) {
+    toast(e.message, "error");
+  }
+}
+
+// ── Delete pose handler ───────────────────────────────────────
+
+async function handleDeletePose() {
+  if (!activePoseId) return;
+  const pose = library.poses[activePoseId];
+  const name = pose ? pose.englishName : activePoseId;
+  if (!confirm(`Delete "${name}" and ALL its variants, sketches, SVGs, and reference images?\n\nThis cannot be undone.`)) return;
+  try {
+    const res = await fetch(`${API}/poses/${activePoseId}`, { method: "DELETE" });
+    if (!res.ok) throw new Error("Failed to delete pose");
+    delete library.poses[activePoseId];
+    closeDetail();
+    render();
+    toast(`Deleted "${name}"`);
+  } catch (e) {
+    toast(e.message, "error");
+  }
+}
+
+// ── Delete variant handler ─────────────────────────────────────
+
+async function deleteVariant(variantId) {
+  if (!activePoseId) return;
+  const pose = library.poses[activePoseId];
+  if (!pose) return;
+  const variant = pose.assets && pose.assets.variants && pose.assets.variants[variantId];
+  const label = variant ? variant.label : variantId;
+  if (!confirm(`Delete variant "${label}" and all its files (sketch, SVGs, etc.)?\n\nThis cannot be undone.`)) return;
+  try {
+    const res = await fetch(`${API}/poses/${activePoseId}/variants/${variantId}`, { method: "DELETE" });
+    if (!res.ok) throw new Error("Failed to delete variant");
+    // Update local state
+    if (pose.assets && pose.assets.variants) {
+      delete pose.assets.variants[variantId];
+    }
+    delete pendingTraceSvgs[variantId];
+    delete originalTraceSvgs[variantId];
+    delete rotationAngles[variantId];
+    toast(`Deleted variant "${label}"`);
+    renderVariantsList(pose);
+    renderGrid();
+  } catch (e) {
+    toast(e.message, "error");
+  }
+}
+
+// ── Variants rendering ────────────────────────────────────────
+
+function renderVariantsList(pose) {
+  const list = document.getElementById("variants-list");
+  const variants = (pose.assets && pose.assets.variants) ? Object.values(pose.assets.variants) : [];
+
+  if (variants.length === 0) {
+    list.innerHTML = '<div style="color:#555;font-size:0.82rem;padding:12px 0;">No variants yet. Add one to get started.</div>';
+    return;
+  }
+
+  list.innerHTML = variants.map(v => {
+    const ts = Date.now();
+    const sketchUrl = `${API}/poses/${pose.poseId}/variants/${v.variantId}/assets/sketch.jpg?t=${ts}`;
+    const svgFile = (v.status === "production-ready" || v.status === "analyzed") ? "production.svg" : "traced.svg";
+    const svgUrl = `${API}/poses/${pose.poseId}/variants/${v.variantId}/assets/${svgFile}?t=${ts}`;
+    const inputId = `upload-${v.variantId}`;
+    const tracePreviewId = `trace-preview-${v.variantId}`;
+    const traceSvgContId = `trace-svg-${v.variantId}`;
+
+    // Claude analysis for this variant
+    let claudeHtml = '';
+    if (v.claudeAnalysis) {
+      const a = v.claudeAnalysis;
+      claudeHtml = `
+        <div class="variant-claude">
+          <span class="confidence-badge ${a.confidence}">${a.confidence}</span>
+          <span style="color:#888;font-size:0.72rem;margin-left:6px;">${a.notes || ''}</span>
+          ${a.changes ? `<div style="color:#666;font-size:0.7rem;margin-top:4px;"><em>${a.changes}</em></div>` : ''}
+        </div>`;
+    }
+
+    return `
+    <div class="variant-card ${v.isPrimary ? 'primary' : ''}" data-variant-id="${v.variantId}">
+      <div class="variant-top-row">
+        <div class="variant-thumb">
+          <img src="${sketchUrl}" onerror="this.outerHTML='<div class=\\'no-file\\'>sketch</div>'" />
+        </div>
+        <div class="variant-thumb">
+          <img src="${svgUrl}" onerror="this.outerHTML='<div class=\\'no-file\\'>svg</div>'" />
+        </div>
+        <div class="variant-info">
+          <div class="variant-name" data-variant-id="${v.variantId}" title="Double-click to edit">
+            ${v.label}
+            ${v.isPrimary ? '<span class="primary-badge">primary</span>' : ''}
+          </div>
+          <div class="variant-meta">
+            <span class="tag">${v.viewType}</span>
+            <span class="status-dot ${v.status}" style="width:8px;height:8px;display:inline-block;border-radius:50%;"></span>
+            <span style="color:#666;">${v.status}</span>
+          </div>
+          <div class="variant-actions">
+            <input type="file" class="variant-upload-input" id="${inputId}" accept="image/*" data-variant-id="${v.variantId}" />
+            <button class="btn btn-small btn-secondary" onclick="document.getElementById('${inputId}').click()">Upload Sketch</button>
+            <button class="btn btn-small btn-secondary" onclick="openVariantInTracer('${v.variantId}')">Trace</button>
+            ${!v.isPrimary ? `<button class="btn btn-small btn-secondary" onclick="setPrimary('${v.variantId}')">Set Primary</button>` : ''}
+            <button class="btn btn-small btn-danger" onclick="deleteVariant('${v.variantId}')" style="margin-left:auto;">Delete</button>
+          </div>
+        </div>
+      </div>
+      <!-- Auto-trace preview area -->
+      <div class="variant-trace-preview" id="${tracePreviewId}">
+        <div class="trace-svg-container" id="${traceSvgContId}"></div>
+        <div class="trace-actions">
+          <button class="rotate-btn" onclick="rotateTracePreview('${v.variantId}')">Rotate 90&deg;</button>
+          <div style="display:flex;gap:3px;align-items:center;">
+            <input type="number" class="fine-rotate-input" id="fine-rotate-${v.variantId}" value="0" step="0.5" min="-180" max="180" title="Fine-tune rotation (degrees)" />
+            <button class="rotate-btn" onclick="fineRotatePreview('${v.variantId}')" style="font-size:0.65rem;padding:3px 5px;">Apply</button>
+          </div>
+          <button class="btn btn-small btn-primary" onclick="saveTracedSvg('${v.variantId}')">Save Trace</button>
+        </div>
+      </div>
+      ${claudeHtml}
+    </div>`;
+  }).join("");
+
+  // Attach upload handlers
+  list.querySelectorAll(".variant-upload-input").forEach(input => {
+    input.addEventListener("change", handleVariantSketchUpload);
+  });
+
+  // Attach double-click handlers for inline label editing
+  list.querySelectorAll(".variant-name").forEach(nameEl => {
+    nameEl.addEventListener("dblclick", startInlineEdit);
+  });
+}
+
+// ── Inline label editing (#1) ─────────────────────────────────
+
+function startInlineEdit(e) {
+  const nameEl = e.currentTarget;
+  const variantId = nameEl.dataset.variantId;
+  const pose = library.poses[activePoseId];
+  if (!pose) return;
+  const variant = pose.assets.variants[variantId];
+  if (!variant) return;
+
+  // Replace label text with an input
+  const currentLabel = variant.label;
+  const input = document.createElement("input");
+  input.type = "text";
+  input.value = currentLabel;
+  input.className = "variant-name-edit";
+
+  // Clear current content and insert input
+  nameEl.textContent = "";
+  nameEl.appendChild(input);
+  input.focus();
+  input.select();
+
+  async function commit() {
+    const newLabel = input.value.trim();
+    if (newLabel && newLabel !== currentLabel) {
+      try {
+        await savePose(activePoseId, {
+          assets: { variants: { [variantId]: { label: newLabel } } },
+        });
+        toast("Label updated");
+      } catch (err) {
+        toast(err.message, "error");
+      }
+    }
+    // Re-render
+    openDetail(activePoseId);
+  }
+
+  input.addEventListener("blur", commit);
+  input.addEventListener("keydown", (ev) => {
+    if (ev.key === "Enter") { ev.preventDefault(); input.blur(); }
+    if (ev.key === "Escape") {
+      input.value = currentLabel; // revert
+      input.blur();
+    }
+  });
+}
+
+// ── Variant sketch upload + auto-trace (#2) ───────────────────
+
+function handleVariantSketchUpload(e) {
+  const file = e.target.files[0];
+  const variantId = e.target.dataset.variantId;
+  if (!file || !activePoseId || !variantId) return;
+
+  // Open crop modal — upload happens after crop/skip
+  openCropModal(file, activePoseId, variantId);
+  e.target.value = ""; // reset so re-uploading same file works
+}
+
+// ── Crop SVG to content bounding box ──────────────────────────
+
+function cropSvgToContent(svgText, padding = 5) {
+  return new Promise((resolve) => {
+    // Create a hidden container to render the SVG and measure bounding boxes
+    const container = document.createElement("div");
+    container.style.cssText = "position:fixed;left:-9999px;top:-9999px;visibility:hidden;width:2000px;height:2000px;";
+    document.body.appendChild(container);
+    container.innerHTML = svgText;
+
+    const svgEl = container.querySelector("svg");
+    if (!svgEl) {
+      document.body.removeChild(container);
+      resolve(svgText); // return unchanged
+      return;
+    }
+
+    // Give the browser a frame to lay out the SVG
+    requestAnimationFrame(() => {
+      try {
+        // Get bounding box of all content
+        const bbox = svgEl.getBBox();
+
+        if (bbox.width > 0 && bbox.height > 0) {
+          // Apply padding
+          const x = bbox.x - padding;
+          const y = bbox.y - padding;
+          const w = bbox.width + padding * 2;
+          const h = bbox.height + padding * 2;
+
+          // Update viewBox
+          svgEl.setAttribute("viewBox", `${x} ${y} ${w} ${h}`);
+          svgEl.removeAttribute("width");
+          svgEl.removeAttribute("height");
+        }
+
+        const serializer = new XMLSerializer();
+        const cropped = serializer.serializeToString(svgEl);
+        document.body.removeChild(container);
+        resolve(cropped);
+      } catch (e) {
+        document.body.removeChild(container);
+        resolve(svgText); // return unchanged on error
+      }
+    });
+  });
+}
+
+function showTracePreview(variantId, svgText) {
+  const previewEl = document.getElementById(`trace-preview-${variantId}`);
+  const svgContEl = document.getElementById(`trace-svg-${variantId}`);
+  if (!previewEl || !svgContEl) return;
+
+  svgContEl.innerHTML = svgText;
+  const svgEl = svgContEl.querySelector("svg");
+  if (svgEl) {
+    svgEl.style.maxWidth = "100%";
+    svgEl.style.maxHeight = "120px";
+    svgEl.removeAttribute("width");
+    svgEl.removeAttribute("height");
+  }
+  previewEl.classList.add("visible");
+}
+
+// ── Rotate traced SVG by 90 degrees (#3) ──────────────────────
+// Always applies rotation from the ORIGINAL un-rotated SVG to avoid
+// cumulative transform drift. Then crops to bounding box to re-center.
+
+async function rotateTracePreview(variantId) {
+  const origSvg = originalTraceSvgs[variantId];
+  if (!origSvg) return;
+
+  // Increment cumulative angle
+  rotationAngles[variantId] = ((rotationAngles[variantId] || 0) + 90) % 360;
+  const angle = rotationAngles[variantId];
+
+  if (angle === 0) {
+    // Back to original — no transform needed
+    pendingTraceSvgs[variantId] = origSvg;
+    showTracePreview(variantId, origSvg);
+    return;
+  }
+
+  // Parse original SVG
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(origSvg, "image/svg+xml");
+  const svgEl = doc.querySelector("svg");
+  if (!svgEl) return;
+
+  // Get original viewBox
+  let vb = svgEl.getAttribute("viewBox");
+  if (!vb) {
+    const w = parseFloat(svgEl.getAttribute("width")) || 100;
+    const h = parseFloat(svgEl.getAttribute("height")) || 100;
+    vb = `0 0 ${w} ${h}`;
+  }
+  const [minX, minY, vbW, vbH] = vb.split(/[\s,]+/).map(Number);
+
+  // Center of original content
+  const cx = minX + vbW / 2;
+  const cy = minY + vbH / 2;
+
+  // Wrap all children in a rotation group
+  const wrapper = doc.createElementNS("http://www.w3.org/2000/svg", "g");
+  wrapper.setAttribute("transform", `rotate(${angle}, ${cx}, ${cy})`);
+  while (svgEl.firstChild) wrapper.appendChild(svgEl.firstChild);
+  svgEl.appendChild(wrapper);
+
+  // Adjust viewBox for the rotated bounding box
+  if (angle === 90 || angle === 270) {
+    // Dimensions swap; recompute origin to keep centered
+    const newMinX = cx - vbH / 2;
+    const newMinY = cy - vbW / 2;
+    svgEl.setAttribute("viewBox", `${newMinX} ${newMinY} ${vbH} ${vbW}`);
+  }
+  // 180° keeps same dimensions, just need the rotation
+
+  // Serialize, then crop to actual content bounds for clean centering
+  const serializer = new XMLSerializer();
+  const rotatedSvg = serializer.serializeToString(doc);
+  const croppedSvg = await cropSvgToContent(rotatedSvg);
+
+  pendingTraceSvgs[variantId] = croppedSvg;
+  showTracePreview(variantId, croppedSvg);
+}
+
+// ── Save traced SVG (#2 save button) ──────────────────────────
+
+async function saveTracedSvg(variantId) {
+  const svgText = pendingTraceSvgs[variantId];
+  if (!svgText || !activePoseId) return;
+
+  try {
+    // Save traced SVG file + update variant status to "traced"
+    await saveVariantAsset(activePoseId, variantId, "traced.svg", svgText, "traced");
+
+    // Also update pose-level status to "traced" if currently "draft"
+    const pose = library.poses[activePoseId];
+    const updates = {
+      assets: { variants: { [variantId]: { status: "traced" } } },
+    };
+    if (pose && pose.status === "draft") {
+      updates.status = "traced";
+    }
+    await savePose(activePoseId, updates);
+
+    delete pendingTraceSvgs[variantId];
+    delete originalTraceSvgs[variantId];
+    delete rotationAngles[variantId];
+    toast("Traced SVG saved");
+
+    // Refresh library data and re-render everything
+    await fetchLibrary();
+    renderGrid();
+    if (activePoseId) {
+      const updatedPose = library.poses[activePoseId];
+      if (updatedPose) renderVariantsList(updatedPose);
+    }
+  } catch (err) {
+    toast(err.message, "error");
+  }
+}
+
+// ── Open variant in tracer (#4 + #5) ──────────────────────────
+
+function openVariantInTracer(variantId) {
+  if (!activePoseId) return;
+  // Pass poseId + variantId; tracer will auto-load, auto-trace, and link back
+  window.open(`/pages/svg-tracer.html?poseId=${activePoseId}&variantId=${variantId}`, "_blank");
+}
+
+// ── Set primary variant ───────────────────────────────────────
+
+async function setPrimary(variantId) {
+  if (!activePoseId) return;
+  const pose = library.poses[activePoseId];
+  if (!pose || !pose.assets || !pose.assets.variants) return;
+
+  const variantUpdates = {};
+  for (const vid of Object.keys(pose.assets.variants)) {
+    variantUpdates[vid] = { isPrimary: vid === variantId };
+  }
+
+  try {
+    await savePose(activePoseId, { assets: { variants: variantUpdates } });
+    toast("Primary variant updated");
+    openDetail(activePoseId);
+    renderGrid();
+  } catch (err) {
+    toast(err.message, "error");
+  }
+}
+
+// ── Add variant handler ───────────────────────────────────────
+
+async function handleAddVariant() {
+  if (!activePoseId) return;
+  const variantId = toPoseId(document.getElementById("new-variant-id").value.trim());
+  const label = document.getElementById("new-variant-label").value.trim();
+  const viewType = document.getElementById("new-variant-viewtype").value;
+
+  if (!variantId) {
+    toast("Enter a variant ID", "error");
+    return;
+  }
+  if (!label) {
+    toast("Enter a label", "error");
+    return;
+  }
+
+  const pose = library.poses[activePoseId];
+  if (pose.assets.variants && pose.assets.variants[variantId]) {
+    toast("Variant already exists", "error");
+    return;
+  }
+
+  try {
+    await addVariantToLibrary(activePoseId, variantId, label, viewType);
+    toast(`Added variant: ${label}`);
+    document.getElementById("add-variant-row").classList.remove("open");
+    openDetail(activePoseId);
+  } catch (err) {
+    toast(err.message, "error");
+  }
+}
+
+// ── New Pose modal ────────────────────────────────────────────
+
+function openNewPoseModal() {
+  document.getElementById("new-englishName").value = "";
+  document.getElementById("new-poseId").value = "";
+  document.getElementById("new-sanskritName").value = "";
+  document.getElementById("new-pose-modal").classList.add("open");
+  document.getElementById("new-englishName").focus();
+}
+
+function closeNewPoseModal() {
+  document.getElementById("new-pose-modal").classList.remove("open");
+}
+
+async function handleCreatePose() {
+  const englishName = document.getElementById("new-englishName").value.trim();
+  const poseId = document.getElementById("new-poseId").value.trim();
+  const sanskritName = document.getElementById("new-sanskritName").value.trim();
+
+  if (!englishName || !poseId) {
+    toast("Enter a name first", "error");
+    return;
+  }
+
+  try {
+    const pose = await createPose({ poseId, englishName, sanskritName });
+    toast(`Created: ${pose.englishName}`);
+    closeNewPoseModal();
+    render();
+    openDetail(pose.poseId);
+  } catch (e) {
+    toast(e.message, "error");
+  }
+}
+
+// ── Fine-tune rotation ────────────────────────────────────────
+
+async function fineRotatePreview(variantId) {
+  const origSvg = originalTraceSvgs[variantId];
+  if (!origSvg) return;
+
+  const input = document.getElementById(`fine-rotate-${variantId}`);
+  const fineAngle = parseFloat(input.value) || 0;
+  if (fineAngle === 0) return;
+
+  // Add fine angle to cumulative
+  rotationAngles[variantId] = ((rotationAngles[variantId] || 0) + fineAngle) % 360;
+  if (rotationAngles[variantId] < 0) rotationAngles[variantId] += 360;
+  const angle = rotationAngles[variantId];
+
+  // Parse original SVG
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(origSvg, "image/svg+xml");
+  const svgEl = doc.querySelector("svg");
+  if (!svgEl) return;
+
+  let vb = svgEl.getAttribute("viewBox");
+  if (!vb) {
+    const w = parseFloat(svgEl.getAttribute("width")) || 100;
+    const h = parseFloat(svgEl.getAttribute("height")) || 100;
+    vb = `0 0 ${w} ${h}`;
+  }
+  const [minX, minY, vbW, vbH] = vb.split(/[\s,]+/).map(Number);
+  const cx = minX + vbW / 2;
+  const cy = minY + vbH / 2;
+
+  // Apply rotation
+  const wrapper = doc.createElementNS("http://www.w3.org/2000/svg", "g");
+  wrapper.setAttribute("transform", `rotate(${angle}, ${cx}, ${cy})`);
+  while (svgEl.firstChild) wrapper.appendChild(svgEl.firstChild);
+  svgEl.appendChild(wrapper);
+
+  // For non-90° angles, enlarge viewBox to fit rotated content
+  const rad = Math.abs(angle * Math.PI / 180);
+  const sin = Math.sin(rad);
+  const cos = Math.cos(rad);
+  const newW = Math.abs(vbW * cos) + Math.abs(vbH * sin);
+  const newH = Math.abs(vbW * sin) + Math.abs(vbH * cos);
+  const newMinX = cx - newW / 2;
+  const newMinY = cy - newH / 2;
+  svgEl.setAttribute("viewBox", `${newMinX} ${newMinY} ${newW} ${newH}`);
+
+  const serializer = new XMLSerializer();
+  const rotatedSvg = serializer.serializeToString(doc);
+  const croppedSvg = await cropSvgToContent(rotatedSvg);
+
+  pendingTraceSvgs[variantId] = croppedSvg;
+  showTracePreview(variantId, croppedSvg);
+  input.value = "0";
+}
+
+// ── Reference Images (pose-level) ────────────────────────────
+
+async function loadRefImages(poseId) {
+  const grid = document.getElementById("ref-images-grid");
+  if (!grid) return;
+
+  try {
+    const res = await fetch(`${API}/poses/${poseId}/references`);
+    if (!res.ok) {
+      grid.innerHTML = '<div class="ref-upload-btn" onclick="document.getElementById(\'ref-image-upload\').click()">+</div>';
+      return;
+    }
+    const data = await res.json();
+    const files = data.files || [];
+
+    grid.innerHTML = files.map(f => `
+      <div class="ref-img-card" title="${f}">
+        <img src="${API}/poses/${poseId}/references/${f}?t=${Date.now()}" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2280%22 height=%2280%22><text x=%2210%22 y=%2240%22 fill=%22%23666%22 font-size=%2210%22>${f}</text></svg>'" />
+        <div class="ref-img-name">${f}</div>
+        <button class="ref-img-delete" onclick="event.stopPropagation(); deleteRefImage('${poseId}', '${f}')">&times;</button>
+      </div>
+    `).join("") + '<div class="ref-upload-btn" onclick="document.getElementById(\'ref-image-upload\').click()">+</div>';
+  } catch (e) {
+    grid.innerHTML = '<div class="ref-upload-btn" onclick="document.getElementById(\'ref-image-upload\').click()">+</div>';
+  }
+}
+
+async function uploadRefImages(poseId, files) {
+  for (const file of files) {
+    const formData = new FormData();
+    formData.append("image", file);
+    try {
+      await fetch(`${API}/poses/${poseId}/references`, {
+        method: "POST",
+        body: formData,
+      });
+    } catch (e) {
+      toast(`Failed to upload ${file.name}`, "error");
+    }
+  }
+  toast(`Uploaded ${files.length} reference image(s)`);
+  loadRefImages(poseId);
+}
+
+async function deleteRefImage(poseId, filename) {
+  if (!confirm(`Delete reference image "${filename}"?`)) return;
+  try {
+    await fetch(`${API}/poses/${poseId}/references/${filename}`, { method: "DELETE" });
+    toast("Reference image deleted");
+    loadRefImages(poseId);
+  } catch (e) {
+    toast(e.message, "error");
+  }
+}
+
+// ── Claude Text Review ───────────────────────────────────────
+
+let lastReviewSuggestions = null;
+
+async function handleClaudeReview() {
+  if (!activePoseId) return;
+
+  const btn = document.getElementById("btn-claude-review");
+  const resultDiv = document.getElementById("claude-review-result");
+  const actionsDiv = document.getElementById("claude-review-actions");
+
+  btn.disabled = true;
+  btn.textContent = "Reviewing...";
+  resultDiv.className = "claude-review-result visible";
+  resultDiv.innerHTML = '<div style="color:#888;">Sending text to Claude for review...</div>';
+  actionsDiv.style.display = "none";
+
+  // Collect current text field values
+  const textData = {
+    englishName: document.getElementById("field-englishName").value,
+    sanskritName: document.getElementById("field-sanskritName").value,
+    description: document.getElementById("field-description").value,
+    categories: document.getElementById("field-categories").value,
+    cues: document.getElementById("field-cues").value,
+    contraindications: document.getElementById("field-contraindications").value,
+  };
+
+  try {
+    const res = await fetch(`${API}/poses/${activePoseId}/review-text`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(textData),
+    });
+
+    if (!res.ok) throw new Error("Review failed");
+    const data = await res.json();
+    lastReviewSuggestions = data.suggestions || [];
+
+    if (lastReviewSuggestions.length === 0) {
+      resultDiv.innerHTML = '<div style="color:#81C784;">No issues found — text looks good!</div>';
+      return;
+    }
+
+    resultDiv.innerHTML = lastReviewSuggestions.map(s => `
+      <div class="suggestion">
+        <div class="field-name">${s.field}</div>
+        ${s.original ? `<div class="original">${escapeHtml(s.original)}</div>` : ''}
+        <div class="revised">${escapeHtml(s.revised)}</div>
+        ${s.note ? `<div style="color:#888;font-size:0.72rem;margin-top:2px;">${escapeHtml(s.note)}</div>` : ''}
+      </div>
+    `).join("");
+    actionsDiv.style.display = "flex";
+
+  } catch (e) {
+    resultDiv.innerHTML = `<div style="color:#EF5350;">Error: ${e.message}</div>`;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Review Grammar & Spelling";
+  }
+}
+
+function escapeHtml(s) {
+  const div = document.createElement("div");
+  div.textContent = s;
+  return div.innerHTML;
+}
+
+function applyReviewSuggestions() {
+  if (!lastReviewSuggestions) return;
+
+  const fieldMap = {
+    englishName: "field-englishName",
+    sanskritName: "field-sanskritName",
+    description: "field-description",
+    categories: "field-categories",
+    cues: "field-cues",
+    contraindications: "field-contraindications",
+  };
+
+  for (const s of lastReviewSuggestions) {
+    const elId = fieldMap[s.field];
+    if (elId && s.revised) {
+      document.getElementById(elId).value = s.revised;
+    }
+  }
+
+  document.getElementById("claude-review-result").className = "claude-review-result";
+  document.getElementById("claude-review-actions").style.display = "none";
+  lastReviewSuggestions = null;
+  toast("Suggestions applied — click Save to persist");
+}
+
+// ── Crop Modal ────────────────────────────────────────────────
+
+let cropState = {
+  file: null,        // original File object
+  image: null,       // HTMLImageElement
+  poseId: null,
+  variantId: null,
+  scale: 1,          // display-to-original ratio
+  sel: null,         // { x, y, w, h } in canvas coords
+  dragging: false,
+  startX: 0,
+  startY: 0,
+};
+
+function openCropModal(file, poseId, variantId) {
+  cropState.file = file;
+  cropState.poseId = poseId;
+  cropState.variantId = variantId;
+  cropState.sel = null;
+  cropState.dragging = false;
+  document.getElementById("crop-btn-confirm").disabled = true;
+  document.getElementById("crop-info").textContent = "Click and drag to select crop region";
+
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const img = new Image();
+    img.onload = () => {
+      cropState.image = img;
+      initCropCanvas();
+      document.getElementById("crop-modal").classList.add("open");
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function initCropCanvas() {
+  const canvas = document.getElementById("crop-canvas");
+  const ctx = canvas.getContext("2d");
+  const img = cropState.image;
+
+  // Scale to fit inside the wrapper (max ~850px wide, ~65vh tall)
+  const maxW = 850;
+  const maxH = window.innerHeight * 0.6;
+  const scale = Math.min(1, maxW / img.width, maxH / img.height);
+
+  const cw = Math.round(img.width * scale);
+  const ch = Math.round(img.height * scale);
+
+  canvas.width = cw;
+  canvas.height = ch;
+  cropState.scale = scale;
+
+  ctx.drawImage(img, 0, 0, cw, ch);
+}
+
+function drawCropOverlay() {
+  const canvas = document.getElementById("crop-canvas");
+  const ctx = canvas.getContext("2d");
+  const img = cropState.image;
+
+  // Redraw image
+  ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+  if (!cropState.sel) return;
+  const { x, y, w, h } = cropState.sel;
+
+  // Dark overlay on unselected area
+  ctx.fillStyle = "rgba(0, 0, 0, 0.55)";
+  ctx.fillRect(0, 0, canvas.width, y);                          // top
+  ctx.fillRect(0, y + h, canvas.width, canvas.height - y - h);  // bottom
+  ctx.fillRect(0, y, x, h);                                     // left
+  ctx.fillRect(x + w, y, canvas.width - x - w, h);              // right
+
+  // Selection border
+  ctx.strokeStyle = "#81C784";
+  ctx.lineWidth = 2;
+  ctx.setLineDash([6, 3]);
+  ctx.strokeRect(x, y, w, h);
+  ctx.setLineDash([]);
+}
+
+function getCanvasPos(e, canvas) {
+  const rect = canvas.getBoundingClientRect();
+  const touch = e.touches ? e.touches[0] : e;
+  return {
+    x: Math.max(0, Math.min(canvas.width, (touch.clientX - rect.left) * (canvas.width / rect.width))),
+    y: Math.max(0, Math.min(canvas.height, (touch.clientY - rect.top) * (canvas.height / rect.height))),
+  };
+}
+
+function onCropPointerDown(e) {
+  e.preventDefault();
+  const canvas = document.getElementById("crop-canvas");
+  const pos = getCanvasPos(e, canvas);
+  cropState.dragging = true;
+  cropState.startX = pos.x;
+  cropState.startY = pos.y;
+  cropState.sel = { x: pos.x, y: pos.y, w: 0, h: 0 };
+}
+
+function onCropPointerMove(e) {
+  if (!cropState.dragging) return;
+  e.preventDefault();
+  const canvas = document.getElementById("crop-canvas");
+  const pos = getCanvasPos(e, canvas);
+
+  const x = Math.min(cropState.startX, pos.x);
+  const y = Math.min(cropState.startY, pos.y);
+  const w = Math.abs(pos.x - cropState.startX);
+  const h = Math.abs(pos.y - cropState.startY);
+
+  cropState.sel = { x, y, w, h };
+  drawCropOverlay();
+
+  // Show dimensions in original image pixels
+  const origW = Math.round(w / cropState.scale);
+  const origH = Math.round(h / cropState.scale);
+  document.getElementById("crop-info").textContent = `Selection: ${origW} × ${origH} px`;
+}
+
+function onCropPointerUp(e) {
+  if (!cropState.dragging) return;
+  cropState.dragging = false;
+  // Enable confirm if selection is meaningful (at least 20px display)
+  const btn = document.getElementById("crop-btn-confirm");
+  btn.disabled = !(cropState.sel && cropState.sel.w > 20 && cropState.sel.h > 20);
+}
+
+function confirmCrop() {
+  if (!cropState.sel || !cropState.image) return;
+
+  const { x, y, w, h } = cropState.sel;
+  const s = cropState.scale;
+
+  // Crop from original resolution
+  const offscreen = document.createElement("canvas");
+  const origX = Math.round(x / s);
+  const origY = Math.round(y / s);
+  const origW = Math.round(w / s);
+  const origH = Math.round(h / s);
+  offscreen.width = origW;
+  offscreen.height = origH;
+
+  const ctx = offscreen.getContext("2d");
+  ctx.drawImage(cropState.image, origX, origY, origW, origH, 0, 0, origW, origH);
+
+  offscreen.toBlob((blob) => {
+    if (!blob) {
+      toast("Crop failed — uploading original", "error");
+      proceedWithUpload(cropState.poseId, cropState.variantId, cropState.file);
+    } else {
+      const croppedFile = new File([blob], cropState.file.name || "sketch.jpg", { type: "image/jpeg" });
+      proceedWithUpload(cropState.poseId, cropState.variantId, croppedFile);
+    }
+    closeCropModal();
+  }, "image/jpeg", 0.92);
+}
+
+function skipCrop() {
+  proceedWithUpload(cropState.poseId, cropState.variantId, cropState.file);
+  closeCropModal();
+}
+
+function closeCropModal() {
+  document.getElementById("crop-modal").classList.remove("open");
+  cropState = { file: null, image: null, poseId: null, variantId: null, scale: 1, sel: null, dragging: false, startX: 0, startY: 0 };
+  // Clear canvas
+  const canvas = document.getElementById("crop-canvas");
+  const ctx = canvas.getContext("2d");
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+async function proceedWithUpload(poseId, variantId, fileOrBlob) {
+  try {
+    await uploadVariantSketch(poseId, variantId, fileOrBlob);
+    await fetchLibrary();
+    toast("Sketch uploaded — tracing...");
+
+    const pose = library.poses[poseId];
+    if (pose) renderVariantsList(pose);
+
+    // Auto-trace
+    try {
+      const rawSvg = await autoTraceSketch(poseId, variantId);
+      const svgText = await cropSvgToContent(rawSvg);
+      originalTraceSvgs[variantId] = svgText;
+      rotationAngles[variantId] = 0;
+      pendingTraceSvgs[variantId] = svgText;
+      showTracePreview(variantId, svgText);
+      toast("Auto-trace complete");
+    } catch (traceErr) {
+      toast("Sketch uploaded (trace failed: " + traceErr.message + ")", "error");
+    }
+  } catch (err) {
+    toast(err.message, "error");
+  }
+}
+
+// ── Event listeners ───────────────────────────────────────────
+
+document.getElementById("search").addEventListener("input", renderGrid);
+
+// Filter buttons
+document.querySelectorAll(".filter-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    activeFilter = btn.dataset.filter;
+    renderGrid();
+  });
+});
+
+// Status select
+document.querySelectorAll("#status-select .status-option").forEach(opt => {
+  opt.addEventListener("click", () => {
+    document.querySelectorAll("#status-select .status-option").forEach(o => o.classList.remove("active"));
+    opt.classList.add("active");
+  });
+});
+
+// Buttons
+document.getElementById("btn-close-detail").addEventListener("click", closeDetail);
+document.getElementById("btn-save").addEventListener("click", handleSave);
+document.getElementById("btn-delete-pose").addEventListener("click", handleDeletePose);
+document.getElementById("btn-new-pose").addEventListener("click", openNewPoseModal);
+document.getElementById("btn-cancel-new").addEventListener("click", closeNewPoseModal);
+document.getElementById("btn-create-pose").addEventListener("click", handleCreatePose);
+document.getElementById("btn-add-variant").addEventListener("click", () => {
+  const row = document.getElementById("add-variant-row");
+  row.classList.toggle("open");
+  if (row.classList.contains("open")) {
+    document.getElementById("new-variant-id").value = "";
+    document.getElementById("new-variant-label").value = "";
+    document.getElementById("new-variant-id").focus();
+  }
+});
+document.getElementById("btn-confirm-variant").addEventListener("click", handleAddVariant);
+
+// Claude review
+document.getElementById("btn-claude-review").addEventListener("click", handleClaudeReview);
+document.getElementById("btn-apply-suggestions").addEventListener("click", applyReviewSuggestions);
+document.getElementById("btn-dismiss-review").addEventListener("click", () => {
+  document.getElementById("claude-review-result").className = "claude-review-result";
+  document.getElementById("claude-review-actions").style.display = "none";
+  lastReviewSuggestions = null;
+});
+
+// Reference image upload
+document.getElementById("ref-image-upload").addEventListener("change", (e) => {
+  if (!activePoseId || !e.target.files.length) return;
+  uploadRefImages(activePoseId, Array.from(e.target.files));
+  e.target.value = "";
+});
+
+// Auto-fill variant label from ID
+document.getElementById("new-variant-id").addEventListener("input", (e) => {
+  const id = e.target.value.trim();
+  if (!document.getElementById("new-variant-label").value) {
+    const label = id.split("-").map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ") + " View";
+    document.getElementById("new-variant-label").value = label;
+  }
+});
+
+// Auto-generate poseId from English name
+document.getElementById("new-englishName").addEventListener("input", (e) => {
+  document.getElementById("new-poseId").value = toPoseId(e.target.value);
+});
+
+// Close modal on backdrop click
+document.getElementById("new-pose-modal").addEventListener("click", (e) => {
+  if (e.target === e.currentTarget) closeNewPoseModal();
+});
+
+// Crop modal events
+const cropCanvas = document.getElementById("crop-canvas");
+cropCanvas.addEventListener("mousedown", onCropPointerDown);
+cropCanvas.addEventListener("mousemove", onCropPointerMove);
+cropCanvas.addEventListener("mouseup", onCropPointerUp);
+cropCanvas.addEventListener("mouseleave", onCropPointerUp);
+cropCanvas.addEventListener("touchstart", onCropPointerDown, { passive: false });
+cropCanvas.addEventListener("touchmove", onCropPointerMove, { passive: false });
+cropCanvas.addEventListener("touchend", onCropPointerUp);
+
+document.getElementById("crop-btn-confirm").addEventListener("click", confirmCrop);
+document.getElementById("crop-btn-skip").addEventListener("click", skipCrop);
+document.getElementById("crop-btn-cancel").addEventListener("click", closeCropModal);
+document.getElementById("crop-modal").addEventListener("click", (e) => {
+  if (e.target === e.currentTarget) closeCropModal();
+});
+
+// Close modals on Escape
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") {
+    if (document.getElementById("crop-modal").classList.contains("open")) {
+      closeCropModal();
+    } else if (document.getElementById("new-pose-modal").classList.contains("open")) {
+      closeNewPoseModal();
+    } else if (document.getElementById("detail-panel").classList.contains("open")) {
+      closeDetail();
+    }
+  }
+});
+
+// ── Init ──────────────────────────────────────────────────────
+
+fetchLibrary().catch(e => {
+  console.error("Failed to load pose library:", e);
+  toast("Failed to load library", "error");
+});
+</script>
+</body>
+</html>

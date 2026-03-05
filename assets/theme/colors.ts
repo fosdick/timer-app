@@ -2,7 +2,7 @@
 
 export const yogaColors = {
   // Primary Colors - Current Pose (Memory Trigger)
-  poseCurrentIcon: "#CDDC39", // Bright Lime - current pose icon
+  poseCurrentIcon: "#81C784", // Soft Green - current pose icon (matches SVG default)
   poseCurrentName: "#E8F5E9", // White - current pose name (bold weight)
 
   progressText: "#E8F5E9", // White - progress text like "Superset" (bold weight)
@@ -16,7 +16,7 @@ export const yogaColors = {
   currentTimeLabel: "#689F38", // Same - "Current Time" label
 
   // Functional Colors - Navigation (Visible but Supporting)
-  poseNavIcon: "#546E7A", // Blue-Gray - prev/next pose icons
+  poseNavIcon: "#81C784", // Soft Green - prev/next pose icons (matches SVG default)
   poseNavIconOpacity: 1, // Apply 60% opacity to these icons
 
   // Active/Countdown Colors

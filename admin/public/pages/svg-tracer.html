@@ -65,6 +65,13 @@
       font-size: 0.78rem;
       color: #81C784;
     }
+    .drop-zone .size-badge {
+      margin-top: 4px;
+      font-size: 0.72rem;
+      color: #555;
+    }
+    .drop-zone .size-badge .arrow { color: #444; }
+    .drop-zone .size-badge .after { color: #81C784; font-weight: 600; }
     #file-input { display: none; }
 
     /* Keypoints picker */
@@ -180,6 +187,9 @@
       gap: 16px;
       flex: 1;
     }
+    .preview-panels.has-overlay {
+      grid-template-columns: 1fr 1fr 1fr;
+    }
 
     .panel {
       background: #1a1a1a;
@@ -267,7 +277,39 @@
 
     .claude-body {
       padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
     }
+
+    /* Prompt textarea */
+    .prompt-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #555;
+      margin-bottom: 4px;
+    }
+    .prompt-textarea {
+      width: 100%;
+      background: #111;
+      border: 1px solid #333;
+      border-radius: 8px;
+      color: #e0e0e0;
+      font-size: 0.82rem;
+      font-family: system-ui, sans-serif;
+      line-height: 1.5;
+      padding: 10px 12px;
+      resize: vertical;
+      min-height: 80px;
+      transition: border-color 0.2s;
+    }
+    .prompt-textarea:focus {
+      outline: none;
+      border-color: #555;
+    }
+    .prompt-textarea::placeholder { color: #444; }
 
     .analyze-btn {
       background: #1a1a1a;
@@ -279,6 +321,7 @@
       font-weight: 600;
       cursor: pointer;
       transition: border-color 0.2s, background 0.2s;
+      align-self: flex-start;
     }
     .analyze-btn:hover:not(:disabled) {
       border-color: #c5a3ff;
@@ -453,6 +496,7 @@
       <div class="drop-zone" id="drop-zone">
         Drop image here or click to browse
         <div class="filename" id="filename-display" style="display:none"></div>
+        <div class="size-badge" id="size-badge" style="display:none"></div>
       </div>
       <input type="file" id="file-input" accept="image/jpeg,image/png,image/webp" />
     </div>
@@ -495,22 +539,22 @@
       <div class="section-label">Preprocessing</div>
 
       <div class="param">
-        <label>Threshold C <span id="threshold-val">8</span></label>
-        <input type="range" id="threshold" min="0" max="50" value="8"
+        <label>Threshold C <span id="threshold-val">22</span></label>
+        <input type="range" id="threshold" min="0" max="50" value="22"
                oninput="document.getElementById('threshold-val').textContent=this.value" />
         <div class="hint">Lower = capture more ink. Try 5–12 for clean sketches.</div>
       </div>
 
       <div class="param" style="margin-top:10px">
-        <label>Blur radius <span id="blur-val">3</span></label>
-        <input type="range" id="blur-radius" min="0" max="21" step="2" value="3"
+        <label>Blur radius <span id="blur-val">6</span></label>
+        <input type="range" id="blur-radius" min="0" max="21" step="2" value="6"
                oninput="document.getElementById('blur-val').textContent=this.value" />
         <div class="hint">0 = off. Use 3–7 to soften JPEG noise before thresholding.</div>
       </div>
 
       <div class="param" style="margin-top:10px">
-        <label>Edge margin <span id="edgemargin-val">40</span> px</label>
-        <input type="range" id="edge-margin" min="0" max="300" step="5" value="40"
+        <label>Edge margin <span id="edgemargin-val">1</span> px</label>
+        <input type="range" id="edge-margin" min="0" max="300" step="1" value="1"
                oninput="document.getElementById('edgemargin-val').textContent=this.value" />
         <div class="hint">Black-out N px around all edges. Removes spiral binding &amp; paper border.</div>
       </div>
@@ -573,6 +617,17 @@
         </div>
       </div>
 
+      <!-- Overlay panel — hidden until keypoints are loaded -->
+      <div class="panel" id="overlay-panel-wrap" style="display:none">
+        <div class="panel-header">
+          Keypoint overlay
+          <span style="color:#555;font-weight:400;font-size:0.68rem" id="overlay-header-note">loading…</span>
+        </div>
+        <div class="panel-body dark-bg" id="overlay-panel">
+          <span class="empty-hint" style="color:#444">Generating…</span>
+        </div>
+      </div>
+
       <div class="panel">
         <div class="panel-header">
           SVG result
@@ -595,8 +650,17 @@
         <span style="color:#444;font-weight:400;font-size:0.7rem">pose ID + SVG refinement</span>
       </div>
       <div class="claude-body">
+
+        <!-- User prompt -->
+        <div>
+          <div class="prompt-label">Your prompt</div>
+          <textarea class="prompt-textarea" id="claude-prompt"
+            placeholder="Tell Claude what to do with this SVG…&#10;&#10;e.g. Identify the yoga pose. Clean up the SVG by removing stray dots and normalising the fill to black. Return the refined SVG."
+          ></textarea>
+        </div>
+
         <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
-          <button class="analyze-btn" id="analyze-btn" disabled>Analyze with Claude ✦</button>
+          <button class="analyze-btn" id="analyze-btn" disabled>Send to Claude ✦</button>
           <div class="claude-status" id="claude-status">Trace an image first.</div>
         </div>
 
@@ -662,11 +726,227 @@
   const normOptions   = document.getElementById('norm-options');
   const normTag       = document.getElementById('norm-tag');
 
-  let selectedFile    = null;
+  const sizeBadge     = document.getElementById('size-badge');
+
+  let selectedFile    = null;   // original File — used for name / keypoint hints
+  let selectedBlob    = null;   // compressed Blob — what actually gets POSTed
   let selectedKpFile  = null;
   let currentSvgText  = null;   // set after each successful trace
+  let originalSvgText = null;   // un-rotated original for clean rotation
+  let cumulativeAngle = 0;      // track rotation angle
+
+  // ── Image compression ──────────────────────────────────────────────────────
+  const MAX_DIM  = 1600;   // longest side cap (px)
+  const JPEG_Q   = 0.85;   // JPEG quality
+
+  function fmtKB(bytes) {
+    return bytes >= 1024 * 1024
+      ? (bytes / 1024 / 1024).toFixed(1) + ' MB'
+      : Math.round(bytes / 1024) + ' KB';
+  }
+
+  function compressImage(file) {
+    return new Promise((resolve) => {
+      const img = new Image();
+      const url = URL.createObjectURL(file);
+      img.onload = () => {
+        URL.revokeObjectURL(url);
+        let { width, height } = img;
+        if (width <= MAX_DIM && height <= MAX_DIM) {
+          // Already small enough — still re-encode to strip EXIF / normalise rotation
+          // but cap quality slightly to keep it lean
+        }
+        const scale = Math.min(1, MAX_DIM / Math.max(width, height));
+        const w = Math.round(width  * scale);
+        const h = Math.round(height * scale);
+        const canvas = document.createElement('canvas');
+        canvas.width  = w;
+        canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, w, h);
+        canvas.toBlob(blob => resolve({ blob, w, h }), 'image/jpeg', JPEG_Q);
+      };
+      img.onerror = () => { URL.revokeObjectURL(url); resolve({ blob: file, w: 0, h: 0 }); };
+      img.src = url;
+    });
+  }
+
+  // ── Keypoint overlay ───────────────────────────────────────────────────────
+  const overlayPanelWrap   = document.getElementById('overlay-panel-wrap');
+  const overlayPanel       = document.getElementById('overlay-panel');
+  const overlayHeaderNote  = document.getElementById('overlay-header-note');
+  const previewPanels      = document.querySelector('.preview-panels');
+
+  let currentOverlayB64 = null;   // base64 JPEG sent to Claude
+
+  // MediaPipe Pose connections (landmark index pairs)
+  const POSE_CONNECTIONS = [
+    [11,12],[11,23],[12,24],[23,24],   // torso
+    [11,13],[13,15],                    // left arm
+    [12,14],[14,16],                    // right arm
+    [15,17],[15,19],[15,21],            // left hand
+    [16,18],[16,20],[16,22],            // right hand
+    [23,25],[25,27],[27,29],[27,31],    // left leg
+    [24,26],[26,28],[28,30],[28,32],    // right leg
+  ];
+  const LEFT_IDS  = new Set([1,2,3,7,9,11,13,15,17,19,21,23,25,27,29,31]);
+  const RIGHT_IDS = new Set([4,5,6,8,10,12,14,16,18,20,22,24,26,28,30,32]);
+  const FACE_IDS  = new Set([0,1,2,3,4,5,6,7,8,9,10]);
+  const KEY_LABELS = {
+    11:'L.Shoulder',12:'R.Shoulder',
+    13:'L.Elbow',   14:'R.Elbow',
+    15:'L.Wrist',   16:'R.Wrist',
+    23:'L.Hip',     24:'R.Hip',
+    25:'L.Knee',    26:'R.Knee',
+    27:'L.Ankle',   28:'R.Ankle',
+  };
+
+  const COL_LEFT  = 'rgba(80,140,255,0.9)';
+  const COL_RIGHT = 'rgba(255,140,60,0.9)';
+  const COL_MID   = 'rgba(200,200,200,0.7)';
+
+  // Draw skeleton on a canvas on top of imageBlob; returns base64 JPEG string
+  function drawOverlay(imageBlob, kpArray) {
+    return new Promise((resolve) => {
+      const img = new Image();
+      const url = URL.createObjectURL(imageBlob);
+      img.onload = () => {
+        URL.revokeObjectURL(url);
+        const W = img.width, H = img.height;
+        const canvas = document.createElement('canvas');
+        canvas.width = W; canvas.height = H;
+        const ctx = canvas.getContext('2d');
+
+        // Background photo
+        ctx.drawImage(img, 0, 0);
+
+        // Build lookup by id
+        const kpMap = {};
+        kpArray.forEach(k => { kpMap[k.id] = k; });
+
+        const VIS_THRESHOLD = 0.4;
+
+        function ptXY(id) {
+          const k = kpMap[id];
+          if (!k || k.visibility < VIS_THRESHOLD) return null;
+          return [k.x * W, k.y * H];
+        }
+
+        function jointColor(id) {
+          if (LEFT_IDS.has(id))  return COL_LEFT;
+          if (RIGHT_IDS.has(id)) return COL_RIGHT;
+          return COL_MID;
+        }
+
+        // Draw connections
+        ctx.lineWidth = Math.max(2, W / 300);
+        POSE_CONNECTIONS.forEach(([a, b]) => {
+          const pa = ptXY(a), pb = ptXY(b);
+          if (!pa || !pb) return;
+          const col = LEFT_IDS.has(a) && LEFT_IDS.has(b) ? COL_LEFT
+                    : RIGHT_IDS.has(a) && RIGHT_IDS.has(b) ? COL_RIGHT
+                    : COL_MID;
+          ctx.strokeStyle = col;
+          ctx.beginPath();
+          ctx.moveTo(pa[0], pa[1]);
+          ctx.lineTo(pb[0], pb[1]);
+          ctx.stroke();
+        });
+
+        // Head circle — estimate radius from shoulder width
+        const ls = ptXY(11), rs = ptXY(12), nose = ptXY(0);
+        const headCenter = nose || (ls && rs ? [(ls[0]+rs[0])/2, Math.min(ls[1],rs[1]) - (Math.abs(ls[0]-rs[0])*0.5)] : null);
+        if (headCenter) {
+          const r = ls && rs ? Math.abs(ls[0]-rs[0]) * 0.22 : W * 0.04;
+          ctx.strokeStyle = COL_MID;
+          ctx.lineWidth = Math.max(1.5, W / 400);
+          ctx.beginPath();
+          ctx.arc(headCenter[0], headCenter[1], r, 0, Math.PI * 2);
+          ctx.stroke();
+        }
+
+        // Joint dots + key labels
+        const dotR   = Math.max(4, W / 200);
+        const fontSize = Math.max(11, W / 100);
+        ctx.font = `bold ${fontSize}px system-ui, sans-serif`;
+        ctx.textAlign = 'left';
+
+        Object.keys(kpMap).forEach(idStr => {
+          const id = parseInt(idStr);
+          if (FACE_IDS.has(id)) return;      // skip face — head circle covers it
+          const pt = ptXY(id);
+          if (!pt) return;
+
+          const col = jointColor(id);
+          ctx.fillStyle = col;
+          ctx.beginPath();
+          ctx.arc(pt[0], pt[1], dotR, 0, Math.PI * 2);
+          ctx.fill();
+
+          if (KEY_LABELS[id]) {
+            const label = KEY_LABELS[id];
+            const isLeft = LEFT_IDS.has(id);
+            ctx.fillStyle = 'rgba(0,0,0,0.55)';
+            const tw = ctx.measureText(label).width;
+            const tx = isLeft ? pt[0] + dotR + 2 : pt[0] - tw - dotR - 2;
+            ctx.fillRect(tx - 2, pt[1] - fontSize, tw + 4, fontSize + 4);
+            ctx.fillStyle = col;
+            ctx.fillText(label, tx, pt[1]);
+          }
+        });
+
+        // Info bar at bottom
+        const barH = Math.max(22, H * 0.03);
+        ctx.fillStyle = 'rgba(0,0,0,0.65)';
+        ctx.fillRect(0, H - barH, W, barH);
+        ctx.fillStyle = COL_LEFT;
+        ctx.font = `bold ${barH * 0.55}px system-ui, sans-serif`;
+        ctx.textAlign = 'left';
+        ctx.fillText('■ LEFT', 8, H - barH * 0.25);
+        ctx.fillStyle = COL_RIGHT;
+        const leftW = ctx.measureText('■ LEFT  ').width;
+        ctx.fillText('■ RIGHT', 8 + leftW, H - barH * 0.25);
+        const visCount = kpArray.filter(k => k.visibility >= VIS_THRESHOLD && !FACE_IDS.has(k.id)).length;
+        ctx.fillStyle = 'rgba(255,255,255,0.5)';
+        ctx.textAlign = 'right';
+        ctx.fillText(`${visCount} kp visible`, W - 8, H - barH * 0.25);
+
+        resolve(canvas.toDataURL('image/jpeg', 0.88));
+      };
+      img.onerror = () => { URL.revokeObjectURL(url); resolve(null); };
+      img.src = url;
+    });
+  }
+
+  async function tryGenerateOverlay() {
+    if (!selectedBlob || !selectedKpFile) return;
+
+    overlayPanelWrap.style.display = '';
+    previewPanels.classList.add('has-overlay');
+    overlayHeaderNote.textContent = 'generating…';
+    overlayPanel.innerHTML = '<span class="empty-hint" style="color:#444">Generating…</span>';
+    currentOverlayB64 = null;
+
+    try {
+      const kpText = await selectedKpFile.text();
+      const kpJson = JSON.parse(kpText);
+      const kpArray = kpJson.keypoints || kpJson;
+
+      const b64 = await drawOverlay(selectedBlob, kpArray);
+      if (!b64) throw new Error('canvas failed');
+
+      currentOverlayB64 = b64;
+      const visCount = kpArray.filter(k => k.visibility >= 0.4 && ![0,1,2,3,4,5,6,7,8,9,10].includes(k.id)).length;
+      overlayHeaderNote.textContent = `${visCount} joints`;
+      overlayPanel.innerHTML = `<img src="${b64}" style="max-width:100%;max-height:400px;object-fit:contain" alt="keypoint overlay" />`;
+    } catch (e) {
+      overlayHeaderNote.textContent = 'failed';
+      overlayPanel.innerHTML = `<span class="empty-hint" style="color:#e57373">${e.message}</span>`;
+    }
+  }
 
   // Claude panel elements
+  const claudePrompt   = document.getElementById('claude-prompt');
   const analyzeBtn     = document.getElementById('analyze-btn');
   const claudeStatus   = document.getElementById('claude-status');
   const claudeResults  = document.getElementById('claude-results');
@@ -717,20 +997,34 @@
     }
   });
 
-  function setFile(file) {
+  async function setFile(file) {
     if (!file) return;
     selectedFile = file;
+    selectedBlob = null;
     filenameDisp.textContent = file.name;
     filenameDisp.style.display = 'block';
+    sizeBadge.style.display = 'none';
+    submitBtn.disabled = true;
+    setStatus('Compressing…', '');
+
+    // Compress / resize via canvas
+    const { blob, w, h } = await compressImage(file);
+    selectedBlob = blob;
+
+    // Show before → after size
+    const before = fmtKB(file.size);
+    const after  = fmtKB(blob.size);
+    const dimStr = w ? ` (${w}×${h})` : '';
+    sizeBadge.innerHTML =
+      `<span class="arrow">${before} →</span> <span class="after">${after}${dimStr}</span>`;
+    sizeBadge.style.display = 'block';
+
     submitBtn.disabled = false;
     setStatus('', '');
 
-    // Show original preview
-    const reader = new FileReader();
-    reader.onload = e => {
-      originalPanel.innerHTML = `<img src="${e.target.result}" alt="original" />`;
-    };
-    reader.readAsDataURL(file);
+    // Show compressed preview (use the blob, not the raw EXIF-heavy original)
+    const previewUrl = URL.createObjectURL(blob);
+    originalPanel.innerHTML = `<img src="${previewUrl}" alt="original" />`;
 
     // Auto-suggest matching keypoints file name in the badge
     const base = file.name.replace(/\.[^.]+$/, '');
@@ -739,6 +1033,9 @@
       kpBadge.textContent = `hint: ${expectedKp}`;
       kpBadge.className = 'kp-badge';
     }
+
+    // Regenerate overlay if keypoints already loaded
+    tryGenerateOverlay();
   }
 
   // ── Keypoints file selection ───────────────────────────────────────────────
@@ -752,6 +1049,10 @@
     kpClear.style.display = 'none';
     normOptions.style.display = 'none';
     kpInput.value = '';
+    // Hide overlay panel
+    overlayPanelWrap.style.display = 'none';
+    previewPanels.classList.remove('has-overlay');
+    currentOverlayB64 = null;
   });
 
   function setKpFile(file) {
@@ -767,6 +1068,47 @@
     kpClear.style.display = '';
     normOptions.style.display = '';
     setStatus('', '');
+
+    // Generate overlay if image already loaded
+    tryGenerateOverlay();
+  }
+
+  // ── Crop SVG to content bounding box ──────────────────────────────────────
+  function cropSvgToContent(svgText, padding = 5) {
+    return new Promise((resolve) => {
+      const container = document.createElement('div');
+      container.style.cssText = 'position:fixed;left:-9999px;top:-9999px;visibility:hidden;width:2000px;height:2000px;';
+      document.body.appendChild(container);
+      container.innerHTML = svgText;
+
+      const svgEl = container.querySelector('svg');
+      if (!svgEl) {
+        document.body.removeChild(container);
+        resolve(svgText);
+        return;
+      }
+
+      requestAnimationFrame(() => {
+        try {
+          const bbox = svgEl.getBBox();
+          if (bbox.width > 0 && bbox.height > 0) {
+            const x = bbox.x - padding;
+            const y = bbox.y - padding;
+            const w = bbox.width + padding * 2;
+            const h = bbox.height + padding * 2;
+            svgEl.setAttribute('viewBox', `${x} ${y} ${w} ${h}`);
+            svgEl.removeAttribute('width');
+            svgEl.removeAttribute('height');
+          }
+          const cropped = new XMLSerializer().serializeToString(svgEl);
+          document.body.removeChild(container);
+          resolve(cropped);
+        } catch (e) {
+          document.body.removeChild(container);
+          resolve(svgText);
+        }
+      });
+    });
   }
 
   // ── Submit ─────────────────────────────────────────────────────────────────
@@ -780,7 +1122,8 @@
     normTag.style.display = 'none';
 
     const form = new FormData();
-    form.append('file', selectedFile);
+    // Use the compressed blob; keep original filename so python-api sees the right extension
+    form.append('file', selectedBlob || selectedFile, selectedFile.name);
     form.append('threshold',    document.getElementById('threshold').value);
     form.append('blur_radius',  document.getElementById('blur-radius').value);
     form.append('edge_margin',  document.getElementById('edge-margin').value);
@@ -806,12 +1149,7 @@
         throw new Error(err.detail || res.statusText);
       }
 
-      const svgText = await res.text();
-      currentSvgText = svgText;                 // store for Claude
-      analyzeBtn.disabled = false;
-      claudeStatus.textContent = 'Ready — click Analyze with Claude ✦';
-      claudeStatus.className = 'claude-status';
-      claudeResults.classList.remove('visible'); // reset previous results
+      const rawSvgText = await res.text();
 
       const wasNormalised = res.headers.get('X-Normalised') === 'true';
       const normError     = res.headers.get('X-Normalisation-Error');
@@ -819,6 +1157,17 @@
       if (normError) {
         setStatus(`Traced (normalisation failed: ${normError})`, 'error');
       }
+
+      // Crop to content bounding box
+      setStatus('Cropping to content...', '');
+      const svgText = await cropSvgToContent(rawSvgText);
+      currentSvgText = svgText;                 // store for Claude
+      originalSvgText = svgText;                // store un-rotated original
+      cumulativeAngle = 0;                      // reset rotation
+      analyzeBtn.disabled = false;
+      claudeStatus.textContent = 'Ready — write a prompt above and click Send ✦';
+      claudeStatus.className = 'claude-status';
+      claudeResults.classList.remove('visible'); // reset previous results
 
       // Inline SVG preview
       svgPanel.innerHTML = svgText;
@@ -873,9 +1222,23 @@
     const base = apiUrlInput.value.replace(/\/trace$/, '').replace(/\/api$/, '');
     const claudeUrl = `${base}/api/claude/analyze`;
 
+    // Auto-include loaded keypoints — much better for pose ID than SVG geometry
+    let keypointsArray = null;
+    if (selectedKpFile) {
+      try {
+        const kpText = await selectedKpFile.text();
+        const kpJson = JSON.parse(kpText);
+        keypointsArray = kpJson.keypoints || kpJson;
+      } catch { /* fall through — SVG-only */ }
+    }
+
     try {
+      const promptText = claudePrompt.value.trim();
       const body = {
         svg: currentSvgText,
+        ...(keypointsArray    ? { keypoints: keypointsArray }        : {}),
+        ...(currentOverlayB64 ? { overlayImage: currentOverlayB64 } : {}),
+        ...(promptText        ? { userPrompt: promptText }           : {}),
       };
 
       const res = await fetch(claudeUrl, {
@@ -886,7 +1249,15 @@
 
       if (!res.ok) {
         const err = await res.json().catch(() => ({ error: res.statusText }));
-        throw new Error(err.error || err.detail || res.statusText);
+        // Build a useful message: include HTTP status + Anthropic type + message
+        const parts = [
+          err.status  ? `HTTP ${err.status}` : `HTTP ${res.status}`,
+          err.type    ? `[${err.type}]`       : null,
+          err.error   || err.detail           || res.statusText,
+          err.model   ? `model=${err.model}`  : null,
+          err.svgKb   ? `svg=${err.svgKb}kb`  : null,
+        ].filter(Boolean);
+        throw new Error(parts.join(' — '));
       }
 
       const data = await res.json();
@@ -932,6 +1303,291 @@
       analyzeBtn.disabled = false;
     }
   });
+
+  // ── Rotation control (#3) ─────────────────────────────────────────────────
+  // Adds a "Rotate 90°" button next to the download button
+  const rotateBtn = document.createElement('button');
+  rotateBtn.textContent = 'Rotate 90°';
+  rotateBtn.className = 'submit-btn';
+  rotateBtn.style.cssText = 'padding:8px 14px;font-size:0.82rem;display:none;margin-left:8px;';
+  downloadBtn.parentNode.insertBefore(rotateBtn, downloadBtn.nextSibling);
+
+  rotateBtn.addEventListener('click', async () => {
+    if (!originalSvgText) return;
+
+    // Increment cumulative angle
+    cumulativeAngle = (cumulativeAngle + 90) % 360;
+
+    if (cumulativeAngle === 0) {
+      // Back to original
+      currentSvgText = originalSvgText;
+    } else {
+      // Parse original SVG fresh each time
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(originalSvgText, 'image/svg+xml');
+      const svgEl = doc.querySelector('svg');
+      if (!svgEl) return;
+
+      let vb = svgEl.getAttribute('viewBox');
+      if (!vb) {
+        const w = parseFloat(svgEl.getAttribute('width')) || 100;
+        const h = parseFloat(svgEl.getAttribute('height')) || 100;
+        vb = `0 0 ${w} ${h}`;
+      }
+      const [minX, minY, vbW, vbH] = vb.split(/[\s,]+/).map(Number);
+
+      // Center of original content
+      const cx = minX + vbW / 2;
+      const cy = minY + vbH / 2;
+
+      // Wrap all children in a rotation group
+      const wrapper = doc.createElementNS('http://www.w3.org/2000/svg', 'g');
+      wrapper.setAttribute('transform', `rotate(${cumulativeAngle}, ${cx}, ${cy})`);
+      while (svgEl.firstChild) wrapper.appendChild(svgEl.firstChild);
+      svgEl.appendChild(wrapper);
+
+      // Adjust viewBox for 90/270 (dimensions swap)
+      if (cumulativeAngle === 90 || cumulativeAngle === 270) {
+        const newMinX = cx - vbH / 2;
+        const newMinY = cy - vbW / 2;
+        svgEl.setAttribute('viewBox', `${newMinX} ${newMinY} ${vbH} ${vbW}`);
+      }
+      // 180° keeps same dimensions
+
+      const rotatedSvg = new XMLSerializer().serializeToString(doc);
+      currentSvgText = await cropSvgToContent(rotatedSvg);
+    }
+
+    // Update preview
+    svgPanel.innerHTML = currentSvgText;
+    const el = svgPanel.querySelector('svg');
+    if (el) { el.style.maxWidth = '100%'; el.style.maxHeight = '400px'; }
+
+    // Update download
+    const blob = new Blob([currentSvgText], { type: 'image/svg+xml' });
+    downloadBtn.href = URL.createObjectURL(blob);
+  });
+
+  // ── Fine-tune rotation input ──────────────────────────────────────────────
+  const fineRotateWrap = document.createElement('span');
+  fineRotateWrap.style.cssText = 'display:none;margin-left:8px;align-items:center;gap:4px;';
+  fineRotateWrap.innerHTML = `
+    <input type="number" id="fine-rotate-tracer" value="0" step="0.5" min="-180" max="180"
+           style="width:60px;padding:6px 4px;font-size:0.82rem;text-align:center;border-radius:6px;border:1px solid #333;background:#1a1a1a;color:#e0e0e0;" title="Fine-tune rotation (degrees)" />
+    <button class="submit-btn" style="padding:8px 10px;font-size:0.78rem;">Apply</button>
+  `;
+  downloadBtn.parentNode.insertBefore(fineRotateWrap, rotateBtn.nextSibling);
+
+  const fineRotateInput = fineRotateWrap.querySelector('input');
+  const fineRotateApply = fineRotateWrap.querySelector('button');
+
+  fineRotateApply.addEventListener('click', async () => {
+    if (!originalSvgText) return;
+    const fineAngle = parseFloat(fineRotateInput.value) || 0;
+    if (fineAngle === 0) return;
+
+    cumulativeAngle = (cumulativeAngle + fineAngle) % 360;
+    if (cumulativeAngle < 0) cumulativeAngle += 360;
+
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(originalSvgText, 'image/svg+xml');
+    const svgEl = doc.querySelector('svg');
+    if (!svgEl) return;
+
+    let vb = svgEl.getAttribute('viewBox');
+    if (!vb) {
+      const w = parseFloat(svgEl.getAttribute('width')) || 100;
+      const h = parseFloat(svgEl.getAttribute('height')) || 100;
+      vb = `0 0 ${w} ${h}`;
+    }
+    const [minX, minY, vbW, vbH] = vb.split(/[\s,]+/).map(Number);
+    const cx = minX + vbW / 2;
+    const cy = minY + vbH / 2;
+
+    const wrapper = doc.createElementNS('http://www.w3.org/2000/svg', 'g');
+    wrapper.setAttribute('transform', `rotate(${cumulativeAngle}, ${cx}, ${cy})`);
+    while (svgEl.firstChild) wrapper.appendChild(svgEl.firstChild);
+    svgEl.appendChild(wrapper);
+
+    // Enlarge viewBox for arbitrary angle
+    const rad = Math.abs(cumulativeAngle * Math.PI / 180);
+    const sin = Math.sin(rad);
+    const cos = Math.cos(rad);
+    const newW = Math.abs(vbW * cos) + Math.abs(vbH * sin);
+    const newH = Math.abs(vbW * sin) + Math.abs(vbH * cos);
+    svgEl.setAttribute('viewBox', `${cx - newW/2} ${cy - newH/2} ${newW} ${newH}`);
+
+    const rotatedSvg = new XMLSerializer().serializeToString(doc);
+    currentSvgText = await cropSvgToContent(rotatedSvg);
+
+    svgPanel.innerHTML = currentSvgText;
+    const el = svgPanel.querySelector('svg');
+    if (el) { el.style.maxWidth = '100%'; el.style.maxHeight = '400px'; }
+
+    const blob = new Blob([currentSvgText], { type: 'image/svg+xml' });
+    downloadBtn.href = URL.createObjectURL(blob);
+    fineRotateInput.value = '0';
+  });
+
+  // Show rotate button when trace succeeds — patch the existing submit handler
+  const origDisplay = downloadBtn.style.display;
+  new MutationObserver(() => {
+    rotateBtn.style.display = downloadBtn.style.display;
+    fineRotateWrap.style.display = downloadBtn.style.display === 'none' ? 'none' : 'inline-flex';
+  }).observe(downloadBtn, { attributes: true, attributeFilter: ['style'] });
+
+  // ── Pose Library integration (#4 + #5) ────────────────────────────────────
+  // If opened with ?poseId=xxx&variantId=yyy, auto-load the sketch and trace it.
+  // Also show a "Save to Library" button that writes back to the pose library.
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const linkedPoseId = urlParams.get('poseId');
+  const linkedVariantId = urlParams.get('variantId');
+
+  if (linkedPoseId && linkedVariantId) {
+    // Show library link info
+    const linkBanner = document.createElement('div');
+    linkBanner.style.cssText = 'background:rgba(129,199,132,0.08);border:1px solid rgba(129,199,132,0.3);border-radius:8px;padding:10px 16px;margin-bottom:16px;font-size:0.85rem;display:flex;align-items:center;gap:12px;';
+    linkBanner.innerHTML = `
+      <span style="color:#81C784;font-weight:600;">Linked to Library</span>
+      <span style="color:#888;">Pose: <strong style="color:#e0e0e0">${linkedPoseId}</strong> / Variant: <strong style="color:#e0e0e0">${linkedVariantId}</strong></span>
+      <span style="flex:1"></span>
+      <button id="save-to-library-btn" style="background:#81C784;color:#0f0f0f;border:none;border-radius:6px;padding:6px 14px;font-size:0.82rem;font-weight:700;cursor:pointer;display:none;">Save to Library</button>
+      <button id="save-refined-to-library-btn" style="background:#64B5F6;color:#0f0f0f;border:none;border-radius:6px;padding:6px 14px;font-size:0.82rem;font-weight:700;cursor:pointer;display:none;">Save Refined to Library</button>
+    `;
+    document.body.insertBefore(linkBanner, document.querySelector('.layout'));
+
+    const saveToLibBtn = document.getElementById('save-to-library-btn');
+    const saveRefinedToLibBtn = document.getElementById('save-refined-to-library-btn');
+
+    // Show save button once we have a traced SVG
+    new MutationObserver(() => {
+      if (downloadBtn.style.display !== 'none' && currentSvgText) {
+        saveToLibBtn.style.display = '';
+      }
+    }).observe(downloadBtn, { attributes: true, attributeFilter: ['style'] });
+
+    // Show save-refined button when Claude results appear
+    new MutationObserver(() => {
+      if (claudeResults.classList.contains('visible')) {
+        saveRefinedToLibBtn.style.display = '';
+      }
+    }).observe(claudeResults, { attributes: true, attributeFilter: ['class'] });
+
+    // Save traced SVG to library
+    saveToLibBtn.addEventListener('click', async () => {
+      if (!currentSvgText) return;
+      saveToLibBtn.disabled = true;
+      saveToLibBtn.textContent = 'Saving...';
+      try {
+        // Save SVG file
+        await fetch(`/api/poses/${linkedPoseId}/variants/${linkedVariantId}/assets/traced.svg`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ content: currentSvgText, status: 'traced' }),
+        });
+        // Update variant status + pose-level status
+        await fetch(`/api/poses/${linkedPoseId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            status: 'traced',
+            assets: { variants: { [linkedVariantId]: { status: 'traced' } } },
+          }),
+        });
+        saveToLibBtn.textContent = 'Saved ✓';
+        saveToLibBtn.style.background = '#66BB6A';
+        setTimeout(() => {
+          saveToLibBtn.textContent = 'Save to Library';
+          saveToLibBtn.disabled = false;
+          saveToLibBtn.style.background = '#81C784';
+        }, 2000);
+      } catch (e) {
+        saveToLibBtn.textContent = 'Error!';
+        saveToLibBtn.disabled = false;
+        setTimeout(() => { saveToLibBtn.textContent = 'Save to Library'; }, 2000);
+      }
+    });
+
+    // Save refined SVG (from Claude) to library
+    saveRefinedToLibBtn.addEventListener('click', async () => {
+      const refinedSvgEl = afterPanel.querySelector('svg');
+      if (!refinedSvgEl) return;
+      const refinedSvg = new XMLSerializer().serializeToString(refinedSvgEl);
+      saveRefinedToLibBtn.disabled = true;
+      saveRefinedToLibBtn.textContent = 'Saving...';
+      try {
+        await fetch(`/api/poses/${linkedPoseId}/variants/${linkedVariantId}/assets/production.svg`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ content: refinedSvg, status: 'analyzed' }),
+        });
+        // Update variant status + claudeAnalysis
+        const conf = confidenceBadge.textContent || 'low';
+        const notes = poseNotesText.textContent || '';
+        const changes = changesNote.textContent || '';
+        await fetch(`/api/poses/${linkedPoseId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            assets: { variants: { [linkedVariantId]: {
+              status: 'analyzed',
+              claudeAnalysis: { confidence: conf, notes, changes },
+            } } },
+          }),
+        });
+        saveRefinedToLibBtn.textContent = 'Saved ✓';
+        saveRefinedToLibBtn.style.background = '#42A5F5';
+        setTimeout(() => {
+          saveRefinedToLibBtn.textContent = 'Save Refined to Library';
+          saveRefinedToLibBtn.disabled = false;
+          saveRefinedToLibBtn.style.background = '#64B5F6';
+        }, 2000);
+      } catch (e) {
+        saveRefinedToLibBtn.textContent = 'Error!';
+        saveRefinedToLibBtn.disabled = false;
+        setTimeout(() => { saveRefinedToLibBtn.textContent = 'Save Refined to Library'; }, 2000);
+      }
+    });
+
+    // Auto-load sketch and keypoints from library, then auto-trace (#4)
+    (async () => {
+      try {
+        setStatus('Loading sketch from library...', '');
+
+        // Fetch sketch as blob
+        const sketchUrl = `/api/poses/${linkedPoseId}/variants/${linkedVariantId}/assets/sketch.jpg`;
+        const sketchRes = await fetch(sketchUrl);
+        if (!sketchRes.ok) {
+          setStatus('No sketch found for this variant', 'error');
+          return;
+        }
+        const sketchBlob = await sketchRes.blob();
+        const sketchFile = new File([sketchBlob], 'sketch.jpg', { type: 'image/jpeg' });
+
+        // Set the file (triggers preview)
+        await setFile(sketchFile);
+
+        // Try to load keypoints
+        try {
+          const kpUrl = `/api/poses/${linkedPoseId}/variants/${linkedVariantId}/assets/keypoints.json`;
+          const kpRes = await fetch(kpUrl);
+          if (kpRes.ok) {
+            const kpBlob = await kpRes.blob();
+            const kpFile = new File([kpBlob], 'keypoints.json', { type: 'application/json' });
+            setKpFile(kpFile);
+          }
+        } catch (_) { /* no keypoints — fine */ }
+
+        // Auto-trigger trace
+        setStatus('Auto-tracing...', '');
+        submitBtn.click();
+
+      } catch (e) {
+        setStatus(`Library load error: ${e.message}`, 'error');
+      }
+    })();
+  }
 </script>
 </body>
 </html>

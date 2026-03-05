@@ -1,0 +1,144 @@
+# ── Session Archive ────────────────────────────────────────────────────────────
+# Date: 2026-03-02
+# Thread: Pose Library enhancements + Test SVG flow creation
+# Load this file at the start of the next thread alongside project-brief.yaml
+# ──────────────────────────────────────────────────────────────────────────────
+
+session:
+  date: 2026-03-02
+  focus: Admin enhancements, SVG-to-app pipeline, Test SVG flow
+
+# ── What we built ────────────────────────────────────────────────────────────
+
+built:
+
+  delete_poses_and_variants:
+    files_modified:
+      - server/src/routes/poses.ts
+      - admin/public/pages/pose-library.html
+    features:
+      - "DELETE /api/poses/:poseId — removes JSON entry + recursively deletes asset directory"
+      - "DELETE /api/poses/:poseId/variants/:variantId — removes variant from JSON + asset directory"
+      - Delete Pose button in admin UI action bar with confirmation dialog
+      - Delete button per variant card with confirmation dialog
+      - Both server routes handle missing pose/variant gracefully (404)
+
+  admin_default_tab:
+    files_modified:
+      - admin/src/App.tsx
+    changes:
+      - Reordered TABS array to put pose-library first
+      - Changed default activeTab from "flow-editor" to "pose-library"
+
+  crop_modal:
+    files_modified:
+      - admin/public/pages/pose-library.html
+    features:
+      - Canvas-based crop modal intercepts sketch upload before trace
+      - Dark overlay on unselected region, green dashed selection border
+      - Mouse + touch support (works on tablet)
+      - Info display shows selection dimensions
+      - Three actions: Cancel, Skip (upload uncropped), Crop & Upload
+      - Exports cropped region as Blob at original resolution
+      - Backdrop click and Escape key close modal
+    implementation:
+      - cropState object tracks image, canvas, selection coordinates
+      - openCropModal loads image into canvas, scales to fit viewport
+      - drawCropOverlay renders selection rectangle on each interaction
+      - confirmCrop uses offscreen canvas at original image resolution
+      - proceedWithUpload contains extracted upload+auto-trace logic
+
+  svg_tracer_defaults:
+    files_modified:
+      - admin/public/pages/svg-tracer.html
+    changes:
+      - Threshold C: 8 → 22
+      - Blur radius: 3 → 6
+      - Edge margin: 40 → 1 (step changed from 5 to 1)
+
+  svg_conversion_pipeline:
+    files_created:
+      - convert-svgs.js (repo root utility)
+      - assets/images/svgx/yoga-poses/chaturanga.tsx
+      - assets/images/svgx/yoga-poses/cobblers.tsx
+      - assets/images/svgx/yoga-poses/downward-dog.tsx (replaced hand-coded)
+      - assets/images/svgx/yoga-poses/easy-seat.tsx
+      - assets/images/svgx/yoga-poses/fire-log.tsx
+      - assets/images/svgx/yoga-poses/forward-fold.tsx
+      - assets/images/svgx/yoga-poses/halfway-lift.tsx
+      - assets/images/svgx/yoga-poses/mountain-overhead.tsx
+      - assets/images/svgx/yoga-poses/mountain-pose.tsx (replaced hand-coded)
+      - assets/images/svgx/yoga-poses/plank.tsx
+      - assets/images/svgx/yoga-poses/seated-wide-legged-forward-fold.tsx
+      - assets/images/svgx/yoga-poses/staff.tsx
+      - assets/images/svgx/yoga-poses/standing-prayer.tsx
+      - assets/images/svgx/yoga-poses/upward-facing-dog.tsx
+    files_modified:
+      - assets/data/yoga-assets.ts (14 new imports + entries)
+    notes:
+      - convert-svgs.js reads pose-library.json, finds primary variant traced SVGs
+      - Extracts viewBox, paths, g transform from raw SVG XML
+      - Generates React Native SVG components using react-native-svg
+      - "Default fill color: #81C784 (soft green, visible on dark backgrounds)"
+      - child-pose skipped (no sketch), camel and splits not converted (added later)
+
+  test_svg_flow:
+    files_created:
+      - gen-flow.js (repo root utility)
+    files_modified:
+      - assets/data/yoga-flows.json (added test-svg flow)
+    details:
+      - 14 poses, shuffled random order
+      - Random durations 2-11 seconds each, total 106s
+      - Each pose used exactly once
+      - All assetIds verified: flow → yoga-assets.ts → .tsx component files
+      - Purpose: evaluate traced SVG quality in actual app practice context
+
+  svg_default_color:
+    files_modified: all 14 converted .tsx files in assets/images/svgx/yoga-poses/
+    change: default fill "#000000" → "#81C784"
+
+# ── Files modified (complete list) ───────────────────────────────────────────
+
+files_touched:
+  server:
+    - src/routes/poses.ts                        # DELETE routes for pose + variant
+  admin:
+    - src/App.tsx                                 # default tab = pose-library
+    - public/pages/pose-library.html              # delete buttons, crop modal
+    - public/pages/svg-tracer.html                # updated preprocessing defaults
+  mobile_app:
+    - assets/data/yoga-assets.ts                  # 14 new SVG asset registrations
+    - assets/data/yoga-flows.json                 # added test-svg flow
+    - assets/images/svgx/yoga-poses/*.tsx          # 14 new/replaced SVG components
+
+# ── Key decisions ────────────────────────────────────────────────────────────
+
+decisions:
+  crop_timing: >
+    Crop happens after file selection, before trace.
+    User sees canvas modal with the raw sketch, selects region,
+    then cropped image goes to auto-trace pipeline.
+
+  svg_fill_strategy: >
+    Default fill "#81C784" (green) baked into each component as fallback.
+    Components accept props.color for runtime override via YogaAssetRenderer.
+    This solves the dark-theme visibility issue without requiring CSS hacks.
+
+  tracer_tuning: >
+    Threshold 22, blur 6, edge margin 1 calibrated for hand-drawn yoga
+    sketches on white paper. Higher threshold captures more ink detail,
+    moderate blur smooths JPEG artifacts, minimal edge margin preserves
+    content near paper edges.
+
+# ── What's next ──────────────────────────────────────────────────────────────
+
+next:
+  immediate:
+    - Test "Test SVG" flow on device — evaluate SVG rendering quality
+    - Continue sketch imports (27 photos in working-digitize-folder)
+    - Convert camel and splits to React Native SVG components
+  soon:
+    - Production SVG refinement with Claude + keypoints
+    - Fill in text metadata for all poses
+    - OCR pipeline for reference images

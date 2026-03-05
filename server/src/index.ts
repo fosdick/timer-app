@@ -10,6 +10,7 @@ import flowsRouter from "./routes/flows";
 import healthRouter from "./routes/health";
 import traceRouter from "./routes/trace";
 import claudeRouter from "./routes/claude";
+import posesRouter from "./routes/poses";
 
 dotenv.config();
 
@@ -19,7 +20,7 @@ const CORS_ORIGIN = process.env.CORS_ORIGIN || "http://localhost:8081";
 const specs = swaggerJsdoc(swaggerOptions);
 
 app.use(cors({ origin: CORS_ORIGIN }));
-app.use(express.json());
+app.use(express.json({ limit: "10mb" })); // SVGs can be large
 
 // Serve Swagger UI at a specific route (e.g., /api-docs)
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
@@ -29,6 +30,7 @@ app.use("/api", healthRouter);
 app.use("/api", flowsRouter);
 app.use("/api", traceRouter);
 app.use("/api", claudeRouter);
+app.use("/api", posesRouter);
 
 // Serve static web build in production
 if (process.env.NODE_ENV === "production") {
