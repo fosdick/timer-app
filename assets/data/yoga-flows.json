@@ -497,5 +497,302 @@
         "assetId": "chaturanga"
       }
     ]
+  },
+  {
+    "id": "foundation-flow",
+    "name": "Foundation Flow",
+    "description": "Complete foundation yoga practice — seated work, backbends, standing poses, inversions, and deep relaxation.",
+    "totalDuration": 2085,
+    "items": [
+      {
+        "type": "superset",
+        "name": "Sun Salutation A (Round 1)",
+        "totalDuration": 176,
+        "poses": [
+          { "name": "Mountain Pose", "duration": 16, "assetId": "mountain-pose" },
+          { "name": "Mountain Overhead", "duration": 16, "assetId": "mountain-overhead" },
+          { "name": "Forward Fold", "duration": 16, "assetId": "forward-fold" },
+          { "name": "Halfway Lift", "duration": 16, "assetId": "halfway-lift" },
+          { "name": "Chaturanga", "duration": 16, "assetId": "chaturanga" },
+          { "name": "Upward-Facing Dog", "duration": 16, "assetId": "upward-facing-dog" },
+          { "name": "Downward Dog", "duration": 16, "assetId": "downward-dog" },
+          { "name": "Halfway Lift", "duration": 16, "assetId": "halfway-lift" },
+          { "name": "Forward Fold", "duration": 16, "assetId": "forward-fold" },
+          { "name": "Mountain Overhead", "duration": 16, "assetId": "mountain-overhead" },
+          { "name": "Mountain Pose", "duration": 16, "assetId": "mountain-pose" }
+        ]
+      },
+      {
+        "type": "superset",
+        "name": "Sun Salutation A (Round 2)",
+        "totalDuration": 176,
+        "poses": [
+          { "name": "Mountain Pose", "duration": 16, "assetId": "mountain-pose" },
+          { "name": "Mountain Overhead", "duration": 16, "assetId": "mountain-overhead" },
+          { "name": "Forward Fold", "duration": 16, "assetId": "forward-fold" },
+          { "name": "Halfway Lift", "duration": 16, "assetId": "halfway-lift" },
+          { "name": "Chaturanga", "duration": 16, "assetId": "chaturanga" },
+          { "name": "Upward-Facing Dog", "duration": 16, "assetId": "upward-facing-dog" },
+          { "name": "Downward Dog", "duration": 16, "assetId": "downward-dog" },
+          { "name": "Halfway Lift", "duration": 16, "assetId": "halfway-lift" },
+          { "name": "Forward Fold", "duration": 16, "assetId": "forward-fold" },
+          { "name": "Mountain Overhead", "duration": 16, "assetId": "mountain-overhead" },
+          { "name": "Mountain Pose", "duration": 16, "assetId": "mountain-pose" }
+        ]
+      },
+      {
+        "type": "superset",
+        "name": "Sun Salutation A (Round 3)",
+        "totalDuration": 176,
+        "poses": [
+          { "name": "Mountain Pose", "duration": 16, "assetId": "mountain-pose" },
+          { "name": "Mountain Overhead", "duration": 16, "assetId": "mountain-overhead" },
+          { "name": "Forward Fold", "duration": 16, "assetId": "forward-fold" },
+          { "name": "Halfway Lift", "duration": 16, "assetId": "halfway-lift" },
+          { "name": "Chaturanga", "duration": 16, "assetId": "chaturanga" },
+          { "name": "Upward-Facing Dog", "duration": 16, "assetId": "upward-facing-dog" },
+          { "name": "Downward Dog", "duration": 16, "assetId": "downward-dog" },
+          { "name": "Halfway Lift", "duration": 16, "assetId": "halfway-lift" },
+          { "name": "Forward Fold", "duration": 16, "assetId": "forward-fold" },
+          { "name": "Mountain Overhead", "duration": 16, "assetId": "mountain-overhead" },
+          { "name": "Mountain Pose", "duration": 16, "assetId": "mountain-pose" }
+        ]
+      },
+      {
+        "type": "superset",
+        "name": "Staff Pose",
+        "totalDuration": 90,
+        "poses": [
+          { "name": "Staff — Front", "duration": 22, "assetId": "staff" },
+          { "name": "Staff", "duration": 22, "assetId": "staff" },
+          { "name": "Staff — Motion", "duration": 23, "assetId": "staff" },
+          { "name": "Staff — Upright Swan", "duration": 23, "assetId": "staff" }
+        ]
+      },
+      {
+        "name": "Easy Seat — Right Leg Forward",
+        "duration": 30,
+        "description": "Settle in, right leg forward.",
+        "assetId": "easy-seat"
+      },
+      {
+        "name": "Easy Seat — Fold Right",
+        "duration": 30,
+        "description": "Fold deeply into blocks.",
+        "assetId": "easy-seat",
+        "halfwayChime": true
+      },
+      {
+        "name": "Easy Seat — Left Leg Forward",
+        "duration": 30,
+        "description": "Switch sides, left leg forward.",
+        "assetId": "easy-seat"
+      },
+      {
+        "name": "Easy Seat — Fold Left",
+        "duration": 30,
+        "description": "Fold deeply, other side.",
+        "assetId": "easy-seat"
+      },
+      {
+        "name": "Fire Log — First Side",
+        "duration": 45,
+        "description": "Prep for full lotus. Protect the knees — find your own edge.",
+        "assetId": "fire-log",
+        "halfwayChime": true
+      },
+      {
+        "name": "Fire Log — Second Side",
+        "duration": 45,
+        "description": "Other side.",
+        "assetId": "fire-log"
+      },
+      {
+        "type": "superset",
+        "name": "Cobblers with Twists",
+        "totalDuration": 150,
+        "poses": [
+          { "name": "Settle In", "duration": 30, "description": "Ease into the pose, breathe.", "assetId": "cobblers" },
+          { "name": "Forward Fold", "duration": 30, "description": "Fold forward.", "assetId": "cobblers" },
+          { "name": "Right Ear to Block", "duration": 30, "description": "Block(s) beside right ear, rotate and press.", "assetId": "cobblers", "halfwayChime": true },
+          { "name": "Left Ear to Block", "duration": 30, "description": "Other side.", "assetId": "cobblers" },
+          { "name": "Rest in Cobblers", "duration": 30, "description": "Optional: coffee or tea here.", "assetId": "cobblers" }
+        ]
+      },
+      {
+        "type": "superset",
+        "name": "Seated Wide-Legged Forward Fold",
+        "totalDuration": 120,
+        "poses": [
+          { "name": "Hands to Thighs", "duration": 30, "description": "Light touch, decompress spine.", "assetId": "seated-wide-legged-forward-fold" },
+          { "name": "Left Elbow Down, Right Arm to Toe", "duration": 30, "description": "Look into armpit.", "assetId": "seated-wide-legged-forward-fold", "halfwayChime": true },
+          { "name": "Right Elbow Down, Left Arm to Toe", "duration": 30, "description": "Other side.", "assetId": "seated-wide-legged-forward-fold" },
+          { "name": "Deep Fold, Grab Toes", "duration": 30, "description": "Both hands to toes.", "assetId": "seated-wide-legged-forward-fold" }
+        ]
+      },
+      {
+        "name": "Swan",
+        "duration": 30,
+        "description": "Fluid — like upward dog with more ease. Not a static hold; gentle movement."
+      },
+      {
+        "name": "Bow — Outside Grip",
+        "duration": 60,
+        "description": "Grab feet on the outside edge. Open chest, breathe into the front body."
+      },
+      {
+        "name": "Bow — Inside Grip",
+        "duration": 60,
+        "description": "Grab feet on the inside edge. Subtle shift in shoulder and chest opening."
+      },
+      {
+        "name": "Locust",
+        "duration": 30,
+        "description": "After two rounds of bow, shorter back-strengthening hold."
+      },
+      {
+        "type": "superset",
+        "name": "Cat/Cow + Wrist Warm-Up",
+        "totalDuration": 180,
+        "poses": [
+          { "name": "Cat/Cow — Neutral", "duration": 20 },
+          { "name": "Cat", "duration": 20 },
+          { "name": "Cow", "duration": 20 },
+          { "name": "Wrists — Fingers Forward", "duration": 30, "description": "10 reps up/down" },
+          { "name": "Wrists — Fingers Out", "duration": 30, "description": "10 reps up/down" },
+          { "name": "Wrists — Fingers Inward", "duration": 30, "description": "10 reps up/down" },
+          { "name": "Wrists — Fingers Backward", "duration": 30, "description": "10 reps up/down" }
+        ]
+      },
+      {
+        "type": "superset",
+        "name": "Cow Face — Right Leg Over Left",
+        "totalDuration": 210,
+        "poses": [
+          { "name": "Settle, Right Leg Over Left", "duration": 30 },
+          { "name": "Twist One Direction", "duration": 30 },
+          { "name": "Twist Other Direction", "duration": 30 },
+          { "name": "Right Arm Behind Back", "duration": 30, "halfwayChime": true },
+          { "name": "Left Arm Behind Back", "duration": 30 },
+          { "name": "Rest, Face Forward", "duration": 30 },
+          { "name": "Forward Fold", "duration": 30 }
+        ]
+      },
+      {
+        "name": "Garland — Twist Right",
+        "duration": 30,
+        "description": "Come directly out of Cow Face into a deep squat. Twist right.",
+        "halfwayChime": true
+      },
+      {
+        "name": "Garland — Twist Left",
+        "duration": 30,
+        "description": "Twist left."
+      },
+      {
+        "type": "superset",
+        "name": "Cow Face — Left Leg Over Right",
+        "totalDuration": 210,
+        "poses": [
+          { "name": "Settle, Left Leg Over Right", "duration": 30 },
+          { "name": "Twist One Direction", "duration": 30 },
+          { "name": "Twist Other Direction", "duration": 30 },
+          { "name": "Right Arm Behind Back", "duration": 30 },
+          { "name": "Left Arm Behind Back", "duration": 30 },
+          { "name": "Rest, Face Forward", "duration": 30 },
+          { "name": "Forward Fold", "duration": 30 }
+        ]
+      },
+      {
+        "name": "Scale",
+        "duration": 20,
+        "description": "Press up from Cow Face. Hold as long as you can. L-press or one-leg L-press if full scale not accessible."
+      },
+      {
+        "name": "Low Boat",
+        "duration": 30,
+        "description": "Low boat hold.",
+        "halfwayChime": true
+      },
+      {
+        "name": "High Boat",
+        "duration": 30,
+        "description": "High boat hold."
+      },
+      {
+        "name": "Reverse Plank",
+        "duration": 45,
+        "description": "Transition from Boat. Find comfort before committing to the hold."
+      },
+      {
+        "name": "Rock and Roll",
+        "duration": 20,
+        "description": "Roll spine along the mat from seated to standing. Transition step."
+      },
+      {
+        "name": "Standing Forward Fold",
+        "duration": 30,
+        "description": "Breathe into it. Recovery moment after coming to standing.",
+        "assetId": "forward-fold"
+      },
+      {
+        "name": "One-Legged Mountain — Right",
+        "duration": 30,
+        "description": "Balance, first side.",
+        "halfwayChime": true
+      },
+      {
+        "name": "One-Legged Mountain — Left",
+        "duration": 30,
+        "description": "Balance, other side. Om Namah Shivaya."
+      },
+      {
+        "name": "Standing Wide-Legged Forward Fold",
+        "duration": 30,
+        "description": "Use the long side of the mat. Feet wide, hands pressing to the earth."
+      },
+      {
+        "name": "Headstand",
+        "duration": 30,
+        "description": "Student-paced inversion. Modification: clasped-hands-behind-back variation."
+      },
+      {
+        "name": "Standing Wide-Legged Fold (Return)",
+        "duration": 30,
+        "description": "Recovery after headstand. Breathe, let the spine decompress."
+      },
+      {
+        "name": "Bridge",
+        "duration": 45,
+        "description": "Transition from standing to mat. Press feet firmly, lift hips."
+      },
+      {
+        "name": "Wind Relief — Right Knee",
+        "duration": 30,
+        "description": "Gentle knee-to-chest.",
+        "halfwayChime": true
+      },
+      {
+        "name": "Wind Relief — Left Knee",
+        "duration": 30,
+        "description": "Other side."
+      },
+      {
+        "type": "superset",
+        "name": "Supine Twist",
+        "totalDuration": 120,
+        "poses": [
+          { "name": "Supine Twist — First Side", "duration": 30, "description": "Arms outstretched, gaze opposite." },
+          { "name": "Supine Twist — Other Side", "duration": 30, "description": "Other side." },
+          { "name": "Supine Twist — Long Leg", "duration": 30, "description": "Lengthen more on each side.", "halfwayChime": true },
+          { "name": "Supine Twist — Long Leg Other", "duration": 30, "description": "Final side." }
+        ]
+      },
+      {
+        "name": "Savasana",
+        "duration": 180,
+        "description": "Full relaxation. No chime. End the session when you're ready. You did it!"
+      }
+    ]
   }
 ]

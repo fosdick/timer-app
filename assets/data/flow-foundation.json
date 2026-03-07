@@ -1,0 +1,347 @@
+[
+  {
+    "id": "foundation-flow",
+    "name": "Foundation Flow",
+    "description": "A complete foundation yoga practice covering seated work, backbends, standing poses, inversions, and deep relaxation.",
+    "totalDuration": 2085,
+    "_totalDurationNote": "Approximate — some steps are student-paced. Calculated assuming minimums for open-ended holds.",
+    "items": [
+      {
+        "_step": 1,
+        "name": "Sun Salutation A",
+        "type": "superset",
+        "totalDuration": 540,
+        "repeat": 3,
+        "_todo": "TODO: Flow editor needs flow-level repeat support. Currently repeat=3 means the full sequence plays 3 times (3 min per round).",
+        "poses": [
+          { "poseId": "standing-prayer", "variantId": "front", "name": "Mountain Pose", "duration": 16, "_note": "TODO: mountain-pose poseId missing from pose-library.json. Using standing-prayer as closest match. Create mountain-pose entry or confirm substitute." },
+          { "poseId": "mountain-overhead", "variantId": "front", "name": "Mountain Overhead", "duration": 16 },
+          { "poseId": "forward-fold", "variantId": "forward-fold", "name": "Forward Fold", "duration": 16 },
+          { "poseId": "halfway-lift", "variantId": "halfway-lift", "name": "Halfway Lift", "duration": 16 },
+          { "poseId": "chaturanga", "variantId": "front", "name": "Chaturanga", "duration": 16 },
+          { "poseId": "upward-facing-dog", "variantId": "front", "name": "Upward-Facing Dog", "duration": 16 },
+          { "poseId": "downward-dog", "variantId": "side", "name": "Downward Dog", "duration": 16 },
+          { "poseId": "halfway-lift", "variantId": "halfway-lift", "name": "Halfway Lift", "duration": 16 },
+          { "poseId": "forward-fold", "variantId": "forward-fold", "name": "Forward Fold", "duration": 16 },
+          { "poseId": "mountain-overhead", "variantId": "front", "name": "Mountain Overhead", "duration": 16 },
+          { "poseId": "standing-prayer", "variantId": "front", "name": "Mountain Pose", "duration": 16, "_note": "TODO: mountain-pose poseId missing. Using standing-prayer." }
+        ],
+        "progressText": "Sun Salutation A"
+      },
+      {
+        "_step": 2,
+        "name": "Staff Pose",
+        "type": "superset",
+        "totalDuration": 90,
+        "poses": [
+          { "poseId": "staff", "variantId": "front", "name": "Staff — Front", "duration": 22 },
+          { "poseId": "staff", "variantId": "staff", "name": "Staff", "duration": 22 },
+          { "poseId": "staff", "variantId": "staff-motion", "name": "Staff — Motion", "duration": 23 },
+          { "poseId": "staff", "variantId": "upright-swan", "name": "Staff — Upright Swan", "duration": 23 }
+        ],
+        "progressText": "Staff Pose"
+      },
+      {
+        "_step": 3,
+        "name": "Easy Seat",
+        "poseId": "easy-seat",
+        "totalDuration": 120,
+        "halfwayChime": true,
+        "props": ["block"],
+        "_todo": "TODO: Multi-phase step needed. First 60s right leg forward (front + easy-seat-fold), second 60s left leg forward (easy-seat-other-leg + easy-seat-fold-other-leg).",
+        "phases": [
+          { "variantId": "front", "name": "Easy Seat — Right Leg Forward", "duration": 30, "description": "Settle in, right leg forward." },
+          { "variantId": "easy-seat-fold", "name": "Easy Seat — Fold Right", "duration": 30, "description": "Fold deeply into blocks." },
+          { "variantId": "easy-seat-other-leg", "name": "Easy Seat — Left Leg Forward", "duration": 30, "description": "Switch sides, left leg forward." },
+          { "variantId": "easy-seat-fold-other-leg", "name": "Easy Seat — Fold Left", "duration": 30, "description": "Fold deeply, other side." }
+        ],
+        "description": "Fold deeply into the block. Long, restful hold. No rush."
+      },
+      {
+        "_step": 4,
+        "name": "Fire Log",
+        "poseId": "fire-log",
+        "totalDuration": 90,
+        "halfwayChime": true,
+        "phases": [
+          { "variantId": "front", "name": "Fire Log — First Side", "duration": 45 },
+          { "variantId": "fire-log-other-side", "name": "Fire Log — Second Side", "duration": 45 }
+        ],
+        "description": "Prep for full lotus. Protect the knees — students find their own edge here."
+      },
+      {
+        "_step": 5,
+        "name": "Cobblers (Baddha Konasana) with Twists",
+        "poseId": "cobblers",
+        "totalDuration": 150,
+        "halfwayChime": true,
+        "halfwayChimeNote": "At the ear-to-block transition",
+        "props": ["block", "block"],
+        "_todo": "TODO: Multi-phase step with individual sub-step durations within a single pose.",
+        "phases": [
+          { "variantId": "front", "name": "Settle In", "duration": 30, "description": "Ease into the pose, breathe." },
+          { "variantId": "cobblers-foward-fold", "name": "Forward Fold", "duration": 30, "description": "Fold forward." },
+          { "variantId": "front", "name": "Right Ear to Block", "duration": 30, "description": "Block(s) beside right ear, rotate and press." },
+          { "variantId": "front", "name": "Left Ear to Block", "duration": 30, "description": "Other side." },
+          { "variantId": "front", "name": "Rest in Cobblers", "duration": 30, "description": "Optional: coffee or tea here." }
+        ],
+        "description": "Multi-phase cobblers with forward fold and ear-to-block twists."
+      },
+      {
+        "_step": 6,
+        "name": "Seated Wide-Legged Forward Fold",
+        "poseId": "seated-wide-legged-forward-fold",
+        "totalDuration": 120,
+        "halfwayChime": true,
+        "halfwayChimeNote": "After sub-step 2 (side switch)",
+        "_todo": "TODO: Multi-phase step support needed.",
+        "phases": [
+          { "variantId": "front", "name": "Hands to Thighs", "duration": 30, "description": "Light touch, decompress spine." },
+          { "variantId": "seated-wide-legged-forward-fold-relax", "name": "Left Elbow Down, Right Arm to Toe", "duration": 30, "description": "Look into armpit." },
+          { "variantId": "seated-wide-legged-forward-fold-relax", "name": "Right Elbow Down, Left Arm to Toe", "duration": 30, "description": "Other side." },
+          { "variantId": "front", "name": "Deep Fold, Grab Toes", "duration": 30, "description": "Both hands to toes." }
+        ],
+        "description": "Seated straddle with side twists and deep forward fold."
+      },
+      {
+        "_step": 7,
+        "name": "Swan",
+        "poseId": "swan",
+        "variantId": "front",
+        "duration": 30,
+        "description": "Fluid — like upward dog or cobra but with more ease and openness. Not a static hold; encourage gentle movement."
+      },
+      {
+        "_step": 8,
+        "name": "Bow — Outside Grip",
+        "poseId": "bow",
+        "variantId": "bow-hands-outside-edge-of-foot",
+        "duration": 60,
+        "description": "Grab feet on the outside edge. Open chest, breathe into the front body."
+      },
+      {
+        "_step": 9,
+        "name": "Bow — Inside Grip",
+        "poseId": "bow",
+        "variantId": "front",
+        "duration": 60,
+        "description": "Grab feet on the inside edge. Subtle shift in shoulder and chest opening."
+      },
+      {
+        "_step": 10,
+        "name": "Locust",
+        "poseId": "locus",
+        "variantId": "front",
+        "duration": 30,
+        "_reviewFlag": "poseId 'locus' is likely a typo for 'locust'. Do not auto-fix — requires manual rename of poseId, file paths, and variant keys.",
+        "description": "After two rounds of bow, this is a shorter back-strengthening hold."
+      },
+      {
+        "_step": 11,
+        "name": "Cat / Cow + Wrist Warm-Up",
+        "type": "superset",
+        "totalDuration": 180,
+        "_todo": "TODO: Part B (wrist warm-up) is rep-based (10 reps × 4 directions), not time-based. Flow editor needs rep counter mode. Durations below are estimates. Optional Lion's Pose at end has no SVG — text cue only or skip.",
+        "poses": [
+          { "poseId": "cat-cow", "variantId": "front", "name": "Cat/Cow — Neutral", "duration": 20 },
+          { "poseId": "cat-cow", "variantId": "cat", "name": "Cat", "duration": 20 },
+          { "poseId": "cat-cow", "variantId": "cow", "name": "Cow", "duration": 20 },
+          { "poseId": "table-top-and-wrists", "variantId": "front", "name": "Wrists — Fingers Forward", "duration": 30, "_repBased": true, "_reps": 10 },
+          { "poseId": "table-top-and-wrists", "variantId": "table-top-fingures-out", "name": "Wrists — Fingers Out", "duration": 30, "_repBased": true, "_reps": 10 },
+          { "poseId": "table-top-and-wrists", "variantId": "table-top-wrists-inward", "name": "Wrists — Fingers Inward", "duration": 30, "_repBased": true, "_reps": 10 },
+          { "poseId": "table-top-and-wrists", "variantId": "table-top-wrists-toward-knees", "name": "Wrists — Fingers Backward", "duration": 30, "_repBased": true, "_reps": 10 }
+        ],
+        "progressText": "Cat/Cow + Wrists"
+      },
+      {
+        "_step": 12,
+        "name": "Cow Face — First Side (Right Leg Over Left)",
+        "poseId": "cow-face",
+        "totalDuration": 210,
+        "halfwayChime": true,
+        "halfwayChimeNote": "At arm-bind transition",
+        "_todo": "TODO: Multi-phase step — 7 sub-steps at 30 seconds each.",
+        "phases": [
+          { "variantId": "front", "name": "Settle, Right Leg Over Left", "duration": 30 },
+          { "variantId": "cow-face-2", "name": "Twist One Direction", "duration": 30 },
+          { "variantId": "cow-face-3", "name": "Twist Other Direction", "duration": 30 },
+          { "variantId": "cow-face-hold-your-brain-right", "name": "Right Arm Behind Back", "duration": 30 },
+          { "variantId": "cow-face-5", "name": "Left Arm Behind Back", "duration": 30 },
+          { "variantId": "cow-face-6", "name": "Rest, Face Forward", "duration": 30 },
+          { "variantId": "cow-face-7", "name": "Forward Fold", "duration": 30 }
+        ],
+        "description": "Full cow face sequence — first side with twists, arm binds, and forward fold."
+      },
+      {
+        "_step": 13,
+        "name": "Garland (Malasana)",
+        "poseId": "garland",
+        "totalDuration": 60,
+        "halfwayChime": true,
+        "transitionNote": "Come directly out of Cow Face into a deep squat.",
+        "phases": [
+          { "variantId": "twist-right", "name": "Garland — Twist Right", "duration": 30 },
+          { "variantId": "twist-left", "name": "Garland — Twist Left", "duration": 30 }
+        ],
+        "description": "Deep squat with twists."
+      },
+      {
+        "_step": 14,
+        "name": "Cow Face — Second Side (Left Leg Over Right)",
+        "poseId": "cow-face",
+        "totalDuration": 210,
+        "_todo": "TODO: Mirror of Step 12 using remaining cow-face variants.",
+        "phases": [
+          { "variantId": "cow-face-8", "name": "Settle, Left Leg Over Right", "duration": 30 },
+          { "variantId": "cow-face-9", "name": "Twist One Direction", "duration": 30 },
+          { "variantId": "cow-face-10", "name": "Twist Other Direction", "duration": 30 },
+          { "variantId": "cow-face-11", "name": "Right Arm Behind Back", "duration": 30 },
+          { "variantId": "cow-face-12", "name": "Left Arm Behind Back", "duration": 30 },
+          { "variantId": "front", "name": "Rest, Face Forward", "duration": 30 },
+          { "variantId": "cow-face-7", "name": "Forward Fold", "duration": 30 }
+        ],
+        "description": "Full cow face sequence — second side."
+      },
+      {
+        "_step": 15,
+        "name": "Scale",
+        "poseId": "scale",
+        "variantId": "front",
+        "duration": 20,
+        "studentPaced": true,
+        "_todo": "TODO: Student-paced step — hold as long as you can, tap to advance. 20s is suggested minimum.",
+        "transitionNote": "Press up directly from Cow Face (seated).",
+        "modification": "L-press or one-leg L-press if full scale is not accessible.",
+        "description": "Hold as long as possible. Minimum 20 seconds suggested."
+      },
+      {
+        "_step": 16,
+        "name": "Boat",
+        "poseId": "boat",
+        "totalDuration": 60,
+        "halfwayChime": true,
+        "phases": [
+          { "variantId": "low-boat", "name": "Low Boat", "duration": 30 },
+          { "variantId": "front", "name": "High Boat", "duration": 30 }
+        ],
+        "description": "Low to high boat transition."
+      },
+      {
+        "_step": 17,
+        "name": "Reverse Plank",
+        "poseId": "reverse-plank",
+        "variantId": "front",
+        "duration": 45,
+        "transitionNote": "Transition from Boat.",
+        "description": "Find comfort in the pose before committing to the hold."
+      },
+      {
+        "_step": 18,
+        "name": "Rock and Roll",
+        "poseId": "lotus-flower",
+        "variantId": "front",
+        "duration": 20,
+        "isTransition": true,
+        "_placeholder": true,
+        "_todo": "TODO: PLACEHOLDER — swap poseId to 'rock-and-roll' once SVG is created. This is a transition step, not a held pose. Flow editor needs transition-type step support.",
+        "description": "Roll spine along the mat from seated to standing. Transition step."
+      },
+      {
+        "_step": 19,
+        "name": "Standing Forward Fold",
+        "poseId": "forward-fold",
+        "variantId": "forward-fold",
+        "duration": 30,
+        "description": "Breathe into it. Recovery/arrival moment after coming to standing."
+      },
+      {
+        "_step": 20,
+        "name": "One-Legged Mountain Pose",
+        "poseId": "one-legged-mountain",
+        "totalDuration": 60,
+        "halfwayChime": true,
+        "mantraCue": "Om Namah Shivaya",
+        "_todo": "TODO: After this step, display text cue 'Om Namah Shivaya'. Flow editor needs text/audio cue step support with phonetic display for Sanskrit mantras.",
+        "phases": [
+          { "variantId": "front", "name": "One-Legged Mountain — First Side", "duration": 30 },
+          { "variantId": "one-legged-mountain-other-side", "name": "One-Legged Mountain — Second Side", "duration": 30 }
+        ],
+        "description": "Balance pose with side switch."
+      },
+      {
+        "_step": 21,
+        "name": "Standing Wide-Legged Forward Fold",
+        "poseId": "standing-wide-leg-forward-fold",
+        "variantId": "front",
+        "duration": 30,
+        "description": "Use the long side of the mat. Feet wide, hands gently pressing to the earth."
+      },
+      {
+        "_step": 22,
+        "name": "Headstand",
+        "poseId": "headstand",
+        "variantId": "front",
+        "duration": 30,
+        "studentPaced": true,
+        "_todo": "TODO: Student-paced step — tap to advance. Duration is a minimum fallback. Flow editor needs modification display for alternate SVG (clasped-hands variation).",
+        "transitionNote": "Come directly from standing wide-legged fold.",
+        "modification": "Clasped-hands-behind-back variation for those not inverting.",
+        "description": "Student-paced inversion."
+      },
+      {
+        "_step": 23,
+        "name": "Standing Wide-Legged Forward Fold (Return)",
+        "poseId": "standing-wide-leg-forward-fold",
+        "variantId": "standing-wide-leg-forward-fold-open-chest",
+        "duration": 30,
+        "description": "Recovery after headstand. Breathe, let the spine decompress."
+      },
+      {
+        "_step": 24,
+        "name": "Bridge",
+        "poseId": "bridge",
+        "variantId": "front",
+        "duration": 45,
+        "transitionNote": "Transition from standing down to the mat.",
+        "description": "Press feet firmly, lift hips."
+      },
+      {
+        "_step": 25,
+        "name": "Wind Relief Pose",
+        "poseId": "wind-relief-pose",
+        "totalDuration": 60,
+        "halfwayChime": true,
+        "phases": [
+          { "variantId": "front", "name": "Wind Relief — Right Knee", "duration": 30 },
+          { "variantId": "wind-relief-pose-other-side", "name": "Wind Relief — Left Knee", "duration": 30 }
+        ],
+        "description": "Gentle knee-to-chest with side switch."
+      },
+      {
+        "_step": 26,
+        "name": "Supine Twist",
+        "poseId": "supine-twist",
+        "totalDuration": 120,
+        "halfwayChime": true,
+        "halfwayChimeNote": "Between the two long-leg variants",
+        "phases": [
+          { "variantId": "front", "name": "Supine Twist — First Side", "duration": 30 },
+          { "variantId": "supine-twist-other-side", "name": "Supine Twist — Other Side", "duration": 30 },
+          { "variantId": "supine-twist-long-leg", "name": "Supine Twist — Long Leg", "duration": 30 },
+          { "variantId": "supine-twist-long-leg-other-side", "name": "Supine Twist — Long Leg Other Side", "duration": 30 }
+        ],
+        "description": "Arms outstretched, gaze opposite to crossing leg. Long-leg extension deepens the reach."
+      },
+      {
+        "_step": 27,
+        "name": "Savasana",
+        "poseId": "savasana",
+        "variantId": "front",
+        "duration": 180,
+        "studentPaced": true,
+        "_todo": "TODO: Open-ended final step — no auto-advance. Student ends session manually. 180s (3 min) is suggested minimum. Flow editor needs terminal step support.",
+        "description": "Full relaxation. No chime. Student ends the session manually."
+      }
+    ]
+  }
+]

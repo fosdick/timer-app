@@ -1,63 +1,7 @@
 {
   "version": "1.2",
-  "lastUpdated": "2026-03-05T02:23:08.932Z",
+  "lastUpdated": "2026-03-05T02:44:51.386Z",
   "poses": {
-    "mountain-pose": {
-      "poseId": "mountain-pose",
-      "englishName": "Mountain Pose",
-      "sanskritName": "Tadasana",
-      "difficulty": 1,
-      "categories": [
-        "standing",
-        "foundational"
-      ],
-      "description": "Stand tall with feet hip-width apart, arms relaxed at sides.",
-      "cues": [
-        "Root down through all four corners of the feet",
-        "Engage the quadriceps gently",
-        "Stack shoulders over hips over ankles",
-        "Crown of the head reaches toward the sky"
-      ],
-      "contraindications": [],
-      "assets": {
-        "variants": {
-          "front": {
-            "variantId": "front",
-            "label": "Front View",
-            "viewType": "front",
-            "sketch": "poses/mountain-pose/front/sketch.jpg",
-            "tracedSvg": "poses/mountain-pose/front/traced.svg",
-            "productionSvg": "poses/mountain-pose/front/production.svg",
-            "keypointsJson": "poses/mountain-pose/front/keypoints.json",
-            "overlay": "poses/mountain-pose/front/overlay.jpg",
-            "claudeAnalysis": null,
-            "status": "traced",
-            "isPrimary": true,
-            "metadata": {}
-          },
-          "new-pose": {
-            "variantId": "new-pose",
-            "label": "Front View",
-            "viewType": "front",
-            "sketch": "poses/mountain-pose/new-pose/sketch.jpg",
-            "tracedSvg": "poses/mountain-pose/new-pose/traced.svg",
-            "productionSvg": "poses/mountain-pose/new-pose/production.svg",
-            "keypointsJson": "poses/mountain-pose/new-pose/keypoints.json",
-            "overlay": "poses/mountain-pose/new-pose/overlay.jpg",
-            "claudeAnalysis": null,
-            "status": "draft",
-            "isPrimary": false,
-            "metadata": {}
-          }
-        }
-      },
-      "status": "traced",
-      "timestamps": {
-        "created": "2026-02-28T00:00:00Z",
-        "updated": "2026-03-02T17:33:21.605Z"
-      },
-      "metadata": {}
-    },
     "downward-dog": {
       "poseId": "downward-dog",
       "englishName": "Downward-Facing Dog",
@@ -775,10 +719,10 @@
           }
         }
       },
-      "status": "traced",
+      "status": "production-ready",
       "timestamps": {
         "created": "2026-03-02T21:08:26.019Z",
-        "updated": "2026-03-02T23:40:45.428Z"
+        "updated": "2026-03-05T02:44:51.386Z"
       },
       "metadata": {}
     },
@@ -901,10 +845,10 @@
           }
         }
       },
-      "status": "traced",
+      "status": "production-ready",
       "timestamps": {
         "created": "2026-03-02T22:04:28.166Z",
-        "updated": "2026-03-04T23:54:25.069Z"
+        "updated": "2026-03-05T02:43:49.433Z"
       },
       "metadata": {}
     },
@@ -1033,10 +977,10 @@
           }
         }
       },
-      "status": "traced",
+      "status": "production-ready",
       "timestamps": {
         "created": "2026-03-02T22:11:08.504Z",
-        "updated": "2026-03-02T23:20:25.743Z"
+        "updated": "2026-03-05T02:43:39.786Z"
       },
       "metadata": {}
     },
@@ -1293,10 +1237,10 @@
           }
         }
       },
-      "status": "traced",
+      "status": "production-ready",
       "timestamps": {
         "created": "2026-03-02T23:22:27.112Z",
-        "updated": "2026-03-02T23:30:35.261Z"
+        "updated": "2026-03-05T02:44:41.218Z"
       },
       "metadata": {}
     },
@@ -1967,10 +1911,10 @@
           }
         }
       },
-      "status": "traced",
+      "status": "production-ready",
       "timestamps": {
         "created": "2026-03-04T22:17:16.891Z",
-        "updated": "2026-03-04T22:17:49.956Z"
+        "updated": "2026-03-05T02:44:24.199Z"
       },
       "metadata": {}
     },
@@ -2097,10 +2041,10 @@
           }
         }
       },
-      "status": "traced",
+      "status": "production-ready",
       "timestamps": {
         "created": "2026-03-04T23:28:36.581Z",
-        "updated": "2026-03-04T23:30:58.531Z"
+        "updated": "2026-03-05T02:43:24.291Z"
       },
       "metadata": {}
     },
