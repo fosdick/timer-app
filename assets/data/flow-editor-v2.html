@@ -1,0 +1,1863 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yoga Flow Editor v2</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #0a0f0a;
+            color: #e0e0e0;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        /* TOOLBAR */
+        .toolbar {
+            background: #1a1f1a;
+            border-bottom: 1px solid #2a2f2a;
+            padding: 12px 16px;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .toolbar-group {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .toolbar-input {
+            background: #0a0f0a;
+            border: 1px solid #3a3f3a;
+            color: #e0e0e0;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .toolbar-input:focus {
+            outline: none;
+            border-color: #629231;
+            box-shadow: 0 0 0 2px rgba(98, 146, 49, 0.2);
+        }
+
+        .toolbar-label {
+            font-size: 12px;
+            text-transform: uppercase;
+            color: #91bd27;
+            letter-spacing: 0.5px;
+        }
+
+        .toolbar-display {
+            background: #0a0f0a;
+            border: 1px solid #3a3f3a;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .btn {
+            background: #629231;
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .btn:hover {
+            background: #91bd27;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(98, 146, 49, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        .btn-icon {
+            padding: 6px 8px;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-secondary {
+            background: #3a3f3a;
+            color: #e0e0e0;
+        }
+
+        .btn-secondary:hover {
+            background: #4a4f4a;
+        }
+
+        .btn-danger {
+            background: #dc2626;
+        }
+
+        .btn-danger:hover {
+            background: #ef4444;
+        }
+
+        /* MAIN LAYOUT */
+        .main-layout {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .sidebar-left {
+            width: 280px;
+            background: #1a1f1a;
+            border-right: 1px solid #2a2f2a;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .sidebar-left-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 8px;
+        }
+
+        .sidebar-left-footer {
+            border-top: 1px solid #2a2f2a;
+            padding: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .sidebar-left-title {
+            font-size: 12px;
+            text-transform: uppercase;
+            color: #91bd27;
+            letter-spacing: 0.5px;
+            padding: 8px;
+            font-weight: 600;
+        }
+
+        .center-panel {
+            flex: 1;
+            background: #0a0f0a;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .center-panel-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+        }
+
+        .center-panel-empty {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #6b7280;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .sidebar-right {
+            width: 300px;
+            background: #1a1f1a;
+            border-left: 1px solid #2a2f2a;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .sidebar-right-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .sidebar-right-search {
+            padding: 12px;
+            border-bottom: 1px solid #2a2f2a;
+        }
+
+        .sidebar-right-search input {
+            width: 100%;
+            background: #0a0f0a;
+            border: 1px solid #3a3f3a;
+            color: #e0e0e0;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+
+        .sidebar-right-search input:focus {
+            outline: none;
+            border-color: #629231;
+        }
+
+        .sidebar-right-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 8px;
+        }
+
+        .sidebar-right-preview {
+            border-top: 1px solid #2a2f2a;
+            padding: 12px;
+            min-height: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #0a0f0a;
+        }
+
+        .svg-preview {
+            width: 100%;
+            height: 100%;
+            max-width: 200px;
+            max-height: 200px;
+        }
+
+        /* STEP CARD */
+        .step-card {
+            background: #1a1f1a;
+            border: 1px solid #2a2f2a;
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            gap: 8px;
+            align-items: stretch;
+        }
+
+        .step-card:hover {
+            border-color: #3a3f3a;
+            background: #1f251f;
+        }
+
+        .step-card.active {
+            border-color: #629231;
+            background: #1f251f;
+            box-shadow: 0 0 0 2px rgba(98, 146, 49, 0.2);
+        }
+
+        .step-card.dragging {
+            opacity: 0.5;
+        }
+
+        .step-drag-handle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: grab;
+            color: #6b7280;
+            font-size: 12px;
+        }
+
+        .step-drag-handle:active {
+            cursor: grabbing;
+        }
+
+        .step-card-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            min-width: 0;
+        }
+
+        .step-number-name {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .step-number {
+            font-size: 12px;
+            color: #91bd27;
+            font-weight: 600;
+            min-width: 30px;
+        }
+
+        .step-name {
+            font-size: 14px;
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .step-type-badge {
+            display: inline-flex;
+            font-size: 10px;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 3px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            width: fit-content;
+        }
+
+        .step-type-pose {
+            background: #1f5d3d;
+            color: #91bd27;
+        }
+
+        .step-type-superset {
+            background: #5d4d1f;
+            color: #d4a017;
+        }
+
+        .step-type-multi-phase {
+            background: #1f3d5d;
+            color: #3b82f6;
+        }
+
+        .step-type-transition {
+            background: #3a3f3a;
+            color: #9ca3af;
+        }
+
+        .step-type-student-paced {
+            background: #4a1f5d;
+            color: #a78bfa;
+        }
+
+        .step-duration {
+            font-size: 12px;
+            color: #9ca3af;
+        }
+
+        .step-card-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .step-card-btn {
+            background: none;
+            border: none;
+            color: #6b7280;
+            cursor: pointer;
+            padding: 4px;
+            font-size: 12px;
+            transition: color 0.2s;
+        }
+
+        .step-card-btn:hover {
+            color: #e0e0e0;
+        }
+
+        /* SECTION */
+        .section {
+            margin-bottom: 24px;
+        }
+
+        .section-title {
+            font-size: 12px;
+            text-transform: uppercase;
+            color: #91bd27;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .section-collapsible {
+            cursor: pointer;
+            user-select: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 0;
+        }
+
+        .section-collapsible-icon {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            transition: transform 0.2s;
+        }
+
+        .section-collapsible.collapsed .section-collapsible-icon {
+            transform: rotate(-90deg);
+        }
+
+        .section-collapsible-content {
+            max-height: 1000px;
+            overflow: hidden;
+            transition: max-height 0.2s;
+        }
+
+        .section-collapsible.collapsed .section-collapsible-content {
+            max-height: 0;
+            padding: 0;
+        }
+
+        /* FORM ELEMENTS */
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 6px;
+            display: block;
+            color: #e0e0e0;
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            background: #0a0f0a;
+            border: 1px solid #3a3f3a;
+            color: #e0e0e0;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-family: inherit;
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: #629231;
+            box-shadow: 0 0 0 2px rgba(98, 146, 49, 0.2);
+        }
+
+        .form-select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23e0e0e0' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            padding-right: 32px;
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 80px;
+            font-family: monospace;
+            font-size: 12px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .form-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .form-checkbox input {
+            cursor: pointer;
+            accent-color: #629231;
+        }
+
+        /* TAG INPUT */
+        .tag-input-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            padding: 8px;
+            background: #0a0f0a;
+            border: 1px solid #3a3f3a;
+            border-radius: 4px;
+            min-height: 36px;
+        }
+
+        .tag {
+            background: #629231;
+            color: #fff;
+            padding: 4px 8px;
+            border-radius: 3px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .tag-remove {
+            background: none;
+            border: none;
+            color: #fff;
+            cursor: pointer;
+            font-size: 14px;
+            padding: 0;
+            line-height: 1;
+        }
+
+        .tag-button {
+            background: #3a3f3a;
+            color: #e0e0e0;
+            border: 1px solid #4a4f4a;
+            padding: 4px 8px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s;
+        }
+
+        .tag-button:hover {
+            background: #4a4f4a;
+            border-color: #629231;
+            color: #91bd27;
+        }
+
+        /* POSE LIBRARY */
+        .pose-library-item {
+            background: #1a1f1a;
+            border: 1px solid #2a2f2a;
+            border-radius: 4px;
+            padding: 10px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .pose-library-item:hover {
+            border-color: #3a3f3a;
+            background: #1f251f;
+        }
+
+        .pose-library-item.selected {
+            border-color: #629231;
+            background: #1f251f;
+        }
+
+        .pose-library-name {
+            font-size: 13px;
+            font-weight: 500;
+            color: #e0e0e0;
+            margin-bottom: 4px;
+        }
+
+        .pose-library-sanskrit {
+            font-size: 12px;
+            color: #9ca3af;
+            margin-bottom: 4px;
+        }
+
+        .pose-library-id {
+            font-size: 11px;
+            color: #6b7280;
+            margin-bottom: 6px;
+            font-family: monospace;
+        }
+
+        .pose-library-meta {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            font-size: 10px;
+        }
+
+        .difficulty-badge {
+            background: #3a3f3a;
+            color: #e0e0e0;
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+
+        .category-tag {
+            background: #2a3a2a;
+            color: #91bd27;
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+
+        /* VARIANT GRID */
+        .variant-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .variant-item {
+            background: #1a1f1a;
+            border: 2px solid #2a2f2a;
+            border-radius: 4px;
+            padding: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            aspect-ratio: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            min-height: 120px;
+        }
+
+        .variant-item:hover {
+            border-color: #3a3f3a;
+            background: #1f251f;
+        }
+
+        .variant-item.selected {
+            border-color: #629231;
+            background: #1f251f;
+        }
+
+        .variant-thumbnail {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 6px;
+            object-fit: contain;
+        }
+
+        .variant-label {
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .variant-label-primary {
+            color: #91bd27;
+        }
+
+        /* SUPERSET / MULTI-PHASE ITEMS */
+        .nested-item-list {
+            background: #0a0f0a;
+            border: 1px solid #2a2f2a;
+            border-radius: 4px;
+            padding: 8px;
+            margin-bottom: 12px;
+        }
+
+        .nested-item {
+            background: #1a1f1a;
+            border: 1px solid #2a2f2a;
+            border-radius: 4px;
+            padding: 12px;
+            margin-bottom: 8px;
+            display: flex;
+            gap: 8px;
+            align-items: flex-start;
+        }
+
+        .nested-item-drag {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: grab;
+            color: #6b7280;
+            font-size: 12px;
+            min-width: 20px;
+        }
+
+        .nested-item-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .nested-item-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        /* POSE PICKER */
+        .pose-picker-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .pose-picker-modal.open {
+            display: flex;
+        }
+
+        .pose-picker-content {
+            background: #1a1f1a;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.8);
+        }
+
+        .pose-picker-header {
+            padding: 16px;
+            border-bottom: 1px solid #2a2f2a;
+        }
+
+        .pose-picker-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px;
+        }
+
+        .pose-picker-footer {
+            padding: 12px;
+            border-top: 1px solid #2a2f2a;
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+        }
+
+        /* SCROLLBAR */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #3a3f3a;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #4a4f4a;
+        }
+
+        /* UTILITY */
+        .text-muted {
+            color: #9ca3af;
+        }
+
+        .text-error {
+            color: #ef4444;
+        }
+
+        .text-success {
+            color: #91bd27;
+        }
+
+        .flex {
+            display: flex;
+        }
+
+        .flex-center {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .gap-2 {
+            gap: 8px;
+        }
+
+        .mb-2 {
+            margin-bottom: 8px;
+        }
+
+        /* READONLY */
+        .form-readonly {
+            background: #0a0f0a;
+            border: 1px solid #2a2f2a;
+            color: #6b7280;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- TOOLBAR -->
+        <div class="toolbar">
+            <div class="toolbar-group">
+                <label class="toolbar-label">Flow Name</label>
+                <input type="text" id="flowName" class="toolbar-input" placeholder="Untitled Flow">
+            </div>
+            <div class="toolbar-group">
+                <label class="toolbar-label">Description</label>
+                <input type="text" id="flowDescription" class="toolbar-input" placeholder="Flow description" style="width: 250px;">
+            </div>
+            <div class="toolbar-group">
+                <label class="toolbar-label">Total Duration</label>
+                <div class="toolbar-display" id="totalDurationDisplay">0m 0s</div>
+            </div>
+            <div class="toolbar-group" style="margin-left: auto;">
+                <button class="btn btn-sm" onclick="app.loadFoundationFlow()">Load Foundation</button>
+                <button class="btn btn-sm" onclick="app.importFlow()">Import JSON</button>
+                <button class="btn btn-sm" onclick="app.exportSpecJSON()">Export Spec</button>
+                <button class="btn btn-sm" onclick="app.exportAppJSON()">Export App</button>
+            </div>
+        </div>
+
+        <!-- MAIN LAYOUT -->
+        <div class="main-layout">
+            <!-- LEFT SIDEBAR -->
+            <div class="sidebar-left">
+                <div class="sidebar-left-title">Flow Steps</div>
+                <div class="sidebar-left-content" id="stepList"></div>
+                <div class="sidebar-left-footer">
+                    <button class="btn btn-sm" onclick="app.addStep('pose')">+ Pose</button>
+                    <button class="btn btn-sm" onclick="app.addStep('superset')">+ Superset</button>
+                    <button class="btn btn-sm" onclick="app.addStep('multi-phase')">+ Multi-Phase</button>
+                    <button class="btn btn-sm" onclick="app.addStep('transition')">+ Transition</button>
+                    <button class="btn btn-sm" onclick="app.addStep('student-paced')">+ Student-Paced</button>
+                </div>
+            </div>
+
+            <!-- CENTER PANEL -->
+            <div class="center-panel">
+                <div class="center-panel-content" id="centerPanelContent">
+                    <div class="center-panel-empty">Select a step to edit</div>
+                </div>
+            </div>
+
+            <!-- RIGHT SIDEBAR -->
+            <div class="sidebar-right">
+                <div class="sidebar-right-content">
+                    <div class="sidebar-right-search">
+                        <input type="text" id="poseLibrarySearch" placeholder="Search poses...">
+                    </div>
+                    <div class="sidebar-right-list" id="poseLibraryList"></div>
+                </div>
+                <div class="sidebar-right-preview" id="posePreviewContainer">
+                    <div class="text-muted">Select a variant</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================================================
+        // YOGA FLOW EDITOR v2
+        // ============================================================================
+
+        const REGISTERED_ASSETS = new Set([
+            'generic', 'mountain-pose', 'downward-dog', 'mountain-overhead',
+            'upward-facing-dog', 'plank', 'chaturanga', 'forward-fold',
+            'halfway-lift', 'standing-prayer', 'staff', 'easy-seat',
+            'fire-log', 'seated-wide-legged-forward-fold', 'cobblers'
+        ]);
+
+        const PROP_OPTIONS = ['block', 'strap', 'blanket', 'bolster'];
+
+        let app = {
+            poseLibrary: null,
+            flow: {
+                id: 'flow-' + Date.now(),
+                name: 'Untitled Flow',
+                description: '',
+                items: []
+            },
+            selectedStepIndex: null,
+            selectedPoseId: null,
+            selectedVariantId: null,
+            dragSourceIndex: null,
+            dragSourceContext: null,
+
+            async init() {
+                // Load pose library
+                try {
+                    const response = await fetch('pose-library.json');
+                    this.poseLibrary = await response.json();
+                } catch (e) {
+                    console.error('Failed to load pose library:', e);
+                    this.poseLibrary = { poses: {} };
+                }
+
+                // Attach event listeners
+                document.getElementById('flowName').addEventListener('change', (e) => {
+                    this.flow.name = e.target.value;
+                    this.updateStepList();
+                });
+
+                document.getElementById('flowDescription').addEventListener('change', (e) => {
+                    this.flow.description = e.target.value;
+                });
+
+                document.getElementById('poseLibrarySearch').addEventListener('keyup', (e) => {
+                    this.filterPoseLibrary(e.target.value);
+                });
+
+                this.renderPoseLibrary();
+                this.updateStepList();
+            },
+
+            // Step Management
+            addStep(type) {
+                const step = {
+                    _step: this.flow.items.length + 1,
+                    name: `New ${type}`,
+                    type: type === 'pose' ? undefined : type,
+                    poseId: 'downward-dog',
+                    variantId: 'side',
+                    duration: 30
+                };
+
+                if (type === 'superset') {
+                    step.poses = [
+                        { poseId: 'mountain-pose', variantId: 'front', name: 'Mountain Pose', duration: 10 }
+                    ];
+                    delete step.duration;
+                    step.totalDuration = 10;
+                } else if (type === 'multi-phase') {
+                    step.phases = [
+                        { variantId: 'side', name: 'Hold', duration: 30 }
+                    ];
+                    delete step.duration;
+                    step.totalDuration = 30;
+                } else if (type === 'transition') {
+                    step.isTransition = true;
+                } else if (type === 'student-paced') {
+                    step.studentPaced = true;
+                    step.suggestedMinimum = 30;
+                }
+
+                this.flow.items.push(step);
+                this.selectedStepIndex = this.flow.items.length - 1;
+                this.updateStepList();
+                this.renderStepEditor();
+            },
+
+            deleteStep(index) {
+                if (confirm('Delete this step?')) {
+                    this.flow.items.splice(index, 1);
+                    if (this.selectedStepIndex === index) {
+                        this.selectedStepIndex = null;
+                    }
+                    this.updateStepNumbers();
+                    this.updateStepList();
+                    if (this.selectedStepIndex !== null) {
+                        this.renderStepEditor();
+                    } else {
+                        this.renderEmptyEditor();
+                    }
+                }
+            },
+
+            duplicateStep(index) {
+                const step = JSON.parse(JSON.stringify(this.flow.items[index]));
+                step.name = step.name + ' (copy)';
+                this.flow.items.splice(index + 1, 0, step);
+                this.updateStepNumbers();
+                this.updateStepList();
+            },
+
+            moveStep(index, direction) {
+                const newIndex = direction === 'up' ? index - 1 : index + 1;
+                if (newIndex >= 0 && newIndex < this.flow.items.length) {
+                    [this.flow.items[index], this.flow.items[newIndex]] = 
+                    [this.flow.items[newIndex], this.flow.items[index]];
+                    this.updateStepNumbers();
+                    this.selectedStepIndex = newIndex;
+                    this.updateStepList();
+                    this.renderStepEditor();
+                }
+            },
+
+            updateStepNumbers() {
+                this.flow.items.forEach((step, i) => {
+                    step._step = i + 1;
+                });
+            },
+
+            selectStep(index) {
+                this.selectedStepIndex = index;
+                this.updateStepList();
+                this.renderStepEditor();
+            },
+
+            // Rendering
+            updateStepList() {
+                const container = document.getElementById('stepList');
+                container.innerHTML = this.flow.items.map((step, index) => {
+                    const type = this.getStepType(step);
+                    const duration = this.calculateStepDuration(step);
+                    const isActive = index === this.selectedStepIndex;
+
+                    return `
+                        <div class="step-card ${isActive ? 'active' : ''}" draggable="true"
+                             data-index="${index}"
+                             onclick="app.selectStep(${index})"
+                             ondragstart="app.handleDragStart(event, ${index}, 'root')"
+                             ondragover="app.handleDragOver(event)"
+                             ondrop="app.handleDrop(event, ${index}, 'root')">
+                            <div class="step-drag-handle">⋮⋮</div>
+                            <div class="step-card-content">
+                                <div class="step-number-name">
+                                    <span class="step-number">${step._step}</span>
+                                    <span class="step-name">${step.name}</span>
+                                </div>
+                                <div style="display: flex; gap: 8px; align-items: center;">
+                                    <span class="step-type-badge step-type-${type}">${type}</span>
+                                    <span class="step-duration">${this.formatDuration(duration)}</span>
+                                </div>
+                            </div>
+                            <div class="step-card-menu">
+                                <button class="step-card-btn" onclick="event.stopPropagation(); app.duplicateStep(${index})" title="Duplicate">⧭</button>
+                                <button class="step-card-btn" onclick="event.stopPropagation(); app.moveStep(${index}, 'up')" title="Move up">▲</button>
+                                <button class="step-card-btn" onclick="event.stopPropagation(); app.moveStep(${index}, 'down')" title="Move down">▼</button>
+                                <button class="step-card-btn" onclick="event.stopPropagation(); app.deleteStep(${index})" title="Delete" style="color: #ef4444;">✕</button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            },
+
+            renderEmptyEditor() {
+                document.getElementById('centerPanelContent').innerHTML = `
+                    <div class="center-panel-empty">Select a step to edit</div>
+                `;
+            },
+
+            renderStepEditor() {
+                if (this.selectedStepIndex === null) {
+                    this.renderEmptyEditor();
+                    return;
+                }
+
+                const step = this.flow.items[this.selectedStepIndex];
+                const type = this.getStepType(step);
+                let html = '';
+
+                // Identity section
+                html += `
+                    <div class="section">
+                        <div class="section-title">Identity</div>
+                        <div class="form-group">
+                            <label class="form-label">Step Type</label>
+                            <select class="form-select" onchange="app.changeStepType('${this.selectedStepIndex}', this.value)">
+                                <option value="pose" ${type === 'pose' ? 'selected' : ''}>Pose</option>
+                                <option value="superset" ${type === 'superset' ? 'selected' : ''}>Superset</option>
+                                <option value="multi-phase" ${type === 'multi-phase' ? 'selected' : ''}>Multi-Phase</option>
+                                <option value="transition" ${type === 'transition' ? 'selected' : ''}>Transition</option>
+                                <option value="student-paced" ${type === 'student-paced' ? 'selected' : ''}>Student-Paced</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Name</label>
+                            <input type="text" class="form-input" value="${step.name}" 
+                                   onchange="app.updateStepField('${this.selectedStepIndex}', 'name', this.value)">
+                        </div>
+                `;
+
+                // Pose ID selector (not for superset)
+                if (type !== 'superset') {
+                    html += `
+                        <div class="form-group">
+                            <label class="form-label">Pose</label>
+                            <button class="btn btn-secondary" onclick="app.openPosePicker('${this.selectedStepIndex}')">
+                                ${step.poseId || 'Select Pose'}
+                            </button>
+                        </div>
+                    `;
+                    // For non-multi-phase, show variant selector at top level
+                    if (type !== 'multi-phase') {
+                        html += `
+                            <div class="form-group">
+                                <label class="form-label">Variant</label>
+                                <div class="variant-grid" id="variantGrid-${this.selectedStepIndex}">
+                                    ${this.renderVariantGrid(step.poseId, step.variantId, this.selectedStepIndex)}
+                                </div>
+                            </div>
+                        `;
+                    }
+                }
+
+                // Asset ID display
+                if (step.poseId) {
+                    const hasAsset = REGISTERED_ASSETS.has(step.poseId);
+                    html += `
+                        <div class="form-group">
+                            <label class="form-label">Asset Status</label>
+                            <div class="form-readonly">
+                                ${hasAsset ? '✓ Registered' : '✗ Not Registered'} ${step.poseId}
+                            </div>
+                        </div>
+                    `;
+                }
+
+                html += `</div>`;
+
+                // Timing section
+                html += `
+                    <div class="section">
+                        <div class="section-title">Timing</div>
+                `;
+
+                if (type !== 'superset' && type !== 'multi-phase') {
+                    html += `
+                        <div class="form-group">
+                            <label class="form-checkbox">
+                                <input type="checkbox" ${step.studentPaced ? 'checked' : ''} 
+                                       onchange="app.updateStepField('${this.selectedStepIndex}', 'studentPaced', this.checked)">
+                                Student-Paced Hold
+                            </label>
+                        </div>
+                    `;
+
+                    if (step.studentPaced) {
+                        html += `
+                            <div class="form-group">
+                                <label class="form-label">Suggested Minimum (seconds)</label>
+                                <input type="number" class="form-input" value="${step.suggestedMinimum || 30}" 
+                                       onchange="app.updateStepField('${this.selectedStepIndex}', 'suggestedMinimum', parseInt(this.value))">
+                            </div>
+                        `;
+                    } else {
+                        html += `
+                            <div class="form-group">
+                                <label class="form-label">Duration (seconds)</label>
+                                <input type="number" class="form-input" value="${step.duration || 30}" 
+                                       onchange="app.updateStepField('${this.selectedStepIndex}', 'duration', parseInt(this.value)); app.updateTotalDuration();">
+                            </div>
+                        `;
+                    }
+                } else if (type === 'superset') {
+                    html += `
+                        <div class="form-readonly">Total: ${this.formatDuration(step.totalDuration || 0)}</div>
+                    `;
+                } else if (type === 'multi-phase') {
+                    html += `
+                        <div class="form-readonly">Total: ${this.formatDuration(step.totalDuration || 0)}</div>
+                    `;
+                }
+
+                html += `</div>`;
+
+                // Audio/Visual Cues section
+                html += `
+                    <div class="section">
+                        <div class="section-title">Audio/Visual Cues</div>
+                        <div class="form-group">
+                            <label class="form-checkbox">
+                                <input type="checkbox" ${step.halfwayChime ? 'checked' : ''} 
+                                       onchange="app.updateStepField('${this.selectedStepIndex}', 'halfwayChime', this.checked)">
+                                Halfway Chime
+                            </label>
+                        </div>
+                        ${step.halfwayChime ? `
+                            <div class="form-group">
+                                <label class="form-label">Chime Note</label>
+                                <input type="text" class="form-input" value="${step.halfwayChimeNote || ''}" 
+                                       onchange="app.updateStepField('${this.selectedStepIndex}', 'halfwayChimeNote', this.value)">
+                            </div>
+                        ` : ''}
+                        <div class="form-group">
+                            <label class="form-label">Mantra Cue</label>
+                            <input type="text" class="form-input" value="${step.mantraCue || ''}" 
+                                   onchange="app.updateStepField('${this.selectedStepIndex}', 'mantraCue', this.value)">
+                        </div>
+                    </div>
+                `;
+
+                // Details section
+                html += `
+                    <div class="section">
+                        <div class="section-title">Details</div>
+                        <div class="form-group">
+                            <label class="form-label">Description</label>
+                            <textarea class="form-textarea" onchange="app.updateStepField('${this.selectedStepIndex}', 'description', this.value)">${step.description || ''}</textarea>
+                        </div>
+                        ${type !== 'superset' && type !== 'multi-phase' ? `
+                            <div class="form-group">
+                                <label class="form-label">Transition Note</label>
+                                <textarea class="form-textarea" onchange="app.updateStepField('${this.selectedStepIndex}', 'transitionNote', this.value)">${step.transitionNote || ''}</textarea>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Modification</label>
+                                <textarea class="form-textarea" onchange="app.updateStepField('${this.selectedStepIndex}', 'modification', this.value)">${step.modification || ''}</textarea>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Props</label>
+                                <div class="tag-input-container" id="propsContainer-${this.selectedStepIndex}">
+                                    ${(step.props || []).map(prop => `
+                                        <div class="tag">
+                                            ${prop}
+                                            <button class="tag-remove" onclick="app.removeProp('${this.selectedStepIndex}', '${prop}')">×</button>
+                                        </div>
+                                    `).join('')}
+                                    ${PROP_OPTIONS.filter(p => !(step.props || []).includes(p)).map(prop => `
+                                        <button class="tag-button" onclick="app.addProp('${this.selectedStepIndex}', '${prop}')">${prop}</button>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        ` : ''}
+                        ${type === 'transition' ? `
+                            <div class="form-group">
+                                <label class="form-checkbox">
+                                    <input type="checkbox" checked onchange="app.updateStepField('${this.selectedStepIndex}', 'isTransition', this.checked)">
+                                    Mark as Transition
+                                </label>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+
+                // Superset items
+                if (type === 'superset') {
+                    html += this.renderSupersetEditor(this.selectedStepIndex, step);
+                }
+
+                // Multi-phase items
+                if (type === 'multi-phase') {
+                    html += this.renderMultiPhaseEditor(this.selectedStepIndex, step);
+                }
+
+                // Internal/Dev section
+                html += `
+                    <div class="section">
+                        <div class="section-collapsible" onclick="this.classList.toggle('collapsed')">
+                            <span class="section-collapsible-icon">▼</span>
+                            <span class="section-title" style="margin: 0;">Internal/Dev</span>
+                            <div class="section-collapsible-content">
+                                <div class="section">
+                                    <div class="form-group">
+                                        <label class="form-checkbox">
+                                            <input type="checkbox" ${step._placeholder ? 'checked' : ''} 
+                                                   onchange="app.updateStepField('${this.selectedStepIndex}', '_placeholder', this.checked)">
+                                            Placeholder
+                                        </label>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">TODO</label>
+                                        <textarea class="form-textarea" onchange="app.updateStepField('${this.selectedStepIndex}', '_todo', this.value)">${step._todo || ''}</textarea>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Review Flag</label>
+                                        <input type="text" class="form-input" value="${step._reviewFlag || ''}" 
+                                               onchange="app.updateStepField('${this.selectedStepIndex}', '_reviewFlag', this.value)">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Note</label>
+                                        <input type="text" class="form-input" value="${step._note || ''}" 
+                                               onchange="app.updateStepField('${this.selectedStepIndex}', '_note', this.value)">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                document.getElementById('centerPanelContent').innerHTML = html;
+                
+                // Update total duration after rendering
+                this.updateTotalDuration();
+            },
+
+            renderSupersetEditor(stepIndex, step) {
+                let html = `
+                    <div class="section">
+                        <div class="section-title">Superset Poses</div>
+                        <div class="nested-item-list" id="supersetList-${stepIndex}">
+                            ${(step.poses || []).map((pose, poseIndex) => `
+                                <div class="nested-item" draggable="true"
+                                     ondragstart="app.handleDragStart(event, ${poseIndex}, 'superset-${stepIndex}')"
+                                     ondragover="app.handleDragOver(event)"
+                                     ondrop="app.handleDrop(event, ${poseIndex}, 'superset-${stepIndex}')">
+                                    <div class="nested-item-drag">⋮⋮</div>
+                                    <div class="nested-item-content">
+                                        <div class="form-group">
+                                            <label class="form-label">Pose</label>
+                                            <button class="btn btn-secondary btn-sm" 
+                                                    onclick="app.openPosePickerForNestedItem(${stepIndex}, 'superset', ${poseIndex})">
+                                                ${pose.poseId || 'Select Pose'}
+                                            </button>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Name</label>
+                                            <input type="text" class="form-input" value="${pose.name || ''}" 
+                                                   onchange="app.updateNestedItemField(${stepIndex}, 'superset', ${poseIndex}, 'name', this.value)">
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Duration (seconds)</label>
+                                            <input type="number" class="form-input" value="${pose.duration || 30}" 
+                                                   onchange="app.updateNestedItemField(${stepIndex}, 'superset', ${poseIndex}, 'duration', parseInt(this.value)); app.updateTotalDuration();">
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Description</label>
+                                            <textarea class="form-textarea" onchange="app.updateNestedItemField(${stepIndex}, 'superset', ${poseIndex}, 'description', this.value)">${pose.description || ''}</textarea>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-checkbox">
+                                                <input type="checkbox" ${pose._repBased ? 'checked' : ''} 
+                                                       onchange="app.updateNestedItemField(${stepIndex}, 'superset', ${poseIndex}, '_repBased', this.checked)">
+                                                Rep-Based
+                                            </label>
+                                        </div>
+                                        ${pose._repBased ? `
+                                            <div class="form-group">
+                                                <label class="form-label">Reps</label>
+                                                <input type="number" class="form-input" value="${pose._reps || 5}" 
+                                                       onchange="app.updateNestedItemField(${stepIndex}, 'superset', ${poseIndex}, '_reps', parseInt(this.value))">
+                                            </div>
+                                        ` : ''}
+                                        <div class="form-group">
+                                            <label class="form-label">Note</label>
+                                            <input type="text" class="form-input" value="${pose._note || ''}" 
+                                                   onchange="app.updateNestedItemField(${stepIndex}, 'superset', ${poseIndex}, '_note', this.value)">
+                                        </div>
+                                    </div>
+                                    <div class="nested-item-menu">
+                                        <button class="step-card-btn" onclick="app.removeNestedItem(${stepIndex}, 'superset', ${poseIndex})">✕</button>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <button class="btn btn-secondary btn-sm" onclick="app.addNestedItem(${stepIndex}, 'superset')">+ Add Pose</button>
+                    </div>
+                `;
+                return html;
+            },
+
+            renderMultiPhaseEditor(stepIndex, step) {
+                let html = `
+                    <div class="section">
+                        <div class="section-title">Phases</div>
+                        <div class="nested-item-list" id="phaseList-${stepIndex}">
+                            ${(step.phases || []).map((phase, phaseIndex) => `
+                                <div class="nested-item" draggable="true"
+                                     ondragstart="app.handleDragStart(event, ${phaseIndex}, 'phase-${stepIndex}')"
+                                     ondragover="app.handleDragOver(event)"
+                                     ondrop="app.handleDrop(event, ${phaseIndex}, 'phase-${stepIndex}')">
+                                    <div class="nested-item-drag">⋮⋮</div>
+                                    <div class="nested-item-content">
+                                        <div class="form-group">
+                                            <label class="form-label">Variant</label>
+                                            <div class="variant-grid" id="variantGrid-phase-${stepIndex}-${phaseIndex}">
+                                                ${this.renderVariantGrid(step.poseId, phase.variantId, stepIndex, phaseIndex)}
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Name</label>
+                                            <input type="text" class="form-input" value="${phase.name || ''}" 
+                                                   onchange="app.updateNestedItemField(${stepIndex}, 'phase', ${phaseIndex}, 'name', this.value)">
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Duration (seconds)</label>
+                                            <input type="number" class="form-input" value="${phase.duration || 30}" 
+                                                   onchange="app.updateNestedItemField(${stepIndex}, 'phase', ${phaseIndex}, 'duration', parseInt(this.value)); app.updateTotalDuration();">
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Description</label>
+                                            <textarea class="form-textarea" onchange="app.updateNestedItemField(${stepIndex}, 'phase', ${phaseIndex}, 'description', this.value)">${phase.description || ''}</textarea>
+                                        </div>
+                                    </div>
+                                    <div class="nested-item-menu">
+                                        <button class="step-card-btn" onclick="app.removeNestedItem(${stepIndex}, 'phase', ${phaseIndex})">✕</button>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <button class="btn btn-secondary btn-sm" onclick="app.addNestedItem(${stepIndex}, 'phase')">+ Add Phase</button>
+                    </div>
+                `;
+                return html;
+            },
+
+            renderVariantGrid(poseId, selectedVariantId, stepIndex, phaseIndex = null) {
+                if (!poseId || !this.poseLibrary.poses[poseId]) {
+                    return '<div class="text-muted">No pose selected</div>';
+                }
+
+                const pose = this.poseLibrary.poses[poseId];
+                const variants = pose.assets?.variants || {};
+
+                return Object.entries(variants).map(([variantId, variant]) => {
+                    const isSelected = selectedVariantId === variantId;
+                    const svgPath = `../../../svg-pipeline/poses/${poseId}/${variantId}/traced.svg`;
+                    const isPrimary = variant.isPrimary;
+
+                    let onclickCode = '';
+                    if (phaseIndex !== null) {
+                        onclickCode = `app.updateNestedItemField(${stepIndex}, 'phase', ${phaseIndex}, 'variantId', '${variantId}'); app.renderStepEditor();`;
+                    } else {
+                        onclickCode = `app.updateStepField(${stepIndex}, 'variantId', '${variantId}'); app.renderStepEditor();`;
+                    }
+
+                    return `
+                        <div class="variant-item ${isSelected ? 'selected' : ''}" onclick="${onclickCode}">
+                            <img src="${svgPath}" alt="${variant.label}" class="variant-thumbnail" onerror="this.style.display='none'">
+                            <span class="variant-label ${isPrimary ? 'variant-label-primary' : ''}">${variant.label || variantId}</span>
+                        </div>
+                    `;
+                }).join('');
+            },
+
+            // Pose Library
+            renderPoseLibrary() {
+                this.filterPoseLibrary('');
+            },
+
+            filterPoseLibrary(query) {
+                const container = document.getElementById('poseLibraryList');
+                const poses = Object.values(this.poseLibrary.poses || {});
+
+                const filtered = poses.filter(pose => {
+                    const q = query.toLowerCase();
+                    return pose.englishName?.toLowerCase().includes(q) ||
+                           pose.sanskritName?.toLowerCase().includes(q) ||
+                           pose.poseId?.toLowerCase().includes(q);
+                });
+
+                container.innerHTML = filtered.map(pose => `
+                    <div class="pose-library-item ${this.selectedPoseId === pose.poseId ? 'selected' : ''}"
+                         onclick="app.selectPoseInLibrary('${pose.poseId}')">
+                        <div class="pose-library-name">${pose.englishName || pose.poseId}</div>
+                        <div class="pose-library-sanskrit">${pose.sanskritName || ''}</div>
+                        <div class="pose-library-id">${pose.poseId}</div>
+                        <div class="pose-library-meta">
+                            <span class="difficulty-badge">Difficulty: ${pose.difficulty || 0}</span>
+                            ${(pose.categories || []).map(cat => `
+                                <span class="category-tag">${cat}</span>
+                            `).join('')}
+                        </div>
+                    </div>
+                `).join('');
+            },
+
+            selectPoseInLibrary(poseId) {
+                this.selectedPoseId = poseId;
+                this.selectedVariantId = null;
+                this.filterPoseLibrary(document.getElementById('poseLibrarySearch').value);
+                this.renderPoseVariants();
+            },
+
+            renderPoseVariants() {
+                const container = document.getElementById('posePreviewContainer');
+                if (!this.selectedPoseId || !this.poseLibrary.poses[this.selectedPoseId]) {
+                    container.innerHTML = '<div class="text-muted">Select a pose</div>';
+                    return;
+                }
+
+                const pose = this.poseLibrary.poses[this.selectedPoseId];
+                const variants = pose.assets?.variants || {};
+
+                if (Object.keys(variants).length === 0) {
+                    container.innerHTML = '<div class="text-muted">No variants</div>';
+                    return;
+                }
+
+                let html = '<div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; width: 100%;">';
+                html += Object.entries(variants).map(([variantId, variant]) => {
+                    const svgPath = `../../../svg-pipeline/poses/${this.selectedPoseId}/${variantId}/traced.svg`;
+                    return `
+                        <div class="variant-item ${this.selectedVariantId === variantId ? 'selected' : ''}"
+                             onclick="app.selectVariantAndApply('${variantId}')">
+                            <img src="${svgPath}" alt="${variant.label}" class="variant-thumbnail" onerror="this.style.display='none'">
+                            <span class="variant-label ${variant.isPrimary ? 'variant-label-primary' : ''}">${variant.label || variantId}</span>
+                        </div>
+                    `;
+                }).join('');
+                html += '</div>';
+
+                container.innerHTML = html;
+            },
+
+            selectVariantAndApply(variantId) {
+                if (!this.selectedPoseId) return;
+                this.selectedVariantId = variantId;
+
+                // If a step is selected, auto-fill it
+                if (this.selectedStepIndex !== null) {
+                    const step = this.flow.items[this.selectedStepIndex];
+                    step.poseId = this.selectedPoseId;
+                    step.variantId = variantId;
+                    this.updateTotalDuration();
+                    this.renderStepEditor();
+                }
+
+                this.renderPoseVariants();
+            },
+
+            // Pose Picker Modal
+            openPosePicker(stepIndex) {
+                // TODO: Implement modal-based pose picker
+            },
+
+            openPosePickerForNestedItem(stepIndex, type, itemIndex) {
+                // TODO: Implement modal for nested items
+            },
+
+            // Field Updates
+            updateStepField(stepIndex, field, value) {
+                const step = this.flow.items[parseInt(stepIndex)];
+                if (field === 'studentPaced' && value && !step.suggestedMinimum) {
+                    step.suggestedMinimum = 30;
+                }
+                step[field] = value;
+                this.updateTotalDuration();
+            },
+
+            updateNestedItemField(stepIndex, type, itemIndex, field, value) {
+                const step = this.flow.items[stepIndex];
+                if (type === 'superset') {
+                    step.poses[itemIndex][field] = value;
+                } else if (type === 'phase') {
+                    step.phases[itemIndex][field] = value;
+                }
+                this.updateTotalDuration();
+                this.renderStepEditor();
+            },
+
+            addNestedItem(stepIndex, type) {
+                const step = this.flow.items[stepIndex];
+                if (type === 'superset') {
+                    step.poses.push({
+                        poseId: 'mountain-pose',
+                        variantId: 'front',
+                        name: 'New Pose',
+                        duration: 30
+                    });
+                } else if (type === 'phase') {
+                    step.phases.push({
+                        variantId: 'side',
+                        name: 'New Phase',
+                        duration: 30
+                    });
+                }
+                this.updateTotalDuration();
+                this.renderStepEditor();
+            },
+
+            removeNestedItem(stepIndex, type, itemIndex) {
+                const step = this.flow.items[stepIndex];
+                if (type === 'superset') {
+                    step.poses.splice(itemIndex, 1);
+                } else if (type === 'phase') {
+                    step.phases.splice(itemIndex, 1);
+                }
+                this.updateTotalDuration();
+                this.renderStepEditor();
+            },
+
+            addProp(stepIndex, prop) {
+                const step = this.flow.items[stepIndex];
+                if (!step.props) step.props = [];
+                if (!step.props.includes(prop)) {
+                    step.props.push(prop);
+                    this.renderStepEditor();
+                }
+            },
+
+            removeProp(stepIndex, prop) {
+                const step = this.flow.items[stepIndex];
+                step.props = (step.props || []).filter(p => p !== prop);
+                this.renderStepEditor();
+            },
+
+            changeStepType(stepIndex, newType) {
+                const step = this.flow.items[parseInt(stepIndex)];
+                
+                // Reset all type-specific fields
+                step.type = undefined;
+                step.isTransition = undefined;
+                step.studentPaced = undefined;
+                delete step.poses;
+                delete step.phases;
+
+                if (newType === 'pose') {
+                    step.duration = 30;
+                } else if (newType === 'superset') {
+                    step.type = 'superset';
+                    step.poses = [{ poseId: 'mountain-pose', variantId: 'front', name: 'Pose 1', duration: 30 }];
+                    delete step.duration;
+                } else if (newType === 'multi-phase') {
+                    step.type = 'multi-phase';
+                    step.phases = [{ variantId: 'side', name: 'Phase 1', duration: 30 }];
+                    delete step.duration;
+                } else if (newType === 'transition') {
+                    step.type = 'transition';
+                    step.isTransition = true;
+                    step.duration = 5;
+                } else if (newType === 'student-paced') {
+                    step.type = 'student-paced';
+                    step.studentPaced = true;
+                    step.suggestedMinimum = 30;
+                    delete step.duration;
+                }
+
+                this.updateTotalDuration();
+                this.renderStepEditor();
+            },
+
+            // Drag and Drop
+            handleDragStart(event, index, context) {
+                this.dragSourceIndex = index;
+                this.dragSourceContext = context;
+                event.dataTransfer.effectAllowed = 'move';
+            },
+
+            handleDragOver(event) {
+                event.preventDefault();
+                event.dataTransfer.dropEffect = 'move';
+            },
+
+            handleDrop(event, targetIndex, context) {
+                event.preventDefault();
+                if (this.dragSourceIndex === null || this.dragSourceContext !== context) return;
+
+                if (context === 'root') {
+                    const items = this.flow.items;
+                    const source = items[this.dragSourceIndex];
+                    items.splice(this.dragSourceIndex, 1);
+                    items.splice(targetIndex, 0, source);
+                    this.updateStepNumbers();
+                    this.selectedStepIndex = targetIndex;
+                    this.updateStepList();
+                } else if (context.startsWith('superset-')) {
+                    const stepIndex = parseInt(context.split('-')[1]);
+                    const poses = this.flow.items[stepIndex].poses;
+                    const source = poses[this.dragSourceIndex];
+                    poses.splice(this.dragSourceIndex, 1);
+                    poses.splice(targetIndex, 0, source);
+                    this.updateTotalDuration();
+                    this.renderStepEditor();
+                } else if (context.startsWith('phase-')) {
+                    const stepIndex = parseInt(context.split('-')[1]);
+                    const phases = this.flow.items[stepIndex].phases;
+                    const source = phases[this.dragSourceIndex];
+                    phases.splice(this.dragSourceIndex, 1);
+                    phases.splice(targetIndex, 0, source);
+                    this.updateTotalDuration();
+                    this.renderStepEditor();
+                }
+
+                this.dragSourceIndex = null;
+                this.dragSourceContext = null;
+            },
+
+            // Calculations
+            calculateStepDuration(step) {
+                if (step.studentPaced) return step.suggestedMinimum || 0;
+                if (step.type === 'superset') return step.totalDuration || 0;
+                if (step.type === 'multi-phase') return step.totalDuration || 0;
+                return step.duration || 0;
+            },
+
+            updateTotalDuration() {
+                let total = 0;
+                this.flow.items.forEach(step => {
+                    const stepType = this.getStepType(step);
+
+                    if (stepType === 'superset') {
+                        step.totalDuration = (step.poses || []).reduce((sum, p) => sum + (p.duration || 0), 0);
+                        total += step.totalDuration;
+                    } else if (stepType === 'multi-phase') {
+                        step.totalDuration = (step.phases || []).reduce((sum, p) => sum + (p.duration || 0), 0);
+                        total += step.totalDuration;
+                    } else if (stepType === 'student-paced') {
+                        total += step.suggestedMinimum || 0;
+                    } else {
+                        total += step.duration || 0;
+                    }
+                });
+
+                this.flow.totalDuration = total;
+                document.getElementById('totalDurationDisplay').textContent = this.formatDuration(total);
+            },
+
+            formatDuration(seconds) {
+                const mins = Math.floor(seconds / 60);
+                const secs = seconds % 60;
+                return `${mins}m ${secs}s`;
+            },
+
+            getStepType(step) {
+                if (step.type === 'superset') return 'superset';
+                if (step.type === 'multi-phase') return 'multi-phase';
+                if (step.type === 'student-paced' || step.studentPaced) return 'student-paced';
+                if (step.type === 'transition' || step.isTransition) return 'transition';
+                return 'pose';
+            },
+
+            // Import/Export
+            async loadFoundationFlow() {
+                try {
+                    const response = await fetch('flow-foundation.json');
+                    const data = await response.json();
+                    const foundationFlow = Array.isArray(data) ? data[0] : data;
+                    this.importFlowData(foundationFlow);
+                } catch (e) {
+                    alert('Failed to load foundation flow: ' + e.message);
+                }
+            },
+
+            importFlow() {
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = '.json';
+                input.onchange = (e) => {
+                    const file = e.target.files[0];
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        try {
+                            const data = JSON.parse(event.target.result);
+                            const flow = Array.isArray(data) ? data[0] : data;
+                            this.importFlowData(flow);
+                        } catch (err) {
+                            alert('Invalid JSON: ' + err.message);
+                        }
+                    };
+                    reader.readAsText(file);
+                };
+                input.click();
+            },
+
+            importFlowData(flowData) {
+                this.flow = {
+                    id: flowData.id || 'flow-' + Date.now(),
+                    name: flowData.name || 'Imported Flow',
+                    description: flowData.description || '',
+                    items: (flowData.items || []).map((item, idx) => {
+                        const type = this.detectStepType(item);
+                        return {
+                            ...item,
+                            _step: idx + 1,
+                            type: type !== 'pose' ? type : undefined,
+                            poseId: item.poseId || 'downward-dog',
+                            variantId: item.variantId || 'side'
+                        };
+                    })
+                };
+
+                document.getElementById('flowName').value = this.flow.name;
+                document.getElementById('flowDescription').value = this.flow.description;
+                this.selectedStepIndex = null;
+                this.updateTotalDuration();
+                this.updateStepList();
+                this.renderEmptyEditor();
+            },
+
+            detectStepType(item) {
+                if (item.type === 'superset' || item.poses) return 'superset';
+                if (item.phases) return 'multi-phase';
+                if (item.studentPaced) return 'student-paced';
+                if (item.isTransition) return 'transition';
+                return 'pose';
+            },
+
+            exportSpecJSON() {
+                const spec = [{
+                    id: this.flow.id,
+                    name: this.flow.name,
+                    description: this.flow.description,
+                    totalDuration: this.flow.totalDuration,
+                    items: this.flow.items.map(item => {
+                        const copy = JSON.parse(JSON.stringify(item));
+                        return copy;
+                    })
+                }];
+
+                this.downloadJSON(spec, `flow-${this.flow.id}-spec.json`);
+            },
+
+            exportAppJSON() {
+                const appFormat = {
+                    id: this.flow.id,
+                    name: this.flow.name,
+                    description: this.flow.description,
+                    totalDuration: this.flow.totalDuration,
+                    items: this.flow.items.map(item => {
+                        const type = this.getStepType(item);
+                        const appItem = {
+                            name: item.name,
+                            description: item.description
+                        };
+
+                        if (type === 'superset') {
+                            appItem.type = 'superset';
+                            appItem.name = item.name;
+                            appItem.totalDuration = item.totalDuration;
+                            appItem.poses = (item.poses || []).map(p => ({
+                                name: p.name,
+                                duration: p.duration,
+                                assetId: p.assetId || this.getAssetForPose(p.poseId),
+                                description: p.description
+                            }));
+                        } else if (type === 'multi-phase') {
+                            appItem.type = 'superset';
+                            appItem.totalDuration = item.totalDuration;
+                            appItem.poses = (item.phases || []).map(p => ({
+                                name: p.name,
+                                duration: p.duration,
+                                assetId: this.getAssetForPose(item.poseId),
+                                description: p.description
+                            }));
+                        } else {
+                            if (item.halfwayChime) appItem.halfwayChime = true;
+                            appItem.duration = item.duration || item.suggestedMinimum || 30;
+                            appItem.assetId = item.assetId || this.getAssetForPose(item.poseId);
+                        }
+
+                        return appItem;
+                    })
+                };
+
+                this.downloadJSON(appFormat, `flow-${this.flow.id}-app.json`);
+            },
+
+            getAssetForPose(poseId) {
+                return REGISTERED_ASSETS.has(poseId) ? poseId : 'generic';
+            },
+
+            downloadJSON(data, filename) {
+                const json = JSON.stringify(data, null, 2);
+                const blob = new Blob([json], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }
+        };
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => app.init());
+    </script>
+</body>
+</html>

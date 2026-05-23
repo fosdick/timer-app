@@ -23,6 +23,7 @@ const TABS = [
   { id: "pose-library",  label: "Pose Library",   src: "/pages/pose-library.html" },
   { id: "flow-editor",   label: "Flow Editor",   src: "/pages/flow-editor.html"  },
   { id: "svg-tracer",    label: "SVG Tracer",     src: "/pages/svg-tracer.html"   },
+  { id: "flow-editor-v2", label: "Flow Editor v2", src: "/pages/flow-editor-v2.html" },
 ] as const;
 
 type TabId = (typeof TABS)[number]["id"];
