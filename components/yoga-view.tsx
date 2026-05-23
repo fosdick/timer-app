@@ -28,6 +28,7 @@ import {
 } from "@/assets/data/yoga-flows";
 import { yogaColors, yogaTypography } from "@/assets/theme";
 import { useFocusEffect } from "expo-router";
+import { YOGA_FLOW_ENABLED } from "@/constants/constants";
 
 const YOGA_TIMER_APP_DATA = "yoga_timer_app_data";
 const YOGA_TIMER_SETTINGS_DATA = "yoga_timer_settings_data";
@@ -524,7 +525,7 @@ export default function YogaView() {
       // Pause and show overlay
       cancelHalfwayPauseAndStop();
       setShowPauseOverlay(true);
-    } else {
+    } else if (YOGA_FLOW_ENABLED) {
       // Open flow select
       setShowFlowSelect(true);
     }
@@ -577,7 +578,9 @@ export default function YogaView() {
   const handleSelectDifferentFlow = () => {
     setShowPauseOverlay(false);
     cancelHalfwayPauseAndStop();
-    setShowFlowSelect(true);
+    if (YOGA_FLOW_ENABLED) {
+      setShowFlowSelect(true);
+    }
   };
 
   // Get current, previous, and next poses for display with asset fallback logic
@@ -972,13 +975,15 @@ export default function YogaView() {
               <Text style={styles.pauseButtonText}>Reset</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity
-              style={styles.pauseButton}
-              activeOpacity={0.7}
-              onPress={handleSelectDifferentFlow}
-            >
-              <Text style={styles.pauseButtonText}>Select Different Flow</Text>
-            </TouchableOpacity>
+            {YOGA_FLOW_ENABLED && (
+              <TouchableOpacity
+                style={styles.pauseButton}
+                activeOpacity={0.7}
+                onPress={handleSelectDifferentFlow}
+              >
+                <Text style={styles.pauseButtonText}>Select Different Flow</Text>
+              </TouchableOpacity>
+            )}
           </View>
         </View>
       </Modal>

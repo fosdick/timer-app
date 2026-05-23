@@ -20,3 +20,5 @@ export const Constants: ConstantsType = {
   REMOVE_ADS_DATA_KEY: "remove-ads-data-key",
   CONTACT_EMAIL: "timerapp.yoga@fastmail.fm",
 };
+
+export const YOGA_FLOW_ENABLED = false;

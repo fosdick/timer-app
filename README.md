@@ -29,3 +29,9 @@ follow the prompts.
 npx expo install react-native-google-mobile-ads
 
 ```
+
+install on the phone:
+
+```
+npx eas-cli build --profile preview --platform ios
+```
