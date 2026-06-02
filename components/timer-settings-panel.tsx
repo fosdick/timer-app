@@ -29,7 +29,7 @@ import { yogaColors } from "@/assets/theme";
 
 let _previewSound: Audio.Sound | null = null;
 
-const stopPreviewSound = () => {
+export const stopPreviewSound = () => {
   if (_previewSound) {
     const s = _previewSound;
     _previewSound = null;
@@ -54,7 +54,7 @@ const playPreviewSound = (requireResult: any) => {
 export type TransitionSoundId = "swoosh" | "end-bell" | "ocean";
 export type HalfMarkSoundId = "sticks" | "snap" | "bell";
 
-interface SoundOption<T> {
+export interface SoundOption<T> {
   id: T;
   label: string;
   onPreview: () => void;
@@ -63,7 +63,7 @@ interface SoundOption<T> {
 /* eslint-disable @typescript-eslint/no-var-requires */
 
 // First entry = current coded default, shown first in picker
-const TRANSITION_SOUNDS: SoundOption<TransitionSoundId>[] = [
+export const TRANSITION_SOUNDS: SoundOption<TransitionSoundId>[] = [
   {
     id: "swoosh",
     label: "Swoosh",
@@ -84,7 +84,7 @@ const TRANSITION_SOUNDS: SoundOption<TransitionSoundId>[] = [
   },
 ];
 
-const HALF_MARK_SOUNDS: SoundOption<HalfMarkSoundId>[] = [
+export const HALF_MARK_SOUNDS: SoundOption<HalfMarkSoundId>[] = [
   {
     id: "sticks",
     label: "Sticks",
@@ -110,9 +110,9 @@ const HALF_MARK_SOUNDS: SoundOption<HalfMarkSoundId>[] = [
 
 // ─── Stepper constants ────────────────────────────────────────────────────────
 
-const PAUSE_STEP_MS = 500;
-const PAUSE_MIN_MS = 0;
-const PAUSE_MAX_MS = 30000; // 30 s ceiling so a 5 s default still has ample headroom
+export const PAUSE_STEP_MS = 500;
+export const PAUSE_MIN_MS = 0;
+export const PAUSE_MAX_MS = 30000; // 30 s ceiling so a 5 s default still has ample headroom
 
 // ─── Props ────────────────────────────────────────────────────────────────────
 
@@ -133,6 +133,13 @@ export interface TimerSettingsPanelProps {
   onHalfMarkSoundChange: (sound: HalfMarkSoundId) => void;
   halfMarkEnabled: boolean;
   onHalfMarkEnabledChange: (enabled: boolean) => void;
+
+  /**
+   * "Save as Pace" action. The panel closes itself first (stopping any
+   * preview sound) and then invokes this callback so the parent can open
+   * the Pace form modal pre-filled with the current settings values.
+   */
+  onSavePace: () => void;
 }
 
 // ─── PauseStepper ─────────────────────────────────────────────────────────────
@@ -142,7 +149,7 @@ interface PauseStepperProps {
   onChange: (ms: number) => void;
 }
 
-const PauseStepper = ({ valueMs, onChange }: PauseStepperProps) => {
+export const PauseStepper = ({ valueMs, onChange }: PauseStepperProps) => {
   const canDecrement = valueMs > PAUSE_MIN_MS;
   const canIncrement = valueMs < PAUSE_MAX_MS;
 
@@ -178,7 +185,7 @@ const PauseStepper = ({ valueMs, onChange }: PauseStepperProps) => {
 
 // ─── SoundPickerModal ─────────────────────────────────────────────────────────
 
-interface SoundPickerModalProps<T extends string> {
+export interface SoundPickerModalProps<T extends string> {
   visible: boolean;
   title: string;
   options: SoundOption<T>[];
@@ -187,7 +194,7 @@ interface SoundPickerModalProps<T extends string> {
   onClose: () => void;       // only Done button triggers this
 }
 
-function SoundPickerModal<T extends string>({
+export function SoundPickerModal<T extends string>({
   visible,
   title,
   options,
@@ -320,6 +327,7 @@ export const TimerSettingsPanel = ({
   onHalfMarkSoundChange,
   halfMarkEnabled,
   onHalfMarkEnabledChange,
+  onSavePace,
 }: TimerSettingsPanelProps) => {
   const [showTransitionPicker, setShowTransitionPicker] = useState(false);
   const [showHalfMarkPicker, setShowHalfMarkPicker] = useState(false);
@@ -328,6 +336,14 @@ export const TimerSettingsPanel = ({
   const handleClose = () => {
     stopPreviewSound();
     onClose();
+  };
+
+  // Save-as-Pace: dismiss the panel cleanly first so the form modal can
+  // present without overlapping the slide-down panel.
+  const handleSavePace = () => {
+    stopPreviewSound();
+    onClose();
+    onSavePace();
   };
 
   // Slide-down animation
@@ -390,6 +406,15 @@ export const TimerSettingsPanel = ({
           toggleEnabled={halfMarkEnabled}
           onToggleChange={onHalfMarkEnabledChange}
         />
+
+        {/* Save-as-Pace button — opens form pre-filled with current values */}
+        <TouchableOpacity
+          style={styles.saveButton}
+          onPress={handleSavePace}
+          activeOpacity={0.7}
+        >
+          <Text style={styles.saveButtonText}>Save as Pace</Text>
+        </TouchableOpacity>
       </Animated.View>
 
       {/* Sound picker modals */}
@@ -537,6 +562,21 @@ const styles = StyleSheet.create({
   soundPickerIcon: {
     color: yogaColors.instructionalText,
     fontSize: 16,
+  },
+
+  // ── Save-as-Pace button ───────────────────────────────────────────────────
+  saveButton: {
+    marginTop: 18,
+    backgroundColor: "#333",
+    borderRadius: 8,
+    paddingVertical: 10,
+    alignItems: "center",
+  },
+  saveButtonText: {
+    color: yogaColors.timerCountdown,
+    fontSize: 15,
+    fontWeight: "600",
+    letterSpacing: 0.3,
   },
 
   // ── Toggle / spacer ───────────────────────────────────────────────────────

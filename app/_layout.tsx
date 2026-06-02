@@ -5,6 +5,7 @@ import { useEffect } from "react";
 import "react-native-reanimated";
 import Purchases from "react-native-purchases";
 import { Platform, Alert } from "react-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 // app files
 import { Constants } from "@/constants/constants";
@@ -47,21 +48,23 @@ export default function RootLayout() {
   }
 
   return (
-    <DisplayAdsProvider>
-      <Stack
-        screenOptions={{
-          title: "Timer App Yoga",
-          headerStyle: {
-            // backgroundColor: "#080B0c",
-            backgroundColor: colorTheme.headerLiteShade,
-          },
-          headerRight: () => <SettingsSvg />,
-        }}
-      >
-        {/* <Stack.Screen name="+html" options={{ headerShown: false }} /> */}
-        <Stack.Screen name="+not-found" />
-        <Stack.Screen name="settings" />
-      </Stack>
-    </DisplayAdsProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <DisplayAdsProvider>
+        <Stack
+          screenOptions={{
+            title: "Timer App Yoga",
+            headerStyle: {
+              // backgroundColor: "#080B0c",
+              backgroundColor: colorTheme.headerLiteShade,
+            },
+            headerRight: () => <SettingsSvg />,
+          }}
+        >
+          {/* <Stack.Screen name="+html" options={{ headerShown: false }} /> */}
+          <Stack.Screen name="+not-found" />
+          <Stack.Screen name="settings" />
+        </Stack>
+      </DisplayAdsProvider>
+    </GestureHandlerRootView>
   );
 }

@@ -29,6 +29,18 @@ import {
 import { yogaColors, yogaTypography } from "@/assets/theme";
 import { useFocusEffect } from "expo-router";
 import { YOGA_FLOW_ENABLED } from "@/constants/constants";
+import { PaceListModal } from "./pace-list-modal";
+import { PaceFormModal } from "./pace-form-modal";
+import {
+  type TimerPace,
+  type TimerPaceInput,
+  addPace,
+  deletePace,
+  loadActivePaceId,
+  loadPaces,
+  saveActivePaceId,
+  updatePace,
+} from "@/assets/data/yoga-paces";
 
 const YOGA_TIMER_APP_DATA = "yoga_timer_app_data";
 const YOGA_TIMER_SETTINGS_DATA = "yoga_timer_settings_data";
@@ -130,6 +142,17 @@ export default function YogaView() {
   const [showTimerSettings, setShowTimerSettings] = useState<boolean>(false);
   const [currentTime, setCurrentTime] = useState(new Date());
 
+  // Pace state
+  const [paces, setPaces] = useState<TimerPace[]>([]);
+  const [activePaceId, setActivePaceId] = useState<string | null>(null);
+  const [showPaceList, setShowPaceList] = useState<boolean>(false);
+  const [paceFormVisible, setPaceFormVisible] = useState<boolean>(false);
+  const [paceFormMode, setPaceFormMode] = useState<"create" | "edit">("create");
+  const [paceFormInitial, setPaceFormInitial] = useState<TimerPaceInput | null>(
+    null,
+  );
+  const [editingPaceId, setEditingPaceId] = useState<string | null>(null);
+
   // Timer settings panel state
   const [transitionPauseMs, setTransitionPauseMs] = useState<number>(DEFAULT_TRANSITION_PAUSE_MS);
   const [transitionSound, setTransitionSound] = useState<TransitionSoundId>("swoosh");
@@ -187,6 +210,39 @@ export default function YogaView() {
     if (!settingsLoaded) return;
     storeData(YOGA_TIMER_SETTINGS_DATA, { transitionPauseMs, halfMarkPauseMs, halfMarkEnabled, transitionSound, halfMarkSound });
   }, [settingsLoaded, transitionPauseMs, halfMarkPauseMs, halfMarkEnabled, transitionSound, halfMarkSound]);
+
+  // Load paces + restore last-active pace on mount.
+  // Runs after settings load so the active pace's values cleanly override
+  // any persisted hamburger settings (pace wins).
+  useEffect(() => {
+    if (!settingsLoaded) return;
+    const loadPacesAndActive = async () => {
+      const [pacesList, activeId] = await Promise.all([
+        loadPaces(),
+        loadActivePaceId(),
+      ]);
+      setPaces(pacesList);
+      if (activeId) {
+        const active = pacesList.find((p) => p.id === activeId);
+        if (active) {
+          // Inline-apply so we don't depend on a const declared further down
+          setInitialTotalTime(active.initialTotalTime);
+          setTimeRemaining(active.initialTotalTime);
+          setTransitionPauseMs(active.transitionPauseMs);
+          setTransitionSound(active.transitionSound);
+          setHalfMarkPauseMs(active.halfMarkPauseMs);
+          setHalfMarkSound(active.halfMarkSound);
+          setHalfMarkEnabled(active.halfMarkEnabled);
+          setActivePaceId(active.id);
+        } else {
+          // Stale id (pace was deleted in another session) — clear it
+          saveActivePaceId(null);
+        }
+      }
+    };
+    loadPacesAndActive();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [settingsLoaded]);
 
   // Load saved flow on mount
   useEffect(() => {
@@ -525,9 +581,9 @@ export default function YogaView() {
       // Pause and show overlay
       cancelHalfwayPauseAndStop();
       setShowPauseOverlay(true);
-    } else if (YOGA_FLOW_ENABLED) {
-      // Open flow select
-      setShowFlowSelect(true);
+    } else {
+      // Open Pace list (replaces yoga-flow select while YOGA_FLOW_ENABLED is off)
+      setShowPaceList(true);
     }
   };
 
@@ -581,6 +637,120 @@ export default function YogaView() {
     if (YOGA_FLOW_ENABLED) {
       setShowFlowSelect(true);
     }
+  };
+
+  // ─── Pace handlers ──────────────────────────────────────────────────────────
+
+  // Apply pace values to current timer-settings state. Caller decides
+  // whether to also mark this as the active pace.
+  const applyPaceValuesToState = (
+    p: TimerPace | TimerPaceInput,
+  ) => {
+    setInitialTotalTime(p.initialTotalTime);
+    setTimeRemaining(p.initialTotalTime);
+    setTransitionPauseMs(p.transitionPauseMs);
+    setTransitionSound(p.transitionSound);
+    setHalfMarkPauseMs(p.halfMarkPauseMs);
+    setHalfMarkSound(p.halfMarkSound);
+    setHalfMarkEnabled(p.halfMarkEnabled);
+  };
+
+  // Snapshot of the current hamburger state — used to pre-fill the pace
+  // form regardless of whether it's opened from the list or the hamburger.
+  const currentSettingsAsPaceInput = (): TimerPaceInput => ({
+    name: "",
+    initialTotalTime,
+    transitionPauseMs,
+    transitionSound,
+    halfMarkPauseMs,
+    halfMarkSound,
+    halfMarkEnabled,
+  });
+
+  // Tap a pace in the list → load its values and remember it as active.
+  const handleApplyPace = (pace: TimerPace) => {
+    cancelHalfwayPauseAndStop();
+    applyPaceValuesToState(pace);
+    setActivePaceId(pace.id);
+    saveActivePaceId(pace.id);
+    setShowPaceList(false);
+  };
+
+  // "+ Create new Pace" in the list — opens form pre-filled with current
+  // hamburger state (matches "Save as Pace" from hamburger for consistency).
+  const handleOpenCreateFromList = () => {
+    setPaceFormMode("create");
+    setPaceFormInitial(currentSettingsAsPaceInput());
+    setEditingPaceId(null);
+    setShowPaceList(false);
+    setPaceFormVisible(true);
+  };
+
+  // Hamburger "Save as Pace" button — opens form pre-filled with current values.
+  const handleOpenCreateFromHamburger = () => {
+    setPaceFormMode("create");
+    setPaceFormInitial(currentSettingsAsPaceInput());
+    setEditingPaceId(null);
+    setPaceFormVisible(true);
+  };
+
+  // Swipe Edit on a pace row.
+  const handleOpenEditPace = (pace: TimerPace) => {
+    setPaceFormMode("edit");
+    setPaceFormInitial({
+      name: pace.name,
+      initialTotalTime: pace.initialTotalTime,
+      transitionPauseMs: pace.transitionPauseMs,
+      transitionSound: pace.transitionSound,
+      halfMarkPauseMs: pace.halfMarkPauseMs,
+      halfMarkSound: pace.halfMarkSound,
+      halfMarkEnabled: pace.halfMarkEnabled,
+    });
+    setEditingPaceId(pace.id);
+    setShowPaceList(false);
+    setPaceFormVisible(true);
+  };
+
+  // Swipe Delete on a pace row (after confirmation prompt in the list modal).
+  const handleDeletePace = async (pace: TimerPace) => {
+    await deletePace(pace.id);
+    setPaces((prev) => prev.filter((p) => p.id !== pace.id));
+    if (activePaceId === pace.id) {
+      setActivePaceId(null);
+      saveActivePaceId(null);
+      // Leave hamburger settings as-is — user can pick another pace or keep tweaking
+    }
+  };
+
+  // Form Save — routes to addPace or updatePace based on mode.
+  const handlePaceFormSave = async (values: TimerPaceInput) => {
+    if (paceFormMode === "create") {
+      const newPace = await addPace(values);
+      setPaces((prev) => [newPace, ...prev]);
+      // A freshly created pace becomes the active one — the user just
+      // chose & named these settings, presumably they want to use them now.
+      applyPaceValuesToState(newPace);
+      setActivePaceId(newPace.id);
+      saveActivePaceId(newPace.id);
+    } else if (paceFormMode === "edit" && editingPaceId) {
+      const updated = await updatePace(editingPaceId, values);
+      if (updated) {
+        setPaces((prev) =>
+          prev.map((p) => (p.id === updated.id ? updated : p)),
+        );
+        // If we just edited the active pace, re-apply its (possibly changed) values.
+        if (editingPaceId === activePaceId) {
+          applyPaceValuesToState(updated);
+        }
+      }
+    }
+    setPaceFormVisible(false);
+    setEditingPaceId(null);
+  };
+
+  const handlePaceFormCancel = () => {
+    setPaceFormVisible(false);
+    setEditingPaceId(null);
   };
 
   // Get current, previous, and next poses for display with asset fallback logic
@@ -767,11 +937,15 @@ export default function YogaView() {
         </TouchableOpacity>
       </View>
 
-      {/* Flow name */}
+      {/* Flow / Pace label — in manual mode shows the active pace name
+          (or "Pace" placeholder if none loaded). When yoga-flow is enabled
+          and a flow is selected, shows the flow name as before. */}
       <View style={styles.flowNameContainer}>
         <Text style={styles.flowName}>
           {isManualMode
-            ? "Manual Timer"
+            ? (activePaceId
+                ? paces.find((p) => p.id === activePaceId)?.name ?? "Pace"
+                : "Pace")
             : selectedFlow
               ? selectedFlow.name
               : "Select Flow"}
@@ -1034,6 +1208,29 @@ export default function YogaView() {
           onHalfMarkSoundChange={setHalfMarkSound}
           halfMarkEnabled={halfMarkEnabled}
           onHalfMarkEnabledChange={setHalfMarkEnabled}
+          onSavePace={handleOpenCreateFromHamburger}
+        />
+      )}
+
+      {/* Pace list modal — opens when user taps the center icon (manual mode, not running) */}
+      <PaceListModal
+        visible={showPaceList}
+        paces={paces}
+        onClose={() => setShowPaceList(false)}
+        onApply={handleApplyPace}
+        onCreate={handleOpenCreateFromList}
+        onEdit={handleOpenEditPace}
+        onDelete={handleDeletePace}
+      />
+
+      {/* Pace form modal — Create or Edit, used by list + hamburger entry points */}
+      {paceFormInitial && (
+        <PaceFormModal
+          visible={paceFormVisible}
+          mode={paceFormMode}
+          initialValues={paceFormInitial}
+          onSave={handlePaceFormSave}
+          onCancel={handlePaceFormCancel}
         />
       )}
     </View>
