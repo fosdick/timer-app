@@ -40,6 +40,12 @@ export interface PaceListModalProps {
   onCreate: () => void;
   onEdit: (pace: TimerPace) => void;
   onDelete: (pace: TimerPace) => void;
+  /**
+   * Reset timer settings to the "first install" defaults and exit any
+   * active pace. Renders a secondary "Restore defaults" action in the
+   * list footer when paces exist.
+   */
+  onRestoreDefaults: () => void;
 }
 
 // ─── Component ────────────────────────────────────────────────────────────────
@@ -52,6 +58,7 @@ export const PaceListModal = ({
   onCreate,
   onEdit,
   onDelete,
+  onRestoreDefaults,
 }: PaceListModalProps) => {
   // Track the currently-open Swipeable so opening a new one closes the previous
   const [openRowId, setOpenRowId] = useState<string | null>(null);
@@ -179,6 +186,15 @@ export const PaceListModal = ({
                 <Text style={styles.createRowText}>+ Create new Pace</Text>
               </TouchableOpacity>
             }
+            ListFooterComponent={
+              <TouchableOpacity
+                style={styles.restoreRow}
+                onPress={onRestoreDefaults}
+                activeOpacity={0.7}
+              >
+                <Text style={styles.restoreRowText}>Restore defaults</Text>
+              </TouchableOpacity>
+            }
             ItemSeparatorComponent={() => <View style={styles.rowDivider} />}
             // Allow rows to render off-screen so swipeables work smoothly
             initialNumToRender={20}
@@ -242,6 +258,20 @@ const styles = StyleSheet.create({
     color: yogaColors.timerCountdown,
     fontSize: 16,
     fontWeight: "600",
+  },
+
+  // Restore defaults (footer — secondary, subtler than Create)
+  restoreRow: {
+    paddingHorizontal: 20,
+    paddingVertical: 22,
+    alignItems: "center",
+    marginTop: 8,
+  },
+  restoreRowText: {
+    color: yogaColors.instructionalText,
+    fontSize: 14,
+    fontWeight: "500",
+    letterSpacing: 0.3,
   },
 
   // Pace row

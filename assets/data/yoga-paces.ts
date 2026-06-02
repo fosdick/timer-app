@@ -36,6 +36,24 @@ export interface TimerPace {
 
 export type TimerPaceInput = Omit<TimerPace, "id" | "createdAt">;
 
+/**
+ * The settings the app ships with — what a user sees on first install,
+ * and what "Restore defaults" reverts to. Kept here so the Pace list and
+ * the yoga view stay in agreement about what "default" means.
+ *
+ * NOTE: These values should match the defaults at the top of yoga-view.tsx
+ * (DEFAULT_INITIAL_TOTAL_TIME, DEFAULT_TRANSITION_PAUSE_MS, DEFAULT_HALF_MARK_PAUSE_MS)
+ * and the initial useState values for the sounds + toggle.
+ */
+export const DEFAULT_PACE_SETTINGS: Omit<TimerPaceInput, "name"> = {
+  initialTotalTime: 30,
+  transitionPauseMs: 5000,
+  transitionSound: "swoosh",
+  halfMarkPauseMs: 1000,
+  halfMarkSound: "sticks",
+  halfMarkEnabled: true,
+};
+
 // Simple time-based id, no UUID dep needed
 const generateId = (): string =>
   `pace_${Date.now()}_${Math.floor(Math.random() * 10000)}`;

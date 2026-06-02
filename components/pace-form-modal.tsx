@@ -179,9 +179,9 @@ export const PaceFormModal = ({
 
         <View style={styles.rowDivider} />
 
-        {/* Timer duration — tappable row */}
+        {/* Timer duration — tappable row, label left + value right */}
         <TouchableOpacity
-          style={styles.settingRow}
+          style={styles.timerRow}
           onPress={() => setShowTimerPicker(true)}
           activeOpacity={0.7}
         >
@@ -193,7 +193,8 @@ export const PaceFormModal = ({
 
         <View style={styles.rowDivider} />
 
-        {/* Main Transition */}
+        {/* Main Transition — fixed-width label keeps stepper aligned with Half Mark.
+            Trailing spacer matches the Half Mark switch column so ♪ aligns too. */}
         <View style={styles.settingRow}>
           <Text style={styles.fieldLabel}>Main Transition</Text>
           <View style={styles.settingControls}>
@@ -209,6 +210,7 @@ export const PaceFormModal = ({
             >
               <Text style={styles.soundPickerIcon}>♪</Text>
             </TouchableOpacity>
+            <View style={styles.toggleSpacer} />
           </View>
         </View>
 
@@ -339,7 +341,7 @@ const styles = StyleSheet.create({
   fieldLabel: {
     color: yogaColors.poseCurrentName,
     fontSize: 15,
-    width: 140,
+    width: 120, // matches hamburger panel — keeps stepper column aligned across rows
     marginRight: 8,
   },
   nameInput: {
@@ -352,8 +354,15 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
 
-  // Setting rows (Timer / Main Transition / Half Mark)
+  // Stepper rows (Main Transition / Half Mark) — label left, controls
+  // flow naturally after it so stepper columns align across rows.
   settingRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 14,
+  },
+  // Timer row — label left, value right (no stepper, so space-between is OK)
+  timerRow: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
@@ -363,6 +372,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
+  },
+  // Same rendered width as a Switch — keeps ♪ column aligned in the
+  // Main Transition row even though it has no toggle.
+  toggleSpacer: {
+    width: 51,
+    height: 31,
   },
   timerValue: {
     color: yogaColors.timerCountdown,

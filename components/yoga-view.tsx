@@ -34,6 +34,7 @@ import { PaceFormModal } from "./pace-form-modal";
 import {
   type TimerPace,
   type TimerPaceInput,
+  DEFAULT_PACE_SETTINGS,
   addPace,
   deletePace,
   loadActivePaceId,
@@ -753,6 +754,22 @@ export default function YogaView() {
     setEditingPaceId(null);
   };
 
+  // "Restore defaults" — resets the hamburger state to the values a user
+  // sees on first install and exits any active pace.
+  const handleRestoreDefaults = () => {
+    cancelHalfwayPauseAndStop();
+    setInitialTotalTime(DEFAULT_PACE_SETTINGS.initialTotalTime);
+    setTimeRemaining(DEFAULT_PACE_SETTINGS.initialTotalTime);
+    setTransitionPauseMs(DEFAULT_PACE_SETTINGS.transitionPauseMs);
+    setTransitionSound(DEFAULT_PACE_SETTINGS.transitionSound);
+    setHalfMarkPauseMs(DEFAULT_PACE_SETTINGS.halfMarkPauseMs);
+    setHalfMarkSound(DEFAULT_PACE_SETTINGS.halfMarkSound);
+    setHalfMarkEnabled(DEFAULT_PACE_SETTINGS.halfMarkEnabled);
+    setActivePaceId(null);
+    saveActivePaceId(null);
+    setShowPaceList(false);
+  };
+
   // Get current, previous, and next poses for display with asset fallback logic
   const getCurrentPose = (): YogaPose | null => {
     if (isManualMode || !selectedFlow) return null;
@@ -1221,6 +1238,7 @@ export default function YogaView() {
         onCreate={handleOpenCreateFromList}
         onEdit={handleOpenEditPace}
         onDelete={handleDeletePace}
+        onRestoreDefaults={handleRestoreDefaults}
       />
 
       {/* Pace form modal — Create or Edit, used by list + hamburger entry points */}
