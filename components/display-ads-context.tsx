@@ -2,6 +2,7 @@ import React, { createContext, useState } from "react";
 import { Constants } from "@/constants/constants";
 import Purchases, { CustomerInfo } from "react-native-purchases";
 import { getData } from "../assets/utils/persistent-storage";
+import { loadActivePromos } from "@/assets/data/promo-codes";
 
 type DisplayAdsContextType = {
   displayAds: boolean;
@@ -49,6 +50,12 @@ const DisplayAdsProvider: React.FC<{ children: React.ReactNode }> = ({
       // maybe off line
       const removeAdsData = await getData(Constants.REMOVE_ADS_DATA_KEY);
       if (removeAdsData?.removeAds) {
+        setDisplayAds(false);
+      }
+      // Also check for an active "remove-ads" promo — independent of purchase
+      // state, so a tester/beta user keeps ads off via their granted code.
+      const activePromos = await loadActivePromos();
+      if (activePromos.includes("remove-ads")) {
         setDisplayAds(false);
       }
     }

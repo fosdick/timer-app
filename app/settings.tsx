@@ -1,6 +1,7 @@
 import { StyleSheet, View } from "react-native";
 import { useContext, useEffect } from "react";
 import PaywallScreen from "@/components/paywall-screen";
+import PromoCodeInput from "@/components/promo-code-input";
 import RestorePurchasesButton from "@/components/restore-purchases-button";
 import { DisplayAdsContext } from "../components/display-ads-context";
 import { deactivateKeepAwake } from "expo-keep-awake";
@@ -18,6 +19,7 @@ export default function TabTwoScreen() {
   return (
     <View style={styles.viewBody}>
       <PaywallScreen></PaywallScreen>
+      <PromoCodeInput />
       <Support></Support>
       <View style={styles.container}>
         {displayAds && <RestorePurchasesButton />}
