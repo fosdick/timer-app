@@ -1,7 +1,7 @@
 import { LinearGradient } from "expo-linear-gradient";
 
 import { useEffect, useState } from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Switch, Text, TouchableOpacity, View } from "react-native";
 import { TimerPickerModal } from "react-native-timer-picker";
 import {
   TimerStyles,
@@ -14,6 +14,11 @@ import { playEndChime, playSnap, playStart } from "../assets/utils/sounds";
 import { Audio } from "expo-av";
 import { getData, storeData } from "../assets/utils/persistent-storage";
 import { PauseStepper } from "./timer-settings-panel";
+import {
+  VILOMA,
+  getCycleDuration,
+  getPhaseAtTime,
+} from "@/assets/data/pranayama-patterns";
 
 const PRANAYAMA_TIMER_APP_DATA: string = "pranayama_timer_app_data";
 
@@ -55,6 +60,11 @@ export default function Pranayama() {
   const [beatInterval, setBeatInterval] = useState(DEFAULT_BEAT_INTERVAL);
   const [beatCount, setBeatCount] = useState(DEFAULT_BEAT_COUNT);
 
+  // Viloma pattern toggle. When active, the chime cadence locks to Viloma's
+  // unit (2s) and a phase label overlays the screen. The audio grid still
+  // ticks uniformly — the pattern lives in the visual, not the chime cadence.
+  const [vilomaActive, setVilomaActive] = useState(false);
+
   // Seconds remaining until the next chime — counts down N → 1 → N → 1...
   // Stays at N when stopped. Resets at the moment of each chime.
   const secondsToNextChime = beatInterval - (beatCount % beatInterval);
@@ -64,6 +74,25 @@ export default function Pranayama() {
   // fires, then advances cell-by-cell, wrapping at VISUAL_GRID_CELLS.
   const currentCellIndex =
     Math.floor(beatCount / beatInterval) % VISUAL_GRID_CELLS;
+
+  // ─── Pattern (Viloma) ────────────────────────────────────────────────────
+  // Elapsed seconds since the timer started (initial − remaining). Reduced
+  // mod the cycle duration gives us where we are in the current Viloma cycle.
+  const elapsedSeconds = initialTotalTime - totalTime;
+  const vilomaCycleDuration = getCycleDuration(VILOMA);
+  const phaseAtTime = vilomaActive
+    ? getPhaseAtTime(VILOMA, elapsedSeconds % vilomaCycleDuration)
+    : null;
+
+  const toggleViloma = () => {
+    if (!vilomaActive) {
+      // Activating: lock chime cadence to Viloma's unit and reset beatCount
+      // so phase 0 (Inhale) begins cleanly on the next Start.
+      setBeatInterval(VILOMA.unitSeconds);
+      setBeatCount(0);
+    }
+    setVilomaActive(!vilomaActive);
+  };
 
   const resetTimer = async () => {
     setTotalTime(initialTotalTime);
@@ -183,11 +212,40 @@ export default function Pranayama() {
         </View>
       </View>
 
+      {/* Pattern phase label — only visible when Viloma is active. The chime
+          cadence does not change; this is the visual face of the pattern. */}
+      {phaseAtTime && (
+        <View style={styles.phaseContainer}>
+          <Text style={styles.phaseLabel}>
+            {phaseAtTime.phase.label.toUpperCase()}
+          </Text>
+          <Text style={styles.phaseRemaining}>
+            {phaseAtTime.remainingInPhase}s in phase
+          </Text>
+        </View>
+      )}
+
       {/* Spacer pushes the bottom group toward the Start button */}
       <View style={{ flex: 1 }} />
 
-      {/* Bottom group: per-beat countdown + interval stepper, near Start */}
+      {/* Bottom group: pattern toggle, per-beat countdown, interval stepper */}
       <View style={styles.bottomGroup}>
+        {/* Pattern toggle — small row, low visual weight. Future: replaces
+            with a proper pattern picker when the curated library lands. */}
+        <View style={styles.patternToggleRow}>
+          <Switch
+            value={vilomaActive}
+            onValueChange={toggleViloma}
+            trackColor={{
+              false: colorTheme.controlInactive,
+              true: colorTheme.controlActive,
+            }}
+            thumbColor="#FFFFFF"
+            ios_backgroundColor={colorTheme.controlInactive}
+          />
+          <Text style={styles.patternToggleLabel}>Viloma</Text>
+        </View>
+
         <Text style={PranayamaStyles.metronomeCount}>{secondsToNextChime}</Text>
         <Text style={[PranayamaStyles.metronomeLabel, styles.bottomLabel]}>
           Metronome Count (seconds)
@@ -204,6 +262,9 @@ export default function Pranayama() {
           maxMs={BEAT_INTERVAL_MAX_MS}
           stepMs={BEAT_INTERVAL_STEP_MS}
           formatValue={(ms) => `${Math.round(ms / 1000)}s`}
+          // Viloma's phase boundaries depend on the 2s unit. Lock the
+          // stepper while it's active so the practice stays aligned.
+          disabled={vilomaActive}
         />
       </View>
 
@@ -257,6 +318,26 @@ const styles = StyleSheet.create({
     transform: [{ scale: 1.25 }],
   },
 
+  // Pattern phase label (shown when Viloma is active)
+  phaseContainer: {
+    alignItems: "center",
+    marginTop: 24,
+  },
+  phaseLabel: {
+    fontSize: 36,
+    fontWeight: "300",
+    color: "#CDDC39",
+    letterSpacing: 2,
+    textAlign: "center",
+  },
+  phaseRemaining: {
+    fontSize: 14,
+    fontWeight: "400",
+    color: "#689F38",
+    marginTop: 6,
+    textAlign: "center",
+  },
+
   bottomGroup: {
     width: "80%",
     alignSelf: "center",
@@ -266,5 +347,19 @@ const styles = StyleSheet.create({
   // Tighten the gap between the label and the stepper below it.
   bottomLabel: {
     marginBottom: 12,
+  },
+
+  // Pattern toggle row
+  patternToggleRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    marginBottom: 16,
+  },
+  patternToggleLabel: {
+    color: "#689F38",
+    fontSize: 14,
+    fontWeight: "400",
+    letterSpacing: 0.5,
   },
 });
