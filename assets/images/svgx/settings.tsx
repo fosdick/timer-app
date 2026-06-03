@@ -1,16 +1,36 @@
 import * as React from "react";
+import { Pressable } from "react-native";
 import Svg, { Path, SvgProps } from "react-native-svg";
-import { Link } from "expo-router";
+import { useRouter } from "expo-router";
 
+/**
+ * Settings gear shown in the navigation header (top right).
+ *
+ * Previously wrapped in an expo-router <Link> with asymmetric paddingRight.
+ * That combination produced a faint pill/circle background around the icon
+ * on iOS and pushed the gear off-center. Switched to Pressable + router.push
+ * with symmetric padding so the icon is centered and the background is
+ * fully transparent.
+ */
 const SettingsSvg = (props: SvgProps) => {
+  const router = useRouter();
   return (
-    <Link href="/settings" style={{ paddingRight: 16 }}>
+    <Pressable
+      onPress={() => router.push("/settings")}
+      style={({ pressed }) => ({
+        paddingHorizontal: 12,
+        paddingVertical: 8,
+        opacity: pressed ? 0.6 : 1,
+      })}
+      hitSlop={4}
+      accessibilityRole="button"
+      accessibilityLabel="Settings"
+    >
       <Svg
-        width="24px"
-        height="24px"
+        width={24}
+        height={24}
         viewBox="0 0 24 24"
         fill="none"
-        xmlns="http://www.w3.org/2000/svg"
         {...props}
       >
         <Path
@@ -26,7 +46,7 @@ const SettingsSvg = (props: SvgProps) => {
           fill="#1C274C"
         />
       </Svg>
-    </Link>
+    </Pressable>
   );
 };
 
