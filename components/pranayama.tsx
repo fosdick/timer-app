@@ -1,7 +1,14 @@
 import { LinearGradient } from "expo-linear-gradient";
 
-import { useEffect, useState } from "react";
-import { StyleSheet, Switch, Text, TouchableOpacity, View } from "react-native";
+import { useEffect, useRef, useState } from "react";
+import {
+  Animated,
+  StyleSheet,
+  Switch,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { TimerPickerModal } from "react-native-timer-picker";
 import {
   TimerStyles,
@@ -31,11 +38,6 @@ const BEAT_INTERVAL_MIN_MS = 1000;
 const BEAT_INTERVAL_MAX_MS = 20000;
 const BEAT_INTERVAL_STEP_MS = 1000;
 
-// Visual grid — number of cells representing the audio beat row.
-// One cell per chime; advances on each chime and wraps. Foundation that
-// future Pattern overlays will color/label per phase.
-const VISUAL_GRID_CELLS = 8;
-
 export default function Pranayama() {
   const getRemainingTime = () => {
     const hours = Math.floor(totalTime / 3600);
@@ -60,16 +62,11 @@ export default function Pranayama() {
   const [beatInterval, setBeatInterval] = useState(DEFAULT_BEAT_INTERVAL);
   const [beatCount, setBeatCount] = useState(DEFAULT_BEAT_COUNT);
 
-  // Viloma pattern toggle. When active, the chime cadence locks to Viloma's
-  // unit (2s) and a phase label overlays the screen. The audio grid still
-  // ticks uniformly — the pattern lives in the visual, not the chime cadence.
+  // Viloma toggle. When OFF: original metronome behavior, no visuals.
+  // When ON: chime cadence locks to Viloma's unit; during long-hold phases
+  // (Antara/Bahya Kumbhaka) the chime stops, a Sanskrit phase label
+  // appears, an ocean-blue progress bar fills, and an ocean sound bed plays.
   const [vilomaActive, setVilomaActive] = useState(false);
-
-  // Which cell in the visual grid is currently "live" — the count of completed
-  // chimes since start, modulo the grid size. Stays at 0 until the first chime
-  // fires, then advances cell-by-cell, wrapping at VISUAL_GRID_CELLS.
-  const currentCellIndex =
-    Math.floor(beatCount / beatInterval) % VISUAL_GRID_CELLS;
 
   // ─── Pattern (Viloma) ────────────────────────────────────────────────────
   // Elapsed seconds since the timer started (initial − remaining). Reduced
@@ -79,6 +76,10 @@ export default function Pranayama() {
   const phaseAtTime = vilomaActive
     ? getPhaseAtTime(VILOMA, elapsedSeconds % vilomaCycleDuration)
     : null;
+  // Are we currently inside a long-hold phase (Antara/Bahya Kumbhaka)?
+  // Drives the ocean sound, progress bar, and chime suppression.
+  const isInLongHold =
+    vilomaActive && (phaseAtTime?.phase.isLongHold ?? false);
 
   const toggleViloma = () => {
     if (!vilomaActive) {
@@ -110,6 +111,81 @@ export default function Pranayama() {
       setAlarmString(formatTime(getTimeParts(savedData.totalTime)));
     }
   });
+
+  // ─── Ocean sound during long holds ───────────────────────────────────────
+  // The chime ↔ ocean swap is mutually exclusive. When isInLongHold becomes
+  // true we start the looped ocean wave; when it goes false we stop it.
+  // Cancellation flag handles the case where the user toggles off Viloma
+  // (or otherwise leaves the hold) before createAsync resolves.
+  const oceanSoundRef = useRef<Audio.Sound | null>(null);
+  useEffect(() => {
+    if (!isInLongHold) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const { sound } = await Audio.Sound.createAsync(
+          require("../assets/sounds/442944__qubodup__ocean-wave.wav"),
+          { isLooping: true },
+        );
+        if (cancelled) {
+          sound.unloadAsync().catch(() => {});
+          return;
+        }
+        oceanSoundRef.current = sound;
+        await sound.playAsync();
+      } catch {
+        // sound load failed — silently degrade; the visual still works
+      }
+    })();
+    return () => {
+      cancelled = true;
+      if (oceanSoundRef.current) {
+        const s = oceanSoundRef.current;
+        oceanSoundRef.current = null;
+        s.stopAsync().catch(() => {});
+        s.unloadAsync().catch(() => {});
+      }
+    };
+  }, [isInLongHold]);
+  // Belt-and-suspenders unmount cleanup so an in-flight ocean sound never
+  // outlives the screen.
+  useEffect(() => {
+    return () => {
+      if (oceanSoundRef.current) {
+        const s = oceanSoundRef.current;
+        oceanSoundRef.current = null;
+        s.stopAsync().catch(() => {});
+        s.unloadAsync().catch(() => {});
+      }
+    };
+  }, []);
+
+  // ─── Progress-bar animation ──────────────────────────────────────────────
+  // Smoothly tween the bar each tick toward the current within-phase fraction.
+  // Because phaseAtTime is only recomputed when the timer ticks, a paused
+  // practice naturally freezes the bar in place. When the long hold ends we
+  // tween back to 0; when Viloma is toggled off mid-hold we also tween to 0.
+  const progressAnim = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    let target = 0;
+    if (isInLongHold && phaseAtTime) {
+      const elapsedInPhase =
+        phaseAtTime.phase.durationSeconds - phaseAtTime.remainingInPhase;
+      target = elapsedInPhase / phaseAtTime.phase.durationSeconds;
+    }
+    Animated.timing(progressAnim, {
+      toValue: target,
+      duration: 1000,
+      useNativeDriver: false, // animating width requires JS driver
+    }).start();
+  }, [
+    isInLongHold,
+    phaseAtTime?.index,
+    phaseAtTime?.remainingInPhase,
+    progressAnim,
+  ]);
+
+  // ─── Timer tick ──────────────────────────────────────────────────────────
   useEffect(() => {
     const intervalId = setTimeout(() => {
       if (!isStop && totalTime >= 0) {
@@ -117,13 +193,19 @@ export default function Pranayama() {
         const nextTotalTime = totalTime - 1;
         setTotalTime(nextTotalTime);
         setBeatCount(nextBeatCount);
-        // Snap when crossing a beat-interval boundary. Using the *next* beat
-        // count aligns the audible chime with the on-screen countdown — when
-        // the display shows the new beatInterval value (the just-reset "3"),
-        // the user simultaneously hears the snap. No initial-tick guard is
-        // needed: at beatInterval=3 the first qualifying tick is at t=3, not t=0.
+        // Snap on each beat boundary — EXCEPT when the next tick lands in a
+        // long-hold phase (the ocean takes over there). Computed against
+        // post-tick state so the boundary tick aligns with phase transitions.
         if (nextBeatCount % beatInterval === 0) {
-          playSnap();
+          const enteringLongHold =
+            vilomaActive &&
+            (getPhaseAtTime(
+              VILOMA,
+              (initialTotalTime - nextTotalTime) % vilomaCycleDuration,
+            ).phase.isLongHold ?? false);
+          if (!enteringLongHold) {
+            playSnap();
+          }
         }
         setAlarmString(formatTime(getTimeParts(nextTotalTime)));
         if (nextTotalTime === 0) {
@@ -192,42 +274,42 @@ export default function Pranayama() {
         />
       </View>
 
-      {/* Visual grid — row of beat cells, current one highlighted.
-          Foundation for future Pattern overlays (phase labels/colors). */}
-      <View style={styles.visualGridContainer}>
-        <View style={styles.visualGridRow}>
-          {Array.from({ length: VISUAL_GRID_CELLS }).map((_, idx) => (
-            <View
-              key={idx}
+      {/* Long-hold treatment — visible only when Viloma is active AND we're
+          inside an Antara/Bahya Kumbhaka phase. Decorative Sanskrit label
+          above; ocean-themed progress bar below. */}
+      {isInLongHold && phaseAtTime && (
+        <View style={styles.longHoldContainer}>
+          <Text style={styles.sanskritLabel}>{phaseAtTime.phase.label}</Text>
+          <View style={styles.progressBarTrack}>
+            <Animated.View
               style={[
-                styles.gridCell,
-                idx === currentCellIndex && styles.gridCellActive,
+                styles.progressBarFillContainer,
+                {
+                  width: progressAnim.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: ["0%", "100%"],
+                  }),
+                },
               ]}
-            />
-          ))}
-        </View>
-      </View>
-
-      {/* Pattern phase label — only visible when Viloma is active. The chime
-          cadence does not change; this is the visual face of the pattern. */}
-      {phaseAtTime && (
-        <View style={styles.phaseContainer}>
-          <Text style={styles.phaseLabel}>
-            {phaseAtTime.phase.label.toUpperCase()}
-          </Text>
-          <Text style={styles.phaseRemaining}>
-            {phaseAtTime.remainingInPhase}s in phase
-          </Text>
+            >
+              <LinearGradient
+                colors={["#80DEEA", "#0277BD"]}
+                start={{ x: 0, y: 0.5 }}
+                end={{ x: 1, y: 0.5 }}
+                style={styles.progressBarGradient}
+              />
+            </Animated.View>
+          </View>
         </View>
       )}
 
       {/* Spacer pushes the bottom group toward the Start button */}
       <View style={{ flex: 1 }} />
 
-      {/* Bottom group: pattern toggle, per-beat countdown, interval stepper */}
+      {/* Bottom group: static interval number, label, toggle, stepper */}
       <View style={styles.bottomGroup}>
-        {/* Pattern toggle — small row, low visual weight. Future: replaces
-            with a proper pattern picker when the curated library lands. */}
+        {/* Pattern toggle — low visual weight. Future: replaced by a proper
+            pattern picker when the curated library lands. */}
         <View style={styles.patternToggleRow}>
           <Switch
             value={vilomaActive}
@@ -241,6 +323,14 @@ export default function Pranayama() {
           />
           <Text style={styles.patternToggleLabel}>Viloma</Text>
         </View>
+
+        {/* Static interval display — shows the current beatInterval value.
+            Does NOT count down; it's a label for the chime cadence, not a
+            per-second visual the user has to track. */}
+        <Text style={PranayamaStyles.metronomeCount}>{beatInterval}</Text>
+        <Text style={[PranayamaStyles.metronomeLabel, styles.intervalLabel]}>
+          Metronome Count (seconds)
+        </Text>
 
         <PauseStepper
           valueMs={beatInterval * 1000}
@@ -283,58 +373,51 @@ export default function Pranayama() {
 }
 
 const styles = StyleSheet.create({
-  visualGridContainer: {
+  // ─── Long-hold treatment (Sanskrit label + ocean progress bar) ───────────
+  longHoldContainer: {
     width: "80%",
     alignSelf: "center",
+    alignItems: "center",
     marginTop: 36,
-    alignItems: "center",
   },
-  visualGridRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 14,
-  },
-  gridCell: {
-    width: 14,
-    height: 14,
-    borderRadius: 7,
-    borderWidth: 1.5,
-    borderColor: colorTheme.controlInactive,
-    backgroundColor: "transparent",
-  },
-  gridCellActive: {
-    backgroundColor: colorTheme.controlActive,
-    borderColor: colorTheme.controlActive,
-    // Subtle scale-up on the active cell so it reads as the "live" one.
-    transform: [{ scale: 1.25 }],
-  },
-
-  // Pattern phase label (shown when Viloma is active)
-  phaseContainer: {
-    alignItems: "center",
-    marginTop: 24,
-  },
-  phaseLabel: {
-    fontSize: 36,
+  sanskritLabel: {
+    // Decorative — italic serif, lighter weight, generous spacing. Reads more
+    // as a name to honor than as a label to read at a glance.
+    fontFamily: "Georgia",
+    fontStyle: "italic",
     fontWeight: "300",
-    color: "#CDDC39",
+    fontSize: 24,
     letterSpacing: 2,
+    color: "#80DEEA",
     textAlign: "center",
+    marginBottom: 18,
   },
-  phaseRemaining: {
-    fontSize: 14,
-    fontWeight: "400",
-    color: "#689F38",
-    marginTop: 6,
-    textAlign: "center",
+  progressBarTrack: {
+    width: "100%",
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: "rgba(128, 222, 234, 0.12)",
+    overflow: "hidden",
+  },
+  progressBarFillContainer: {
+    height: "100%",
+    borderRadius: 4,
+    overflow: "hidden",
+  },
+  progressBarGradient: {
+    flex: 1,
+    height: "100%",
   },
 
+  // ─── Bottom group ────────────────────────────────────────────────────────
   bottomGroup: {
     width: "80%",
     alignSelf: "center",
     alignItems: "center",
     marginBottom: 16,
+  },
+  intervalLabel: {
+    marginBottom: 12,
   },
 
   // Pattern toggle row

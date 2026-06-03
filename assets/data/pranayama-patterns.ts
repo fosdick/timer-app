@@ -17,6 +17,18 @@
 export interface PranayamaPhase {
   label: string;
   durationSeconds: number;
+  /**
+   * Marks a "long hold" (Sanskrit: kumbhaka). During these phases the app
+   *   - hides the normal beat-chime audio
+   *   - plays an ambient ocean sound bed instead
+   *   - shows a left-to-right progress bar themed to match the ocean
+   *   - renders the phase label decoratively (italic serif), not utilitarian
+   *
+   * Short phases (Inhale, Hold, Exhale) keep the uniform chime grid and
+   * show no visual overlay — the user counts in their head, the chime is
+   * the cue.
+   */
+  isLongHold?: boolean;
 }
 
 export interface PranayamaPattern {
@@ -54,8 +66,8 @@ export const VILOMA: PranayamaPattern = {
     { label: "Hold",   durationSeconds: 2 },
     { label: "Inhale", durationSeconds: 2 },
     { label: "Hold",   durationSeconds: 2 },
-    // Top hold after last inhale (full lungs)
-    { label: "Top Hold", durationSeconds: 6 },
+    // Antara Kumbhaka — retention after the last inhale (full lungs).
+    { label: "Antara Kumbhaka", durationSeconds: 6, isLongHold: true },
     // Exhale section: 4 × (exhale 2s, hold 2s)
     { label: "Exhale", durationSeconds: 2 },
     { label: "Hold",   durationSeconds: 2 },
@@ -65,8 +77,8 @@ export const VILOMA: PranayamaPattern = {
     { label: "Hold",   durationSeconds: 2 },
     { label: "Exhale", durationSeconds: 2 },
     { label: "Hold",   durationSeconds: 2 },
-    // Bottom hold after last exhale (empty lungs)
-    { label: "Bottom Hold", durationSeconds: 4 },
+    // Bahya Kumbhaka — retention after the last exhale (empty lungs).
+    { label: "Bahya Kumbhaka", durationSeconds: 4, isLongHold: true },
   ],
 };
 
