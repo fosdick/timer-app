@@ -5,11 +5,15 @@ import { getData } from "../assets/utils/persistent-storage";
 
 type DisplayAdsContextType = {
   displayAds: boolean;
-  setDisplayAds?: (value: boolean) => void;
+  setDisplayAds: (value: boolean) => void;
   customerInfoData?: CustomerInfo;
 };
+// No-op default so consumers can always call setDisplayAds without an undefined
+// check. The provider always supplies a real setter, so this default only ever
+// runs if someone consumes the context outside the provider tree.
 const DisplayAdsContext = createContext<DisplayAdsContextType>({
   displayAds: true,
+  setDisplayAds: () => {},
 });
 
 const DisplayAdsProvider: React.FC<{ children: React.ReactNode }> = ({

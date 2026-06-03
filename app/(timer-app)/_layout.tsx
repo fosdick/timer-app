@@ -14,13 +14,14 @@ export default function TabLayout() {
     <View style={styles.tabsWithAds}>
       {/* <BannerAdsView></BannerAdsView> */}
       <Tabs
-        sceneContainerStyle={{
-          backgroundColor: colorTheme.backgroundColor,
-        }}
         screenOptions={{
           tabBarActiveTintColor: colorTheme.tabBarActiveTintColor,
           // tabBarInactiveTintColor: colorTheme.tabBarInActiveTintColor,
           headerShown: false,
+          // sceneStyle replaces the old top-level sceneContainerStyle prop
+          sceneStyle: {
+            backgroundColor: colorTheme.backgroundColor,
+          },
           tabBarStyle: {
             backgroundColor: colorTheme.backgroundColor,
             borderBlockColor: colorTheme.borderColor,

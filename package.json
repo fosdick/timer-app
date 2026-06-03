@@ -10,6 +10,9 @@
     "web": "expo start --web",
     "test": "jest --watchAll",
     "lint": "expo lint",
+    "typecheck": "tsc --noEmit",
+    "install:hooks": "cp scripts/git-hooks/pre-push .git/hooks/pre-push && chmod +x .git/hooks/pre-push",
+    "prepare": "npm run install:hooks",
     "release-ios": "git checkout build-27x && eas build --platform ios && eas submit --platform ios"
   },
   "jest": {

@@ -7,7 +7,7 @@ interface ConstantsType {
   SUPPORT_EMAIL: string;
   REMOVE_ADS_DATA_KEY: string;
   CONTACT_EMAIL: string;
-  REMOVE_ADS_EVENT?: string;
+  REMOVE_ADS_EVENT: string;
 }
 
 export const Constants: ConstantsType = {
@@ -19,6 +19,7 @@ export const Constants: ConstantsType = {
   SUPPORT_EMAIL: "app.support@fastmail.fm",
   REMOVE_ADS_DATA_KEY: "remove-ads-data-key",
   CONTACT_EMAIL: "timerapp.yoga@fastmail.fm",
+  REMOVE_ADS_EVENT: "remove-ads-event",
 };
 
 export const YOGA_FLOW_ENABLED = false;

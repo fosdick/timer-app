@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+#
+# Pre-push hook: block pushes that introduce TypeScript errors.
+#
+# Installed by `npm run install:hooks` (or `npm install`, which runs the
+# prepare lifecycle script). Source of truth lives at scripts/git-hooks/pre-push.
+
+set -e
+
+# Skip if user explicitly forces the push past hooks (--no-verify).
+# Git already handles --no-verify, but make the intent obvious.
+
+cd "$(git rev-parse --show-toplevel)"
+
+echo "▶ Running tsc --noEmit before push..."
+if ! npx --no-install tsc --noEmit; then
+  echo ""
+  echo "✖ TypeScript errors found. Push aborted."
+  echo "  Fix the errors above (or push with --no-verify if you must)."
+  exit 1
+fi
+echo "✔ Type check passed."

@@ -1,3 +1,4 @@
+import type { TextStyle } from "react-native";
 import { yogaColors } from "./colors";
 
 // Font Weights
@@ -8,8 +9,9 @@ export const fontWeights = {
   bold: "700",
 } as const;
 
-// Typography Scales
-export const yogaTypography = {
+// Typography Scales — typed as TextStyle so consumers spreading these
+// into StyleSheet.create get TextStyle-compatible values back.
+export const yogaTypography: Record<string, TextStyle> = {
   // Flow Name (De-emphasized)
   flowName: {
     fontSize: 18,

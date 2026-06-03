@@ -4,9 +4,7 @@ import Svg, { Path, SvgProps } from "react-native-svg";
 const YogaSvg = (props: SvgProps) => {
   return (
     <Svg
-      xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 32 32"
-      xmlSpace="preserve"
       {...props}
     >
       <Path

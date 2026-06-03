@@ -1,5 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Text, TouchableOpacity, View, Modal, StyleSheet } from "react-native";
+import {
+  Modal,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  type TextStyle,
+  type ViewStyle,
+} from "react-native";
 import { TimerStyles, colorTheme, screenStyles } from "@/assets/styles/timer-app";
 import {
   formatMinutesSeconds,
@@ -1255,11 +1263,64 @@ export default function YogaView() {
   );
 }
 
-const styles = StyleSheet.create({
+// Explicit typing so each key resolves to a single, narrow style type.
+// Without this, StyleSheet.create infers the broad ViewStyle | TextStyle | ImageStyle
+// union for every key, which then fails to assign to <View style={...}> etc.
+interface YogaViewStyles {
+  // Layout
+  contentArea: ViewStyle;
+  hamburgerContainer: ViewStyle;
+  flowContentArea: ViewStyle;
+  bottomSection: ViewStyle;
+
+  // Timer
+  timerLabel: TextStyle;
+  timerCountdown: TextStyle;
+  currentTimeLabel: TextStyle;
+  currentTime: TextStyle;
+  currentTimePeriod: TextStyle;
+
+  // Flow / Pace label
+  flowNameContainer: ViewStyle;
+  flowName: TextStyle;
+
+  // Superset info
+  supersetInfoContainer: ViewStyle;
+  supersetLabel: TextStyle;
+  supersetTimer: TextStyle;
+  supersetPlaceholder: ViewStyle;
+
+  // Progress text
+  progressTextContainer: ViewStyle;
+  progressText: TextStyle;
+  progressTextLabel: TextStyle;
+  progressTextPlaceholder: ViewStyle;
+
+  // Pose container + icons
+  poseContainer: ViewStyle;
+  sideIconContainer: ViewStyle;
+  sideIcon: ViewStyle;
+  centerIconContainer: ViewStyle;
+
+  // Pose info
+  poseInfoContainer: ViewStyle;
+  poseInfoPlaceholder: ViewStyle;
+  poseName: TextStyle;
+  poseDescription: TextStyle;
+
+  // Modals / pause overlay
+  modalContainer: ViewStyle;
+  pauseOverlay: ViewStyle;
+  pauseMenu: ViewStyle;
+  pauseButton: ViewStyle;
+  pauseButtonText: TextStyle;
+}
+
+const styles = StyleSheet.create<YogaViewStyles>({
   // Layout
   contentArea: {
     flex: 1,
-    alignItems: "center" as const,
+    alignItems: "center",
     width: "100%",
   },
   // Hamburger button — absolute top-left, above all content
@@ -1306,21 +1367,21 @@ const styles = StyleSheet.create({
   supersetInfoContainer: {
     marginTop: 8,
     paddingHorizontal: 20,
-    alignItems: "center" as const,
+    alignItems: "center",
     minHeight: 40, // Reserve space to prevent layout shift
   },
   supersetLabel: {
     fontSize: 14,
-    fontWeight: "400" as const,
+    fontWeight: "400",
     color: yogaColors.timerLabel,
-    textAlign: "center" as const,
+    textAlign: "center",
     marginBottom: 4,
   },
   supersetTimer: {
     fontSize: 18,
-    fontWeight: "300" as const,
+    fontWeight: "300",
     color: yogaColors.timerCountdown,
-    textAlign: "center" as const,
+    textAlign: "center",
   },
   supersetPlaceholder: {
     height: 40, // Match minHeight to maintain consistent spacing
