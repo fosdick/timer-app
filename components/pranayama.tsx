@@ -65,10 +65,6 @@ export default function Pranayama() {
   // ticks uniformly — the pattern lives in the visual, not the chime cadence.
   const [vilomaActive, setVilomaActive] = useState(false);
 
-  // Seconds remaining until the next chime — counts down N → 1 → N → 1...
-  // Stays at N when stopped. Resets at the moment of each chime.
-  const secondsToNextChime = beatInterval - (beatCount % beatInterval);
-
   // Which cell in the visual grid is currently "live" — the count of completed
   // chimes since start, modulo the grid size. Stays at 0 until the first chime
   // fires, then advances cell-by-cell, wrapping at VISUAL_GRID_CELLS.
@@ -246,10 +242,6 @@ export default function Pranayama() {
           <Text style={styles.patternToggleLabel}>Viloma</Text>
         </View>
 
-        <Text style={PranayamaStyles.metronomeCount}>{secondsToNextChime}</Text>
-        <Text style={[PranayamaStyles.metronomeLabel, styles.bottomLabel]}>
-          Metronome Count (seconds)
-        </Text>
         <PauseStepper
           valueMs={beatInterval * 1000}
           onChange={(ms) => {
@@ -343,10 +335,6 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     alignItems: "center",
     marginBottom: 16,
-  },
-  // Tighten the gap between the label and the stepper below it.
-  bottomLabel: {
-    marginBottom: 12,
   },
 
   // Pattern toggle row
