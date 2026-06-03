@@ -159,6 +159,12 @@ interface PauseStepperProps {
    * Pranayama passes a 1-second-resolution integer formatter (e.g. "3s").
    */
   formatValue?: (ms: number) => string;
+  /**
+   * Optional disabled state — both buttons go inactive and the value renders
+   * dimmed. Pranayama uses this when a pattern locks the chime cadence to its
+   * unit (e.g. Viloma forces 2s).
+   */
+  disabled?: boolean;
 }
 
 export const PauseStepper = ({
@@ -168,9 +174,10 @@ export const PauseStepper = ({
   maxMs = PAUSE_MAX_MS,
   stepMs = PAUSE_STEP_MS,
   formatValue = (ms) => `${(ms / 1000).toFixed(1)}s`,
+  disabled = false,
 }: PauseStepperProps) => {
-  const canDecrement = valueMs > minMs;
-  const canIncrement = valueMs < maxMs;
+  const canDecrement = !disabled && valueMs > minMs;
+  const canIncrement = !disabled && valueMs < maxMs;
 
   return (
     <View style={styles.stepper}>
@@ -186,7 +193,9 @@ export const PauseStepper = ({
       </TouchableOpacity>
 
       {/* Fixed width keeps the + button in the same column regardless of digit count */}
-      <Text style={styles.stepperValue}>{formatValue(valueMs)}</Text>
+      <Text style={[styles.stepperValue, disabled && styles.stepperValueDisabled]}>
+        {formatValue(valueMs)}
+      </Text>
 
       <TouchableOpacity
         style={[styles.stepperButton, !canIncrement && styles.stepperButtonDisabled]}
@@ -567,6 +576,9 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     width: 46, // fixed — keeps + column steady for values 0.0s – 30.0s
     textAlign: "center",
+  },
+  stepperValueDisabled: {
+    color: "#666",
   },
 
   // ── Sound picker button (♪) ───────────────────────────────────────────────
