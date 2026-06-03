@@ -50,7 +50,7 @@ export default function TabLayout() {
         <Tabs.Screen
           name="hitt"
           options={{
-            title: "HITT",
+            title: "HIIT",
             tabBarIcon: ({ color, focused }) => <HittSvg color={color} />,
           }}
         />

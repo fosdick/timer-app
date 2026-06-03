@@ -49,6 +49,9 @@ const PromoCodeInput = () => {
   const handleApply = async () => {
     setFeedback(null);
     const promo = findPromoByCode(input);
+    // Clear the input on every Apply press, whatever the outcome — the
+    // feedback line below reports success/error, so the field shouldn't linger.
+    setInput("");
     if (!promo) {
       setFeedback({ kind: "error", text: "Code not recognized." });
       return;
@@ -68,7 +71,6 @@ const PromoCodeInput = () => {
         setDisplayAds(false);
       }
       setActivePromos((prev) => [...prev, promo.id]);
-      setInput("");
       setFeedback({ kind: "success", text: `${promo.name} activated.` });
     } finally {
       setBusy(false);
@@ -263,7 +265,7 @@ const styles = StyleSheet.create({
     marginRight: 12,
   },
   activeName: {
-    color: "#fff",
+    color: "#ccc",
     fontSize: 16,
     fontWeight: "500",
   },
