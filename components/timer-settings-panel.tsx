@@ -147,17 +147,36 @@ export interface TimerSettingsPanelProps {
 interface PauseStepperProps {
   valueMs: number;
   onChange: (ms: number) => void;
+  /** Optional override for the min value (ms). Defaults to PAUSE_MIN_MS (0). */
+  minMs?: number;
+  /** Optional override for the max value (ms). Defaults to PAUSE_MAX_MS (30000). */
+  maxMs?: number;
+  /** Optional override for the step size (ms). Defaults to PAUSE_STEP_MS (500). */
+  stepMs?: number;
+  /**
+   * Optional override for how the value is formatted in the middle column.
+   * Default renders `(valueMs / 1000).toFixed(1) + 's'` (e.g. "5.0s").
+   * Pranayama passes a 1-second-resolution integer formatter (e.g. "3s").
+   */
+  formatValue?: (ms: number) => string;
 }
 
-export const PauseStepper = ({ valueMs, onChange }: PauseStepperProps) => {
-  const canDecrement = valueMs > PAUSE_MIN_MS;
-  const canIncrement = valueMs < PAUSE_MAX_MS;
+export const PauseStepper = ({
+  valueMs,
+  onChange,
+  minMs = PAUSE_MIN_MS,
+  maxMs = PAUSE_MAX_MS,
+  stepMs = PAUSE_STEP_MS,
+  formatValue = (ms) => `${(ms / 1000).toFixed(1)}s`,
+}: PauseStepperProps) => {
+  const canDecrement = valueMs > minMs;
+  const canIncrement = valueMs < maxMs;
 
   return (
     <View style={styles.stepper}>
       <TouchableOpacity
         style={[styles.stepperButton, !canDecrement && styles.stepperButtonDisabled]}
-        onPress={() => canDecrement && onChange(valueMs - PAUSE_STEP_MS)}
+        onPress={() => canDecrement && onChange(valueMs - stepMs)}
         activeOpacity={canDecrement ? 0.6 : 1}
         hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
       >
@@ -167,11 +186,11 @@ export const PauseStepper = ({ valueMs, onChange }: PauseStepperProps) => {
       </TouchableOpacity>
 
       {/* Fixed width keeps the + button in the same column regardless of digit count */}
-      <Text style={styles.stepperValue}>{(valueMs / 1000).toFixed(1)}s</Text>
+      <Text style={styles.stepperValue}>{formatValue(valueMs)}</Text>
 
       <TouchableOpacity
         style={[styles.stepperButton, !canIncrement && styles.stepperButtonDisabled]}
-        onPress={() => canIncrement && onChange(valueMs + PAUSE_STEP_MS)}
+        onPress={() => canIncrement && onChange(valueMs + stepMs)}
         activeOpacity={canIncrement ? 0.6 : 1}
         hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
       >
