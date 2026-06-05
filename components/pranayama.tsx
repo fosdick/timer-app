@@ -26,6 +26,11 @@ import {
   getCycleDuration,
   getPhaseAtTime,
 } from "@/assets/data/pranayama-patterns";
+import {
+  HOLD_AMBIENCES,
+  DEFAULT_HOLD_AMBIENCE,
+  getAmbience,
+} from "@/assets/data/hold-ambiences";
 
 const PRANAYAMA_TIMER_APP_DATA: string = "pranayama_timer_app_data";
 
@@ -68,6 +73,9 @@ export default function Pranayama() {
   // appears, an ocean-blue progress bar fills, and an ocean sound bed plays.
   const [vilomaActive, setVilomaActive] = useState(false);
 
+  // Which looping sound bed plays during long holds (Antara/Bahya Kumbhaka).
+  const [holdAmbience, setHoldAmbience] = useState(DEFAULT_HOLD_AMBIENCE);
+
   // ─── Pattern (Viloma) ────────────────────────────────────────────────────
   // Elapsed seconds since the timer started (initial − remaining). Reduced
   // mod the cycle duration gives us where we are in the current Viloma cycle.
@@ -96,10 +104,15 @@ export default function Pranayama() {
     setAlarmString(formatTime(getTimeParts(initialTotalTime)));
     setBeatCount(0);
   };
-  const saveStoredData = (totalTimeVal?: number) => {
+  const saveStoredData = (overrides?: {
+    totalTime?: number;
+    beatInterval?: number;
+    holdAmbience?: string;
+  }) => {
     storeData(PRANAYAMA_TIMER_APP_DATA, {
-      totalTime: totalTimeVal || initialTotalTime,
-      beatInterval,
+      totalTime: overrides?.totalTime ?? initialTotalTime,
+      beatInterval: overrides?.beatInterval ?? beatInterval,
+      holdAmbience: overrides?.holdAmbience ?? holdAmbience,
     });
   };
   useState(async () => {
@@ -107,6 +120,7 @@ export default function Pranayama() {
     setBeatInterval(savedData?.beatInterval || DEFAULT_BEAT_INTERVAL);
     setTotalTime(savedData?.totalTime || DEFAULT_TIMER_LENGTH);
     setInitialTotalTime(savedData?.totalTime || DEFAULT_TIMER_LENGTH);
+    setHoldAmbience(savedData?.holdAmbience || DEFAULT_HOLD_AMBIENCE);
     if (savedData?.totalTime) {
       setAlarmString(formatTime(getTimeParts(savedData.totalTime)));
     }
@@ -119,14 +133,14 @@ export default function Pranayama() {
   // (or otherwise leaves the hold) before createAsync resolves.
   const oceanSoundRef = useRef<Audio.Sound | null>(null);
   useEffect(() => {
-    if (!isInLongHold) return;
+    const asset = getAmbience(holdAmbience).asset;
+    if (!isInLongHold || asset == null) return; // "None" => silent hold
     let cancelled = false;
     (async () => {
       try {
-        const { sound } = await Audio.Sound.createAsync(
-          require("../assets/sounds/442944__qubodup__ocean-wave.wav"),
-          { isLooping: true },
-        );
+        const { sound } = await Audio.Sound.createAsync(asset, {
+          isLooping: true,
+        });
         if (cancelled) {
           sound.unloadAsync().catch(() => {});
           return;
@@ -146,7 +160,7 @@ export default function Pranayama() {
         s.unloadAsync().catch(() => {});
       }
     };
-  }, [isInLongHold]);
+  }, [isInLongHold, holdAmbience]);
   // Belt-and-suspenders unmount cleanup so an in-flight ocean sound never
   // outlives the screen.
   useEffect(() => {
@@ -254,11 +268,12 @@ export default function Pranayama() {
             setShowPicker(false);
             setIsStop(true);
             setBeatCount(0);
-            saveStoredData(
-              pickedDuration.hours * 3600 +
+            saveStoredData({
+              totalTime:
+                pickedDuration.hours * 3600 +
                 pickedDuration.minutes * 60 +
                 pickedDuration.seconds,
-            );
+            });
           }}
           modalTitle="Set Alarm"
           onCancel={() => setShowPicker(false)}
@@ -324,6 +339,39 @@ export default function Pranayama() {
           <Text style={styles.patternToggleLabel}>Viloma</Text>
         </View>
 
+        {/* Hold ambience picker — the looping bed during Antara/Bahya Kumbhaka.
+            Only relevant when Viloma is on (that's when long holds happen). */}
+        {vilomaActive && (
+          <View style={styles.ambienceRow}>
+            <Text style={styles.ambienceLabel}>Hold sound</Text>
+            <View style={styles.ambienceChips}>
+              {HOLD_AMBIENCES.map((a) => {
+                const active = holdAmbience === a.id;
+                return (
+                  <TouchableOpacity
+                    key={a.id}
+                    activeOpacity={0.7}
+                    onPress={() => {
+                      setHoldAmbience(a.id);
+                      saveStoredData({ holdAmbience: a.id });
+                    }}
+                    style={[styles.ambienceChip, active && styles.ambienceChipActive]}
+                  >
+                    <Text
+                      style={[
+                        styles.ambienceChipText,
+                        active && styles.ambienceChipTextActive,
+                      ]}
+                    >
+                      {a.label}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+          </View>
+        )}
+
         {/* Static interval display — shows the current beatInterval value.
             Does NOT count down; it's a label for the chime cadence, not a
             per-second visual the user has to track. */}
@@ -338,7 +386,7 @@ export default function Pranayama() {
             const seconds = Math.round(ms / 1000);
             setBeatInterval(seconds);
             setBeatCount(0);
-            saveStoredData();
+            saveStoredData({ beatInterval: seconds });
           }}
           minMs={BEAT_INTERVAL_MIN_MS}
           maxMs={BEAT_INTERVAL_MAX_MS}
@@ -418,6 +466,43 @@ const styles = StyleSheet.create({
   },
   intervalLabel: {
     marginBottom: 12,
+  },
+
+  // ─── Hold ambience picker ────────────────────────────────────────────────
+  ambienceRow: {
+    alignItems: "center",
+    marginBottom: 18,
+  },
+  ambienceLabel: {
+    color: "#90A4AE",
+    fontSize: 12,
+    marginBottom: 8,
+    letterSpacing: 0.5,
+  },
+  ambienceChips: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "center",
+    gap: 8,
+  },
+  ambienceChip: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: "rgba(128, 222, 234, 0.35)",
+  },
+  ambienceChipActive: {
+    backgroundColor: "#0277BD",
+    borderColor: "#0277BD",
+  },
+  ambienceChipText: {
+    color: "#80DEEA",
+    fontSize: 13,
+  },
+  ambienceChipTextActive: {
+    color: "#FFFFFF",
+    fontWeight: "600",
   },
 
   // Pattern toggle row

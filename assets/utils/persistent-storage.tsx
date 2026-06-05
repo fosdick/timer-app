@@ -20,6 +20,8 @@ type storageData = {
   halfMarkEnabled?: boolean;
   transitionSound?: string;
   halfMarkSound?: string;
+  // Pranayama: looping sound bed during long holds (Antara/Bahya Kumbhaka)
+  holdAmbience?: string;
 };
 const storeData = async (key: string, value: Partial<storageData>) => {
   try {
