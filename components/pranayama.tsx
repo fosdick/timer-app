@@ -392,9 +392,9 @@ export default function Pranayama() {
           maxMs={BEAT_INTERVAL_MAX_MS}
           stepMs={BEAT_INTERVAL_STEP_MS}
           formatValue={(ms) => `${Math.round(ms / 1000)}s`}
-          // Viloma's phase boundaries depend on the 2s unit. Lock the
-          // stepper while it's active so the practice stays aligned.
-          disabled={vilomaActive}
+          // Adjustable even while Viloma is active. The metronome is a uniform
+          // audio grid the practitioner chooses; Viloma's phases run on real
+          // time, so the chime cadence is independent of the pattern.
         />
       </View>
 

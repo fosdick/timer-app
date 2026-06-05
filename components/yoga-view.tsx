@@ -586,14 +586,10 @@ export default function YogaView() {
   };
 
   const handleCenterIconPress = () => {
-    if (isRunning) {
-      // Pause and show overlay
-      cancelHalfwayPauseAndStop();
-      setShowPauseOverlay(true);
-    } else {
-      // Open Pace list (replaces yoga-flow select while YOGA_FLOW_ENABLED is off)
-      setShowPaceList(true);
-    }
+    // Always open the Pace list (save / create-new-Pace), whether the timer is
+    // running or stopped. (Previously this paused a running timer and popped a
+    // resume/reset overlay; the icon's job is Pace selection, not pausing.)
+    setShowPaceList(true);
   };
 
   const handleTimerPress = () => {
@@ -776,6 +772,17 @@ export default function YogaView() {
     setActivePaceId(null);
     saveActivePaceId(null);
     setShowPaceList(false);
+  };
+
+  // A manual edit to any pace-defining setting (timer length or a transition
+  // option) means the current settings no longer match the active saved pace,
+  // so drop the pace association — the title reverts to "Pace". The edited
+  // values are kept; only the link is cleared.
+  const clearActivePaceOnEdit = () => {
+    if (activePaceId !== null) {
+      setActivePaceId(null);
+      saveActivePaceId(null);
+    }
   };
 
   // Get current, previous, and next poses for display with asset fallback logic
@@ -1194,6 +1201,7 @@ export default function YogaView() {
         initialValue={getTimePartsMinSec(initialTotalTime)}
         onConfirm={(pickedDuration) => {
           const newTime = pickedDuration.minutes * 60 + pickedDuration.seconds;
+          clearActivePaceOnEdit();
           setInitialTotalTime(newTime);
           setTimeRemaining(newTime);
           setShowPicker(false);
@@ -1224,15 +1232,15 @@ export default function YogaView() {
           visible={showTimerSettings}
           onClose={() => setShowTimerSettings(false)}
           transitionPauseMs={transitionPauseMs}
-          onTransitionPauseMsChange={setTransitionPauseMs}
+          onTransitionPauseMsChange={(v) => { clearActivePaceOnEdit(); setTransitionPauseMs(v); }}
           transitionSound={transitionSound}
-          onTransitionSoundChange={setTransitionSound}
+          onTransitionSoundChange={(v) => { clearActivePaceOnEdit(); setTransitionSound(v); }}
           halfMarkPauseMs={halfMarkPauseMs}
-          onHalfMarkPauseMsChange={setHalfMarkPauseMs}
+          onHalfMarkPauseMsChange={(v) => { clearActivePaceOnEdit(); setHalfMarkPauseMs(v); }}
           halfMarkSound={halfMarkSound}
-          onHalfMarkSoundChange={setHalfMarkSound}
+          onHalfMarkSoundChange={(v) => { clearActivePaceOnEdit(); setHalfMarkSound(v); }}
           halfMarkEnabled={halfMarkEnabled}
-          onHalfMarkEnabledChange={setHalfMarkEnabled}
+          onHalfMarkEnabledChange={(v) => { clearActivePaceOnEdit(); setHalfMarkEnabled(v); }}
           onSavePace={handleOpenCreateFromHamburger}
         />
       )}
