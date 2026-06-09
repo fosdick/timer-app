@@ -1,77 +1,93 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { Audio } from "expo-av";
 import { LinearGradient } from "expo-linear-gradient";
 import { TimerPickerModal } from "react-native-timer-picker";
-import { METRONOME, BreathPattern, getPattern, isMetronome } from "@/assets/data/breath-patterns";
+import {
+  METRONOME,
+  BreathPattern,
+  EditFieldKey,
+  getPattern,
+  isMetronome,
+  applyCountEdit,
+} from "@/assets/data/breath-patterns";
 import { useBreathTimer } from "@/assets/utils/use-breath-timer";
 import { useAmbience } from "@/assets/utils/use-ambience";
 import { getData, storeData } from "@/assets/utils/persistent-storage";
 import { getTimeParts } from "@/assets/utils/format-time";
 import { PatternPicker } from "./PatternPicker";
 import { PhaseCounts } from "./PhaseCounts";
+import { CountEditors } from "./CountEditors";
 import { BreathStage } from "./BreathStage";
 import { SoundOptions } from "./SoundOptions";
-import {
-  getClickSound,
-  getAmbience,
-  DEFAULT_CLICK_ID,
-  DEFAULT_AMBIENCE_ID,
-} from "./breath-sounds";
+import { getClickSound, getAmbience, DEFAULT_CLICK_ID, DEFAULT_AMBIENCE_ID } from "./breath-sounds";
 import { breathTheme as t } from "./breath-theme";
 
 const BREATH_DATA_KEY = "breath_timer_data";
 const DEFAULT_TOTAL_SEC = 300; // 5 min
-const CLICK_SLOT_SEC = 0.3; // the boundary click's own little time container
+const CLICK_SLOT_SEC = 0.3; // boundary click's own little time container (patterns only)
 
-type BreathSettings = {
-  breathPatternId?: string;
-  breathTotalSec?: number;
-  breathClick?: string;
-  breathAmbience?: string;
+type CountSet = { inhale: number; holdIn: number; exhale: number; holdOut: number };
+
+const applyCustom = (base: BreathPattern, custom: Record<string, CountSet>): BreathPattern => {
+  const c = custom[base.id];
+  return c ? { ...base, ...c } : base;
 };
+const countsOf = (p: BreathPattern): CountSet => ({
+  inhale: p.inhale,
+  holdIn: p.holdIn,
+  exhale: p.exhale,
+  holdOut: p.holdOut,
+});
 
 /**
- * The new breath-pattern timer (pranayama tab). Assembles the pattern picker,
- * live stage, phase columns, sound options, a session-length picker, and the
- * tested useBreathTimer — with persisted settings for daily practice.
+ * The breath-pattern timer (pranayama tab). Holds the selected pattern id + any
+ * per-pattern edited counts; derives the live pattern from them. Includes the
+ * metronome mode (preserves the original pranayama), editable counts via scroll
+ * wheels, a session-length picker, sound options, and persisted settings.
  */
 export default function BreathScreen() {
-  const [pattern, setPattern] = useState<BreathPattern>(METRONOME);
+  const [patternId, setPatternId] = useState<string>(METRONOME.id);
+  const [customCounts, setCustomCounts] = useState<Record<string, CountSet>>({});
   const [totalSec, setTotalSec] = useState<number>(DEFAULT_TOTAL_SEC);
   const [clickId, setClickId] = useState<string>(DEFAULT_CLICK_ID);
   const [ambienceId, setAmbienceId] = useState<string>(DEFAULT_AMBIENCE_ID);
   const [showPicker, setShowPicker] = useState(false);
 
+  // Memoized so the pattern reference is stable across renders (a new object
+  // each render would thrash the timer's memo/effects).
+  const pattern = useMemo(
+    () => applyCustom(getPattern(patternId) ?? METRONOME, customCounts),
+    [patternId, customCounts],
+  );
+  const metro = isMetronome(pattern);
+
   // Restore saved settings on mount.
   useEffect(() => {
     (async () => {
       const saved = await getData(BREATH_DATA_KEY);
-      const p = saved?.breathPatternId ? getPattern(saved.breathPatternId) : undefined;
-      if (p) setPattern(p);
+      if (saved?.breathPatternId && getPattern(saved.breathPatternId)) setPatternId(saved.breathPatternId);
+      if (saved?.breathCustomCounts) setCustomCounts(saved.breathCustomCounts);
       if (saved?.breathTotalSec) setTotalSec(saved.breathTotalSec);
       if (saved?.breathClick) setClickId(saved.breathClick);
       if (saved?.breathAmbience) setAmbienceId(saved.breathAmbience);
     })();
   }, []);
 
-  const metro = isMetronome(pattern);
-
   const timer = useBreathTimer(pattern, totalSec, {
-    clickSlotSec: metro ? 0 : CLICK_SLOT_SEC, // metronome: pure interval, click exactly every N sec
+    clickSlotSec: metro ? 0 : CLICK_SLOT_SEC,
     onClick: () => getClickSound(clickId).play(),
   });
 
-  // Calming bed loops while the timer runs (None => silent).
   useAmbience(getAmbience(ambienceId).asset, timer.isRunning);
 
-  // Persist; `over` carries the freshly-changed value (state is stale in closure).
-  const persist = (over: BreathSettings) => {
+  const persist = (over: Partial<Parameters<typeof storeData>[1]>) => {
     storeData(BREATH_DATA_KEY, {
-      breathPatternId: pattern.id,
+      breathPatternId: patternId,
       breathTotalSec: totalSec,
       breathClick: clickId,
       breathAmbience: ambienceId,
+      breathCustomCounts: customCounts,
       ...over,
     });
   };
@@ -79,8 +95,17 @@ export default function BreathScreen() {
   const choosePattern = (p: BreathPattern) => {
     if (timer.isRunning) return;
     timer.reset();
-    setPattern(p);
+    setPatternId(p.id);
     persist({ breathPatternId: p.id });
+  };
+
+  const editCount = (key: EditFieldKey, value: number) => {
+    if (timer.isRunning) return;
+    const next = applyCountEdit(pattern, key, value);
+    const nextCustom = { ...customCounts, [patternId]: countsOf(next) };
+    setCustomCounts(nextCustom);
+    timer.reset();
+    persist({ breathCustomCounts: nextCustom });
   };
 
   return (
@@ -92,7 +117,7 @@ export default function BreathScreen() {
         onPressClock={() => setShowPicker(true)}
       />
 
-      {!metro && (
+      {metro ? null : (
         <PhaseCounts pattern={pattern} activeKind={timer.isRunning ? timer.view.kind : undefined} />
       )}
 
@@ -100,6 +125,8 @@ export default function BreathScreen() {
 
       <View style={styles.controls}>
         <PatternPicker selectedId={pattern.id} onSelect={choosePattern} disabled={timer.isRunning} />
+
+        <CountEditors pattern={pattern} onChange={editCount} disabled={timer.isRunning} />
 
         <SoundOptions
           clickId={clickId}

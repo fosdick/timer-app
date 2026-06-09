@@ -27,6 +27,11 @@ type storageData = {
   breathTotalSec?: number;
   breathAmbience?: string;
   breathClick?: string;
+  /** Per-pattern user-edited counts, keyed by pattern id. */
+  breathCustomCounts?: Record<
+    string,
+    { inhale: number; holdIn: number; exhale: number; holdOut: number }
+  >;
 };
 const storeData = async (key: string, value: Partial<storageData>) => {
   try {

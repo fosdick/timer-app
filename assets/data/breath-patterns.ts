@@ -94,6 +94,58 @@ export const getPattern = (id: string): BreathPattern | undefined =>
 /** Metronome mode: a single uniform click interval, no phases/labels. */
 export const isMetronome = (p: BreathPattern): boolean => p.metronome === true;
 
+// ─── Editable counts ──────────────────────────────────────────────────────────
+
+export type EditFieldKey = "interval" | "breath" | "holdSym" | "holdIn" | "holdOut";
+
+export interface EditField {
+  key: EditFieldKey;
+  label: string;
+  value: number;
+}
+
+/**
+ * The user-editable count fields for a pattern (drives the scroll-picker UI):
+ *   - locked (4-7-8): none
+ *   - metronome: one "Count" interval
+ *   - even: "Breath" (inhale=exhale) + "Hold" (holdIn=holdOut)
+ *   - odd:  "Breath" + "Hold in" + "Hold out"
+ */
+export function editableFields(p: BreathPattern): EditField[] {
+  if (p.locked) return [];
+  if (isMetronome(p)) return [{ key: "interval", label: "Count", value: p.inhale }];
+  if (isEvenPattern(p)) {
+    return [
+      { key: "breath", label: "Breath", value: p.inhale },
+      { key: "holdSym", label: "Hold", value: p.holdIn },
+    ];
+  }
+  return [
+    { key: "breath", label: "Breath", value: p.inhale },
+    { key: "holdIn", label: "Hold in", value: p.holdIn },
+    { key: "holdOut", label: "Hold out", value: p.holdOut },
+  ];
+}
+
+/** Apply an edited value to a field, returning a new pattern (counts clamped). */
+export function applyCountEdit(p: BreathPattern, key: EditFieldKey, value: number): BreathPattern {
+  const v = Math.max(0, Math.round(value));
+  switch (key) {
+    case "interval":
+      return { ...p, inhale: Math.max(1, v) };
+    case "breath":
+      return { ...p, inhale: Math.max(1, v), exhale: Math.max(1, v) };
+    case "holdSym":
+      return { ...p, holdIn: v, holdOut: v };
+    case "holdIn":
+      return { ...p, holdIn: v };
+    case "holdOut":
+      return { ...p, holdOut: v };
+    default:
+      return p;
+  }
+}
+
 // ─── Pure helpers ─────────────────────────────────────────────────────────────
 
 const KIND_LABEL: Record<BreathPhaseKind, string> = {

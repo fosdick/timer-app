@@ -5,6 +5,8 @@ import {
   VILOMA,
   FOUR_SEVEN_EIGHT,
   isMetronome,
+  editableFields,
+  applyCountEdit,
   getPattern,
   resolvePhases,
   isEvenPattern,
@@ -165,6 +167,45 @@ describe("metronome", () => {
   it("4-7-8 is locked, others are not", () => {
     expect(FOUR_SEVEN_EIGHT.locked).toBe(true);
     expect(VILOMA.locked).toBeUndefined();
+  });
+});
+
+describe("editableFields", () => {
+  it("has none for locked 4-7-8", () => {
+    expect(editableFields(FOUR_SEVEN_EIGHT)).toEqual([]);
+  });
+  it("has one interval for metronome", () => {
+    expect(editableFields(METRONOME)).toEqual([{ key: "interval", label: "Count", value: 3 }]);
+  });
+  it("has breath + hold for even patterns", () => {
+    expect(editableFields(NADI_SHODHANA).map((f) => f.key)).toEqual(["breath", "holdSym"]);
+  });
+  it("has breath + both holds for odd patterns", () => {
+    const f = editableFields(VILOMA);
+    expect(f.map((x) => x.key)).toEqual(["breath", "holdIn", "holdOut"]);
+    expect(f.map((x) => x.value)).toEqual([16, 6, 4]);
+  });
+});
+
+describe("applyCountEdit", () => {
+  it("breath sets inhale and exhale together", () => {
+    const p = applyCountEdit(NADI_SHODHANA, "breath", 8);
+    expect(p.inhale).toBe(8);
+    expect(p.exhale).toBe(8);
+  });
+  it("holdSym sets both holds; holdIn/holdOut set one", () => {
+    expect(applyCountEdit(NADI_SHODHANA, "holdSym", 3)).toMatchObject({ holdIn: 3, holdOut: 3 });
+    expect(applyCountEdit(VILOMA, "holdOut", 9)).toMatchObject({ holdIn: 6, holdOut: 9 });
+  });
+  it("clamps breath and interval to at least 1, holds to at least 0", () => {
+    expect(applyCountEdit(VILOMA, "breath", 0).inhale).toBe(1);
+    expect(applyCountEdit(METRONOME, "interval", 0).inhale).toBe(1);
+    expect(applyCountEdit(VILOMA, "holdIn", -5).holdIn).toBe(0);
+  });
+  it("does not mutate the original pattern", () => {
+    const before = { ...VILOMA };
+    applyCountEdit(VILOMA, "breath", 99);
+    expect(VILOMA).toEqual(before);
   });
 });
 
