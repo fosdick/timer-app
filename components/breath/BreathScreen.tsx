@@ -1,40 +1,72 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import { VILOMA, BreathPattern } from "@/assets/data/breath-patterns";
+import { Audio } from "expo-av";
+import { LinearGradient } from "expo-linear-gradient";
+import { TimerPickerModal } from "react-native-timer-picker";
+import { VILOMA, BreathPattern, getPattern } from "@/assets/data/breath-patterns";
 import { useBreathTimer } from "@/assets/utils/use-breath-timer";
 import { playSnap } from "@/assets/utils/sounds";
+import { getData, storeData } from "@/assets/utils/persistent-storage";
+import { getTimeParts } from "@/assets/utils/format-time";
 import { PatternPicker } from "./PatternPicker";
 import { PhaseCounts } from "./PhaseCounts";
 import { BreathStage } from "./BreathStage";
 import { breathTheme as t } from "./breath-theme";
 
-const DEFAULT_TOTAL_SEC = 300; // 5 min — a duration picker comes in a later pass
+const BREATH_DATA_KEY = "breath_timer_data";
+const DEFAULT_TOTAL_SEC = 300; // 5 min
 const CLICK_SLOT_SEC = 0.3; // the boundary click's own little time container
 
 /**
  * The new breath-pattern timer screen. Assembles the picker + live stage + the
- * tested useBreathTimer. Decoupled and component-based so each piece is reusable
- * and the logic (in breath-timer-core) stays unit-tested.
+ * tested useBreathTimer, with a session-length picker and persisted settings.
  */
 export default function BreathScreen() {
   const [pattern, setPattern] = useState<BreathPattern>(VILOMA);
+  const [totalSec, setTotalSec] = useState<number>(DEFAULT_TOTAL_SEC);
+  const [showPicker, setShowPicker] = useState(false);
 
-  const timer = useBreathTimer(pattern, DEFAULT_TOTAL_SEC, {
+  // Restore saved pattern + session length on mount.
+  useEffect(() => {
+    (async () => {
+      const saved = await getData(BREATH_DATA_KEY);
+      const p = saved?.breathPatternId ? getPattern(saved.breathPatternId) : undefined;
+      if (p) setPattern(p);
+      if (saved?.breathTotalSec) setTotalSec(saved.breathTotalSec);
+    })();
+  }, []);
+
+  const timer = useBreathTimer(pattern, totalSec, {
     clickSlotSec: CLICK_SLOT_SEC,
     onClick: () => {
       playSnap();
     },
   });
 
+  // Persist current settings; `over` explicitly carries the changed value so we
+  // don't depend on a freshly-set state value (which is still stale in closure).
+  const persist = (over: { breathPatternId?: string; breathTotalSec?: number }) => {
+    storeData(BREATH_DATA_KEY, {
+      breathPatternId: pattern.id,
+      breathTotalSec: totalSec,
+      ...over,
+    });
+  };
+
   const choosePattern = (p: BreathPattern) => {
     if (timer.isRunning) return; // lock pattern while running
     timer.reset();
     setPattern(p);
+    persist({ breathPatternId: p.id });
   };
 
   return (
     <View style={styles.screen}>
-      <BreathStage view={timer.view} isRunning={timer.isRunning} />
+      <BreathStage
+        view={timer.view}
+        isRunning={timer.isRunning}
+        onPressClock={() => setShowPicker(true)}
+      />
 
       <PhaseCounts pattern={pattern} activeKind={timer.isRunning ? timer.view.kind : undefined} />
 
@@ -51,6 +83,27 @@ export default function BreathScreen() {
           <Text style={styles.startText}>{timer.isRunning ? "Stop" : "Start"}</Text>
         </TouchableOpacity>
       </View>
+
+      <TimerPickerModal
+        visible={showPicker}
+        setIsVisible={setShowPicker}
+        initialValue={getTimeParts(totalSec)}
+        hideHours
+        onConfirm={(picked) => {
+          const newTotal = picked.hours * 3600 + picked.minutes * 60 + picked.seconds;
+          setTotalSec(newTotal);
+          setShowPicker(false);
+          timer.reset();
+          persist({ breathTotalSec: newTotal });
+        }}
+        modalTitle="Session length"
+        onCancel={() => setShowPicker(false)}
+        closeOnOverlayPress
+        Audio={Audio}
+        LinearGradient={LinearGradient}
+        styles={{ theme: "dark" }}
+        modalProps={{ overlayOpacity: 0.2 }}
+      />
     </View>
   );
 }

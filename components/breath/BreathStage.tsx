@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { BreathView } from "@/assets/data/breath-timer-core";
 import { breathTheme as t, formatClock } from "./breath-theme";
 
@@ -7,13 +7,24 @@ import { breathTheme as t, formatClock } from "./breath-theme";
  * the current phase label plus the count remaining in that phase (a single
  * glanceable number; the calm comes from the boundary click, not per-count ticks).
  */
-export function BreathStage({ view, isRunning }: { view: BreathView; isRunning: boolean }) {
+export function BreathStage({
+  view,
+  isRunning,
+  onPressClock,
+}: {
+  view: BreathView;
+  isRunning: boolean;
+  onPressClock?: () => void;
+}) {
   const tint = t.phaseTint[view.kind] ?? t.accentSoft;
   const showCount = isRunning && view.segmentType === "breath" && view.countRemaining > 0;
+  const clockDisabled = isRunning || !onPressClock;
   return (
     <View style={styles.stage}>
-      <Text style={styles.clockLabel}>remaining</Text>
-      <Text style={styles.clock}>{formatClock(view.totalRemaining)}</Text>
+      <Text style={styles.clockLabel}>{clockDisabled ? "remaining" : "tap to set · remaining"}</Text>
+      <TouchableOpacity activeOpacity={0.7} disabled={clockDisabled} onPress={onPressClock}>
+        <Text style={styles.clock}>{formatClock(view.totalRemaining)}</Text>
+      </TouchableOpacity>
 
       <View style={styles.center}>
         {isRunning ? (

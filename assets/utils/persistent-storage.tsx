@@ -22,6 +22,10 @@ type storageData = {
   halfMarkSound?: string;
   // Pranayama: looping sound bed during long holds (Antara/Bahya Kumbhaka)
   holdAmbience?: string;
+  // Breath timer (new pranayama)
+  breathPatternId?: string;
+  breathTotalSec?: number;
+  breathAmbience?: string;
 };
 const storeData = async (key: string, value: Partial<storageData>) => {
   try {
