@@ -1,0 +1,195 @@
+/**
+ * Breath patterns — the pure, UI-free model behind the breath timer.
+ *
+ * A pattern is four phase counts: inhale → hold-in → exhale → hold-out. A count
+ * is a breath beat (1 count ≈ 1 second by default). A phase with count 0 is
+ * skipped (e.g. 4-7-8 has no hold after the exhale).
+ *
+ * "Even" patterns have inhale==exhale and hold-in==hold-out, so the UI shows two
+ * columns; "odd" patterns differ, so the UI shows four. (From the sketch:
+ * "if odd show all four columns, if even show two".)
+ *
+ * The timeline expands a pattern into ordered SEGMENTS. Each active phase becomes
+ * an optional "click" segment (the boundary chime in its own little time
+ * container — the "click in its own space" idea) followed by a "breath" segment
+ * (the count the practitioner breathes through). Everything here is pure and
+ * deterministic so it can be unit-tested without React Native.
+ */
+
+export type BreathPhaseKind = "inhale" | "holdIn" | "exhale" | "holdOut";
+
+export interface BreathPattern {
+  id: string;
+  name: string;
+  /** Phase counts (breath beats). 0 = phase skipped. */
+  inhale: number;
+  holdIn: number;
+  exhale: number;
+  holdOut: number;
+}
+
+export interface ResolvedPhase {
+  kind: BreathPhaseKind;
+  label: string; // "Inhale" | "Hold" | "Exhale" | "Hold"
+  count: number; // always > 0 (zero-count phases are dropped)
+}
+
+export type SegmentType = "click" | "breath";
+
+export interface BreathSegment {
+  phaseIndex: number; // index into the resolved-phases array
+  kind: BreathPhaseKind;
+  label: string;
+  type: SegmentType;
+  /** Cycle-relative start, seconds. */
+  start: number;
+  /** Seconds. A click segment may be 0 when there is no click slot. */
+  duration: number;
+}
+
+export interface PatternColumns {
+  mode: "even" | "odd";
+  columns: { kind: BreathPhaseKind; count: number }[];
+}
+
+// ─── Library ──────────────────────────────────────────────────────────────────
+
+export const BOX: BreathPattern = { id: "box", name: "Box", inhale: 4, holdIn: 4, exhale: 4, holdOut: 4 };
+
+// Nadi Shodhana — even pacing: 10 on, 2 off (inhale, hold, exhale, hold).
+export const NADI_SHODHANA: BreathPattern = { id: "nadi", name: "Nadi Shodhana", inhale: 10, holdIn: 2, exhale: 10, holdOut: 2 };
+
+// Viloma — odd: equal inhale/exhale with longer, asymmetric holds.
+export const VILOMA: BreathPattern = { id: "viloma", name: "Viloma", inhale: 16, holdIn: 6, exhale: 16, holdOut: 4 };
+
+// 4-7-8 — inhale 4, hold 7, exhale 8, no closing hold.
+export const FOUR_SEVEN_EIGHT: BreathPattern = { id: "478", name: "4-7-8", inhale: 4, holdIn: 7, exhale: 8, holdOut: 0 };
+
+export const BREATH_PATTERNS: BreathPattern[] = [BOX, NADI_SHODHANA, VILOMA, FOUR_SEVEN_EIGHT];
+
+export const getPattern = (id: string): BreathPattern | undefined =>
+  BREATH_PATTERNS.find((p) => p.id === id);
+
+// ─── Pure helpers ─────────────────────────────────────────────────────────────
+
+const KIND_LABEL: Record<BreathPhaseKind, string> = {
+  inhale: "Inhale",
+  holdIn: "Hold",
+  exhale: "Exhale",
+  holdOut: "Hold",
+};
+
+const PHASE_ORDER: BreathPhaseKind[] = ["inhale", "holdIn", "exhale", "holdOut"];
+
+/** Ordered phases with count > 0 (skips empty holds like 4-7-8's closing hold). */
+export function resolvePhases(p: BreathPattern): ResolvedPhase[] {
+  return PHASE_ORDER.map((kind) => ({ kind, label: KIND_LABEL[kind], count: p[kind] }))
+    .filter((phase) => phase.count > 0);
+}
+
+/** Even = inhale==exhale && hold-in==hold-out (symmetric breath). */
+export function isEvenPattern(p: BreathPattern): boolean {
+  return p.inhale === p.exhale && p.holdIn === p.holdOut;
+}
+
+/** Display columns: 2 for even patterns, 4 for odd. */
+export function patternColumns(p: BreathPattern): PatternColumns {
+  if (isEvenPattern(p)) {
+    return {
+      mode: "even",
+      columns: [
+        { kind: "inhale", count: p.inhale },
+        { kind: "holdIn", count: p.holdIn },
+      ],
+    };
+  }
+  return {
+    mode: "odd",
+    columns: [
+      { kind: "inhale", count: p.inhale },
+      { kind: "holdIn", count: p.holdIn },
+      { kind: "exhale", count: p.exhale },
+      { kind: "holdOut", count: p.holdOut },
+    ],
+  };
+}
+
+export interface TimelineOptions {
+  /** Seconds the boundary click occupies before each phase. 0 = no slot. */
+  clickSlotSec?: number;
+  /** Seconds per breath count. Default 1. */
+  countDurationSec?: number;
+}
+
+/**
+ * Expand a pattern into ordered segments for one cycle. Each phase is a click
+ * segment (duration = clickSlotSec, may be 0) immediately followed by a breath
+ * segment (duration = count * countDurationSec). The click leads the phase so it
+ * marks "begin this phase now".
+ */
+export function buildTimeline(p: BreathPattern, opts: TimelineOptions = {}): BreathSegment[] {
+  const clickSlotSec = opts.clickSlotSec ?? 0;
+  const countDurationSec = opts.countDurationSec ?? 1;
+  const phases = resolvePhases(p);
+  const segments: BreathSegment[] = [];
+  let t = 0;
+  phases.forEach((phase, phaseIndex) => {
+    segments.push({
+      phaseIndex,
+      kind: phase.kind,
+      label: phase.label,
+      type: "click",
+      start: t,
+      duration: clickSlotSec,
+    });
+    t += clickSlotSec;
+    segments.push({
+      phaseIndex,
+      kind: phase.kind,
+      label: phase.label,
+      type: "breath",
+      start: t,
+      duration: phase.count * countDurationSec,
+    });
+    t += phase.count * countDurationSec;
+  });
+  return segments;
+}
+
+/** Total seconds for one cycle. */
+export function cycleDurationSec(p: BreathPattern, opts: TimelineOptions = {}): number {
+  const timeline = buildTimeline(p, opts);
+  if (timeline.length === 0) return 0;
+  const last = timeline[timeline.length - 1];
+  return last.start + last.duration;
+}
+
+export interface SegmentAtTime {
+  segment: BreathSegment;
+  index: number; // index into the timeline
+  /** Seconds remaining in this segment. */
+  remaining: number;
+}
+
+/**
+ * Which segment is active at `elapsedSec` within a single (un-looped) cycle.
+ * Zero-duration segments (e.g. an empty click slot) are never returned.
+ * Returns null only for an empty timeline.
+ */
+export function segmentAtElapsed(timeline: BreathSegment[], elapsedSec: number): SegmentAtTime | null {
+  if (timeline.length === 0) return null;
+  for (let i = 0; i < timeline.length; i++) {
+    const seg = timeline[i];
+    if (seg.duration <= 0) continue;
+    if (elapsedSec < seg.start + seg.duration) {
+      return { segment: seg, index: i, remaining: seg.start + seg.duration - elapsedSec };
+    }
+  }
+  // Past the end — clamp to the last non-empty segment.
+  for (let i = timeline.length - 1; i >= 0; i--) {
+    if (timeline[i].duration > 0) {
+      return { segment: timeline[i], index: i, remaining: 0 };
+    }
+  }
+  return null;
+}
