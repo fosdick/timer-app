@@ -114,6 +114,19 @@ export function patternColumns(p: BreathPattern): PatternColumns {
   };
 }
 
+/**
+ * Which display column (from patternColumns) a given phase highlights while
+ * running. Even patterns collapse inhale/exhale onto column 0 and the two holds
+ * onto column 1; odd patterns map each phase to its own column.
+ */
+export function activeColumnIndex(p: BreathPattern, kind: BreathPhaseKind): number {
+  if (isEvenPattern(p)) {
+    return kind === "inhale" || kind === "exhale" ? 0 : 1;
+  }
+  const order: Record<BreathPhaseKind, number> = { inhale: 0, holdIn: 1, exhale: 2, holdOut: 3 };
+  return order[kind];
+}
+
 export interface TimelineOptions {
   /** Seconds the boundary click occupies before each phase. 0 = no slot. */
   clickSlotSec?: number;

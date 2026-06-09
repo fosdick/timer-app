@@ -4,6 +4,7 @@ import { VILOMA, BreathPattern } from "@/assets/data/breath-patterns";
 import { useBreathTimer } from "@/assets/utils/use-breath-timer";
 import { playSnap } from "@/assets/utils/sounds";
 import { PatternPicker } from "./PatternPicker";
+import { PhaseCounts } from "./PhaseCounts";
 import { BreathStage } from "./BreathStage";
 import { breathTheme as t } from "./breath-theme";
 
@@ -34,6 +35,8 @@ export default function BreathScreen() {
   return (
     <View style={styles.screen}>
       <BreathStage view={timer.view} isRunning={timer.isRunning} />
+
+      <PhaseCounts pattern={pattern} activeKind={timer.isRunning ? timer.view.kind : undefined} />
 
       <View style={{ flex: 1 }} />
 

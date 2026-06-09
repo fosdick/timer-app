@@ -7,6 +7,7 @@ import {
   resolvePhases,
   isEvenPattern,
   patternColumns,
+  activeColumnIndex,
   buildTimeline,
   cycleDurationSec,
   segmentAtElapsed,
@@ -127,6 +128,21 @@ describe("segmentAtElapsed", () => {
 
   it("clamps past the end to the last segment", () => {
     expect(segmentAtElapsed(tl, 999)).toMatchObject({ segment: { phaseIndex: 3, type: "breath" }, remaining: 0 });
+  });
+});
+
+describe("activeColumnIndex", () => {
+  it("maps each phase to its own column for odd patterns", () => {
+    expect(activeColumnIndex(VILOMA, "inhale")).toBe(0);
+    expect(activeColumnIndex(VILOMA, "holdIn")).toBe(1);
+    expect(activeColumnIndex(VILOMA, "exhale")).toBe(2);
+    expect(activeColumnIndex(VILOMA, "holdOut")).toBe(3);
+  });
+  it("collapses inhale/exhale and the holds for even patterns", () => {
+    expect(activeColumnIndex(NADI_SHODHANA, "inhale")).toBe(0);
+    expect(activeColumnIndex(NADI_SHODHANA, "exhale")).toBe(0);
+    expect(activeColumnIndex(NADI_SHODHANA, "holdIn")).toBe(1);
+    expect(activeColumnIndex(NADI_SHODHANA, "holdOut")).toBe(1);
   });
 });
 
