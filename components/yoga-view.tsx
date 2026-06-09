@@ -14,6 +14,7 @@ import {
   getTimePartsMinSec,
 } from "../assets/utils/format-time";
 import { getData, storeData } from "../assets/utils/persistent-storage";
+import { armAudioSession } from "../assets/utils/sounds";
 
 import YogaFlowSelect from "./yoga-flow-select";
 import YogaAssetRenderer from "./yoga-asset-renderer";
@@ -117,6 +118,9 @@ export default function YogaView() {
   const playTimerSound = (requireResult: unknown) => {
     stopTimerSound();
     const play = async () => {
+      // Re-arm the audio session first — an interruption (incoming call) or a
+      // return from another app can have deactivated it, leaving playback silent.
+      await armAudioSession();
       const { sound } = await Audio.Sound.createAsync(
         requireResult as Parameters<typeof Audio.Sound.createAsync>[0],
       );
@@ -608,6 +612,10 @@ export default function YogaView() {
       setIsRunning(true);
       // Only play start sound if starting from beginning
       if (isManualMode && timeRemaining === initialTotalTime) {
+        // Re-arm the half-mark for this fresh countdown. Switching paces mid-
+        // cycle can leave the flag `true`, which made the first countdown after
+        // a switch skip its half-mark chime (it self-corrected on the next loop).
+        setHalfwayChimePlayed(false);
         playTimerSound(HALF_MARK_SOUND_REQUIRE["bell"]);
       } else if (!isManualMode && selectedFlow) {
         const firstItem = selectedFlow.items[0];
