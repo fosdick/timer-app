@@ -72,9 +72,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: t.space.sm,
     borderRadius: t.radius,
     borderWidth: 1,
-    borderColor: "rgba(128,222,234,0.35)",
+    borderColor: t.line,
   },
   dim: { opacity: 0.5 },
   label: { color: t.muted, fontSize: 11, textTransform: "uppercase", letterSpacing: 0.5 },
-  value: { color: t.accentSoft, fontSize: 24, fontWeight: "400", fontVariant: ["tabular-nums"] },
+  value: { color: t.text, fontSize: 24, fontWeight: "400", fontVariant: ["tabular-nums"] },
 });

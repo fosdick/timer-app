@@ -1,29 +1,33 @@
 /**
- * Shared style tokens for the breath-timer UI. Components import these instead
- * of hard-coding colours/spacing, so the look stays consistent and tweakable
- * from one place (best-practice: a small theme + co-located StyleSheet.create
- * per component).
+ * Shared style tokens for the breath-timer UI — pulled from the app's colorTheme
+ * so it matches the yoga / HIIT tabs (GreenTheme: dark background, lime active
+ * numbers, olive / blue-gray labels, outline controls).
  */
+import { colorTheme } from "@/assets/styles/timer-app";
 import { BreathPhaseKind } from "@/assets/data/breath-patterns";
 
 export const breathTheme = {
-  bg: "#080B0C",
-  surface: "#0F1B1F",
-  line: "#20323A",
-  text: "#E6EEF0",
-  muted: "#90A4AE",
-  accent: "#0277BD",
-  accentSoft: "#80DEEA",
+  bg: colorTheme.backgroundColor, //            #080B0c
+  surface: "#0D110B", //                        subtle dark panel
+  line: colorTheme.controlInactiveOpacity, //   rgba(84,110,122,0.3) — subtle borders
+  border: colorTheme.borderColor, //            #91BD27 lime — active/control borders
+  text: colorTheme.activeTimerPrimary, //       #CDDC39 lime — primary numbers
+  label: colorTheme.labelPrimary, //            #689F38 olive
+  muted: colorTheme.labelSecondary, //          #546E7A blue-gray
+  accent: colorTheme.activeTimerPrimary, //     #CDDC39 lime
+  accentSoft: colorTheme.activeTimerDimmed, //  #7CB342 muted lime
+  buttonText: colorTheme.fontColor, //          #629231 green
+  tintFaint: "rgba(205,220,57,0.14)", //        faint lime fill for active chips
 
   space: { xs: 6, sm: 10, md: 16, lg: 24, xl: 36 },
-  radius: 14,
+  radius: 10,
 
-  /** Soft per-phase tint for labels/accents. */
+  /** Soft per-phase tint. */
   phaseTint: {
-    inhale: "#80DEEA",
-    holdIn: "#4FC3F7",
-    exhale: "#A5D6A7",
-    holdOut: "#4FC3F7",
+    inhale: colorTheme.activeTimerPrimary,
+    holdIn: colorTheme.activeTimerDimmed,
+    exhale: colorTheme.labelPrimary,
+    holdOut: colorTheme.activeTimerDimmed,
   } as Record<BreathPhaseKind, string>,
 };
 

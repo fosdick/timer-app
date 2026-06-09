@@ -77,8 +77,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: t.line,
   },
-  chipActive: { backgroundColor: "rgba(2,119,189,0.35)", borderColor: t.accent },
+  chipActive: { backgroundColor: t.tintFaint, borderColor: t.border },
   dim: { opacity: 0.5 },
   chipText: { color: t.muted, fontSize: 12 },
-  chipTextActive: { color: "#FFFFFF", fontWeight: "600" },
+  chipTextActive: { color: t.accent, fontWeight: "600" },
 });

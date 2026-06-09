@@ -55,8 +55,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: t.line,
   },
-  colActive: { borderColor: t.accentSoft, backgroundColor: "rgba(128,222,234,0.10)" },
+  colActive: { borderColor: t.border, backgroundColor: t.tintFaint },
   label: { color: t.muted, fontSize: 11, textTransform: "uppercase", letterSpacing: 0.5 },
-  count: { color: t.text, fontSize: 22, fontWeight: "400", fontVariant: ["tabular-nums"], marginTop: 2 },
-  activeText: { color: t.accentSoft },
+  count: { color: t.label, fontSize: 22, fontWeight: "400", fontVariant: ["tabular-nums"], marginTop: 2 },
+  activeText: { color: t.accent },
 });

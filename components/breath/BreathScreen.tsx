@@ -179,13 +179,14 @@ const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: t.bg, paddingHorizontal: t.space.lg, paddingBottom: t.space.lg },
   controls: { alignItems: "center", gap: t.space.md, marginBottom: t.space.md },
   startBtn: {
-    backgroundColor: t.accent,
+    borderWidth: 1,
+    borderColor: t.border,
     paddingHorizontal: t.space.xl + 12,
     paddingVertical: t.space.md,
     borderRadius: t.radius,
     minWidth: 200,
     alignItems: "center",
   },
-  stopBtn: { backgroundColor: "#5a2a2a" },
-  startText: { color: "#FFFFFF", fontSize: 20, fontWeight: "600", letterSpacing: 1 },
+  stopBtn: { borderColor: "#C0795A" }, // warmer outline while running
+  startText: { color: t.buttonText, fontSize: 20, fontWeight: "600", letterSpacing: 1 },
 });
