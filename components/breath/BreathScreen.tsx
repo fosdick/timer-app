@@ -5,56 +5,77 @@ import { LinearGradient } from "expo-linear-gradient";
 import { TimerPickerModal } from "react-native-timer-picker";
 import { VILOMA, BreathPattern, getPattern } from "@/assets/data/breath-patterns";
 import { useBreathTimer } from "@/assets/utils/use-breath-timer";
-import { playSnap } from "@/assets/utils/sounds";
+import { useAmbience } from "@/assets/utils/use-ambience";
 import { getData, storeData } from "@/assets/utils/persistent-storage";
 import { getTimeParts } from "@/assets/utils/format-time";
 import { PatternPicker } from "./PatternPicker";
 import { PhaseCounts } from "./PhaseCounts";
 import { BreathStage } from "./BreathStage";
+import { SoundOptions } from "./SoundOptions";
+import {
+  getClickSound,
+  getAmbience,
+  DEFAULT_CLICK_ID,
+  DEFAULT_AMBIENCE_ID,
+} from "./breath-sounds";
 import { breathTheme as t } from "./breath-theme";
 
 const BREATH_DATA_KEY = "breath_timer_data";
 const DEFAULT_TOTAL_SEC = 300; // 5 min
 const CLICK_SLOT_SEC = 0.3; // the boundary click's own little time container
 
+type BreathSettings = {
+  breathPatternId?: string;
+  breathTotalSec?: number;
+  breathClick?: string;
+  breathAmbience?: string;
+};
+
 /**
- * The new breath-pattern timer screen. Assembles the picker + live stage + the
- * tested useBreathTimer, with a session-length picker and persisted settings.
+ * The new breath-pattern timer (pranayama tab). Assembles the pattern picker,
+ * live stage, phase columns, sound options, a session-length picker, and the
+ * tested useBreathTimer — with persisted settings for daily practice.
  */
 export default function BreathScreen() {
   const [pattern, setPattern] = useState<BreathPattern>(VILOMA);
   const [totalSec, setTotalSec] = useState<number>(DEFAULT_TOTAL_SEC);
+  const [clickId, setClickId] = useState<string>(DEFAULT_CLICK_ID);
+  const [ambienceId, setAmbienceId] = useState<string>(DEFAULT_AMBIENCE_ID);
   const [showPicker, setShowPicker] = useState(false);
 
-  // Restore saved pattern + session length on mount.
+  // Restore saved settings on mount.
   useEffect(() => {
     (async () => {
       const saved = await getData(BREATH_DATA_KEY);
       const p = saved?.breathPatternId ? getPattern(saved.breathPatternId) : undefined;
       if (p) setPattern(p);
       if (saved?.breathTotalSec) setTotalSec(saved.breathTotalSec);
+      if (saved?.breathClick) setClickId(saved.breathClick);
+      if (saved?.breathAmbience) setAmbienceId(saved.breathAmbience);
     })();
   }, []);
 
   const timer = useBreathTimer(pattern, totalSec, {
     clickSlotSec: CLICK_SLOT_SEC,
-    onClick: () => {
-      playSnap();
-    },
+    onClick: () => getClickSound(clickId).play(),
   });
 
-  // Persist current settings; `over` explicitly carries the changed value so we
-  // don't depend on a freshly-set state value (which is still stale in closure).
-  const persist = (over: { breathPatternId?: string; breathTotalSec?: number }) => {
+  // Calming bed loops while the timer runs (None => silent).
+  useAmbience(getAmbience(ambienceId).asset, timer.isRunning);
+
+  // Persist; `over` carries the freshly-changed value (state is stale in closure).
+  const persist = (over: BreathSettings) => {
     storeData(BREATH_DATA_KEY, {
       breathPatternId: pattern.id,
       breathTotalSec: totalSec,
+      breathClick: clickId,
+      breathAmbience: ambienceId,
       ...over,
     });
   };
 
   const choosePattern = (p: BreathPattern) => {
-    if (timer.isRunning) return; // lock pattern while running
+    if (timer.isRunning) return;
     timer.reset();
     setPattern(p);
     persist({ breathPatternId: p.id });
@@ -62,11 +83,7 @@ export default function BreathScreen() {
 
   return (
     <View style={styles.screen}>
-      <BreathStage
-        view={timer.view}
-        isRunning={timer.isRunning}
-        onPressClock={() => setShowPicker(true)}
-      />
+      <BreathStage view={timer.view} isRunning={timer.isRunning} onPressClock={() => setShowPicker(true)} />
 
       <PhaseCounts pattern={pattern} activeKind={timer.isRunning ? timer.view.kind : undefined} />
 
@@ -74,6 +91,20 @@ export default function BreathScreen() {
 
       <View style={styles.controls}>
         <PatternPicker selectedId={pattern.id} onSelect={choosePattern} disabled={timer.isRunning} />
+
+        <SoundOptions
+          clickId={clickId}
+          ambienceId={ambienceId}
+          onClickChange={(id) => {
+            setClickId(id);
+            persist({ breathClick: id });
+          }}
+          onAmbienceChange={(id) => {
+            setAmbienceId(id);
+            persist({ breathAmbience: id });
+          }}
+          disabled={timer.isRunning}
+        />
 
         <TouchableOpacity
           activeOpacity={0.7}
@@ -110,7 +141,7 @@ export default function BreathScreen() {
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: t.bg, paddingHorizontal: t.space.lg, paddingBottom: t.space.lg },
-  controls: { alignItems: "center", gap: t.space.lg, marginBottom: t.space.md },
+  controls: { alignItems: "center", gap: t.space.md, marginBottom: t.space.md },
   startBtn: {
     backgroundColor: t.accent,
     paddingHorizontal: t.space.xl + 12,

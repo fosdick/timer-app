@@ -26,6 +26,7 @@ type storageData = {
   breathPatternId?: string;
   breathTotalSec?: number;
   breathAmbience?: string;
+  breathClick?: string;
 };
 const storeData = async (key: string, value: Partial<storageData>) => {
   try {
