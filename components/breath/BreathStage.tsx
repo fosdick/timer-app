@@ -10,13 +10,15 @@ import { breathTheme as t, formatClock } from "./breath-theme";
 export function BreathStage({
   view,
   isRunning,
+  metronome = false,
   onPressClock,
 }: {
   view: BreathView;
   isRunning: boolean;
+  metronome?: boolean;
   onPressClock?: () => void;
 }) {
-  const tint = t.phaseTint[view.kind] ?? t.accentSoft;
+  const tint = metronome ? t.accentSoft : t.phaseTint[view.kind] ?? t.accentSoft;
   const showCount = isRunning && view.segmentType === "breath" && view.countRemaining > 0;
   const clockDisabled = isRunning || !onPressClock;
   return (
@@ -29,11 +31,11 @@ export function BreathStage({
       <View style={styles.center}>
         {isRunning ? (
           <>
-            <Text style={[styles.phase, { color: tint }]}>{view.label}</Text>
+            {!metronome && <Text style={[styles.phase, { color: tint }]}>{view.label}</Text>}
             <Text style={[styles.count, { color: tint }]}>{showCount ? view.countRemaining : " "}</Text>
           </>
         ) : (
-          <Text style={styles.idle}>Breathe</Text>
+          <Text style={styles.idle}>{metronome ? "Metronome" : "Breathe"}</Text>
         )}
       </View>
     </View>

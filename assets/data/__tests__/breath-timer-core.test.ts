@@ -1,4 +1,4 @@
-import { BOX, NADI_SHODHANA, buildTimeline, cycleDurationSec } from "../breath-patterns";
+import { BOX, NADI_SHODHANA, METRONOME, buildTimeline, cycleDurationSec } from "../breath-patterns";
 import { phaseBoundaries, clicksBetween, breathView } from "../breath-timer-core";
 
 const boxTL = buildTimeline(BOX); // boundaries at 0,4,8,12 ; cycle 16
@@ -48,6 +48,14 @@ describe("clicksBetween", () => {
   it("returns nothing for a non-advancing or zero-cycle window", () => {
     expect(clicksBetween(5, 5, boxTL, boxCycle)).toHaveLength(0);
     expect(clicksBetween(0, 1, boxTL, 0)).toHaveLength(0);
+  });
+});
+
+describe("metronome", () => {
+  it("clicks every interval (uniform grid)", () => {
+    const tl = buildTimeline(METRONOME); // interval 3, cycle 3
+    const cyc = cycleDurationSec(METRONOME);
+    expect(clicksBetween(0, 9, tl, cyc).map((c) => c.time)).toEqual([0, 3, 6]);
   });
 });
 

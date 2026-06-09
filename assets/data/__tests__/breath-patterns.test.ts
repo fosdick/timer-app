@@ -1,8 +1,10 @@
 import {
+  METRONOME,
   BOX,
   NADI_SHODHANA,
   VILOMA,
   FOUR_SEVEN_EIGHT,
+  isMetronome,
   getPattern,
   resolvePhases,
   isEvenPattern,
@@ -143,6 +145,26 @@ describe("activeColumnIndex", () => {
     expect(activeColumnIndex(NADI_SHODHANA, "exhale")).toBe(0);
     expect(activeColumnIndex(NADI_SHODHANA, "holdIn")).toBe(1);
     expect(activeColumnIndex(NADI_SHODHANA, "holdOut")).toBe(1);
+  });
+});
+
+describe("metronome", () => {
+  it("resolves to a single phase using only the interval", () => {
+    const phases = resolvePhases(METRONOME);
+    expect(phases).toHaveLength(1);
+    expect(phases[0].count).toBe(METRONOME.inhale);
+  });
+  it("cycle is just the interval", () => {
+    expect(cycleDurationSec(METRONOME)).toBe(METRONOME.inhale);
+  });
+  it("isMetronome flags only the metronome", () => {
+    expect(isMetronome(METRONOME)).toBe(true);
+    expect(isMetronome(VILOMA)).toBe(false);
+    expect(isMetronome(BOX)).toBe(false);
+  });
+  it("4-7-8 is locked, others are not", () => {
+    expect(FOUR_SEVEN_EIGHT.locked).toBe(true);
+    expect(VILOMA.locked).toBeUndefined();
   });
 });
 

@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { Audio } from "expo-av";
 import { LinearGradient } from "expo-linear-gradient";
 import { TimerPickerModal } from "react-native-timer-picker";
-import { VILOMA, BreathPattern, getPattern } from "@/assets/data/breath-patterns";
+import { METRONOME, BreathPattern, getPattern, isMetronome } from "@/assets/data/breath-patterns";
 import { useBreathTimer } from "@/assets/utils/use-breath-timer";
 import { useAmbience } from "@/assets/utils/use-ambience";
 import { getData, storeData } from "@/assets/utils/persistent-storage";
@@ -37,7 +37,7 @@ type BreathSettings = {
  * tested useBreathTimer — with persisted settings for daily practice.
  */
 export default function BreathScreen() {
-  const [pattern, setPattern] = useState<BreathPattern>(VILOMA);
+  const [pattern, setPattern] = useState<BreathPattern>(METRONOME);
   const [totalSec, setTotalSec] = useState<number>(DEFAULT_TOTAL_SEC);
   const [clickId, setClickId] = useState<string>(DEFAULT_CLICK_ID);
   const [ambienceId, setAmbienceId] = useState<string>(DEFAULT_AMBIENCE_ID);
@@ -55,8 +55,10 @@ export default function BreathScreen() {
     })();
   }, []);
 
+  const metro = isMetronome(pattern);
+
   const timer = useBreathTimer(pattern, totalSec, {
-    clickSlotSec: CLICK_SLOT_SEC,
+    clickSlotSec: metro ? 0 : CLICK_SLOT_SEC, // metronome: pure interval, click exactly every N sec
     onClick: () => getClickSound(clickId).play(),
   });
 
@@ -83,9 +85,16 @@ export default function BreathScreen() {
 
   return (
     <View style={styles.screen}>
-      <BreathStage view={timer.view} isRunning={timer.isRunning} onPressClock={() => setShowPicker(true)} />
+      <BreathStage
+        view={timer.view}
+        isRunning={timer.isRunning}
+        metronome={metro}
+        onPressClock={() => setShowPicker(true)}
+      />
 
-      <PhaseCounts pattern={pattern} activeKind={timer.isRunning ? timer.view.kind : undefined} />
+      {!metro && (
+        <PhaseCounts pattern={pattern} activeKind={timer.isRunning ? timer.view.kind : undefined} />
+      )}
 
       <View style={{ flex: 1 }} />
 

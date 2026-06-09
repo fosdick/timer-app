@@ -26,6 +26,14 @@ export interface BreathPattern {
   holdIn: number;
   exhale: number;
   holdOut: number;
+  /**
+   * Metronome mode (the original pranayama grid): a single uniform interval —
+   * a click every `inhale` seconds, no phases, no inhale/exhale labels. Only the
+   * `inhale` count is used.
+   */
+  metronome?: boolean;
+  /** Counts are fixed and not user-editable (e.g. 4-7-8). */
+  locked?: boolean;
 }
 
 export interface ResolvedPhase {
@@ -54,6 +62,19 @@ export interface PatternColumns {
 
 // ─── Library ──────────────────────────────────────────────────────────────────
 
+// Metronome — the original pranayama grid. One interval; a click every N
+// seconds; the practitioner maps their own breath onto it. HIGHEST priority to
+// preserve (it was the existing pranayama before the breath-pattern rebuild).
+export const METRONOME: BreathPattern = {
+  id: "metronome",
+  name: "Metronome",
+  inhale: 3,
+  holdIn: 0,
+  exhale: 0,
+  holdOut: 0,
+  metronome: true,
+};
+
 export const BOX: BreathPattern = { id: "box", name: "Box", inhale: 4, holdIn: 4, exhale: 4, holdOut: 4 };
 
 // Nadi Shodhana — even pacing: 10 on, 2 off (inhale, hold, exhale, hold).
@@ -62,13 +83,16 @@ export const NADI_SHODHANA: BreathPattern = { id: "nadi", name: "Nadi Shodhana",
 // Viloma — odd: equal inhale/exhale with longer, asymmetric holds.
 export const VILOMA: BreathPattern = { id: "viloma", name: "Viloma", inhale: 16, holdIn: 6, exhale: 16, holdOut: 4 };
 
-// 4-7-8 — inhale 4, hold 7, exhale 8, no closing hold.
-export const FOUR_SEVEN_EIGHT: BreathPattern = { id: "478", name: "4-7-8", inhale: 4, holdIn: 7, exhale: 8, holdOut: 0 };
+// 4-7-8 — inhale 4, hold 7, exhale 8, no closing hold. Fixed counts.
+export const FOUR_SEVEN_EIGHT: BreathPattern = { id: "478", name: "4-7-8", inhale: 4, holdIn: 7, exhale: 8, holdOut: 0, locked: true };
 
-export const BREATH_PATTERNS: BreathPattern[] = [BOX, NADI_SHODHANA, VILOMA, FOUR_SEVEN_EIGHT];
+export const BREATH_PATTERNS: BreathPattern[] = [METRONOME, BOX, NADI_SHODHANA, VILOMA, FOUR_SEVEN_EIGHT];
 
 export const getPattern = (id: string): BreathPattern | undefined =>
   BREATH_PATTERNS.find((p) => p.id === id);
+
+/** Metronome mode: a single uniform click interval, no phases/labels. */
+export const isMetronome = (p: BreathPattern): boolean => p.metronome === true;
 
 // ─── Pure helpers ─────────────────────────────────────────────────────────────
 
