@@ -185,6 +185,10 @@ describe("editableFields", () => {
     expect(f.map((x) => x.key)).toEqual(["breath", "holdIn", "holdOut"]);
     expect(f.map((x) => x.value)).toEqual([16, 6, 4]);
   });
+  it("keeps the odd shape when an odd pattern's holds are edited equal (Viloma bug)", () => {
+    const edited = applyCountEdit(VILOMA, "holdIn", VILOMA.holdOut); // live values now look even
+    expect(editableFields(edited).map((f) => f.key)).toEqual(["breath", "holdIn", "holdOut"]);
+  });
 });
 
 describe("applyCountEdit", () => {

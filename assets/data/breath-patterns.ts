@@ -114,7 +114,11 @@ export interface EditField {
 export function editableFields(p: BreathPattern): EditField[] {
   if (p.locked) return [];
   if (isMetronome(p)) return [{ key: "interval", label: "Count", value: p.inhale }];
-  if (isEvenPattern(p)) {
+  // Decide the field shape from the pattern's INHERENT (library) symmetry, not
+  // the live values — otherwise editing an odd pattern's two holds to be equal
+  // would collapse it to "even" and drop the second hold field (the Viloma bug).
+  const base = getPattern(p.id) ?? p;
+  if (isEvenPattern(base)) {
     return [
       { key: "breath", label: "Breath", value: p.inhale },
       { key: "holdSym", label: "Hold", value: p.holdIn },
