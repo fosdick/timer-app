@@ -31,13 +31,9 @@ export const breathTheme = {
   } as Record<BreathPhaseKind, string>,
 };
 
-/** mm:ss (or h:mm:ss) from a seconds value. */
+/** Always HH:MM:SS with leading zeros (e.g. 01:10:00, 00:05:00). */
 export function formatClock(totalSeconds: number): string {
   const s = Math.max(0, Math.round(totalSeconds));
-  const h = Math.floor(s / 3600);
-  const m = Math.floor((s % 3600) / 60);
-  const sec = s % 60;
-  const mm = h > 0 ? String(m).padStart(2, "0") : String(m);
-  const ss = String(sec).padStart(2, "0");
-  return h > 0 ? `${h}:${mm}:${ss}` : `${mm}:${ss}`;
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${pad(Math.floor(s / 3600))}:${pad(Math.floor((s % 3600) / 60))}:${pad(s % 60)}`;
 }

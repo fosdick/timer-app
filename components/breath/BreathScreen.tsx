@@ -160,7 +160,6 @@ export default function BreathScreen() {
         visible={showPicker}
         setIsVisible={setShowPicker}
         initialValue={getTimeParts(totalSec)}
-        hideHours
         onConfirm={(picked) => {
           const newTotal = picked.hours * 3600 + picked.minutes * 60 + picked.seconds;
           setTotalSec(newTotal);
