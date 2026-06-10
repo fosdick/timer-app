@@ -116,17 +116,15 @@ export default function BreathScreen() {
         onPressClock={() => setShowPicker(true)}
       />
 
-      <View style={{ flex: 1 }} />
-
       <View style={styles.controls}>
-        <PatternPicker selectedId={pattern.id} onSelect={choosePattern} disabled={timer.isRunning} />
-
         <CountEditors
           pattern={pattern}
           activeKind={timer.isRunning && !metro ? timer.view.kind : undefined}
           onChange={editCount}
           disabled={timer.isRunning}
         />
+
+        <PatternPicker selectedId={pattern.id} onSelect={choosePattern} disabled={timer.isRunning} />
 
         <SoundOptions
           clickId={clickId}
@@ -152,6 +150,10 @@ export default function BreathScreen() {
           </Text>
         </TouchableOpacity>
       </View>
+
+      {/* Controls hug the stage; leftover space falls below so Start never
+          gets pushed under the banner/tab bar. */}
+      <View style={{ flex: 1 }} />
 
       <TimerPickerModal
         visible={showPicker}

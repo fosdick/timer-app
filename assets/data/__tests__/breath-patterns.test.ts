@@ -31,8 +31,8 @@ describe("resolvePhases", () => {
     expect(phases.map((p) => p.count)).toEqual([4, 7, 8]);
   });
 
-  it("labels both holds 'Hold'", () => {
-    expect(resolvePhases(BOX).map((p) => p.label)).toEqual(["Inhale", "Hold", "Exhale", "Hold"]);
+  it("labels both holds 'Retention'", () => {
+    expect(resolvePhases(BOX).map((p) => p.label)).toEqual(["Inhale", "Retention", "Exhale", "Retention"]);
   });
 });
 
@@ -178,13 +178,19 @@ describe("editableFields", () => {
   it("has one interval for metronome", () => {
     expect(editableFields(METRONOME)).toEqual([{ key: "interval", label: "Count", value: 3 }]);
   });
-  it("has breath + hold for even patterns", () => {
-    expect(editableFields(NADI_SHODHANA).map((f) => f.key)).toEqual(["breath", "holdSym"]);
+  it("has breath + symmetric retention for even patterns", () => {
+    const f = editableFields(BOX);
+    expect(f.map((x) => x.key)).toEqual(["breath", "holdSym"]);
+    expect(f.map((x) => x.label)).toEqual(["Breath", "Retention"]);
   });
-  it("has breath + both holds for odd patterns", () => {
+  it("has breath + both retentions for odd patterns", () => {
     const f = editableFields(VILOMA);
     expect(f.map((x) => x.key)).toEqual(["breath", "holdIn", "holdOut"]);
+    expect(f.map((x) => x.label)).toEqual(["Breath", "Retention in", "Retention out"]);
     expect(f.map((x) => x.value)).toEqual([16, 6, 4]);
+  });
+  it("splitHolds (Nadi Shodhana) gets the 3-box odd shape despite even values", () => {
+    expect(editableFields(NADI_SHODHANA).map((f) => f.key)).toEqual(["breath", "holdIn", "holdOut"]);
   });
   it("keeps the odd shape when an odd pattern's holds are edited equal (Viloma bug)", () => {
     const edited = applyCountEdit(VILOMA, "holdIn", VILOMA.holdOut); // live values now look even
@@ -193,22 +199,29 @@ describe("editableFields", () => {
 });
 
 describe("countFields", () => {
-  it("locked 4-7-8 shows display-only In/Hold/Out (zero hold dropped)", () => {
+  it("locked 4-7-8 shows display-only In/Retention/Out (zero hold dropped)", () => {
     const f = countFields(FOUR_SEVEN_EIGHT);
     expect(f.map((x) => [x.label, x.value, x.editable])).toEqual([
       ["In", 4, false],
-      ["Hold", 7, false],
+      ["Retention", 7, false],
       ["Out", 8, false],
     ]);
     expect(f.map((x) => x.kinds)).toEqual([["inhale"], ["holdIn"], ["exhale"]]);
   });
-  it("even patterns: Breath lights for inhale+exhale, Hold for both holds", () => {
-    const f = countFields(NADI_SHODHANA);
+  it("even patterns: Breath lights for inhale+exhale, Retention for both holds", () => {
+    const f = countFields(BOX);
     expect(f.map((x) => x.kinds)).toEqual([
       ["inhale", "exhale"],
       ["holdIn", "holdOut"],
     ]);
     expect(f.every((x) => x.editable)).toBe(true);
+  });
+  it("splitHolds patterns: each retention lights its own field", () => {
+    expect(countFields(NADI_SHODHANA).map((x) => x.kinds)).toEqual([
+      ["inhale", "exhale"],
+      ["holdIn"],
+      ["holdOut"],
+    ]);
   });
   it("odd patterns: each hold lights its own field", () => {
     const f = countFields(VILOMA);
