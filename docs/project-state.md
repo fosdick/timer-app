@@ -14,8 +14,9 @@ Viloma+ocean pranayama iteration (since superseded on dev-breath-timer).
 - `main` — canonical, everything shippable through the 2026-06-03 deconcentration batch.
 - `dev-breath-timer` — ACTIVE: the breath-timer rebuild (see breath-timer.md). Next release
   candidate once practice-testing settles.
-- `dev-paces` / tag `backup-dev-paces-pre-split` — old kitchen-sink backup, deletable when
-  comfortable. `dev-pranayama` — the pre-rebuild pranayama line (old component's last state).
+- `dev-paces` — DELETED 2026-06-10 (local + remote); its snapshot survives as tag
+  `backup-dev-paces-pre-split` (= `28b4fe1`, pushed to origin). `dev-pranayama` — the
+  pre-rebuild pranayama line (old component's last state).
 
 ## Feature flags & dormant work
 
