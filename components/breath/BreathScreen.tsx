@@ -16,7 +16,6 @@ import { useAmbience } from "@/assets/utils/use-ambience";
 import { getData, storeData } from "@/assets/utils/persistent-storage";
 import { getTimeParts } from "@/assets/utils/format-time";
 import { PatternPicker } from "./PatternPicker";
-import { PhaseCounts } from "./PhaseCounts";
 import { CountEditors } from "./CountEditors";
 import { BreathStage } from "./BreathStage";
 import { SoundOptions } from "./SoundOptions";
@@ -117,16 +116,17 @@ export default function BreathScreen() {
         onPressClock={() => setShowPicker(true)}
       />
 
-      {metro ? null : (
-        <PhaseCounts pattern={pattern} activeKind={timer.isRunning ? timer.view.kind : undefined} />
-      )}
-
       <View style={{ flex: 1 }} />
 
       <View style={styles.controls}>
         <PatternPicker selectedId={pattern.id} onSelect={choosePattern} disabled={timer.isRunning} />
 
-        <CountEditors pattern={pattern} onChange={editCount} disabled={timer.isRunning} />
+        <CountEditors
+          pattern={pattern}
+          activeKind={timer.isRunning && !metro ? timer.view.kind : undefined}
+          onChange={editCount}
+          disabled={timer.isRunning}
+        />
 
         <SoundOptions
           clickId={clickId}

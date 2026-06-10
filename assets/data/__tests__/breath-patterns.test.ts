@@ -6,6 +6,7 @@ import {
   FOUR_SEVEN_EIGHT,
   isMetronome,
   editableFields,
+  countFields,
   applyCountEdit,
   getPattern,
   resolvePhases,
@@ -188,6 +189,35 @@ describe("editableFields", () => {
   it("keeps the odd shape when an odd pattern's holds are edited equal (Viloma bug)", () => {
     const edited = applyCountEdit(VILOMA, "holdIn", VILOMA.holdOut); // live values now look even
     expect(editableFields(edited).map((f) => f.key)).toEqual(["breath", "holdIn", "holdOut"]);
+  });
+});
+
+describe("countFields", () => {
+  it("locked 4-7-8 shows display-only In/Hold/Out (zero hold dropped)", () => {
+    const f = countFields(FOUR_SEVEN_EIGHT);
+    expect(f.map((x) => [x.label, x.value, x.editable])).toEqual([
+      ["In", 4, false],
+      ["Hold", 7, false],
+      ["Out", 8, false],
+    ]);
+    expect(f.map((x) => x.kinds)).toEqual([["inhale"], ["holdIn"], ["exhale"]]);
+  });
+  it("even patterns: Breath lights for inhale+exhale, Hold for both holds", () => {
+    const f = countFields(NADI_SHODHANA);
+    expect(f.map((x) => x.kinds)).toEqual([
+      ["inhale", "exhale"],
+      ["holdIn", "holdOut"],
+    ]);
+    expect(f.every((x) => x.editable)).toBe(true);
+  });
+  it("odd patterns: each hold lights its own field", () => {
+    const f = countFields(VILOMA);
+    expect(f.map((x) => x.kinds)).toEqual([["inhale", "exhale"], ["holdIn"], ["holdOut"]]);
+  });
+  it("metronome: a single editable Count with no phase highlight", () => {
+    const f = countFields(METRONOME);
+    expect(f).toHaveLength(1);
+    expect(f[0]).toMatchObject({ label: "Count", editable: true, kinds: [] });
   });
 });
 

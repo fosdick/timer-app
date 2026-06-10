@@ -131,6 +131,43 @@ export function editableFields(p: BreathPattern): EditField[] {
   ];
 }
 
+export interface CountField {
+  /** An EditFieldKey when editable; the phase kind for locked display-only fields. */
+  key: string;
+  label: string;
+  value: number;
+  /** Phase kinds that highlight this field while the timer is running. */
+  kinds: BreathPhaseKind[];
+  editable: boolean;
+}
+
+const FIELD_KINDS: Record<EditFieldKey, BreathPhaseKind[]> = {
+  interval: [],
+  breath: ["inhale", "exhale"],
+  holdSym: ["holdIn", "holdOut"],
+  holdIn: ["holdIn"],
+  holdOut: ["holdOut"],
+};
+
+/**
+ * The single merged count row: the editable fields (tap to edit), or one
+ * display-only field per resolved phase for locked patterns (4-7-8). `kinds`
+ * says which phase kinds light the field up while running, so the row doubles
+ * as the live phase display.
+ */
+export function countFields(p: BreathPattern): CountField[] {
+  if (p.locked) {
+    return resolvePhases(p).map((ph) => ({
+      key: ph.kind,
+      label: KIND_SHORT[ph.kind],
+      value: ph.count,
+      kinds: [ph.kind],
+      editable: false,
+    }));
+  }
+  return editableFields(p).map((f) => ({ ...f, kinds: FIELD_KINDS[f.key], editable: true }));
+}
+
 /** Apply an edited value to a field, returning a new pattern (counts clamped). */
 export function applyCountEdit(p: BreathPattern, key: EditFieldKey, value: number): BreathPattern {
   const v = Math.max(0, Math.round(value));
@@ -156,6 +193,13 @@ const KIND_LABEL: Record<BreathPhaseKind, string> = {
   inhale: "Inhale",
   holdIn: "Hold",
   exhale: "Exhale",
+  holdOut: "Hold",
+};
+
+const KIND_SHORT: Record<BreathPhaseKind, string> = {
+  inhale: "In",
+  holdIn: "Hold",
+  exhale: "Out",
   holdOut: "Hold",
 };
 
