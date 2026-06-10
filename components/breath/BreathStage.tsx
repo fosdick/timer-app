@@ -43,10 +43,10 @@ export function BreathStage({
 }
 
 const styles = StyleSheet.create({
-  stage: { alignItems: "center", paddingTop: t.space.xl },
+  stage: { alignItems: "center", paddingTop: t.space.md },
   clockLabel: { color: t.muted, fontSize: 12, letterSpacing: 1, textTransform: "uppercase" },
   clock: { color: t.text, fontSize: 44, fontWeight: "200", fontVariant: ["tabular-nums"] },
-  center: { alignItems: "center", justifyContent: "center", minHeight: 200 },
+  center: { alignItems: "center", justifyContent: "center", minHeight: 150 },
   phase: { fontSize: 26, fontWeight: "300", letterSpacing: 2 },
   count: { fontSize: 96, fontWeight: "200", fontVariant: ["tabular-nums"], marginTop: t.space.sm },
   idle: { color: t.muted, fontSize: 22, fontWeight: "300", letterSpacing: 2 },
