@@ -35,7 +35,7 @@ Viloma+ocean pranayama iteration (since superseded on dev-breath-timer).
 - **Promo codes** (settings): first promo `flowfree` → remove ads; designed for more.
 - **Pre-push tsc hook**: `scripts/git-hooks/pre-push`, installed via `npm run install:hooks`.
 
-## Sound Lab (`../sound-lab/` — separate, LOCAL-ONLY git repo)
+## Sound Lab (`../sound-lab/` — separate git repo, remote: github.com/fosdick/sound-lab)
 
 3-tier audio asset workshop (React/Vite ui :5173 → Express :3010 → FastAPI+ffmpeg+pyloudnorm
 :8010). Renders seamless, loudness-tuned WAV loops; syncs into `assets/sounds/`. Run via
@@ -43,7 +43,7 @@ Viloma+ocean pranayama iteration (since superseded on dev-breath-timer).
 imported clicks/bells). Key facts: the click (`snap.wav`) is the loudness anchor; app sounds are
 wired via the registry `assets/utils/sounds.tsx` (renames are dangerous); known issue —
 `end-bell.wav` peaks at 0 dBFS (clipping). Strong next feature idea: live "seam score" while
-dragging in/out points. **No remote — back it up before any machine change.**
+dragging in/out points.
 
 ## Known issues / deferred
 

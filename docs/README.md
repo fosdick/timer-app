@@ -24,7 +24,7 @@ account, new context window — can pick up cold. The repo's `CLAUDE.md` points 
   copied. If memory and these docs disagree, memory is probably newer — verify against git.
 - **Claude account** — chat history on claude.ai is tied to the account, not the plan; downgrading
   to free keeps it. Claude Code transcripts/memory are local files, untouched by plan changes.
-- **Sound Lab** (`../sound-lab/`) — its own git repo, **LOCAL-ONLY, no remote** as of 2026-06-10.
-  The rendered ambience beds and recipes exist only on this Mac (plus the copies synced into this
-  repo's `assets/sounds/`). If backing things up before an account/machine change, push sound-lab
-  to a remote or copy it — it is the one piece of project knowledge not on GitHub.
+- **Sound Lab** (`../sound-lab/`) — its own git repo with a remote at
+  `github.com:fosdick/sound-lab.git` (first pushed 2026-06-09). Note: the raw sound pile and
+  most of `dist/` are gitignored by design — only the recipe, code, and the tracked final beds
+  are backed up; raw sources are re-downloadable from Freesound.
