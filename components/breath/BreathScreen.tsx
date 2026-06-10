@@ -15,6 +15,7 @@ import { useBreathTimer } from "@/assets/utils/use-breath-timer";
 import { useAmbience } from "@/assets/utils/use-ambience";
 import { getData, storeData } from "@/assets/utils/persistent-storage";
 import { getTimeParts } from "@/assets/utils/format-time";
+import { screenStyles } from "@/assets/styles/timer-app";
 import { PatternPicker } from "./PatternPicker";
 import { CountEditors } from "./CountEditors";
 import { BreathStage } from "./BreathStage";
@@ -139,7 +140,11 @@ export default function BreathScreen() {
           }}
           disabled={timer.isRunning}
         />
+      </View>
 
+      {/* Bottom-anchored like the yoga tab's button (same shared container),
+          so switching tabs doesn't make the button appear to jump. */}
+      <View style={screenStyles.buttonContainer}>
         <TouchableOpacity
           activeOpacity={0.7}
           style={[styles.startBtn, timer.isRunning && styles.stopBtn]}
@@ -150,10 +155,6 @@ export default function BreathScreen() {
           </Text>
         </TouchableOpacity>
       </View>
-
-      {/* Controls hug the stage; leftover space falls below so Start never
-          gets pushed under the banner/tab bar. */}
-      <View style={{ flex: 1 }} />
 
       <TimerPickerModal
         visible={showPicker}
@@ -180,7 +181,7 @@ export default function BreathScreen() {
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: t.bg, paddingHorizontal: t.space.lg, paddingBottom: t.space.lg },
+  screen: { flex: 1, backgroundColor: t.bg, paddingHorizontal: t.space.lg },
   controls: { alignItems: "center", gap: t.space.md, marginBottom: t.space.md },
   startBtn: {
     borderWidth: 1,

@@ -1,11 +1,16 @@
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { BreathView } from "@/assets/data/breath-timer-core";
+import { yogaTypography } from "@/assets/theme";
 import { breathTheme as t, formatClock } from "./breath-theme";
 
 /**
- * The central live display: total time remaining up top, and — while running —
- * the current phase label plus the count remaining in that phase (a single
- * glanceable number; the calm comes from the boundary click, not per-count ticks).
+ * The central live display: total time remaining up top (label + countdown
+ * typography shared with the yoga tab so the tabs read as one app; tapping the
+ * number still opens the session-length picker), and — while running — the
+ * current phase label plus the count remaining in that phase (a single
+ * glanceable number; the calm comes from the boundary click, not per-count
+ * ticks). The center area is FIXED height so the controls below never shift
+ * when the session starts.
  */
 export function BreathStage({
   view,
@@ -23,9 +28,9 @@ export function BreathStage({
   const clockDisabled = isRunning || !onPressClock;
   return (
     <View style={styles.stage}>
-      <Text style={styles.clockLabel}>{clockDisabled ? "remaining" : "tap to set · remaining"}</Text>
+      <Text style={yogaTypography.timerLabel}>Remaining</Text>
       <TouchableOpacity activeOpacity={0.7} disabled={clockDisabled} onPress={onPressClock}>
-        <Text style={styles.clock}>{formatClock(view.totalRemaining)}</Text>
+        <Text style={yogaTypography.timerCountdown}>{formatClock(view.totalRemaining)}</Text>
       </TouchableOpacity>
 
       <View style={styles.center}>
@@ -43,11 +48,9 @@ export function BreathStage({
 }
 
 const styles = StyleSheet.create({
-  stage: { alignItems: "center", paddingTop: t.space.md },
-  clockLabel: { color: t.muted, fontSize: 12, letterSpacing: 1, textTransform: "uppercase" },
-  clock: { color: t.text, fontSize: 44, fontWeight: "200", fontVariant: ["tabular-nums"] },
-  center: { alignItems: "center", justifyContent: "center", minHeight: 120 },
-  phase: { fontSize: 26, fontWeight: "300", letterSpacing: 2 },
-  count: { fontSize: 96, fontWeight: "200", fontVariant: ["tabular-nums"], marginTop: t.space.sm },
+  stage: { alignItems: "center", marginTop: 10 }, // mirrors the yoga tab's timer block offset
+  center: { alignItems: "center", justifyContent: "center", height: 150 }, // fixed: no layout shift on start
+  phase: { fontSize: 24, fontWeight: "300", letterSpacing: 2 },
+  count: { fontSize: 88, fontWeight: "200", fontVariant: ["tabular-nums"] },
   idle: { color: t.muted, fontSize: 22, fontWeight: "300", letterSpacing: 2 },
 });
