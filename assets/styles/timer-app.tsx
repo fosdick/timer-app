@@ -156,6 +156,11 @@ export const TimerStyles = StyleSheet.create({
     borderColor: borderColor,
     color: fontColor,
   },
+  // Light-green variant for the Stop/Resume states (shared across all tabs).
+  startButtonEngaged: {
+    borderColor: colorTheme.activeTimerDimmed,
+    color: colorTheme.activeTimerDimmed,
+  },
   metronome: {
     // marginTop: 15,
     paddingVertical: 5,

@@ -9,11 +9,11 @@ import { BreathPhaseKind } from "@/assets/data/breath-patterns";
 export const breathTheme = {
   bg: colorTheme.backgroundColor, //            #080B0c
   surface: "#0D110B", //                        subtle dark panel
-  line: colorTheme.controlInactiveOpacity, //   rgba(84,110,122,0.3) — subtle borders
+  line: "rgba(124, 179, 66, 0.35)", //          light green @35% — subtle borders (match yoga/HIIT greens)
   border: colorTheme.borderColor, //            #91BD27 lime — active/control borders
   text: colorTheme.activeTimerPrimary, //       #CDDC39 lime — primary numbers
   label: colorTheme.labelPrimary, //            #689F38 olive
-  muted: colorTheme.labelSecondary, //          #546E7A blue-gray
+  muted: colorTheme.activeTimerDimmed, //       #7CB342 light green — inactive/secondary (was blue-gray)
   accent: colorTheme.activeTimerPrimary, //     #CDDC39 lime
   accentSoft: colorTheme.activeTimerDimmed, //  #7CB342 muted lime
   buttonText: colorTheme.fontColor, //          #629231 green

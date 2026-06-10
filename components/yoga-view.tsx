@@ -944,6 +944,13 @@ export default function YogaView() {
   });
   const [h, m, s, pam] = formatedTime.split(/:|\s/);
 
+  const startStopLabel =
+    isRunning || isAutoTimerPaused || isInTransition
+      ? "Stop"
+      : timeRemaining > 0 && (isManualMode ? timeRemaining < initialTotalTime : true)
+        ? "Resume"
+        : "Start";
+
   return (
     <View style={screenStyles.contentContainer}>
       {/* Hamburger button — manual mode only, absolute top-left */}
@@ -1141,8 +1148,8 @@ export default function YogaView() {
       <View style={screenStyles.buttonContainer}>
         <TouchableOpacity activeOpacity={0.7} onPress={handleStartStop}>
           <View>
-            <Text style={TimerStyles.startButton}>
-              {(isRunning || isAutoTimerPaused || isInTransition) ? "Stop" : (timeRemaining > 0 && (isManualMode ? timeRemaining < initialTotalTime : true)) ? "Resume" : "Start"}
+            <Text style={[TimerStyles.startButton, startStopLabel !== "Start" && TimerStyles.startButtonEngaged]}>
+              {startStopLabel}
             </Text>
           </View>
         </TouchableOpacity>

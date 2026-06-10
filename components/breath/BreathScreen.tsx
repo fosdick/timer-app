@@ -147,7 +147,9 @@ export default function BreathScreen() {
           style={[styles.startBtn, timer.isRunning && styles.stopBtn]}
           onPress={() => (timer.isRunning ? timer.stop() : timer.start())}
         >
-          <Text style={styles.startText}>{timer.isRunning ? "Stop" : "Start"}</Text>
+          <Text style={[styles.startText, timer.isRunning && styles.stopText]}>
+            {timer.isRunning ? "Stop" : "Start"}
+          </Text>
         </TouchableOpacity>
       </View>
 
@@ -187,6 +189,7 @@ const styles = StyleSheet.create({
     minWidth: 200,
     alignItems: "center",
   },
-  stopBtn: { borderColor: "#C0795A" }, // warmer outline while running
+  stopBtn: { borderColor: t.accentSoft }, // light green while running (matches yoga/HIIT)
   startText: { color: t.buttonText, fontSize: 20, fontWeight: "600", letterSpacing: 1 },
+  stopText: { color: t.accentSoft },
 });

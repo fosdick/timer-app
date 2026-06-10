@@ -338,7 +338,7 @@ export default function HittView() {
           }}
         >
           <View>
-            <Text style={TimerStyles.startButton}>
+            <Text style={[TimerStyles.startButton, isStop !== true && TimerStyles.startButtonEngaged]}>
               {isStop === true ? "Start" : "Stop"}
             </Text>
           </View>
