@@ -25,11 +25,6 @@ unless asked. Sound Lab (audio asset prep) lives OUTSIDE this repo at `../sound-
 - Theme: GreenTheme (dark `#080B0c`, lime `#CDDC39`, light green `#7CB342`, olive `#689F38`).
   All three tabs must read as one app — shared tokens in `assets/styles/timer-app.tsx` and
   `assets/theme/`; breath tab tokens in `components/breath/breath-theme.ts`.
-- Canonical features: `docs/canonical-features.md` lists behaviors (and deliberate absences)
-  that must never silently disappear. When a feature is specced, ASK the user what's canonical
-  vs. iterative if they don't say. Rebuilding/replacing a component = re-verify its entries
-  before calling the work done. Canonical changes are explicit edits to that file, never
-  implied by code changes.
 
 ## Build & verify
 
