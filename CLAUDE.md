@@ -25,6 +25,13 @@ unless asked. Sound Lab (audio asset prep) lives OUTSIDE this repo at `../sound-
 - Theme: GreenTheme (dark `#080B0c`, lime `#CDDC39`, light green `#7CB342`, olive `#689F38`).
   All three tabs must read as one app — shared tokens in `assets/styles/timer-app.tsx` and
   `assets/theme/`; breath tab tokens in `components/breath/breath-theme.ts`.
+- Canonical features: `docs/canonical-features.md` — behaviors (and deliberate absences) that
+  must never silently disappear. Capture happens at the GO moment of a feature ("going —
+  canonical bits I'm hearing: X, Y — confirm?"); entries are in the user's words (Claude
+  nominates, only the user ratifies). Rebuilding a component = re-verify its entries.
+  A failing canonical test means canon is changing: amend the manifest in the same commit,
+  or stop. Builds need an explicit go — a reply to a question Claude asked is an answer,
+  never authorization.
 
 ## Build & verify
 

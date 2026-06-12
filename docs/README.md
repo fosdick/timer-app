@@ -13,6 +13,7 @@ account, new context window — can pick up cold. The repo's `CLAUDE.md` points 
 | [breath-timer.md](breath-timer.md) | The breath-timer feature itself: architecture, iteration history, current state, what's open before release. |
 | [release-and-builds.md](release-and-builds.md) | iOS release playbook + local build/signing setup (Apple ID facts, gotchas) + the never-eas-for-testing rule. |
 | [project-state.md](project-state.md) | Snapshot of everything else: branches, feature flags, deferred items, Sound Lab, known issues. |
+| [canonical-features.md](canonical-features.md) | Behaviors (and deliberate absences) that must never silently disappear — captured at go moments, in the user's words, guarded by manifest/contract/smoke tiers. |
 
 ## Continuity notes (what lives where)
 

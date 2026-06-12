@@ -40,7 +40,8 @@ set up (2026-06-10). Defaults:
 0. **Memory/docs audit** (standing practice since 2026-06-10): hard-verify the memory files and
    these docs against reality — extract checkable claims (branches, flags, counts, statuses),
    test each with real commands, fix stale facts in place. Releases are when stale knowledge
-   bites hardest.
+   bites hardest. Also walk `docs/canonical-features.md` and verify each entry holds in the
+   build being shipped.
 1. Merge the feature branch → `main`; verify tests + `npx tsc --noEmit`.
 2. From main cut `build-v{NEW_VERSION}-ios-submit`.
 3. Bump the version in BOTH `package.json` and `app.json` (`expo.version`); commit and push.
