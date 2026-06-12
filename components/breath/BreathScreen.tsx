@@ -15,6 +15,7 @@ import { useBreathTimer } from "@/assets/utils/use-breath-timer";
 import { useAmbience } from "@/assets/utils/use-ambience";
 import { getData, storeData } from "@/assets/utils/persistent-storage";
 import { getTimeParts } from "@/assets/utils/format-time";
+import { playStart, playEndChime } from "@/assets/utils/sounds";
 import { screenStyles } from "@/assets/styles/timer-app";
 import { PatternPicker } from "./PatternPicker";
 import { CountEditors } from "./CountEditors";
@@ -74,9 +75,12 @@ export default function BreathScreen() {
     })();
   }, []);
 
+  // Start/end chimes match the yoga tab (canonical behavior — see the old
+  // pranayama component): bell-hit on Start, end-bell when the session ends.
   const timer = useBreathTimer(pattern, totalSec, {
     clickSlotSec: metro ? 0 : CLICK_SLOT_SEC,
     onClick: () => getClickSound(clickId).play(),
+    onFinish: () => playEndChime(),
   });
 
   useAmbience(getAmbience(ambienceId).asset, timer.isRunning);
@@ -148,7 +152,14 @@ export default function BreathScreen() {
         <TouchableOpacity
           activeOpacity={0.7}
           style={[styles.startBtn, timer.isRunning && styles.stopBtn]}
-          onPress={() => (timer.isRunning ? timer.stop() : timer.start())}
+          onPress={() => {
+            if (timer.isRunning) {
+              timer.stop();
+            } else {
+              playStart();
+              timer.start();
+            }
+          }}
         >
           <Text style={[styles.startText, timer.isRunning && styles.stopText]}>
             {timer.isRunning ? "Stop" : "Start"}
