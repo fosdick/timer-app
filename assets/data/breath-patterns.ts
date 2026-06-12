@@ -37,6 +37,9 @@ export interface BreathPattern {
   /** Edit the two retentions separately (odd-style 3 boxes) even when the
    * pattern's values are symmetric (e.g. Nadi Shodhana). */
   splitHolds?: boolean;
+  /** All FOUR counts edit independently (inhale ≠ exhale allowed) — the
+   * unequal-breath patterns (Visamavritti). */
+  independentCounts?: boolean;
 }
 
 export interface ResolvedPhase {
@@ -90,7 +93,11 @@ export const VILOMA: BreathPattern = { id: "viloma", name: "Viloma", inhale: 16,
 // 4-7-8 — inhale 4, hold 7, exhale 8, no closing hold. Fixed counts.
 export const FOUR_SEVEN_EIGHT: BreathPattern = { id: "478", name: "4-7-8", inhale: 4, holdIn: 7, exhale: 8, holdOut: 0, locked: true };
 
-export const BREATH_PATTERNS: BreathPattern[] = [METRONOME, BOX, NADI_SHODHANA, VILOMA, FOUR_SEVEN_EIGHT];
+// Visamavritti — unequal breath: all four counts independent, defaulting to the
+// classical 1:4:2:3 ratio (4 / 16 / 8 / 12).
+export const VISAMAVRITTI: BreathPattern = { id: "visama", name: "Visamavritti", inhale: 4, holdIn: 16, exhale: 8, holdOut: 12, independentCounts: true };
+
+export const BREATH_PATTERNS: BreathPattern[] = [METRONOME, BOX, NADI_SHODHANA, VILOMA, FOUR_SEVEN_EIGHT, VISAMAVRITTI];
 
 export const getPattern = (id: string): BreathPattern | undefined =>
   BREATH_PATTERNS.find((p) => p.id === id);
@@ -100,7 +107,7 @@ export const isMetronome = (p: BreathPattern): boolean => p.metronome === true;
 
 // ─── Editable counts ──────────────────────────────────────────────────────────
 
-export type EditFieldKey = "interval" | "breath" | "holdSym" | "holdIn" | "holdOut";
+export type EditFieldKey = "interval" | "breath" | "holdSym" | "holdIn" | "holdOut" | "inhale" | "exhale";
 
 export interface EditField {
   key: EditFieldKey;
@@ -114,6 +121,7 @@ export interface EditField {
  *   - metronome: one "Count" interval
  *   - even: "Breath" (inhale=exhale) + "Retention" (holdIn=holdOut)
  *   - odd or splitHolds: "Breath" + "Retention in" + "Retention out"
+ *   - independentCounts (Visamavritti): all four, separately
  */
 export function editableFields(p: BreathPattern): EditField[] {
   if (p.locked) return [];
@@ -122,6 +130,14 @@ export function editableFields(p: BreathPattern): EditField[] {
   // the live values — otherwise editing an odd pattern's two holds to be equal
   // would collapse it to "even" and drop the second hold field (the Viloma bug).
   const base = getPattern(p.id) ?? p;
+  if (base.independentCounts) {
+    return [
+      { key: "inhale", label: "Inhale", value: p.inhale },
+      { key: "holdIn", label: "Retention in", value: p.holdIn },
+      { key: "exhale", label: "Exhale", value: p.exhale },
+      { key: "holdOut", label: "Retention out", value: p.holdOut },
+    ];
+  }
   if (isEvenPattern(base) && !base.splitHolds) {
     return [
       { key: "breath", label: "Breath", value: p.inhale },
@@ -151,6 +167,8 @@ const FIELD_KINDS: Record<EditFieldKey, BreathPhaseKind[]> = {
   holdSym: ["holdIn", "holdOut"],
   holdIn: ["holdIn"],
   holdOut: ["holdOut"],
+  inhale: ["inhale"],
+  exhale: ["exhale"],
 };
 
 /**
@@ -186,6 +204,10 @@ export function applyCountEdit(p: BreathPattern, key: EditFieldKey, value: numbe
       return { ...p, holdIn: v };
     case "holdOut":
       return { ...p, holdOut: v };
+    case "inhale":
+      return { ...p, inhale: Math.max(1, v) };
+    case "exhale":
+      return { ...p, exhale: Math.max(1, v) };
     default:
       return p;
   }

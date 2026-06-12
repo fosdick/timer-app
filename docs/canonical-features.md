@@ -80,3 +80,7 @@ Promote with the user's words, or strike.
 - HIIT start sound (`playHittStart`) on starting a HIIT session.
 - Last-active Pace restored on launch (yoga tab).
 - Click sounds preview when the picker wheel settles on them.
+- Visamavritti exists right after 4-7-8 with all four counts independently editable,
+  defaulting to the 1:4:2:3 ratio (4/16/8/12). (Nominated at its go moment, 2026-06-12 —
+  user words on file: "this style requires all four box... the default should be the ratio
+  of 1:4:2:3"; awaiting explicit ratification.)

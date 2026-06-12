@@ -10,7 +10,9 @@ pranayama component. Design rationale: see [design-pranayama.md](design-pranayam
   (inhale / holdIn / exhale / holdOut; 0 = skipped). Library: METRONOME (the original uniform
   grid, default selection, highest-priority to preserve), BOX 4/4/4/4, NADI_SHODHANA 10/2/10/2
   (`splitHolds: true` → independent retention edits), VILOMA 16/6/16/4, FOUR_SEVEN_EIGHT 4/7/8/0
-  (`locked` — lock-in category, intentionally not editable). Pure helpers: resolvePhases,
+  (`locked` — lock-in category, intentionally not editable), VISAMAVRITTI 4/16/8/12
+  (`independentCounts: true` → all four boxes edit separately; the classical 1:4:2:3
+  unequal-breath ratio). Pure helpers: resolvePhases,
   buildTimeline (click segment in its own ~0.3s container + breath segment per phase),
   editableFields / countFields (field shape derives from the LIBRARY pattern's symmetry, not
   live values — the "Viloma bug" fix), applyCountEdit, segmentAtElapsed.

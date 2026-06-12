@@ -4,6 +4,7 @@ import {
   NADI_SHODHANA,
   VILOMA,
   FOUR_SEVEN_EIGHT,
+  VISAMAVRITTI,
   isMetronome,
   editableFields,
   countFields,
@@ -196,6 +197,12 @@ describe("editableFields", () => {
     const edited = applyCountEdit(VILOMA, "holdIn", VILOMA.holdOut); // live values now look even
     expect(editableFields(edited).map((f) => f.key)).toEqual(["breath", "holdIn", "holdOut"]);
   });
+  it("independentCounts (Visamavritti) gets all four boxes, separately editable", () => {
+    const f = editableFields(VISAMAVRITTI);
+    expect(f.map((x) => x.key)).toEqual(["inhale", "holdIn", "exhale", "holdOut"]);
+    expect(f.map((x) => x.label)).toEqual(["Inhale", "Retention in", "Exhale", "Retention out"]);
+    expect(f.map((x) => x.value)).toEqual([4, 16, 8, 12]);
+  });
 });
 
 describe("countFields", () => {
@@ -232,6 +239,14 @@ describe("countFields", () => {
     expect(f).toHaveLength(1);
     expect(f[0]).toMatchObject({ label: "Count", editable: true, kinds: [] });
   });
+  it("independentCounts patterns: every phase lights only its own field", () => {
+    expect(countFields(VISAMAVRITTI).map((x) => x.kinds)).toEqual([
+      ["inhale"],
+      ["holdIn"],
+      ["exhale"],
+      ["holdOut"],
+    ]);
+  });
 });
 
 describe("applyCountEdit", () => {
@@ -248,6 +263,12 @@ describe("applyCountEdit", () => {
     expect(applyCountEdit(VILOMA, "breath", 0).inhale).toBe(1);
     expect(applyCountEdit(METRONOME, "interval", 0).inhale).toBe(1);
     expect(applyCountEdit(VILOMA, "holdIn", -5).holdIn).toBe(0);
+  });
+  it("inhale/exhale edit independently (Visamavritti), clamped to at least 1", () => {
+    const p = applyCountEdit(VISAMAVRITTI, "inhale", 6);
+    expect(p.inhale).toBe(6);
+    expect(p.exhale).toBe(8); // untouched — unequal breath is the point
+    expect(applyCountEdit(VISAMAVRITTI, "exhale", 0).exhale).toBe(1);
   });
   it("does not mutate the original pattern", () => {
     const before = { ...VILOMA };
