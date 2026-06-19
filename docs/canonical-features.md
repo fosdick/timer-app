@@ -67,6 +67,27 @@ enforced) → `smoke test` (screen-level wiring test — the layer where losses 
   aperiodic/fractal direction lands post-release.
 - Guard: manifest + design doc (behavioral/aesthetic — verified by ear and design review).
 
+### 5. The promo-code field clears after Apply, on every outcome
+- After pressing Apply the text input clears — valid, unrecognized, or already-active alike —
+  and the feedback line reports what happened. The field never lingers with stale text.
+- Provenance: user, 2026-06-19 — ratified "promo-clear". Regressed TWICE: first the clear was
+  missing; then the success path cleared in React state but lingered on-device because the field
+  was disabled (`editable={!busy}`) in the same render that cleared it, stranding the native iOS
+  text update. Fix: don't disable the field during activation; re-entry guarded in handleApply.
+- Guard: **smoke test** (`components/__tests__/promo-code-input.test.tsx`, RNTL) covers the state
+  clear + "field stays editable while activation is in flight". CAVEAT: the native-reconciliation
+  variant is below RNTL's mock renderer (it only sees React state) — that layer needs device/E2E.
+
+### 6. A running timer gates tab switches behind a confirmation
+- While any timer is running, switching tabs prompts "switch anyway?" first — an accidental tap
+  (phone set down mid-practice) must not silently stop the session. Idle → instant switch as
+  before; pressing the already-focused tab never prompts.
+- Provenance: user, 2026-06-19 — "if timer is running confirm to continue switching"; ratified
+  "tab switch confirm".
+- Guard: **contract test** (`assets/utils/__tests__/tab-switch-guard.test.ts`) for the decision
+  + **smoke test** (`components/__tests__/active-timer-context.test.tsx`) for the running-state
+  plumbing.
+
 ---
 
 ## Nominees — observed by Claude, NOT yet ratified

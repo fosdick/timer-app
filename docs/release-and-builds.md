@@ -6,13 +6,18 @@ As of 2026-06-10. Two distinct activities: **testing builds** (daily, free, loca
 ## Rule: never `eas build` for testing
 
 EAS cloud builds spend credits (they reset monthly) and are unnecessary since local signing was
-set up (2026-06-10). Defaults:
+set up (2026-06-10). Defaults (npm scripts wrap these — see README-deploy.md):
 
-- **Simulator** (UI checks, zero signing): `npx expo run:ios`
-- **Real iPhone** (audio/haptics/practice): `npx expo run:ios --configuration Release --device "iPhone"`
-  — or press ▶ in Xcode (`ios/TimerAppYoga.xcworkspace`); the scheme's Run config is set to
-  Release, so ▶ gives the standalone no-Metro app.
+- **Preflight first** (after time away): `npm run preflight` — checks toolchain/signing/cert rot
+  before a long build fails on it.
+- **Simulator** (UI checks, zero signing): `npm run ios` (`npx expo run:ios`)
+- **Real iPhone** (audio/haptics/practice): `npm run ios:device`
+  (`npx expo run:ios --configuration Release --device`) — or press ▶ in Xcode
+  (`ios/TimerAppYoga.xcworkspace`); the scheme's Run config is set to Release, so ▶ gives the
+  standalone no-Metro app.
 - No dev-client / Metro flows — Release builds embed the JS bundle.
+- **`eas-cli` is pinned** as a devDependency (run via the npm scripts, not bare `npx`), so the
+  CLI doesn't silently change version between sessions.
 
 ## Local signing facts (hard-won, don't re-derive)
 
@@ -32,8 +37,10 @@ set up (2026-06-10). Defaults:
   overwrite; wipes local app data), and the phone will require Developer Mode (Settings →
   Privacy & Security, restart).
 - Always open `ios/TimerAppYoga.xcworkspace` (not the .xcodeproj, not the folder). `ios/` is
-  gitignored prebuild output — `expo prebuild --clean` would wipe the DEVELOPMENT_TEAM and the
-  Release scheme tweak; re-set them if regenerated.
+  gitignored prebuild output. The **DEVELOPMENT_TEAM is now captured in `app.json`**
+  (`ios.appleTeamId: "L5MB3YYG22"`), so `expo prebuild` re-applies it automatically — a clean
+  prebuild no longer drops signing. The Release **scheme tweak** is NOT yet captured in config,
+  so re-set that one by hand if `ios/` is regenerated (or do one ▶ run in Xcode).
 
 ## App Store release playbook
 
@@ -46,16 +53,29 @@ set up (2026-06-10). Defaults:
 2. From main cut `build-v{NEW_VERSION}-ios-submit`.
 3. Bump the version in BOTH `package.json` and `app.json` (`expo.version`); commit and push.
 4. Build — pick one:
-   - `eas build --profile production --platform ios --local` (free, same pipeline/credentials,
-     fastlane required — it's installed; if it breaks after a brew Ruby upgrade:
-     `brew reinstall fastlane`), or
+   - `npm run build:ios` (= `eas build --profile production --platform ios --local`) — free, same
+     pipeline/credentials, fastlane required — it's installed; if it breaks after a brew Ruby
+     upgrade: `brew reinstall fastlane`), or
    - `eas build --profile production --platform ios` (cloud, costs credits), or
    - Xcode Product → Archive → Organizer upload (fully Expo-free; manual build numbers).
-5. `eas submit --profile production --platform ios` (free regardless of build path).
+5. `npm run submit:ios` (= `eas submit --profile production --platform ios`) — free regardless of
+   build path.
 6. App Store Connect: create the version, What's New, select build, submit for review.
 7. After submission: merge the release branch back to main, tag `v{NEW_VERSION}`, delete the
    release branch. (Keeps main from falling behind shipped code — the pre-cleanup failure mode.)
 
 Gotchas: Apple periodically updates the PLA — builds fail with "Apple 403" until accepted at
 developer.apple.com. `production` profile has `autoIncrement` (build numbers managed by EAS,
-`appVersionSource: remote`). The `release-ios` npm script is stale — don't use it.
+`appVersionSource: remote`). (The old stale `release-ios` npm script was removed 2026-06-19 —
+use `npm run build:ios` / `npm run submit:ios`.)
+
+### `eas build --local` fails in "Install dependencies" with "Unknown error" (2026-06-19)
+
+Any `--local` EAS build (preview or `production`) tarballs the working dir **without `.git/`**,
+then runs `npm ci`. npm's `prepare` lifecycle script fires automatically during that install —
+ours runs `install:hooks`, which `cp`s a hook into `.git/hooks/`. In the sandbox `.git/hooks`
+doesn't exist, the `cp` fails, and EAS masks the real cause as a generic "Unknown error. See logs
+of the Install dependencies build phase." The fix: `install:hooks` now guards on
+`test -d .git/hooks` and `|| true`s, so it no-ops when there's no git checkout. Don't drop the
+guard. (Same trap would bite any new `prepare`/`postinstall` script that assumes `.git/` or other
+dev-only files are present.)
