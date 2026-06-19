@@ -13,6 +13,7 @@ import {
 } from "@/assets/data/breath-patterns";
 import { useBreathTimer } from "@/assets/utils/use-breath-timer";
 import { useAmbience } from "@/assets/utils/use-ambience";
+import { useReportActiveTimer } from "@/components/active-timer-context";
 import { getData, storeData } from "@/assets/utils/persistent-storage";
 import { getTimeParts } from "@/assets/utils/format-time";
 import { playStart, playEndChime } from "@/assets/utils/sounds";
@@ -84,6 +85,9 @@ export default function BreathScreen() {
   });
 
   useAmbience(getAmbience(ambienceId).asset, timer.isRunning);
+
+  // Report to the tab bar so an accidental tab tap mid-session is confirmed.
+  useReportActiveTimer("breath", timer.isRunning);
 
   const persist = (over: Partial<Parameters<typeof storeData>[1]>) => {
     storeData(BREATH_DATA_KEY, {

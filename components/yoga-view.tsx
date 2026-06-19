@@ -15,6 +15,7 @@ import {
 } from "../assets/utils/format-time";
 import { getData, storeData } from "../assets/utils/persistent-storage";
 import { armAudioSession } from "../assets/utils/sounds";
+import { useReportActiveTimer } from "./active-timer-context";
 
 import YogaFlowSelect from "./yoga-flow-select";
 import YogaAssetRenderer from "./yoga-asset-renderer";
@@ -82,6 +83,8 @@ export default function YogaView() {
 
   // Timer state
   const [isRunning, setIsRunning] = useState<boolean>(false);
+  // Report to the tab bar so an accidental tab tap mid-session is confirmed.
+  useReportActiveTimer("yoga", isRunning);
   const [timeRemaining, setTimeRemaining] = useState<number>(
     DEFAULT_INITIAL_TOTAL_TIME,
   );
