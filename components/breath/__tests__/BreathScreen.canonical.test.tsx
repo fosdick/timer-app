@@ -70,13 +70,19 @@ describe("canonical #1: pranayama chimes at start and end", () => {
     jest.useRealTimers();
   });
 
-  it("plays the start bell on Start and the end bell when the session completes", async () => {
+  it("plays the start bell after the count-in and the end bell when the session completes", async () => {
     let tree!: ReactTestRenderer;
     await act(async () => {
       tree = renderer.create(<BreathScreen />);
     });
 
+    // Start now begins an 8s count-in; the start bell fires when it reaches 0.
     pressTextButton(tree, "Start");
+    expect(playStart).not.toHaveBeenCalled();
+
+    await act(async () => {
+      jest.advanceTimersByTime(8_000); // count-in completes
+    });
     expect(playStart).toHaveBeenCalledTimes(1);
     expect(playEndChime).not.toHaveBeenCalled();
 
@@ -97,6 +103,9 @@ describe("canonical #1: pranayama chimes at start and end", () => {
 
     pressTextButton(tree, "Start");
     await act(async () => {
+      jest.advanceTimersByTime(8_000); // finish count-in → session running
+    });
+    await act(async () => {
       jest.advanceTimersByTime(2_000);
     });
     pressTextButton(tree, "Stop");
@@ -104,6 +113,90 @@ describe("canonical #1: pranayama chimes at start and end", () => {
       jest.advanceTimersByTime(10_000);
     });
     expect(playEndChime).not.toHaveBeenCalled();
+
+    act(() => tree.unmount());
+  }, 20_000);
+});
+
+describe("count-in (Begin in) — fresh start only", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    jest.useFakeTimers();
+  });
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
+  const hasText = (tree: ReactTestRenderer, label: string) =>
+    tree.root.findAll(
+      (n) => n.type === (Text as unknown) && n.props.children === label,
+    ).length > 0;
+
+  it("shows a 'Begin in' count-in on a fresh Start and chimes only at 0", async () => {
+    let tree!: ReactTestRenderer;
+    await act(async () => {
+      tree = renderer.create(<BreathScreen />);
+    });
+
+    pressTextButton(tree, "Start");
+    expect(hasText(tree, "Begin in")).toBe(true);
+    expect(playStart).not.toHaveBeenCalled();
+
+    // Partway through the count-in: still counting, no chime yet.
+    await act(async () => {
+      jest.advanceTimersByTime(3_000);
+    });
+    expect(playStart).not.toHaveBeenCalled();
+
+    await act(async () => {
+      jest.advanceTimersByTime(5_000); // reaches 0 (3 + 5 = 8s)
+    });
+    expect(playStart).toHaveBeenCalledTimes(1);
+    expect(hasText(tree, "Begin in")).toBe(false);
+
+    act(() => tree.unmount());
+  }, 20_000);
+
+  it("does NOT count in when resuming a paused sequence", async () => {
+    let tree!: ReactTestRenderer;
+    await act(async () => {
+      tree = renderer.create(<BreathScreen />);
+    });
+
+    pressTextButton(tree, "Start");
+    await act(async () => {
+      jest.advanceTimersByTime(8_000); // count-in done → running (start bell #1)
+    });
+    await act(async () => {
+      jest.advanceTimersByTime(1_000);
+    });
+    pressTextButton(tree, "Stop"); // pause mid-sequence
+    expect(playStart).toHaveBeenCalledTimes(1);
+
+    pressTextButton(tree, "Start"); // resume — immediate, no count-in
+    expect(hasText(tree, "Begin in")).toBe(false);
+    expect(playStart).toHaveBeenCalledTimes(2);
+
+    act(() => tree.unmount());
+  }, 20_000);
+
+  it("cancels the count-in if Stop is pressed before it reaches 0", async () => {
+    let tree!: ReactTestRenderer;
+    await act(async () => {
+      tree = renderer.create(<BreathScreen />);
+    });
+
+    pressTextButton(tree, "Start");
+    await act(async () => {
+      jest.advanceTimersByTime(3_000);
+    });
+    pressTextButton(tree, "Stop"); // cancel the count-in
+    expect(hasText(tree, "Begin in")).toBe(false);
+
+    await act(async () => {
+      jest.advanceTimersByTime(20_000); // no start should ever fire
+    });
+    expect(playStart).not.toHaveBeenCalled();
 
     act(() => tree.unmount());
   }, 20_000);

@@ -35,8 +35,12 @@ enforced) → `smoke test` (screen-level wiring test — the layer where losses 
 ## Ratified
 
 ### 1. Non-repeating timers chime at start and end
-- **Pranayama/breath:** pressing Start plays the bell-hit (`playStart` — the same sound as the
-  yoga tab's start); session completion plays the end bell (`playEndChime`, end-bell.wav).
+- **Pranayama/breath:** the start bell-hit (`playStart` — the same sound as the yoga tab's start)
+  marks the beginning of the practice; session completion plays the end bell (`playEndChime`,
+  end-bell.wav).
+- **Amended 2026-06-19 (count-in, #7):** on a FRESH sequence the start bell now fires when the
+  count-in reaches 0 (not on the button press); on resume from a pause it still fires
+  immediately. The bell still marks the actual start of breathing — that intent is unchanged.
 - **Canonical ABSENCE:** the yoga tab has **no end chime** — it repeats and plays transition
   sounds instead. Do not "fix" this by adding one.
 - Provenance: user, 2026-06-11 — "always a start and end sound for pranayama. really for
@@ -87,6 +91,18 @@ enforced) → `smoke test` (screen-level wiring test — the layer where losses 
 - Guard: **contract test** (`assets/utils/__tests__/tab-switch-guard.test.ts`) for the decision
   + **smoke test** (`components/__tests__/active-timer-context.test.tsx`) for the running-state
   plumbing.
+
+### 7. Count-in ("Begin in") on the Pranayama tab
+- Pressing Start on a FRESH sequence counts in from 8 seconds, labeled "Begin in"; when it
+  reaches 0 the start chime plays and the existing functionality begins. Does NOT run on
+  pause/resume (resume starts immediately). Pressing Stop during the count-in cancels it. The
+  count-in counts as an active session (tab-switch guard + controls locked apply during it).
+  Pranayama tab only — yoga/HIIT have no count-in.
+- Provenance: user, 2026-06-19 — "create a 'count in' feature... 'count in' from 10 seconds.
+  Label the counter as 'Begin in'. when the counter reaches 0, start chime plays and the existing
+  functionality begins. This only happens from the beginning of a new breathe sequence. does not
+  happen on a pause / resume case." (Duration amended 10 → 8 at ratification, same day.)
+- Guard: **smoke test** (`components/breath/__tests__/BreathScreen.canonical.test.tsx`).
 
 ---
 

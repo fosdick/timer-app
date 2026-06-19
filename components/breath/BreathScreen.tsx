@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { Audio } from "expo-av";
 import { LinearGradient } from "expo-linear-gradient";
@@ -28,6 +28,7 @@ import { breathTheme as t } from "./breath-theme";
 const BREATH_DATA_KEY = "breath_timer_data";
 const DEFAULT_TOTAL_SEC = 300; // 5 min
 const CLICK_SLOT_SEC = 0.3; // boundary click's own little time container (patterns only)
+const COUNT_IN_SEC = 8; // "Begin in" pre-roll before a fresh sequence starts
 
 type CountSet = { inhale: number; holdIn: number; exhale: number; holdOut: number };
 
@@ -86,8 +87,66 @@ export default function BreathScreen() {
 
   useAmbience(getAmbience(ambienceId).asset, timer.isRunning);
 
-  // Report to the tab bar so an accidental tab tap mid-session is confirmed.
-  useReportActiveTimer("breath", timer.isRunning);
+  // Count-in ("Begin in N"): a pre-roll before a FRESH sequence so the user can
+  // settle / place their hands (esp. Nadi Shodhana) before the practice starts.
+  // null = not counting in. It does NOT run on resume — only a fresh start.
+  const [countIn, setCountIn] = useState<number | null>(null);
+  const countInRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const active = timer.isRunning || countIn !== null;
+
+  const stopCountIn = () => {
+    if (countInRef.current) {
+      clearInterval(countInRef.current);
+      countInRef.current = null;
+    }
+    setCountIn(null);
+  };
+
+  const beginCountIn = () => {
+    let remaining = COUNT_IN_SEC;
+    setCountIn(remaining);
+    countInRef.current = setInterval(() => {
+      remaining -= 1;
+      if (remaining <= 0) {
+        stopCountIn();
+        // The actual sequence begins now — start chime then the timer (the
+        // existing Start behavior, just deferred past the count-in).
+        playStart();
+        timer.start();
+      } else {
+        setCountIn(remaining);
+      }
+    }, 1000);
+  };
+
+  // Clean up the count-in ticker on unmount.
+  useEffect(() => () => {
+    if (countInRef.current) clearInterval(countInRef.current);
+  }, []);
+
+  const onPressStartStop = () => {
+    if (countIn !== null) {
+      stopCountIn(); // cancel the count-in (sequence never started)
+      return;
+    }
+    if (timer.isRunning) {
+      timer.stop();
+      return;
+    }
+    // Fresh start (at the beginning or after finishing) gets the count-in;
+    // resuming a paused sequence starts immediately, as before.
+    const fresh = timer.view.finished || timer.view.totalRemaining >= totalSec;
+    if (fresh) {
+      beginCountIn();
+    } else {
+      playStart();
+      timer.start();
+    }
+  };
+
+  // Report to the tab bar so an accidental tab tap mid-session (incl. during
+  // the count-in) is confirmed.
+  useReportActiveTimer("breath", active);
 
   const persist = (over: Partial<Parameters<typeof storeData>[1]>) => {
     storeData(BREATH_DATA_KEY, {
@@ -101,14 +160,14 @@ export default function BreathScreen() {
   };
 
   const choosePattern = (p: BreathPattern) => {
-    if (timer.isRunning) return;
+    if (active) return;
     timer.reset();
     setPatternId(p.id);
     persist({ breathPatternId: p.id });
   };
 
   const editCount = (key: EditFieldKey, value: number) => {
-    if (timer.isRunning) return;
+    if (active) return;
     const next = applyCountEdit(pattern, key, value);
     const nextCustom = { ...customCounts, [patternId]: countsOf(next) };
     setCustomCounts(nextCustom);
@@ -122,6 +181,7 @@ export default function BreathScreen() {
         view={timer.view}
         isRunning={timer.isRunning}
         metronome={metro}
+        countIn={countIn}
         onPressClock={() => setShowPicker(true)}
       />
 
@@ -130,10 +190,10 @@ export default function BreathScreen() {
           pattern={pattern}
           activeKind={timer.isRunning && !metro ? timer.view.kind : undefined}
           onChange={editCount}
-          disabled={timer.isRunning}
+          disabled={active}
         />
 
-        <PatternPicker selectedId={pattern.id} onSelect={choosePattern} disabled={timer.isRunning} />
+        <PatternPicker selectedId={pattern.id} onSelect={choosePattern} disabled={active} />
 
         <SoundOptions
           clickId={clickId}
@@ -146,7 +206,7 @@ export default function BreathScreen() {
             setAmbienceId(id);
             persist({ breathAmbience: id });
           }}
-          disabled={timer.isRunning}
+          disabled={active}
         />
       </View>
 
@@ -155,18 +215,11 @@ export default function BreathScreen() {
       <View style={screenStyles.buttonContainer}>
         <TouchableOpacity
           activeOpacity={0.7}
-          style={[styles.startBtn, timer.isRunning && styles.stopBtn]}
-          onPress={() => {
-            if (timer.isRunning) {
-              timer.stop();
-            } else {
-              playStart();
-              timer.start();
-            }
-          }}
+          style={[styles.startBtn, active && styles.stopBtn]}
+          onPress={onPressStartStop}
         >
-          <Text style={[styles.startText, timer.isRunning && styles.stopText]}>
-            {timer.isRunning ? "Stop" : "Start"}
+          <Text style={[styles.startText, active && styles.stopText]}>
+            {active ? "Stop" : "Start"}
           </Text>
         </TouchableOpacity>
       </View>

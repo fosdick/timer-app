@@ -17,15 +17,21 @@ export function BreathStage({
   isRunning,
   metronome = false,
   onPressClock,
+  countIn = null,
 }: {
   view: BreathView;
   isRunning: boolean;
   metronome?: boolean;
   onPressClock?: () => void;
+  /** Seconds left in the pre-roll count-in ("Begin in N"), or null when not counting in. */
+  countIn?: number | null;
 }) {
   const tint = metronome ? t.accentSoft : t.phaseTint[view.kind] ?? t.accentSoft;
+  const counting = countIn !== null;
   const showCount = isRunning && view.segmentType === "breath" && view.countRemaining > 0;
-  const clockDisabled = isRunning || !onPressClock;
+  // The clock (session-length picker) is locked once a sequence is committed —
+  // running OR counting in.
+  const clockDisabled = isRunning || counting || !onPressClock;
   return (
     <View style={styles.stage}>
       <Text style={yogaTypography.timerLabel}>Remaining</Text>
@@ -34,7 +40,12 @@ export function BreathStage({
       </TouchableOpacity>
 
       <View style={styles.center}>
-        {isRunning ? (
+        {counting ? (
+          <>
+            <Text style={[styles.phase, { color: t.accentSoft }]}>Begin in</Text>
+            <Text style={[styles.count, { color: t.accentSoft }]}>{countIn}</Text>
+          </>
+        ) : isRunning ? (
           <>
             {!metronome && <Text style={[styles.phase, { color: tint }]}>{view.label}</Text>}
             <Text style={[styles.count, { color: tint }]}>{showCount ? view.countRemaining : " "}</Text>
