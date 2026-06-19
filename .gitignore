@@ -8,6 +8,9 @@ dist
 android
 ios
 .yarn
+# Track the app's own package-lock.json (reproducible installs) but keep
+# dormant subproject lockfiles (admin/, server/, python-api/) out.
+*/package-lock.json
 .DS_Store
 */.DS_Store
 
