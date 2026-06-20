@@ -32,6 +32,11 @@ type storageData = {
     string,
     { inhale: number; holdIn: number; exhale: number; holdOut: number }
   >;
+  // User Preferences page (see components/user-preferences-context.tsx)
+  autoCorrectExhaleEnd?: boolean;
+  vilomaSnap?: boolean;
+  visamavrittiSnap?: boolean;
+  allDownbeatSnaps?: boolean;
 };
 const storeData = async (key: string, value: Partial<storageData>) => {
   try {

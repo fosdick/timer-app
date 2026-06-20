@@ -15,6 +15,7 @@ import {
 import { useBreathTimer } from "@/assets/utils/use-breath-timer";
 import { useAmbience } from "@/assets/utils/use-ambience";
 import { useReportActiveTimer } from "@/components/active-timer-context";
+import { useUserPreferences } from "@/components/user-preferences-context";
 import { getData, storeData } from "@/assets/utils/persistent-storage";
 import { getTimeParts } from "@/assets/utils/format-time";
 import { playStart, playEndChime } from "@/assets/utils/sounds";
@@ -66,18 +67,22 @@ export default function BreathScreen() {
   );
   const metro = isMetronome(pattern);
 
-  // The session always ends on an exhale: round the chosen length UP to the end
-  // of an exhale phase (whole rounds for Nadi). `totalSec` stays the user's raw
-  // pick; this derived value is what the timer runs and the UI shows. Metronome
-  // is unaffected (no exhale to land on). Must use the SAME timeline opts as the
-  // timer below so the end bell lands exactly on the exhale.
+  const { prefs } = useUserPreferences();
+  // The session ends on an exhale (when the user pref is on): round the chosen
+  // length UP to the end of an exhale phase (whole rounds for Nadi). `totalSec`
+  // stays the user's raw pick; this derived value is what the timer runs and the
+  // UI shows. Metronome is unaffected (no exhale to land on). Must use the SAME
+  // timeline opts as the timer below so the end bell lands exactly on the exhale.
+  const endsOnExhale = prefs.autoCorrectExhaleEnd && !metro;
   const effectiveTotalSec = useMemo(
     () =>
-      adjustTotalToExhaleEnd(pattern, totalSec, {
-        clickSlotSec: metro ? 0 : CLICK_SLOT_SEC,
-        countDurationSec: 1,
-      }),
-    [pattern, totalSec, metro],
+      prefs.autoCorrectExhaleEnd
+        ? adjustTotalToExhaleEnd(pattern, totalSec, {
+            clickSlotSec: metro ? 0 : CLICK_SLOT_SEC,
+            countDurationSec: 1,
+          })
+        : totalSec,
+    [pattern, totalSec, metro, prefs.autoCorrectExhaleEnd],
   );
 
   // Restore saved settings on mount.
@@ -197,6 +202,7 @@ export default function BreathScreen() {
         isRunning={timer.isRunning}
         metronome={metro}
         countIn={countIn}
+        endsOnExhale={endsOnExhale}
         onPressClock={() => setShowPicker(true)}
       />
 

@@ -18,6 +18,7 @@ export function BreathStage({
   metronome = false,
   onPressClock,
   countIn = null,
+  endsOnExhale = false,
 }: {
   view: BreathView;
   isRunning: boolean;
@@ -25,6 +26,8 @@ export function BreathStage({
   onPressClock?: () => void;
   /** Seconds left in the pre-roll count-in ("Begin in N"), or null when not counting in. */
   countIn?: number | null;
+  /** Whether the session length is auto-corrected to end on an exhale (annotates the label). */
+  endsOnExhale?: boolean;
 }) {
   const tint = metronome ? t.accentSoft : t.phaseTint[view.kind] ?? t.accentSoft;
   const counting = countIn !== null;
@@ -35,7 +38,7 @@ export function BreathStage({
   return (
     <View style={styles.stage}>
       <Text style={yogaTypography.timerLabel}>
-        {metronome ? "Remaining" : "Remaining (ends on exhale)"}
+        {endsOnExhale ? "Remaining (ends on exhale)" : "Remaining"}
       </Text>
       <TouchableOpacity activeOpacity={0.7} disabled={clockDisabled} onPress={onPressClock}>
         <Text style={yogaTypography.timerCountdown}>{formatClock(view.totalRemaining)}</Text>
