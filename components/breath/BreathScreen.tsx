@@ -10,6 +10,7 @@ import {
   getPattern,
   isMetronome,
   applyCountEdit,
+  adjustTotalToExhaleEnd,
 } from "@/assets/data/breath-patterns";
 import { useBreathTimer } from "@/assets/utils/use-breath-timer";
 import { useAmbience } from "@/assets/utils/use-ambience";
@@ -65,6 +66,20 @@ export default function BreathScreen() {
   );
   const metro = isMetronome(pattern);
 
+  // The session always ends on an exhale: round the chosen length UP to the end
+  // of an exhale phase (whole rounds for Nadi). `totalSec` stays the user's raw
+  // pick; this derived value is what the timer runs and the UI shows. Metronome
+  // is unaffected (no exhale to land on). Must use the SAME timeline opts as the
+  // timer below so the end bell lands exactly on the exhale.
+  const effectiveTotalSec = useMemo(
+    () =>
+      adjustTotalToExhaleEnd(pattern, totalSec, {
+        clickSlotSec: metro ? 0 : CLICK_SLOT_SEC,
+        countDurationSec: 1,
+      }),
+    [pattern, totalSec, metro],
+  );
+
   // Restore saved settings on mount.
   useEffect(() => {
     (async () => {
@@ -79,7 +94,7 @@ export default function BreathScreen() {
 
   // Start/end chimes match the yoga tab (canonical behavior — see the old
   // pranayama component): bell-hit on Start, end-bell when the session ends.
-  const timer = useBreathTimer(pattern, totalSec, {
+  const timer = useBreathTimer(pattern, effectiveTotalSec, {
     clickSlotSec: metro ? 0 : CLICK_SLOT_SEC,
     onClick: () => getClickSound(clickId).play(),
     onFinish: () => playEndChime(),
@@ -135,7 +150,7 @@ export default function BreathScreen() {
     }
     // Fresh start (at the beginning or after finishing) gets the count-in;
     // resuming a paused sequence starts immediately, as before.
-    const fresh = timer.view.finished || timer.view.totalRemaining >= totalSec;
+    const fresh = timer.view.finished || timer.view.totalRemaining >= effectiveTotalSec;
     if (fresh) {
       beginCountIn();
     } else {
@@ -227,7 +242,7 @@ export default function BreathScreen() {
       <TimerPickerModal
         visible={showPicker}
         setIsVisible={setShowPicker}
-        initialValue={getTimeParts(totalSec)}
+        initialValue={getTimeParts(effectiveTotalSec)}
         onConfirm={(picked) => {
           const newTotal = picked.hours * 3600 + picked.minutes * 60 + picked.seconds;
           setTotalSec(newTotal);

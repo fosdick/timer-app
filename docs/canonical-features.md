@@ -117,6 +117,21 @@ Promote with the user's words, or strike.
 - HIIT start sound (`playHittStart`) on starting a HIIT session.
 - Last-active Pace restored on launch (yoga tab).
 - Click sounds preview when the picker wheel settles on them.
+- Pranayama session length always ends on an EXHALE. Selecting a countdown time or editing the
+  counts auto-adjusts the total UPWARD (never below the selected time) so the session ends at the
+  end of an exhale phase — any trailing retention of the final cycle is dropped. Nadi Shodhana
+  rounds to whole ROUNDS (2 sets, alternating nostrils): the round ends on set 2's exhale.
+  Metronome is unaffected (no exhale phase). (Bug/feature nomination — provenance: user,
+  2026-06-20: "auto adjust the total count down time so that the end is always on an exhale. Time
+  will always adjust upward... a round is the 2 sets... the final ending should always be
+  exhale.") Guard: **contract test** (`assets/data/__tests__/breath-patterns.test.ts`,
+  adjustTotalToExhaleEnd).
+- Creating a new Pace (yoga tab) LOADS it but does NOT start the timer — matches selecting an
+  existing pace (handleApplyPace) and the hamburger "Save as Pace" path. The center-icon
+  create-while-a-flow-is-running path used to leave the timer running into the new pace; fixed
+  2026-06-20 by stopping (cancelHalfwayPauseAndStop) before applying, like pace selection.
+  (Bug-fix nomination — provenance: user, 2026-06-20: "desired behavior is to not have the flow
+  start when the user saved a new flow.") Guard: TBD (E2E flow or YogaView wiring test).
 - Visamavritti exists right after 4-7-8 with all four counts independently editable,
   defaulting to the 1:4:2:3 ratio (4/16/8/12). (Nominated at its go moment, 2026-06-12 —
   user words on file: "this style requires all four box... the default should be the ratio

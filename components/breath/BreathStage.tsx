@@ -34,7 +34,9 @@ export function BreathStage({
   const clockDisabled = isRunning || counting || !onPressClock;
   return (
     <View style={styles.stage}>
-      <Text style={yogaTypography.timerLabel}>Remaining</Text>
+      <Text style={yogaTypography.timerLabel}>
+        {metronome ? "Remaining" : "Remaining (ends on exhale)"}
+      </Text>
       <TouchableOpacity activeOpacity={0.7} disabled={clockDisabled} onPress={onPressClock}>
         <Text style={yogaTypography.timerCountdown}>{formatClock(view.totalRemaining)}</Text>
       </TouchableOpacity>

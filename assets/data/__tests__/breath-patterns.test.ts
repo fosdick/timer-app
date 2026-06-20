@@ -17,6 +17,7 @@ import {
   buildTimeline,
   cycleDurationSec,
   segmentAtElapsed,
+  adjustTotalToExhaleEnd,
 } from "../breath-patterns";
 
 describe("resolvePhases", () => {
@@ -281,5 +282,57 @@ describe("getPattern", () => {
   it("looks up by id", () => {
     expect(getPattern("viloma")).toBe(VILOMA);
     expect(getPattern("nope")).toBeUndefined();
+  });
+});
+
+describe("adjustTotalToExhaleEnd", () => {
+  // No click slots -> clean integer math. Box: in4 hold4 ex4 hold4; cycle 16;
+  // exhale ends at 4+4+4 = 12; valid ends 12, 28, 44, 60, ...
+  const noClicks = { clickSlotSec: 0, countDurationSec: 1 };
+
+  it("rounds UP to the end of an exhale (dropping the trailing hold)", () => {
+    expect(adjustTotalToExhaleEnd(BOX, 50, noClicks)).toBe(60);
+    expect(adjustTotalToExhaleEnd(BOX, 55, noClicks)).toBe(60);
+  });
+
+  it("leaves a length that already ends on an exhale unchanged", () => {
+    expect(adjustTotalToExhaleEnd(BOX, 60, noClicks)).toBe(60);
+    expect(adjustTotalToExhaleEnd(BOX, 28, noClicks)).toBe(28);
+  });
+
+  it("never returns less than the desired length (only upward)", () => {
+    for (const d of [1, 5, 13, 29, 100, 301]) {
+      expect(adjustTotalToExhaleEnd(BOX, d, noClicks)).toBeGreaterThanOrEqual(d);
+    }
+  });
+
+  it("clamps a too-short request up to one full exhale", () => {
+    expect(adjustTotalToExhaleEnd(BOX, 0, noClicks)).toBe(12);
+    expect(adjustTotalToExhaleEnd(BOX, 5, noClicks)).toBe(12);
+  });
+
+  it("4-7-8: exhale is the last phase, so it rounds to whole cycles", () => {
+    // cycle 4+7+8 = 19; exhale ends at the cycle end -> valid ends 19, 38, 57, 76
+    expect(adjustTotalToExhaleEnd(FOUR_SEVEN_EIGHT, 60, noClicks)).toBe(76);
+    expect(adjustTotalToExhaleEnd(FOUR_SEVEN_EIGHT, 38, noClicks)).toBe(38);
+  });
+
+  it("Nadi Shodhana ends only on whole rounds (2 sets), at set 2's exhale", () => {
+    // cycle 10+2+10+2 = 24; exhale ends at 22; round = 2 cycles = 48.
+    // round ends: 24 + 22 = 46, then +48 -> 94, 142, ...
+    expect(adjustTotalToExhaleEnd(NADI_SHODHANA, 10, noClicks)).toBe(46); // one round min
+    expect(adjustTotalToExhaleEnd(NADI_SHODHANA, 46, noClicks)).toBe(46);
+    expect(adjustTotalToExhaleEnd(NADI_SHODHANA, 60, noClicks)).toBe(94); // next whole round
+    expect(adjustTotalToExhaleEnd(NADI_SHODHANA, 94, noClicks)).toBe(94);
+  });
+
+  it("metronome has no exhale — returned unchanged", () => {
+    expect(adjustTotalToExhaleEnd(METRONOME, 137, noClicks)).toBe(137);
+  });
+
+  it("accounts for click slots so it matches the live timeline", () => {
+    // With a 0.3s click before each phase, Box's exhale ends at
+    // 0.3+4 +0.3+4 +0.3+4 = 12.9; first valid end is 12.9.
+    expect(adjustTotalToExhaleEnd(BOX, 5, { clickSlotSec: 0.3 })).toBeCloseTo(12.9, 5);
   });
 });

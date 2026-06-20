@@ -40,6 +40,13 @@ export interface BreathPattern {
   /** All FOUR counts edit independently (inhale ≠ exhale allowed) — the
    * unequal-breath patterns (Visamavritti). */
   independentCounts?: boolean;
+  /**
+   * Sets (cycles) that make ONE round. Default 1. Nadi Shodhana is 2: a round
+   * is set 1 (one nostril) + set 2 (the other), and the round ENDS on set 2's
+   * exhale. Used by adjustTotalToExhaleEnd so the session is always a whole
+   * number of rounds.
+   */
+  setsPerRound?: number;
 }
 
 export interface ResolvedPhase {
@@ -85,7 +92,7 @@ export const BOX: BreathPattern = { id: "box", name: "Box", inhale: 4, holdIn: 4
 
 // Nadi Shodhana — even pacing (10 on, 2 off) but with independently editable
 // retentions, like Viloma's three boxes.
-export const NADI_SHODHANA: BreathPattern = { id: "nadi", name: "Nadi Shodhana", inhale: 10, holdIn: 2, exhale: 10, holdOut: 2, splitHolds: true };
+export const NADI_SHODHANA: BreathPattern = { id: "nadi", name: "Nadi Shodhana", inhale: 10, holdIn: 2, exhale: 10, holdOut: 2, splitHolds: true, setsPerRound: 2 };
 
 // Viloma — odd: equal inhale/exhale with longer, asymmetric holds.
 export const VILOMA: BreathPattern = { id: "viloma", name: "Viloma", inhale: 16, holdIn: 6, exhale: 16, holdOut: 4 };
@@ -325,6 +332,48 @@ export function cycleDurationSec(p: BreathPattern, opts: TimelineOptions = {}): 
   if (timeline.length === 0) return 0;
   const last = timeline[timeline.length - 1];
   return last.start + last.duration;
+}
+
+/**
+ * Adjust a desired session length UP so the session ends at the end of an
+ * EXHALE phase, never shorter than `desiredSec`. Any retention that would follow
+ * that final exhale is dropped — the practice always ends on the exhale.
+ *
+ * Patterns whose round spans multiple sets (Nadi Shodhana: setsPerRound = 2,
+ * alternating nostrils) only end at a ROUND boundary — the final set's exhale —
+ * so the session is always a whole number of rounds.
+ *
+ * Metronome, and any pattern with no exhale phase, has no exhale to land on, so
+ * `desiredSec` is returned unchanged. Use the SAME opts as the live timeline so
+ * the result lines up exactly with where the timer will fire its end bell.
+ */
+export function adjustTotalToExhaleEnd(
+  p: BreathPattern,
+  desiredSec: number,
+  opts: TimelineOptions = {},
+): number {
+  if (isMetronome(p) || p.exhale <= 0) return desiredSec;
+  const cycleDur = cycleDurationSec(p, opts);
+  if (cycleDur <= 0) return desiredSec;
+
+  // End of the exhale's breath segment within one cycle (drops any trailing
+  // hold-out that would otherwise follow it).
+  const exhaleSeg = [...buildTimeline(p, opts)]
+    .reverse()
+    .find((s) => s.kind === "exhale" && s.type === "breath");
+  if (!exhaleSeg) return desiredSec;
+  const exhaleEnd = exhaleSeg.start + exhaleSeg.duration;
+
+  const sets = Math.max(1, Math.floor(p.setsPerRound ?? 1));
+  const roundDur = sets * cycleDur;
+  // End time of round r (r >= 1): the full sets before the final one, then up to
+  // the final set's exhale end = (sets*r - 1)*cycleDur + exhaleEnd. Pick the
+  // smallest round count whose end is at or past the desired length.
+  const r = Math.max(
+    1,
+    Math.ceil((desiredSec - exhaleEnd + cycleDur) / roundDur),
+  );
+  return (sets * r - 1) * cycleDur + exhaleEnd;
 }
 
 export interface SegmentAtTime {
