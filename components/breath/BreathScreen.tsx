@@ -297,7 +297,7 @@ export default function BreathScreen() {
       <TimerPickerModal
         visible={showPicker}
         setIsVisible={setShowPicker}
-        initialValue={getTimeParts(effectiveTotalSec)}
+        initialValue={getTimeParts(totalSec)}
         onConfirm={(picked) => {
           const newTotal = picked.hours * 3600 + picked.minutes * 60 + picked.seconds;
           setTotalSec(newTotal);
