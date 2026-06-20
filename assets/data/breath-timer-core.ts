@@ -62,6 +62,56 @@ export function clicksBetween(
   return out.sort((a, b) => a.time - b.time);
 }
 
+/**
+ * Cycle-relative times of the per-count "downbeat" snaps during inhale & exhale
+ * — a pulse on each count to pace the breath. These land on the existing count
+ * grid (no new beats; honors the uniform-grid rule). The first count of each
+ * phase is skipped because it coincides with that phase's boundary click. Holds
+ * get no downbeats.
+ */
+export function downbeatBeats(
+  timeline: BreathSegment[],
+  countDurationSec: number,
+): number[] {
+  if (countDurationSec <= 0) return [];
+  const out: number[] = [];
+  for (const seg of timeline) {
+    if (seg.type !== "breath") continue;
+    if (seg.kind !== "inhale" && seg.kind !== "exhale") continue;
+    const count = Math.round(seg.duration / countDurationSec);
+    for (let k = 1; k < count; k++) {
+      out.push(seg.start + k * countDurationSec);
+    }
+  }
+  return out;
+}
+
+/**
+ * Downbeat snaps in the half-open window [prevElapsed, nextElapsed), across
+ * cycle loops — same windowing contract as clicksBetween.
+ */
+export function downbeatsBetween(
+  prevElapsed: number,
+  nextElapsed: number,
+  timeline: BreathSegment[],
+  cycleDur: number,
+  countDurationSec: number,
+): number[] {
+  if (cycleDur <= 0 || nextElapsed <= prevElapsed) return [];
+  const beats = downbeatBeats(timeline, countDurationSec);
+  if (beats.length === 0) return [];
+  const out: number[] = [];
+  const firstCycle = Math.floor(prevElapsed / cycleDur);
+  const lastCycle = Math.floor((nextElapsed - 1e-9) / cycleDur);
+  for (let c = firstCycle; c <= lastCycle; c++) {
+    for (const b of beats) {
+      const t = c * cycleDur + b;
+      if (t >= prevElapsed && t < nextElapsed) out.push(t);
+    }
+  }
+  return out.sort((a, b) => a - b);
+}
+
 export interface BreathView {
   totalRemaining: number; // seconds left in the whole session
   cycleElapsed: number; // seconds into the current cycle

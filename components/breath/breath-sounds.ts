@@ -21,6 +21,10 @@ export const CLICK_SOUNDS: ClickSound[] = [
 
 export const DEFAULT_CLICK_ID = "snap";
 
+// Downbeat snap sound (the per-count pulse during inhale/exhale). Uses the same
+// click catalog for now — a dedicated [click]-downbeat.wav set is a future task.
+export const DEFAULT_DOWNBEAT_ID = "snap";
+
 export const getClickSound = (id: string | undefined): ClickSound =>
   CLICK_SOUNDS.find((c) => c.id === id) ?? CLICK_SOUNDS[0];
 

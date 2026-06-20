@@ -14,13 +14,22 @@ export function SoundOptions({
   onClickChange,
   onAmbienceChange,
   disabled,
+  downbeatId,
+  onDownbeatChange,
+  downbeatDisabled,
 }: {
   clickId: string;
   ambienceId: string;
   onClickChange: (id: string) => void;
   onAmbienceChange: (id: string) => void;
   disabled?: boolean;
+  /** When provided, shows the Downbeat wheel between Click and Ambience. */
+  downbeatId?: string;
+  onDownbeatChange?: (id: string) => void;
+  /** Greys the Downbeat wheel when downbeats are toggled off for the pattern. */
+  downbeatDisabled?: boolean;
 }) {
+  const showDownbeat = downbeatId !== undefined && onDownbeatChange !== undefined;
   return (
     <View style={styles.row}>
       <WheelSelect
@@ -31,6 +40,16 @@ export function SoundOptions({
         onSettle={(id) => getClickSound(id).play()}
         disabled={disabled}
       />
+      {showDownbeat && (
+        <WheelSelect
+          label="Downbeat"
+          options={CLICK_SOUNDS}
+          selectedId={downbeatId}
+          onChange={onDownbeatChange}
+          onSettle={(id) => getClickSound(id).play()}
+          disabled={disabled || downbeatDisabled}
+        />
+      )}
       <WheelSelect
         label="Ambience"
         options={AMBIENCES}

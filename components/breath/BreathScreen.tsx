@@ -15,7 +15,7 @@ import {
 import { useBreathTimer } from "@/assets/utils/use-breath-timer";
 import { useAmbience } from "@/assets/utils/use-ambience";
 import { useReportActiveTimer } from "@/components/active-timer-context";
-import { useUserPreferences } from "@/components/user-preferences-context";
+import { useUserPreferences, isDownbeatEnabled } from "@/components/user-preferences-context";
 import { getData, storeData } from "@/assets/utils/persistent-storage";
 import { getTimeParts } from "@/assets/utils/format-time";
 import { playStart, playEndChime } from "@/assets/utils/sounds";
@@ -24,7 +24,7 @@ import { PatternPicker } from "./PatternPicker";
 import { CountEditors } from "./CountEditors";
 import { BreathStage } from "./BreathStage";
 import { SoundOptions } from "./SoundOptions";
-import { getClickSound, getAmbience, DEFAULT_CLICK_ID, DEFAULT_AMBIENCE_ID } from "./breath-sounds";
+import { getClickSound, getAmbience, DEFAULT_CLICK_ID, DEFAULT_DOWNBEAT_ID, DEFAULT_AMBIENCE_ID } from "./breath-sounds";
 import { breathTheme as t } from "./breath-theme";
 
 const BREATH_DATA_KEY = "breath_timer_data";
@@ -56,6 +56,7 @@ export default function BreathScreen() {
   const [customCounts, setCustomCounts] = useState<Record<string, CountSet>>({});
   const [totalSec, setTotalSec] = useState<number>(DEFAULT_TOTAL_SEC);
   const [clickId, setClickId] = useState<string>(DEFAULT_CLICK_ID);
+  const [downbeatId, setDownbeatId] = useState<string>(DEFAULT_DOWNBEAT_ID);
   const [ambienceId, setAmbienceId] = useState<string>(DEFAULT_AMBIENCE_ID);
   const [showPicker, setShowPicker] = useState(false);
 
@@ -67,7 +68,11 @@ export default function BreathScreen() {
   );
   const metro = isMetronome(pattern);
 
-  const { prefs } = useUserPreferences();
+  const { prefs, setDownbeatEnabled } = useUserPreferences();
+  // Per-pattern downbeat snap (a pulse on each count during inhale/exhale).
+  // Metronome has no breath phases, so it never gets downbeats.
+  const patternDownbeatOn = isDownbeatEnabled(prefs, patternId);
+  const downbeatActive = patternDownbeatOn && !metro;
   // The session ends on an exhale (when the user pref is on): round the chosen
   // length UP to the end of an exhale phase (whole rounds for Nadi). `totalSec`
   // stays the user's raw pick; this derived value is what the timer runs and the
@@ -93,6 +98,7 @@ export default function BreathScreen() {
       if (saved?.breathCustomCounts) setCustomCounts(saved.breathCustomCounts);
       if (saved?.breathTotalSec) setTotalSec(saved.breathTotalSec);
       if (saved?.breathClick) setClickId(saved.breathClick);
+      if (saved?.breathDownbeat) setDownbeatId(saved.breathDownbeat);
       if (saved?.breathAmbience) setAmbienceId(saved.breathAmbience);
     })();
   }, []);
@@ -103,6 +109,9 @@ export default function BreathScreen() {
     clickSlotSec: metro ? 0 : CLICK_SLOT_SEC,
     onClick: () => getClickSound(clickId).play(),
     onFinish: () => playEndChime(),
+    // Downbeat snap on each count during inhale/exhale, when enabled for this
+    // pattern. undefined disables the per-count work entirely in the hook.
+    onDownbeat: downbeatActive ? () => getClickSound(downbeatId).play() : undefined,
   });
 
   useAmbience(getAmbience(ambienceId).asset, timer.isRunning);
@@ -173,6 +182,7 @@ export default function BreathScreen() {
       breathPatternId: patternId,
       breathTotalSec: totalSec,
       breathClick: clickId,
+      breathDownbeat: downbeatId,
       breathAmbience: ambienceId,
       breathCustomCounts: customCounts,
       ...over,
@@ -216,6 +226,22 @@ export default function BreathScreen() {
 
         <PatternPicker selectedId={pattern.id} onSelect={choosePattern} disabled={active} />
 
+        {!metro && (
+          <TouchableOpacity
+            style={styles.downbeatToggle}
+            activeOpacity={0.7}
+            disabled={active}
+            onPress={() => setDownbeatEnabled(patternId, !patternDownbeatOn)}
+            accessibilityRole="checkbox"
+            accessibilityState={{ checked: patternDownbeatOn }}
+          >
+            <View style={[styles.dbBox, patternDownbeatOn && styles.dbBoxOn]}>
+              {patternDownbeatOn ? <Text style={styles.dbTick}>{"✓"}</Text> : null}
+            </View>
+            <Text style={styles.dbLabel}>Downbeat snap on each count</Text>
+          </TouchableOpacity>
+        )}
+
         <SoundOptions
           clickId={clickId}
           ambienceId={ambienceId}
@@ -228,6 +254,16 @@ export default function BreathScreen() {
             persist({ breathAmbience: id });
           }}
           disabled={active}
+          downbeatId={metro ? undefined : downbeatId}
+          onDownbeatChange={
+            metro
+              ? undefined
+              : (id) => {
+                  setDownbeatId(id);
+                  persist({ breathDownbeat: id });
+                }
+          }
+          downbeatDisabled={!patternDownbeatOn}
         />
       </View>
 
@@ -283,4 +319,17 @@ const styles = StyleSheet.create({
   stopBtn: { borderColor: t.accentSoft }, // light green while running (matches yoga/HIIT)
   startText: { color: t.buttonText, fontSize: 20, fontWeight: "600", letterSpacing: 1 },
   stopText: { color: t.accentSoft },
+  downbeatToggle: { flexDirection: "row", alignItems: "center", gap: 10 },
+  dbBox: {
+    width: 20,
+    height: 20,
+    borderRadius: 5,
+    borderWidth: 2,
+    borderColor: t.border,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  dbBoxOn: { backgroundColor: t.accentSoft, borderColor: t.accentSoft },
+  dbTick: { color: t.bg, fontSize: 13, fontWeight: "900", lineHeight: 15 },
+  dbLabel: { color: t.muted, fontSize: 14 },
 });

@@ -7,7 +7,13 @@
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { BreathPattern, buildTimeline, cycleDurationSec } from "../data/breath-patterns";
-import { breathView, clicksBetween, BreathClick, BreathView } from "../data/breath-timer-core";
+import {
+  breathView,
+  clicksBetween,
+  downbeatsBetween,
+  BreathClick,
+  BreathView,
+} from "../data/breath-timer-core";
 
 const TICK_MS = 100;
 
@@ -16,6 +22,8 @@ export interface UseBreathTimerOptions {
   countDurationSec?: number;
   onClick?: (click: BreathClick) => void;
   onFinish?: () => void;
+  /** Fires once per per-count downbeat snap during inhale/exhale (if provided). */
+  onDownbeat?: () => void;
 }
 
 export interface BreathTimer {
@@ -31,7 +39,7 @@ export function useBreathTimer(
   totalDurationSec: number,
   opts: UseBreathTimerOptions = {},
 ): BreathTimer {
-  const { clickSlotSec = 0, countDurationSec = 1, onClick, onFinish } = opts;
+  const { clickSlotSec = 0, countDurationSec = 1, onClick, onFinish, onDownbeat } = opts;
 
   const timeline = useMemo(
     () => buildTimeline(pattern, { clickSlotSec, countDurationSec }),
@@ -60,12 +68,14 @@ export function useBreathTimer(
   const countDurRef = useRef(countDurationSec);
   const onClickRef = useRef(onClick);
   const onFinishRef = useRef(onFinish);
+  const onDownbeatRef = useRef(onDownbeat);
   timelineRef.current = timeline;
   cycleDurRef.current = cycleDur;
   totalRef.current = totalDurationSec;
   countDurRef.current = countDurationSec;
   onClickRef.current = onClick;
   onFinishRef.current = onFinish;
+  onDownbeatRef.current = onDownbeat;
 
   const stop = useCallback(() => {
     if (!runningRef.current) return;
@@ -82,6 +92,16 @@ export function useBreathTimer(
     const elapsed = accumulatedRef.current + (Date.now() - runStartedAtRef.current) / 1000;
     const clicks = clicksBetween(prevElapsedRef.current, elapsed, timelineRef.current, cycleDurRef.current);
     for (const c of clicks) onClickRef.current?.(c);
+    if (onDownbeatRef.current) {
+      const beats = downbeatsBetween(
+        prevElapsedRef.current,
+        elapsed,
+        timelineRef.current,
+        cycleDurRef.current,
+        countDurRef.current,
+      );
+      for (let i = 0; i < beats.length; i++) onDownbeatRef.current();
+    }
     prevElapsedRef.current = elapsed;
     const v = breathView(elapsed, timelineRef.current, cycleDurRef.current, totalRef.current, countDurRef.current);
     setView(v);

@@ -27,6 +27,8 @@ type storageData = {
   breathTotalSec?: number;
   breathAmbience?: string;
   breathClick?: string;
+  /** Downbeat snap sound id (uses the click-sound catalog for now). */
+  breathDownbeat?: string;
   /** Per-pattern user-edited counts, keyed by pattern id. */
   breathCustomCounts?: Record<
     string,
@@ -34,9 +36,8 @@ type storageData = {
   >;
   // User Preferences page (see components/user-preferences-context.tsx)
   autoCorrectExhaleEnd?: boolean;
-  vilomaSnap?: boolean;
-  visamavrittiSnap?: boolean;
-  allDownbeatSnaps?: boolean;
+  /** Per-pattern downbeat-snap enablement, keyed by pattern id. */
+  downbeatByPattern?: Record<string, boolean>;
 };
 const storeData = async (key: string, value: Partial<storageData>) => {
   try {

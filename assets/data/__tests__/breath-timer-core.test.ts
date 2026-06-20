@@ -1,5 +1,5 @@
-import { BOX, NADI_SHODHANA, METRONOME, buildTimeline, cycleDurationSec } from "../breath-patterns";
-import { phaseBoundaries, clicksBetween, breathView } from "../breath-timer-core";
+import { BOX, NADI_SHODHANA, METRONOME, FOUR_SEVEN_EIGHT, buildTimeline, cycleDurationSec } from "../breath-patterns";
+import { phaseBoundaries, clicksBetween, breathView, downbeatBeats, downbeatsBetween } from "../breath-timer-core";
 
 const boxTL = buildTimeline(BOX); // boundaries at 0,4,8,12 ; cycle 16
 const boxCycle = cycleDurationSec(BOX);
@@ -90,5 +90,39 @@ describe("breathView", () => {
     const v = breathView(0.1, tl, cyc, 120);
     expect(v.segmentType).toBe("click");
     expect(v.countRemaining).toBe(0);
+  });
+});
+
+describe("downbeatBeats", () => {
+  it("pulses each count of inhale & exhale (skips count 1 and the holds)", () => {
+    // Box, no click slots: inhale 0-4, hold 4-8, exhale 8-12, hold 12-16.
+    expect(downbeatBeats(buildTimeline(BOX), 1)).toEqual([1, 2, 3, 9, 10, 11]);
+  });
+
+  it("covers a long exhale; the zero-count closing hold adds nothing (4-7-8)", () => {
+    // inhale 0-4, hold 4-11, exhale 11-19.
+    expect(downbeatBeats(buildTimeline(FOUR_SEVEN_EIGHT), 1)).toEqual([
+      1, 2, 3, 12, 13, 14, 15, 16, 17, 18,
+    ]);
+  });
+});
+
+describe("downbeatsBetween", () => {
+  const tl = buildTimeline(BOX); // downbeats at 1,2,3,9,10,11 per 16s cycle
+
+  it("returns the downbeats inside one cycle", () => {
+    expect(downbeatsBetween(0, 16, tl, 16, 1)).toEqual([1, 2, 3, 9, 10, 11]);
+  });
+
+  it("is half-open [prev, next)", () => {
+    expect(downbeatsBetween(2, 10, tl, 16, 1)).toEqual([2, 3, 9]);
+  });
+
+  it("loops across cycle boundaries", () => {
+    expect(downbeatsBetween(15, 20, tl, 16, 1)).toEqual([17, 18, 19]);
+  });
+
+  it("is empty when no downbeat falls in the window (mid-hold)", () => {
+    expect(downbeatsBetween(4, 9, tl, 16, 1)).toEqual([]);
   });
 });

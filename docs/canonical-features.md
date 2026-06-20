@@ -110,6 +110,21 @@ enforced) → `smoke test` (screen-level wiring test — the layer where losses 
 
 Promote with the user's words, or strike.
 
+- **App Support stays reachable** — it's an Apple App Store requirement. Lives on the App Settings
+  page (header user menu → App Settings), alongside the promo code and purchases. Never remove it.
+  (Provenance: user, 2026-06-20 — "app support is a requirement for Apple app store, can not lose
+  that.") Guard: manifest (release audit) + the menu render test reaches App Settings.
+- Header **account menu**: a user glyph opens a dropdown with "User Preferences" and
+  "App Settings"; App Settings is the existing settings page. (Provenance: user, 2026-06-20.)
+  Guard: **smoke test** (`components/__tests__/user-menu.test.tsx`) — opens + both links resolve.
+- **Downbeat snap** (Pranayama): a per-pattern toggle plays the selected downbeat sound on each
+  count during inhale & exhale — a pulse on the EXISTING count grid (no new beats; honors #4).
+  Viloma defaults ON, every other non-metronome pattern OFF; metronome has no downbeats. The
+  downbeat sound + per-pattern enablement persist. (Provenance: user, 2026-06-20 — "play the
+  downbeat/snap sound on each count during the inhale & exhale... on the existing grid — not
+  adding new beats"; "Viloma by default has downbeats enabled... all the others are default off.
+  excludes metronome.") Guard: **contract test**
+  (`assets/data/__tests__/breath-timer-core.test.ts`, downbeatBeats/downbeatsBetween).
 - Library pattern ids stay stable (`metronome/box/nadi/viloma/478`) — persisted selections
   key on them.
 - Breath settings persist across restart (pattern, count edits, length, click, ambience —

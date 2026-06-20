@@ -2,9 +2,13 @@
  * UserPreferencesContext — the "User Preferences" page settings, persisted.
  *
  * Mirrors DisplayAdsContext/ActiveTimerContext: a provider mounted high in
- * app/_layout.tsx, read anywhere via useUserPreferences(). Only the
- * auto-correct-to-exhale pref is wired into behavior in this layer; the snap
- * prefs are persisted now and consumed when the downbeat sound system lands.
+ * app/_layout.tsx, read anywhere via useUserPreferences().
+ *
+ * - autoCorrectExhaleEnd: round pranayama length up to end on an exhale.
+ * - downbeatByPattern: per breath-pattern, whether the downbeat snap plays on
+ *   each count during inhale/exhale. Single source of truth for both the
+ *   per-pattern on-screen toggle and the Viloma/Visamavritti rows on the prefs
+ *   page. Absent entry => default (Viloma on, every other pattern off).
  */
 import React, {
   createContext,
@@ -17,36 +21,36 @@ import React, {
 import { getData, storeData } from "@/assets/utils/persistent-storage";
 
 export type UserPreferences = {
-  /** Round pranayama session length up so it ends on an exhale. */
   autoCorrectExhaleEnd: boolean;
-  /** Metronome snap on Viloma's "sips" (pending the downbeat sound system). */
-  vilomaSnap: boolean;
-  /** Metronome snap on Visamavritti (pending the downbeat sound system). */
-  visamavrittiSnap: boolean;
-  /** Downbeat snap on every count, all patterns except metronome (pending). */
-  allDownbeatSnaps: boolean;
+  downbeatByPattern: Record<string, boolean>;
 };
 
 export const DEFAULT_USER_PREFERENCES: UserPreferences = {
   autoCorrectExhaleEnd: true,
-  vilomaSnap: true,
-  visamavrittiSnap: false,
-  allDownbeatSnaps: false,
+  downbeatByPattern: {},
 };
+
+/** Patterns with downbeats on by default (only Viloma, per product). */
+const DOWNBEAT_DEFAULT_ON = new Set(["viloma"]);
+
+/** Whether downbeats are enabled for a pattern, applying the default when unset. */
+export const isDownbeatEnabled = (
+  prefs: UserPreferences,
+  patternId: string,
+): boolean => prefs.downbeatByPattern[patternId] ?? DOWNBEAT_DEFAULT_ON.has(patternId);
 
 const USER_PREFERENCES_KEY = "user_preferences";
 
 type UserPreferencesContextType = {
   prefs: UserPreferences;
-  setPref: <K extends keyof UserPreferences>(
-    key: K,
-    value: UserPreferences[K],
-  ) => void;
+  setAutoCorrectExhaleEnd: (value: boolean) => void;
+  setDownbeatEnabled: (patternId: string, value: boolean) => void;
 };
 
 const UserPreferencesContext = createContext<UserPreferencesContextType>({
   prefs: DEFAULT_USER_PREFERENCES,
-  setPref: () => {},
+  setAutoCorrectExhaleEnd: () => {},
+  setDownbeatEnabled: () => {},
 });
 
 const UserPreferencesProvider: React.FC<{ children: React.ReactNode }> = ({
@@ -54,26 +58,52 @@ const UserPreferencesProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const [prefs, setPrefs] = useState<UserPreferences>(DEFAULT_USER_PREFERENCES);
 
-  // Load saved prefs on mount, merged over defaults so a newly-added pref keeps
-  // its default until the user changes it.
+  // Load saved prefs on mount, merged over defaults.
   useEffect(() => {
     getData(USER_PREFERENCES_KEY).then((saved) => {
-      if (saved) setPrefs((prev) => ({ ...prev, ...saved }));
+      if (saved) {
+        setPrefs((prev) => ({
+          ...prev,
+          ...saved,
+          downbeatByPattern: { ...prev.downbeatByPattern, ...saved.downbeatByPattern },
+        }));
+      }
     });
   }, []);
 
-  const setPref = useCallback<UserPreferencesContextType["setPref"]>(
-    (key, value) => {
+  const persist = useCallback((next: UserPreferences) => {
+    storeData(USER_PREFERENCES_KEY, next);
+  }, []);
+
+  const setAutoCorrectExhaleEnd = useCallback(
+    (value: boolean) => {
       setPrefs((prev) => {
-        const next = { ...prev, [key]: value };
-        storeData(USER_PREFERENCES_KEY, next);
+        const next = { ...prev, autoCorrectExhaleEnd: value };
+        persist(next);
         return next;
       });
     },
-    [],
+    [persist],
   );
 
-  const value = useMemo(() => ({ prefs, setPref }), [prefs, setPref]);
+  const setDownbeatEnabled = useCallback(
+    (patternId: string, value: boolean) => {
+      setPrefs((prev) => {
+        const next = {
+          ...prev,
+          downbeatByPattern: { ...prev.downbeatByPattern, [patternId]: value },
+        };
+        persist(next);
+        return next;
+      });
+    },
+    [persist],
+  );
+
+  const value = useMemo(
+    () => ({ prefs, setAutoCorrectExhaleEnd, setDownbeatEnabled }),
+    [prefs, setAutoCorrectExhaleEnd, setDownbeatEnabled],
+  );
 
   return (
     <UserPreferencesContext.Provider value={value}>

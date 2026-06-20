@@ -2,33 +2,38 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
 import {
   useUserPreferences,
-  type UserPreferences,
+  isDownbeatEnabled,
 } from "@/components/user-preferences-context";
 import { colorTheme } from "@/assets/styles/timer-app";
 
-type Row = { key: keyof UserPreferences; label: string };
-
-const ROWS: Row[] = [
-  { key: "autoCorrectExhaleEnd", label: "Auto Correct Pranayama total time to end on exhale" },
-  { key: "vilomaSnap", label: "Enable metronome snap for Viloma “sips”" },
-  { key: "visamavrittiSnap", label: "Enable metronome snap for Visamavritti" },
-  { key: "allDownbeatSnaps", label: "Enable all downbeat count snap sounds" },
-];
-
 export default function UserPreferencesScreen() {
-  const { prefs, setPref } = useUserPreferences();
+  const { prefs, setAutoCorrectExhaleEnd, setDownbeatEnabled } =
+    useUserPreferences();
 
   return (
     <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
-      {ROWS.map((row) => (
-        <CheckRow
-          key={row.key}
-          label={row.label}
-          checked={prefs[row.key]}
-          onToggle={() => setPref(row.key, !prefs[row.key])}
-        />
-      ))}
-      <Text style={styles.note}>“Enable all” excludes the metronome snaps.</Text>
+      <CheckRow
+        label="Auto Correct Pranayama total time to end on exhale"
+        checked={prefs.autoCorrectExhaleEnd}
+        onToggle={() => setAutoCorrectExhaleEnd(!prefs.autoCorrectExhaleEnd)}
+      />
+      <CheckRow
+        label="Enable metronome snap for Viloma “sips”"
+        checked={isDownbeatEnabled(prefs, "viloma")}
+        onToggle={() =>
+          setDownbeatEnabled("viloma", !isDownbeatEnabled(prefs, "viloma"))
+        }
+      />
+      <CheckRow
+        label="Enable metronome snap for Visamavritti"
+        checked={isDownbeatEnabled(prefs, "visama")}
+        onToggle={() =>
+          setDownbeatEnabled("visama", !isDownbeatEnabled(prefs, "visama"))
+        }
+      />
+      <Text style={styles.note}>
+        Each pattern also has a Downbeat toggle on its own screen.
+      </Text>
     </ScrollView>
   );
 }
