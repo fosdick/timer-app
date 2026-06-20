@@ -24,6 +24,7 @@ export const UserMenu = () => {
   return (
     <>
       <Pressable
+        testID="account-menu-button"
         onPress={() => setOpen(true)}
         style={({ pressed }) => ({
           paddingHorizontal: 12,
@@ -47,6 +48,7 @@ export const UserMenu = () => {
         <Pressable style={styles.backdrop} onPress={() => setOpen(false)}>
           <View style={styles.menu}>
             <Pressable
+              testID="menu-user-preferences"
               style={({ pressed }) => [styles.item, pressed && styles.itemPressed]}
               onPress={() => go("/user-preferences")}
             >
@@ -54,6 +56,7 @@ export const UserMenu = () => {
             </Pressable>
             <View style={styles.divider} />
             <Pressable
+              testID="menu-app-settings"
               style={({ pressed }) => [styles.item, pressed && styles.itemPressed]}
               onPress={() => go("/settings")}
             >
