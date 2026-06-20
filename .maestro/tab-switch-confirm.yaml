@@ -1,0 +1,14 @@
+# Canonical #6 — a running timer gates tab switches behind a confirmation.
+# An accidental tab tap mid-practice must not silently stop the session.
+appId: com.example.timer-app
+---
+- launchApp:
+    clearState: true
+- tapOn: "Start"
+- extendedWaitUntil:
+    notVisible: "Begin in"     # let the count-in finish so a timer is truly running
+    timeout: 15000
+- tapOn: "Yoga"                # attempt to switch tabs mid-practice
+- assertVisible: "Timer running"  # the confirm dialog appears
+- tapOn: "Stay"               # cancel the switch
+- assertVisible: "Stop"       # still running on Pranayama — we did not navigate away

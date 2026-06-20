@@ -8,6 +8,9 @@ shipped; it is permanent now, do not "fix" it).
 release playbook, build setup, feature history). Those docs are the durable handoff; trust them
 over guesses. There is also a live memory directory (machine-local, see docs/README.md).
 
+Vendor-neutral agent guidance (for any AI, not just Claude) lives in `AGENTS.md`, which points to
+the same docs. This file holds the Claude-specific extras.
+
 ## Scope
 
 Only the mobile app is in scope (repo root: `app/`, `components/`, `assets/`, `constants/`).

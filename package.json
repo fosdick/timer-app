@@ -12,6 +12,7 @@
     "test": "jest --watchAll",
     "lint": "expo lint",
     "typecheck": "tsc --noEmit",
+    "e2e": "maestro test .maestro",
     "preflight": "bash scripts/preflight.sh",
     "build:ios": "npx eas-cli@20.3.0 build --profile production --platform ios --local",
     "submit:ios": "npx eas-cli@20.3.0 submit --profile production --platform ios",

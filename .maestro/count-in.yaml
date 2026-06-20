@@ -1,0 +1,16 @@
+# Canonical #7 — Pranayama count-in ("Begin in").
+# Pressing Start on a FRESH sequence shows an 8s "Begin in" pre-roll, then the
+# practice begins. This is the E2E tier — it sees the real screen, which RNTL
+# cannot (cf. the promo native-clear bug).
+appId: com.example.timer-app
+---
+- launchApp:
+    clearState: true        # fresh state -> a fresh sequence -> count-in runs
+- assertVisible: "Pranayama"
+- tapOn: "Start"
+- assertVisible: "Begin in" # the pre-roll is showing
+- assertVisible: "Stop"     # button flips to Stop (cancelable during count-in)
+- extendedWaitUntil:
+    notVisible: "Begin in"  # ~8s later the count-in completes and breathing begins
+    timeout: 15000
+- assertVisible: "Stop"     # still active (now running)
