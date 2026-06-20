@@ -32,14 +32,17 @@ accessibility label on the header settings icon to be tappable), start/end chime
 `appId` in each flow is `com.example.timer-app` (the shipped bundle id). Maestro targets the
 booted simulator automatically. iOS physical-device support is limited — prefer a simulator.
 
-## Caveat (not yet green — known, scoped follow-up)
+## Status & gotchas (2026-06-20)
 
-These flows are written and the Maestro pipeline runs, but they are **not yet passing on a build
-produced by `npx expo run:ios`**. That build launches through **`expo-dev-client`** (it's a
-dependency), so a `launchApp: { clearState: true }` wipes the saved dev-server URL and the app
-opens the **dev-client launcher** instead of the Pranayama tab — the first `assertVisible` fails.
-
-To get a clean green run, build the app **without the dev-client launcher in the path** (a
-standalone test build), then run `npm run e2e`. That's the next E2E task. The flows themselves
-(selectors, steps, `clearState` for a fresh sequence) are correct for a standalone build.
+- **`count-in.yaml` passes** green on a Release simulator build. The pipeline works.
+- **Java:** macOS ships a `/usr/bin/java` *stub* that only nags you to install Java, so naive
+  detection is misleading. `scripts/e2e.sh` (what `npm run e2e` runs) resolves a real JDK
+  (`/usr/libexec/java_home`, else a Temurin JDK under `~/.jdks`) and prepends it to PATH. It also
+  puts `~/.maestro/bin` on PATH, since npm scripts don't source your interactive shell.
+- **Cold-launch timing:** assert right after `launchApp` and you'll race the splash. Each flow
+  first does `extendedWaitUntil: { visible: "Start" }` to wait for first render.
+- **Tab labels aren't matchable text on iOS.** To tap a tab, use its `testID`
+  (`tab-pranayama` / `tab-yoga` / `tab-hitt`, set via `tabBarButtonTestID` in
+  `app/(timer-app)/_layout.tsx`), not the visible label. `tab-switch-confirm.yaml` uses
+  `tapOn: { id: tab-yoga }` — it goes green on any build that includes those testIDs.
 

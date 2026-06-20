@@ -6,7 +6,9 @@ appId: com.example.timer-app
 ---
 - launchApp:
     clearState: true        # fresh state -> a fresh sequence -> count-in runs
-- assertVisible: "Pranayama"
+- extendedWaitUntil:        # absorb cold-launch + splash before asserting
+    visible: "Start"
+    timeout: 30000
 - tapOn: "Start"
 - assertVisible: "Begin in" # the pre-roll is showing
 - assertVisible: "Stop"     # button flips to Stop (cancelable during count-in)

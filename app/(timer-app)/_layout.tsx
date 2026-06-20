@@ -61,6 +61,9 @@ export default function TabLayout() {
           name="index"
           options={{
             title: "Pranayama",
+            // testID so E2E (Maestro) can tap the tab — its text label isn't
+            // exposed as a matchable element on iOS.
+            tabBarButtonTestID: "tab-pranayama",
             tabBarIcon: ({ color }) => <PranayamaSvg color={color} />,
           }}
         />
@@ -68,6 +71,7 @@ export default function TabLayout() {
           name="yoga"
           options={{
             title: "Yoga",
+            tabBarButtonTestID: "tab-yoga",
             tabBarIcon: ({ color, focused }) => <YogaSvg color={color} />,
           }}
         />
@@ -75,6 +79,7 @@ export default function TabLayout() {
           name="hitt"
           options={{
             title: "HIIT",
+            tabBarButtonTestID: "tab-hitt",
             tabBarIcon: ({ color, focused }) => <HittSvg color={color} />,
           }}
         />
