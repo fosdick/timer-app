@@ -745,6 +745,10 @@ export default function YogaView() {
       setPaces((prev) => [newPace, ...prev]);
       // A freshly created pace becomes the active one — the user just
       // chose & named these settings, presumably they want to use them now.
+      // Stop first (like handleApplyPace) so the pace LOADS but does not start:
+      // creating from the center icon while a flow is running must not leave the
+      // timer running into the new pace.
+      cancelHalfwayPauseAndStop();
       applyPaceValuesToState(newPace);
       setActivePaceId(newPace.id);
       saveActivePaceId(newPace.id);
