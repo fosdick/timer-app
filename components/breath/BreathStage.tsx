@@ -19,6 +19,7 @@ export function BreathStage({
   onPressClock,
   countIn = null,
   endsOnExhale = false,
+  onInfoPress,
 }: {
   view: BreathView;
   isRunning: boolean;
@@ -26,8 +27,10 @@ export function BreathStage({
   onPressClock?: () => void;
   /** Seconds left in the pre-roll count-in ("Begin in N"), or null when not counting in. */
   countIn?: number | null;
-  /** Whether the session length is auto-corrected to end on an exhale (annotates the label). */
+  /** Whether the session length is auto-corrected to end on an exhale (shows the ⓘ). */
   endsOnExhale?: boolean;
+  /** Tapping the ⓘ next to the label (shown only when endsOnExhale). */
+  onInfoPress?: () => void;
 }) {
   const tint = metronome ? t.accentSoft : t.phaseTint[view.kind] ?? t.accentSoft;
   const counting = countIn !== null;
@@ -37,9 +40,19 @@ export function BreathStage({
   const clockDisabled = isRunning || counting || !onPressClock;
   return (
     <View style={styles.stage}>
-      <Text style={yogaTypography.timerLabel}>
-        {endsOnExhale ? "Remaining (ends on exhale)" : "Remaining"}
-      </Text>
+      <View style={styles.labelRow}>
+        <Text style={yogaTypography.timerLabel}>Remaining</Text>
+        {endsOnExhale && onInfoPress ? (
+          <TouchableOpacity
+            onPress={onInfoPress}
+            hitSlop={10}
+            accessibilityRole="button"
+            accessibilityLabel="About session length"
+          >
+            <Text style={styles.info}>{"ⓘ"}</Text>
+          </TouchableOpacity>
+        ) : null}
+      </View>
       <TouchableOpacity activeOpacity={0.7} disabled={clockDisabled} onPress={onPressClock}>
         <Text style={yogaTypography.timerCountdown}>{formatClock(view.totalRemaining)}</Text>
       </TouchableOpacity>
@@ -65,6 +78,8 @@ export function BreathStage({
 
 const styles = StyleSheet.create({
   stage: { alignItems: "center", marginTop: 10 }, // mirrors the yoga tab's timer block offset
+  labelRow: { flexDirection: "row", alignItems: "center", gap: 6 },
+  info: { color: t.muted, fontSize: 15 },
   center: { alignItems: "center", justifyContent: "center", height: 150 }, // fixed: no layout shift on start
   phase: { fontSize: 24, fontWeight: "300", letterSpacing: 2 },
   count: { fontSize: 88, fontWeight: "200", fontVariant: ["tabular-nums"] },

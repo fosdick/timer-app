@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet, Alert } from "react-native";
+import { useRouter, type Href } from "expo-router";
 import { Audio } from "expo-av";
 import { LinearGradient } from "expo-linear-gradient";
 import { TimerPickerModal } from "react-native-timer-picker";
@@ -25,7 +26,7 @@ import { CountEditors } from "./CountEditors";
 import { BreathStage } from "./BreathStage";
 import { SoundOptions } from "./SoundOptions";
 import { getClickSound, getAmbience, DEFAULT_CLICK_ID, DEFAULT_DOWNBEAT_ID, DEFAULT_AMBIENCE_ID } from "./breath-sounds";
-import { breathTheme as t } from "./breath-theme";
+import { breathTheme as t, formatClock } from "./breath-theme";
 
 const BREATH_DATA_KEY = "breath_timer_data";
 const DEFAULT_TOTAL_SEC = 300; // 5 min
@@ -59,6 +60,10 @@ export default function BreathScreen() {
   const [downbeatId, setDownbeatId] = useState<string>(DEFAULT_DOWNBEAT_ID);
   const [ambienceId, setAmbienceId] = useState<string>(DEFAULT_AMBIENCE_ID);
   const [showPicker, setShowPicker] = useState(false);
+  // Live raw value the length picker is scrolled to — drives the "ends on
+  // exhale · m:ss" preview in the modal title.
+  const [pickerSec, setPickerSec] = useState<number>(DEFAULT_TOTAL_SEC);
+  const router = useRouter();
 
   // Memoized so the pattern reference is stable across renders (a new object
   // each render would thrash the timer's memo/effects).
@@ -89,6 +94,30 @@ export default function BreathScreen() {
         : totalSec,
     [pattern, totalSec, metro, prefs.autoCorrectExhaleEnd],
   );
+
+  // Live "ends on exhale · m:ss" preview shown in the length picker's title as
+  // the user scrolls (pickerSec), so the round-up is never a surprise — matters
+  // most for Nadi's coarse, whole-round steps.
+  const pickerTitle = endsOnExhale
+    ? `Ends on exhale · ${formatClock(
+        Math.round(
+          adjustTotalToExhaleEnd(pattern, pickerSec, {
+            clickSlotSec: CLICK_SLOT_SEC,
+            countDurationSec: 1,
+          }),
+        ),
+      )}`
+    : "Session length";
+
+  const showExhaleInfo = () =>
+    Alert.alert(
+      "Ends on exhale",
+      "Pranayama sessions round up so you finish on an exhale. You can turn this off in User Preferences.",
+      [
+        { text: "Open Preferences", onPress: () => router.push("/user-preferences" as Href) },
+        { text: "OK", style: "cancel" },
+      ],
+    );
 
   // Restore saved settings on mount.
   useEffect(() => {
@@ -213,7 +242,11 @@ export default function BreathScreen() {
         metronome={metro}
         countIn={countIn}
         endsOnExhale={endsOnExhale}
-        onPressClock={() => setShowPicker(true)}
+        onInfoPress={showExhaleInfo}
+        onPressClock={() => {
+          setPickerSec(effectiveTotalSec);
+          setShowPicker(true);
+        }}
       />
 
       <View style={styles.controls}>
@@ -285,6 +318,9 @@ export default function BreathScreen() {
         visible={showPicker}
         setIsVisible={setShowPicker}
         initialValue={getTimeParts(effectiveTotalSec)}
+        onDurationChange={(d) =>
+          setPickerSec(d.hours * 3600 + d.minutes * 60 + d.seconds)
+        }
         onConfirm={(picked) => {
           const newTotal = picked.hours * 3600 + picked.minutes * 60 + picked.seconds;
           setTotalSec(newTotal);
@@ -292,7 +328,7 @@ export default function BreathScreen() {
           timer.reset();
           persist({ breathTotalSec: newTotal });
         }}
-        modalTitle="Session length"
+        modalTitle={pickerTitle}
         onCancel={() => setShowPicker(false)}
         closeOnOverlayPress
         Audio={Audio}
