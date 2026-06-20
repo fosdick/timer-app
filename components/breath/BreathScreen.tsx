@@ -26,7 +26,7 @@ import { CountEditors } from "./CountEditors";
 import { BreathStage } from "./BreathStage";
 import { SoundOptions } from "./SoundOptions";
 import { getClickSound, getAmbience, DEFAULT_CLICK_ID, DEFAULT_DOWNBEAT_ID, DEFAULT_AMBIENCE_ID } from "./breath-sounds";
-import { breathTheme as t, formatClock } from "./breath-theme";
+import { breathTheme as t } from "./breath-theme";
 
 const BREATH_DATA_KEY = "breath_timer_data";
 const DEFAULT_TOTAL_SEC = 300; // 5 min
@@ -60,9 +60,6 @@ export default function BreathScreen() {
   const [downbeatId, setDownbeatId] = useState<string>(DEFAULT_DOWNBEAT_ID);
   const [ambienceId, setAmbienceId] = useState<string>(DEFAULT_AMBIENCE_ID);
   const [showPicker, setShowPicker] = useState(false);
-  // Live raw value the length picker is scrolled to — drives the "ends on
-  // exhale · m:ss" preview in the modal title.
-  const [pickerSec, setPickerSec] = useState<number>(DEFAULT_TOTAL_SEC);
   const router = useRouter();
 
   // Memoized so the pattern reference is stable across renders (a new object
@@ -94,20 +91,6 @@ export default function BreathScreen() {
         : totalSec,
     [pattern, totalSec, metro, prefs.autoCorrectExhaleEnd],
   );
-
-  // Live "ends on exhale · m:ss" preview shown in the length picker's title as
-  // the user scrolls (pickerSec), so the round-up is never a surprise — matters
-  // most for Nadi's coarse, whole-round steps.
-  const pickerTitle = endsOnExhale
-    ? `Ends on exhale · ${formatClock(
-        Math.round(
-          adjustTotalToExhaleEnd(pattern, pickerSec, {
-            clickSlotSec: CLICK_SLOT_SEC,
-            countDurationSec: 1,
-          }),
-        ),
-      )}`
-    : "Session length";
 
   const showExhaleInfo = () =>
     Alert.alert(
@@ -243,10 +226,7 @@ export default function BreathScreen() {
         countIn={countIn}
         endsOnExhale={endsOnExhale}
         onInfoPress={showExhaleInfo}
-        onPressClock={() => {
-          setPickerSec(effectiveTotalSec);
-          setShowPicker(true);
-        }}
+        onPressClock={() => setShowPicker(true)}
       />
 
       <View style={styles.controls}>
@@ -318,9 +298,6 @@ export default function BreathScreen() {
         visible={showPicker}
         setIsVisible={setShowPicker}
         initialValue={getTimeParts(effectiveTotalSec)}
-        onDurationChange={(d) =>
-          setPickerSec(d.hours * 3600 + d.minutes * 60 + d.seconds)
-        }
         onConfirm={(picked) => {
           const newTotal = picked.hours * 3600 + picked.minutes * 60 + picked.seconds;
           setTotalSec(newTotal);
@@ -328,7 +305,7 @@ export default function BreathScreen() {
           timer.reset();
           persist({ breathTotalSec: newTotal });
         }}
-        modalTitle={pickerTitle}
+        modalTitle="Session length"
         onCancel={() => setShowPicker(false)}
         closeOnOverlayPress
         Audio={Audio}
