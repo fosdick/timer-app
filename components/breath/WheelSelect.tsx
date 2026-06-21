@@ -32,6 +32,7 @@ export function WheelSelect({
   onChange,
   onSettle,
   disabled = false,
+  muted = false,
 }: {
   label: string;
   options: WheelOption[];
@@ -40,6 +41,8 @@ export function WheelSelect({
   /** Fires when the wheel settles on a new option (e.g. preview its sound). */
   onSettle?: (id: string) => void;
   disabled?: boolean;
+  /** Greys the field (opacity), like the prefs mute — for an inactive option. */
+  muted?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const [idx, setIdx] = useState(0);
@@ -81,7 +84,7 @@ export function WheelSelect({
         activeOpacity={0.7}
         disabled={disabled}
         onPress={openWheel}
-        style={styles.field}
+        style={[styles.field, muted && styles.fieldMuted]}
       >
         <Text style={styles.fieldLabel}>{label}</Text>
         <Text style={styles.fieldValue}>{current.label}</Text>
@@ -154,6 +157,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: t.line,
   },
+  fieldMuted: { opacity: 0.4 }, // matches the prefs mute (disabled selector)
   fieldLabel: { color: t.muted, fontSize: 11, textTransform: "uppercase", letterSpacing: 0.5 },
   fieldValue: { color: t.text, fontSize: 18, fontWeight: "400", marginTop: 3 },
 

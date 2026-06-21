@@ -48,6 +48,7 @@ export function SoundOptions({
           onChange={onDownbeatChange}
           onSettle={(id) => getClickSound(id).play()}
           disabled={disabled || downbeatDisabled}
+          muted={downbeatDisabled}
         />
       )}
       <WheelSelect
