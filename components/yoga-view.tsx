@@ -307,13 +307,21 @@ export default function YogaView() {
     setHalfwayChimePlayed(false);
   };
 
-  // Current time clock - always updates regardless of timer state
+  // Current time clock - always updates regardless of timer state.
+  // Self-reschedules to the next whole wall-clock second (via Date.now) instead
+  // of a flat setInterval, so its tick lands on the SAME instant as the pose
+  // countdown's tick below. Both share the real clock as their one source of
+  // truth, so every on-screen second (Current Time, pose, superset) flips
+  // together — and neither drifts, since each tick re-syncs to Date.now().
   useEffect(() => {
-    const clockInterval = setInterval(() => {
+    let timeoutId: ReturnType<typeof setTimeout>;
+    const tick = () => {
       setCurrentTime(new Date());
-    }, 1000);
+      timeoutId = setTimeout(tick, 1000 - (Date.now() % 1000));
+    };
+    timeoutId = setTimeout(tick, 1000 - (Date.now() % 1000));
 
-    return () => clearInterval(clockInterval);
+    return () => clearTimeout(timeoutId);
   }, []);
 
   // Stop timer and all sounds whenever this screen loses focus.
@@ -440,7 +448,12 @@ export default function YogaView() {
           }
         }
       }
-    }, 1000);
+      // Align the tick to the next whole wall-clock second (Date.now as the one
+      // source of truth) so each decrement lands on the same instant the Current
+      // Time clock flips — and so the countdown can't drift the way a flat
+      // setTimeout(…,1000) chain does. Trade-off: the first second after Start
+      // (or after a pause) is partial; well inside the app's timing tolerance.
+    }, 1000 - (Date.now() % 1000));
 
     return () => clearTimeout(intervalId);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -1047,6 +1060,7 @@ export default function YogaView() {
 
           {/* Current pose icon (clickable) */}
           <TouchableOpacity
+            testID="yoga-center-icon"
             style={styles.centerIconContainer}
             activeOpacity={0.7}
             onPress={handleCenterIconPress}
@@ -1096,6 +1110,7 @@ export default function YogaView() {
           <View style={styles.sideIconContainer} />
 
           <TouchableOpacity
+            testID="yoga-center-icon"
             style={styles.centerIconContainer}
             activeOpacity={0.7}
             onPress={handleCenterIconPress}

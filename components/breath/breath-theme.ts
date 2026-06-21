@@ -31,9 +31,18 @@ export const breathTheme = {
   } as Record<BreathPhaseKind, string>,
 };
 
-/** Always HH:MM:SS with leading zeros (e.g. 01:10:00, 00:05:00). */
+/**
+ * Always HH:MM:SS with leading zeros (e.g. 01:10:00, 00:05:00).
+ *
+ * Quantizes with `ceil` (not `round`) so the displayed total shares the SAME
+ * integer-second boundary as the phase count (breathView.countRemaining, also
+ * `ceil`). Both derive from one wall-clock elapsed, so ceiling both makes them
+ * flip on the same instant instead of a fraction apart — the count-vs-total
+ * desync fix. (Semantically truer too: "5s remaining" holds until a full second
+ * has actually passed.)
+ */
 export function formatClock(totalSeconds: number): string {
-  const s = Math.max(0, Math.round(totalSeconds));
+  const s = Math.max(0, Math.ceil(totalSeconds));
   const pad = (n: number) => String(n).padStart(2, "0");
   return `${pad(Math.floor(s / 3600))}:${pad(Math.floor((s % 3600) / 60))}:${pad(s % 60)}`;
 }
