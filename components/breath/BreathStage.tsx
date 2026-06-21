@@ -47,11 +47,16 @@ export function BreathStageHeader({
             <Text style={styles.info}>{"ⓘ"}</Text>
           </TouchableOpacity>
         ) : null}
+        {roundText ? (
+          <>
+            <Text style={styles.divider}>{"|"}</Text>
+            <Text style={styles.round}>{roundText}</Text>
+          </>
+        ) : null}
       </View>
       <TouchableOpacity activeOpacity={0.7} disabled={clockDisabled} onPress={onPressClock}>
         <Text style={yogaTypography.timerCountdown}>{formatClock(view.totalRemaining)}</Text>
       </TouchableOpacity>
-      {roundText ? <Text style={styles.round}>{roundText}</Text> : null}
     </View>
   );
 }
@@ -93,7 +98,8 @@ const styles = StyleSheet.create({
   header: { alignItems: "center", marginTop: 10 }, // mirrors the yoga tab's timer block offset
   labelRow: { flexDirection: "row", alignItems: "center", gap: 6 },
   info: { color: t.muted, fontSize: 15 },
-  round: { color: t.muted, fontSize: 14, fontWeight: "400", letterSpacing: 0.5, marginTop: 2, fontVariant: ["tabular-nums"] },
+  divider: { color: t.muted, fontSize: 14, opacity: 0.6 },
+  round: { color: t.muted, fontSize: 14, fontWeight: "400", letterSpacing: 0.5, fontVariant: ["tabular-nums"] },
   center: { alignItems: "center", justifyContent: "center", height: 150 },
   phase: { fontSize: 24, fontWeight: "300", letterSpacing: 2 },
   count: { fontSize: 88, fontWeight: "200", fontVariant: ["tabular-nums"] },
