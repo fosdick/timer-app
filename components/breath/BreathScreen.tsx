@@ -30,7 +30,6 @@ import { breathTheme as t } from "./breath-theme";
 
 const BREATH_DATA_KEY = "breath_timer_data";
 const DEFAULT_TOTAL_SEC = 300; // 5 min
-const CLICK_SLOT_SEC = 0.3; // boundary click's own little time container (patterns only)
 const COUNT_IN_SEC = 8; // "Begin in" pre-roll before a fresh sequence starts
 const SCREEN_H = Dimensions.get("window").height; // slide-down distance (clipped)
 
@@ -90,7 +89,6 @@ export default function BreathScreen() {
     () =>
       prefs.autoCorrectExhaleEnd
         ? adjustTotalToExhaleEnd(pattern, totalSec, {
-            clickSlotSec: metro ? 0 : CLICK_SLOT_SEC,
             countDurationSec: 1,
           })
         : totalSec,
@@ -123,7 +121,6 @@ export default function BreathScreen() {
   // Start/end chimes match the yoga tab (canonical behavior — see the old
   // pranayama component): bell-hit on Start, end-bell when the session ends.
   const timer = useBreathTimer(pattern, effectiveTotalSec, {
-    clickSlotSec: metro ? 0 : CLICK_SLOT_SEC,
     onClick: () => getClickSound(clickId).play(),
     onFinish: () => playEndChime(),
     // Downbeat snap on each count during inhale/exhale, when enabled for this
