@@ -115,7 +115,10 @@ export function useBreathTimer(
     if (runningRef.current) return;
     if (accumulatedRef.current >= totalRef.current) accumulatedRef.current = 0; // fresh run after finishing
     runStartedAtRef.current = Date.now();
-    prevElapsedRef.current = accumulatedRef.current;
+    // Skip a boundary that sits exactly at the (re)start instant: the start bell
+    // already marks it, so the first click shouldn't double up with the bell.
+    // clicksBetween is inclusive at the window start, so nudge past it.
+    prevElapsedRef.current = accumulatedRef.current + 1e-6;
     runningRef.current = true;
     setIsRunning(true);
     intervalRef.current = setInterval(tick, TICK_MS);
