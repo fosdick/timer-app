@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { View, Text, TouchableOpacity, StyleSheet, Alert, ScrollView } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet, Alert, ScrollView, Animated, Dimensions } from "react-native";
 import { useRouter, type Href } from "expo-router";
 import { Audio } from "expo-av";
 import { LinearGradient } from "expo-linear-gradient";
@@ -32,6 +32,7 @@ const BREATH_DATA_KEY = "breath_timer_data";
 const DEFAULT_TOTAL_SEC = 300; // 5 min
 const CLICK_SLOT_SEC = 0.3; // boundary click's own little time container (patterns only)
 const COUNT_IN_SEC = 8; // "Begin in" pre-roll before a fresh sequence starts
+const SCREEN_H = Dimensions.get("window").height; // slide-down distance (clipped)
 
 type CountSet = { inhale: number; holdIn: number; exhale: number; holdOut: number };
 
@@ -61,6 +62,10 @@ export default function BreathScreen() {
   const [ambienceId, setAmbienceId] = useState<string>(DEFAULT_AMBIENCE_ID);
   const [showPicker, setShowPicker] = useState(false);
   const router = useRouter();
+
+  // The counts/downbeat slide-up overlay covers the stage when open (idle) and
+  // slides down out of view while a session runs.
+  const slide = useRef(new Animated.Value(0)).current;
 
   // Memoized so the pattern reference is stable across renders (a new object
   // each render would thrash the timer's memo/effects).
@@ -165,6 +170,15 @@ export default function BreathScreen() {
     if (countInRef.current) clearInterval(countInRef.current);
   }, []);
 
+  // Slide the counts overlay down on Start (active), back up on Stop.
+  useEffect(() => {
+    Animated.timing(slide, {
+      toValue: active ? SCREEN_H : 0,
+      duration: 260,
+      useNativeDriver: true,
+    }).start();
+  }, [active, slide]);
+
   const onPressStartStop = () => {
     if (countIn !== null) {
       stopCountIn(); // cancel the count-in (sequence never started)
@@ -219,45 +233,53 @@ export default function BreathScreen() {
 
   return (
     <View style={styles.screen}>
-      <BreathStage
-        view={timer.view}
-        isRunning={timer.isRunning}
-        metronome={metro}
-        countIn={countIn}
-        endsOnExhale={endsOnExhale}
-        onInfoPress={showExhaleInfo}
-        onPressClock={() => setShowPicker(true)}
-      />
-
-      <ScrollView
-        style={styles.controlsScroll}
-        contentContainerStyle={styles.controls}
-        showsVerticalScrollIndicator={false}
-      >
-        <CountEditors
-          pattern={pattern}
-          activeKind={timer.isRunning && !metro ? timer.view.kind : undefined}
-          onChange={editCount}
-          disabled={active}
+      <View style={styles.stageWrap}>
+        <BreathStage
+          view={timer.view}
+          isRunning={timer.isRunning}
+          metronome={metro}
+          countIn={countIn}
+          endsOnExhale={endsOnExhale}
+          onInfoPress={showExhaleInfo}
+          onPressClock={() => setShowPicker(true)}
         />
-
-        <PatternPicker selectedId={pattern.id} onSelect={choosePattern} disabled={active} />
-
-        {!metro && (
-          <TouchableOpacity
-            style={styles.downbeatToggle}
-            activeOpacity={0.7}
-            disabled={active}
-            onPress={() => setDownbeatEnabled(patternId, !patternDownbeatOn)}
-            accessibilityRole="checkbox"
-            accessibilityState={{ checked: patternDownbeatOn }}
+        {/* Slide-up overlay: breath counts + downbeat snap, covering the stage.
+            Open by default; slides down out of view while a session runs. */}
+        <Animated.View
+          pointerEvents={active ? "none" : "auto"}
+          style={[styles.countsOverlay, { transform: [{ translateY: slide }] }]}
+        >
+          <ScrollView
+            contentContainerStyle={styles.countsOverlayContent}
+            showsVerticalScrollIndicator={false}
           >
-            <View style={[styles.dbBox, patternDownbeatOn && styles.dbBoxOn]}>
-              {patternDownbeatOn ? <Text style={styles.dbTick}>{"✓"}</Text> : null}
-            </View>
-            <Text style={styles.dbLabel}>Downbeat snap on each count</Text>
-          </TouchableOpacity>
-        )}
+            <CountEditors
+              pattern={pattern}
+              activeKind={undefined}
+              onChange={editCount}
+              disabled={active}
+            />
+            {!metro && (
+              <TouchableOpacity
+                style={styles.downbeatToggle}
+                activeOpacity={0.7}
+                onPress={() => setDownbeatEnabled(patternId, !patternDownbeatOn)}
+                accessibilityRole="checkbox"
+                accessibilityState={{ checked: patternDownbeatOn }}
+              >
+                <View style={[styles.dbBox, patternDownbeatOn && styles.dbBoxOn]}>
+                  {patternDownbeatOn ? <Text style={styles.dbTick}>{"✓"}</Text> : null}
+                </View>
+                <Text style={styles.dbLabel}>Downbeat snap on each count</Text>
+              </TouchableOpacity>
+            )}
+          </ScrollView>
+        </Animated.View>
+      </View>
+
+      {/* Always-visible controls: pattern styles + sounds. */}
+      <View style={styles.controls}>
+        <PatternPicker selectedId={pattern.id} onSelect={choosePattern} disabled={active} />
 
         <SoundOptions
           clickId={clickId}
@@ -282,7 +304,7 @@ export default function BreathScreen() {
           }
           downbeatDisabled={!patternDownbeatOn}
         />
-      </ScrollView>
+      </View>
 
       {/* Bottom-anchored like the yoga tab's button (same shared container),
           so switching tabs doesn't make the button appear to jump. */}
@@ -323,10 +345,17 @@ export default function BreathScreen() {
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: t.bg, paddingHorizontal: t.space.lg },
-  // The controls scroll in the space between the fixed stage and the fixed
-  // Start button, so a tall pattern (e.g. Visamavritti) never pushes Start off
-  // screen / behind the banner ad.
-  controlsScroll: { flex: 1, alignSelf: "stretch" },
+  // Stage region; the counts overlay is clipped to it (overflow hidden) so it
+  // can slide down out of view without bleeding onto the controls below.
+  stageWrap: { alignSelf: "stretch", position: "relative", overflow: "hidden" },
+  countsOverlay: { ...StyleSheet.absoluteFillObject, backgroundColor: t.bg },
+  countsOverlayContent: {
+    flexGrow: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    gap: t.space.md,
+    padding: t.space.md,
+  },
   controls: { alignItems: "center", gap: t.space.md, paddingVertical: t.space.md },
   startBtn: {
     borderWidth: 1,
