@@ -94,35 +94,39 @@ describe("breathView", () => {
 });
 
 describe("downbeatBeats", () => {
-  it("pulses each count of inhale & exhale (skips count 1 and the holds)", () => {
+  it("pulses each count of every phase (skips count 1 of each — the boundary)", () => {
     // Box, no click slots: inhale 0-4, hold 4-8, exhale 8-12, hold 12-16.
-    expect(downbeatBeats(buildTimeline(BOX), 1)).toEqual([1, 2, 3, 9, 10, 11]);
+    expect(downbeatBeats(buildTimeline(BOX), 1)).toEqual([
+      1, 2, 3, 5, 6, 7, 9, 10, 11, 13, 14, 15,
+    ]);
   });
 
-  it("covers a long exhale; the zero-count closing hold adds nothing (4-7-8)", () => {
-    // inhale 0-4, hold 4-11, exhale 11-19.
+  it("includes retention holds; a zero-count hold adds nothing (4-7-8)", () => {
+    // inhale 0-4, hold 4-11, exhale 11-19, no closing hold.
     expect(downbeatBeats(buildTimeline(FOUR_SEVEN_EIGHT), 1)).toEqual([
-      1, 2, 3, 12, 13, 14, 15, 16, 17, 18,
+      1, 2, 3, 5, 6, 7, 8, 9, 10, 12, 13, 14, 15, 16, 17, 18,
     ]);
   });
 });
 
 describe("downbeatsBetween", () => {
-  const tl = buildTimeline(BOX); // downbeats at 1,2,3,9,10,11 per 16s cycle
+  const tl = buildTimeline(BOX); // downbeats at 1,2,3,5,6,7,9,10,11,13,14,15 / cycle
 
   it("returns the downbeats inside one cycle", () => {
-    expect(downbeatsBetween(0, 16, tl, 16, 1)).toEqual([1, 2, 3, 9, 10, 11]);
+    expect(downbeatsBetween(0, 16, tl, 16, 1)).toEqual([
+      1, 2, 3, 5, 6, 7, 9, 10, 11, 13, 14, 15,
+    ]);
   });
 
   it("is half-open [prev, next)", () => {
-    expect(downbeatsBetween(2, 10, tl, 16, 1)).toEqual([2, 3, 9]);
+    expect(downbeatsBetween(2, 10, tl, 16, 1)).toEqual([2, 3, 5, 6, 7, 9]);
   });
 
   it("loops across cycle boundaries", () => {
-    expect(downbeatsBetween(15, 20, tl, 16, 1)).toEqual([17, 18, 19]);
+    expect(downbeatsBetween(15, 20, tl, 16, 1)).toEqual([15, 17, 18, 19]);
   });
 
-  it("is empty when no downbeat falls in the window (mid-hold)", () => {
-    expect(downbeatsBetween(4, 9, tl, 16, 1)).toEqual([]);
+  it("is empty when no downbeat falls in the window (a phase-boundary gap)", () => {
+    expect(downbeatsBetween(3.2, 3.8, tl, 16, 1)).toEqual([]);
   });
 });

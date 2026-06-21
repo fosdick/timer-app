@@ -63,11 +63,11 @@ export function clicksBetween(
 }
 
 /**
- * Cycle-relative times of the per-count "downbeat" snaps during inhale & exhale
- * — a pulse on each count to pace the breath. These land on the existing count
- * grid (no new beats; honors the uniform-grid rule). The first count of each
- * phase is skipped because it coincides with that phase's boundary click. Holds
- * get no downbeats.
+ * Cycle-relative times of the per-count "downbeat" snaps — a pulse on each count
+ * of EVERY phase (inhale, retention, exhale, retention) to pace the breath.
+ * These land on the existing count grid (no new beats; honors the uniform-grid
+ * rule). The first count of each phase is skipped because it coincides with that
+ * phase's boundary click.
  */
 export function downbeatBeats(
   timeline: BreathSegment[],
@@ -77,7 +77,6 @@ export function downbeatBeats(
   const out: number[] = [];
   for (const seg of timeline) {
     if (seg.type !== "breath") continue;
-    if (seg.kind !== "inhale" && seg.kind !== "exhale") continue;
     const count = Math.round(seg.duration / countDurationSec);
     for (let k = 1; k < count; k++) {
       out.push(seg.start + k * countDurationSec);

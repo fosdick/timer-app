@@ -118,7 +118,8 @@ Promote with the user's words, or strike.
   "App Settings"; App Settings is the existing settings page. (Provenance: user, 2026-06-20.)
   Guard: **smoke test** (`components/__tests__/user-menu.test.tsx`) — opens + both links resolve.
 - **Downbeat snap** (Pranayama): a per-pattern toggle plays the selected downbeat sound on each
-  count during inhale & exhale — a pulse on the EXISTING count grid (no new beats; honors #4).
+  count of EVERY phase — inhale, retention, exhale, retention — a pulse on the EXISTING count
+  grid (no new beats; honors #4).
   Viloma defaults ON, every other non-metronome pattern OFF; metronome has no downbeats. The
   downbeat sound + per-pattern enablement persist. (Provenance: user, 2026-06-20 — "play the
   downbeat/snap sound on each count during the inhale & exhale... on the existing grid — not
