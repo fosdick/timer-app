@@ -121,6 +121,13 @@ export const timerPickerModalStyles: CustomTimerPickerModalStyles = {
   // value) instead of the library's default white.
   pickerItem: { color: colorTheme.activeTimerPrimary },
   pickerLabel: { color: colorTheme.activeTimerDimmed },
+  // Title matches the rounds popup heading (lime, 20/600, letter-spaced).
+  modalTitle: {
+    color: colorTheme.activeTimerPrimary,
+    fontSize: 20,
+    fontWeight: "600",
+    letterSpacing: 1,
+  },
   confirmButton: {
     ...pickerButtonBase,
     color: colorTheme.fontColor,
