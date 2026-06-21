@@ -30,7 +30,6 @@ import { breathTheme as t } from "./breath-theme";
 
 const BREATH_DATA_KEY = "breath_timer_data";
 const DEFAULT_TOTAL_SEC = 300; // 5 min
-const COUNT_IN_SEC = 8; // "Begin in" pre-roll before a fresh sequence starts
 const SCREEN_H = Dimensions.get("window").height; // slide-down distance (clipped)
 
 type CountSet = { inhale: number; holdIn: number; exhale: number; holdOut: number };
@@ -146,7 +145,8 @@ export default function BreathScreen() {
   };
 
   const beginCountIn = () => {
-    let remaining = COUNT_IN_SEC;
+    // Duration comes from User Preferences ("Begin in" pre-roll).
+    let remaining = prefs.countInSec;
     setCountIn(remaining);
     countInRef.current = setInterval(() => {
       remaining -= 1;
@@ -203,10 +203,11 @@ export default function BreathScreen() {
       timer.stop();
       return;
     }
-    // Fresh start (at the beginning or after finishing) gets the count-in;
-    // resuming a paused sequence starts immediately, as before.
+    // Fresh start (at the beginning or after finishing) gets the count-in when
+    // it's enabled in User Preferences; resuming a paused sequence — or a fresh
+    // start with the count-in disabled — starts immediately, as before.
     const fresh = timer.view.finished || timer.view.totalRemaining >= effectiveTotalSec;
-    if (fresh) {
+    if (fresh && prefs.countInEnabled) {
       beginCountIn();
     } else {
       playStart();
