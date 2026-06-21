@@ -117,6 +117,10 @@ export const timerPickerModalStyles: CustomTimerPickerModalStyles = {
     borderColor: PICKER_HAIRLINE,
     borderRadius: 14,
   },
+  // Wheel digits + unit labels in the app's lime (matching the rounds popup
+  // value) instead of the library's default white.
+  pickerItem: { color: colorTheme.activeTimerPrimary },
+  pickerLabel: { color: colorTheme.activeTimerDimmed },
   confirmButton: {
     ...pickerButtonBase,
     color: colorTheme.fontColor,
