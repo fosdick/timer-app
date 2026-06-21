@@ -335,6 +335,58 @@ export function cycleDurationSec(p: BreathPattern, opts: TimelineOptions = {}): 
 }
 
 /**
+ * Shared geometry for the round/exhale math: one cycle's length, the in-cycle
+ * time at which the EXHALE's breath segment ends (any trailing retention
+ * dropped), and how many cycles make a round. `ok` is false when the pattern has
+ * no exhale to land on (metronome). Use the SAME opts as the live timeline.
+ */
+function exhaleGeometry(p: BreathPattern, opts: TimelineOptions) {
+  const cycleDur = cycleDurationSec(p, opts);
+  const exhaleSeg = [...buildTimeline(p, opts)]
+    .reverse()
+    .find((s) => s.kind === "exhale" && s.type === "breath");
+  const exhaleEnd = exhaleSeg ? exhaleSeg.start + exhaleSeg.duration : 0;
+  const sets = Math.max(1, Math.floor(p.setsPerRound ?? 1));
+  return { cycleDur, exhaleEnd, sets, ok: !!exhaleSeg && cycleDur > 0 };
+}
+
+/**
+ * Session length (seconds) for a whole number of rounds that ends on the final
+ * round's EXHALE — any trailing retention after that exhale is dropped. A
+ * "round" spans setsPerRound cycles (Nadi Shodhana: 2, alternating nostrils).
+ * Returns 0 for patterns with no exhale (metronome) — they have no rounds.
+ */
+export function roundsToSessionSec(
+  p: BreathPattern,
+  rounds: number,
+  opts: TimelineOptions = {},
+): number {
+  if (isMetronome(p) || p.exhale <= 0) return 0;
+  const { cycleDur, exhaleEnd, sets, ok } = exhaleGeometry(p, opts);
+  if (!ok) return 0;
+  const r = Math.max(1, Math.floor(rounds));
+  // (sets*r - 1) whole cycles, then the final cycle truncated at its exhale end.
+  return (sets * r - 1) * cycleDur + exhaleEnd;
+}
+
+/**
+ * Inverse of roundsToSessionSec: the smallest whole round count whose
+ * exhale-end length is at least `desiredSec` (always >= 1). Returns 1 for
+ * patterns with no exhale.
+ */
+export function sessionSecToRounds(
+  p: BreathPattern,
+  desiredSec: number,
+  opts: TimelineOptions = {},
+): number {
+  if (isMetronome(p) || p.exhale <= 0) return 1;
+  const { cycleDur, exhaleEnd, sets, ok } = exhaleGeometry(p, opts);
+  if (!ok) return 1;
+  const roundDur = sets * cycleDur;
+  return Math.max(1, Math.ceil((desiredSec - exhaleEnd + cycleDur) / roundDur));
+}
+
+/**
  * Adjust a desired session length UP so the session ends at the end of an
  * EXHALE phase, never shorter than `desiredSec`. Any retention that would follow
  * that final exhale is dropped — the practice always ends on the exhale.
@@ -346,6 +398,9 @@ export function cycleDurationSec(p: BreathPattern, opts: TimelineOptions = {}): 
  * Metronome, and any pattern with no exhale phase, has no exhale to land on, so
  * `desiredSec` is returned unchanged. Use the SAME opts as the live timeline so
  * the result lines up exactly with where the timer will fire its end bell.
+ *
+ * (Expressed in terms of the round helpers: snap to the smallest whole round
+ * count whose exhale-end is at or past the desired length.)
  */
 export function adjustTotalToExhaleEnd(
   p: BreathPattern,
@@ -353,27 +408,8 @@ export function adjustTotalToExhaleEnd(
   opts: TimelineOptions = {},
 ): number {
   if (isMetronome(p) || p.exhale <= 0) return desiredSec;
-  const cycleDur = cycleDurationSec(p, opts);
-  if (cycleDur <= 0) return desiredSec;
-
-  // End of the exhale's breath segment within one cycle (drops any trailing
-  // hold-out that would otherwise follow it).
-  const exhaleSeg = [...buildTimeline(p, opts)]
-    .reverse()
-    .find((s) => s.kind === "exhale" && s.type === "breath");
-  if (!exhaleSeg) return desiredSec;
-  const exhaleEnd = exhaleSeg.start + exhaleSeg.duration;
-
-  const sets = Math.max(1, Math.floor(p.setsPerRound ?? 1));
-  const roundDur = sets * cycleDur;
-  // End time of round r (r >= 1): the full sets before the final one, then up to
-  // the final set's exhale end = (sets*r - 1)*cycleDur + exhaleEnd. Pick the
-  // smallest round count whose end is at or past the desired length.
-  const r = Math.max(
-    1,
-    Math.ceil((desiredSec - exhaleEnd + cycleDur) / roundDur),
-  );
-  return (sets * r - 1) * cycleDur + exhaleEnd;
+  if (!exhaleGeometry(p, opts).ok) return desiredSec;
+  return roundsToSessionSec(p, sessionSecToRounds(p, desiredSec, opts), opts);
 }
 
 export interface SegmentAtTime {

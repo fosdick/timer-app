@@ -27,6 +27,7 @@ import { BreathStageHeader, BreathStageCenter } from "./BreathStage";
 import { SoundOptions } from "./SoundOptions";
 import { getClickSound, getAmbience, DEFAULT_CLICK_ID, DEFAULT_DOWNBEAT_ID, DEFAULT_AMBIENCE_ID } from "./breath-sounds";
 import { breathTheme as t } from "./breath-theme";
+import { SessionLengthModal } from "./SessionLengthModal";
 
 const BREATH_DATA_KEY = "breath_timer_data";
 const DEFAULT_TOTAL_SEC = 300; // 5 min
@@ -231,6 +232,14 @@ export default function BreathScreen() {
     });
   };
 
+  // Commit a new session length (from either picker), reset the timer, persist.
+  const applyTotal = (newTotal: number) => {
+    setTotalSec(newTotal);
+    setShowPicker(false);
+    timer.reset();
+    persist({ breathTotalSec: newTotal });
+  };
+
   const choosePattern = (p: BreathPattern) => {
     if (active) return;
     timer.reset();
@@ -344,25 +353,37 @@ export default function BreathScreen() {
         </TouchableOpacity>
       </View>
 
-      <TimerPickerModal
-        visible={showPicker}
-        setIsVisible={setShowPicker}
-        initialValue={getTimeParts(totalSec)}
-        onConfirm={(picked) => {
-          const newTotal = picked.hours * 3600 + picked.minutes * 60 + picked.seconds;
-          setTotalSec(newTotal);
-          setShowPicker(false);
-          timer.reset();
-          persist({ breathTotalSec: newTotal });
-        }}
-        modalTitle="Session length"
-        onCancel={() => setShowPicker(false)}
-        closeOnOverlayPress
-        Audio={Audio}
-        LinearGradient={LinearGradient}
-        styles={{ theme: "dark" }}
-        modalProps={{ overlayOpacity: 0.2 }}
-      />
+      {/* Session length: real patterns pick a number of ROUNDS (always ends on
+          an exhale); the metronome has no rounds, so it keeps the time wheel. */}
+      {metro ? (
+        <TimerPickerModal
+          visible={showPicker}
+          setIsVisible={setShowPicker}
+          initialValue={getTimeParts(totalSec)}
+          onConfirm={(picked) =>
+            applyTotal(picked.hours * 3600 + picked.minutes * 60 + picked.seconds)
+          }
+          modalTitle="Session length"
+          onCancel={() => setShowPicker(false)}
+          closeOnOverlayPress
+          Audio={Audio}
+          LinearGradient={LinearGradient}
+          styles={{
+            theme: "dark",
+            confirmButton: styles.pickerConfirm,
+            cancelButton: styles.pickerCancel,
+          }}
+          modalProps={{ overlayOpacity: 0.2 }}
+        />
+      ) : (
+        <SessionLengthModal
+          visible={showPicker}
+          pattern={pattern}
+          initialTotalSec={totalSec}
+          onConfirm={applyTotal}
+          onCancel={() => setShowPicker(false)}
+        />
+      )}
     </View>
   );
 }
@@ -401,6 +422,30 @@ const styles = StyleSheet.create({
   stopBtn: { borderColor: t.accentSoft }, // light green while running (matches yoga/HIIT)
   startText: { color: t.buttonText, fontSize: 20, fontWeight: "600", letterSpacing: 1 },
   stopText: { color: t.accentSoft },
+  // Metronome time-wheel Confirm/Cancel — bordered like the app's own buttons
+  // instead of the third-party picker's plain defaults.
+  pickerConfirm: {
+    color: t.buttonText,
+    borderWidth: 1,
+    borderColor: t.border,
+    borderRadius: t.radius,
+    paddingHorizontal: t.space.lg,
+    paddingVertical: t.space.sm,
+    fontSize: 18,
+    fontWeight: "600",
+    overflow: "hidden",
+  },
+  pickerCancel: {
+    color: t.muted,
+    borderWidth: 1,
+    borderColor: t.line,
+    borderRadius: t.radius,
+    paddingHorizontal: t.space.lg,
+    paddingVertical: t.space.sm,
+    fontSize: 18,
+    fontWeight: "600",
+    overflow: "hidden",
+  },
   downbeatToggle: { flexDirection: "row", alignItems: "center", gap: 10 },
   dbBox: {
     width: 20,

@@ -18,6 +18,8 @@ import {
   cycleDurationSec,
   segmentAtElapsed,
   adjustTotalToExhaleEnd,
+  roundsToSessionSec,
+  sessionSecToRounds,
 } from "../breath-patterns";
 
 describe("resolvePhases", () => {
@@ -328,6 +330,19 @@ describe("adjustTotalToExhaleEnd", () => {
 
   it("metronome has no exhale — returned unchanged", () => {
     expect(adjustTotalToExhaleEnd(METRONOME, 137, noClicks)).toBe(137);
+  });
+
+  it("is equivalent to snapping rounds (rounds <-> session round-trips)", () => {
+    // Box exhale-ends: 12, 28, 44, 60, ...; one per whole round.
+    expect(roundsToSessionSec(BOX, 1, noClicks)).toBe(12);
+    expect(roundsToSessionSec(BOX, 4, noClicks)).toBe(60);
+    // adjustTotal == roundsToSessionSec(sessionSecToRounds(...))
+    for (const d of [1, 5, 13, 29, 60, 137]) {
+      const rounds = sessionSecToRounds(BOX, d, noClicks);
+      expect(roundsToSessionSec(BOX, rounds, noClicks)).toBe(
+        adjustTotalToExhaleEnd(BOX, d, noClicks),
+      );
+    }
   });
 
   it("accounts for click slots so it matches the live timeline", () => {
