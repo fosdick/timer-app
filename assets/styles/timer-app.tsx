@@ -88,6 +88,13 @@ export const colorTheme = {
  * bordered button standard (same palette as the rounds popup). Import this and
  * pass it as the picker's `styles` prop rather than re-styling per call site.
  */
+// Matches the rounds popup (SessionLengthModal): an "off grey" dark panel with
+// blacker buttons. PICKER_SURFACE mirrors breath-theme's `surface` token; the
+// blacker button fill reads as distinct against it.
+const PICKER_SURFACE = "#0D110B"; // breath-theme surface — the rounds popup card
+const PICKER_BUTTON_BG = "#000000"; // "more black" than the panel
+const PICKER_HAIRLINE = "rgba(124, 179, 66, 0.35)"; // breath-theme line
+
 const pickerButtonBase = {
   borderWidth: 1,
   borderRadius: 10,
@@ -97,10 +104,19 @@ const pickerButtonBase = {
   fontWeight: "600" as const,
   letterSpacing: 1,
   overflow: "hidden" as const,
+  backgroundColor: PICKER_BUTTON_BG,
 };
 
 export const timerPickerModalStyles: CustomTimerPickerModalStyles = {
   theme: "dark",
+  // Drives the wheel area AND its gradient fade, so the fade blends cleanly.
+  backgroundColor: PICKER_SURFACE,
+  container: {
+    backgroundColor: PICKER_SURFACE,
+    borderWidth: 1,
+    borderColor: PICKER_HAIRLINE,
+    borderRadius: 14,
+  },
   confirmButton: {
     ...pickerButtonBase,
     color: colorTheme.fontColor,
@@ -109,7 +125,7 @@ export const timerPickerModalStyles: CustomTimerPickerModalStyles = {
   cancelButton: {
     ...pickerButtonBase,
     color: colorTheme.activeTimerDimmed,
-    borderColor: "rgba(124, 179, 66, 0.35)",
+    borderColor: PICKER_HAIRLINE,
   },
 };
 
