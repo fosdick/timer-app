@@ -224,12 +224,13 @@ export default function BreathScreen() {
   // the count-in) is confirmed.
   useReportActiveTimer("breath", active);
 
-  // "Round N of M" shown under the countdown during an active session. Breath
-  // patterns only — the metronome has no rounds. A round spans setsPerRound
-  // cycles (Nadi: 2), and the math mirrors the rounds picker so the count lines
-  // up with the chosen session length.
+  // "Round N of M" shown inline beside the Remaining label — always visible for
+  // breath patterns with rounds on (idle shows "Round 1 of M"), independent of
+  // the slide-up/run state. The metronome has no rounds. A round spans
+  // setsPerRound cycles (Nadi: 2); the math mirrors the rounds picker so the
+  // count lines up with the chosen session length.
   const roundText = useMemo(() => {
-    if (metro || !active || !prefs.useRounds) return null;
+    if (metro || !prefs.useRounds) return null;
     const cycleDur = cycleDurationSec(pattern, { countDurationSec: 1 });
     const sets = Math.max(1, Math.floor(pattern.setsPerRound ?? 1));
     const roundDur = sets * cycleDur;
@@ -238,7 +239,7 @@ export default function BreathScreen() {
     const elapsed = effectiveTotalSec - timer.view.totalRemaining;
     const current = Math.min(totalRounds, Math.max(1, Math.floor(elapsed / roundDur) + 1));
     return `Round ${current} of ${totalRounds}`;
-  }, [metro, active, prefs.useRounds, pattern, effectiveTotalSec, timer.view.totalRemaining]);
+  }, [metro, prefs.useRounds, pattern, effectiveTotalSec, timer.view.totalRemaining]);
 
   const persist = (over: Partial<Parameters<typeof storeData>[1]>) => {
     storeData(BREATH_DATA_KEY, {
