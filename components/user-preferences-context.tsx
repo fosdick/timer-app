@@ -4,7 +4,9 @@
  * Mirrors DisplayAdsContext/ActiveTimerContext: a provider mounted high in
  * app/_layout.tsx, read anywhere via useUserPreferences().
  *
- * - autoCorrectExhaleEnd: round pranayama length up to end on an exhale.
+ * - useRounds: pick a breath pattern's session length by number of rounds
+ *   (ends on an exhale). When off, patterns use the plain time wheel like the
+ *   metronome. (Migrated from the former autoCorrectExhaleEnd toggle.)
  * - downbeatByPattern: per breath-pattern, whether the downbeat snap plays on
  *   each count during inhale/exhale. Single source of truth for both the
  *   per-pattern on-screen toggle and the Viloma/Visamavritti rows on the prefs
@@ -23,7 +25,7 @@ import React, {
 import { getData, storeData } from "@/assets/utils/persistent-storage";
 
 export type UserPreferences = {
-  autoCorrectExhaleEnd: boolean;
+  useRounds: boolean;
   downbeatByPattern: Record<string, boolean>;
   countInEnabled: boolean;
   countInSec: number;
@@ -34,7 +36,7 @@ export const COUNT_IN_MIN = 1;
 export const COUNT_IN_MAX = 60;
 
 export const DEFAULT_USER_PREFERENCES: UserPreferences = {
-  autoCorrectExhaleEnd: true,
+  useRounds: true,
   downbeatByPattern: {},
   countInEnabled: true,
   countInSec: 8,
@@ -53,7 +55,7 @@ const USER_PREFERENCES_KEY = "user_preferences";
 
 type UserPreferencesContextType = {
   prefs: UserPreferences;
-  setAutoCorrectExhaleEnd: (value: boolean) => void;
+  setUseRounds: (value: boolean) => void;
   setDownbeatEnabled: (patternId: string, value: boolean) => void;
   setCountInEnabled: (value: boolean) => void;
   setCountInSec: (value: number) => void;
@@ -61,7 +63,7 @@ type UserPreferencesContextType = {
 
 const UserPreferencesContext = createContext<UserPreferencesContextType>({
   prefs: DEFAULT_USER_PREFERENCES,
-  setAutoCorrectExhaleEnd: () => {},
+  setUseRounds: () => {},
   setDownbeatEnabled: () => {},
   setCountInEnabled: () => {},
   setCountInSec: () => {},
@@ -79,6 +81,8 @@ const UserPreferencesProvider: React.FC<{ children: React.ReactNode }> = ({
         setPrefs((prev) => ({
           ...prev,
           ...saved,
+          // Migrate the former autoCorrectExhaleEnd toggle to useRounds (same intent).
+          useRounds: saved.useRounds ?? saved.autoCorrectExhaleEnd ?? prev.useRounds,
           downbeatByPattern: { ...prev.downbeatByPattern, ...saved.downbeatByPattern },
         }));
       }
@@ -89,10 +93,10 @@ const UserPreferencesProvider: React.FC<{ children: React.ReactNode }> = ({
     storeData(USER_PREFERENCES_KEY, next);
   }, []);
 
-  const setAutoCorrectExhaleEnd = useCallback(
+  const setUseRounds = useCallback(
     (value: boolean) => {
       setPrefs((prev) => {
-        const next = { ...prev, autoCorrectExhaleEnd: value };
+        const next = { ...prev, useRounds: value };
         persist(next);
         return next;
       });
@@ -144,14 +148,14 @@ const UserPreferencesProvider: React.FC<{ children: React.ReactNode }> = ({
   const value = useMemo(
     () => ({
       prefs,
-      setAutoCorrectExhaleEnd,
+      setUseRounds,
       setDownbeatEnabled,
       setCountInEnabled,
       setCountInSec,
     }),
     [
       prefs,
-      setAutoCorrectExhaleEnd,
+      setUseRounds,
       setDownbeatEnabled,
       setCountInEnabled,
       setCountInSec,

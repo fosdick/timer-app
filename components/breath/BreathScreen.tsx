@@ -22,7 +22,7 @@ import { useUserPreferences, isDownbeatEnabled } from "@/components/user-prefere
 import { getData, storeData } from "@/assets/utils/persistent-storage";
 import { getTimeParts } from "@/assets/utils/format-time";
 import { playStart, playEndChime } from "@/assets/utils/sounds";
-import { screenStyles } from "@/assets/styles/timer-app";
+import { screenStyles, timerPickerModalStyles } from "@/assets/styles/timer-app";
 import { PatternPicker } from "./PatternPicker";
 import { CountEditors } from "./CountEditors";
 import { BreathStageHeader, BreathStageCenter } from "./BreathStage";
@@ -85,15 +85,15 @@ export default function BreathScreen() {
   // stays the user's raw pick; this derived value is what the timer runs and the
   // UI shows. Metronome is unaffected (no exhale to land on). Must use the SAME
   // timeline opts as the timer below so the end bell lands exactly on the exhale.
-  const endsOnExhale = prefs.autoCorrectExhaleEnd && !metro;
+  const endsOnExhale = prefs.useRounds && !metro;
   const effectiveTotalSec = useMemo(
     () =>
-      prefs.autoCorrectExhaleEnd
+      prefs.useRounds
         ? adjustTotalToExhaleEnd(pattern, totalSec, {
             countDurationSec: 1,
           })
         : totalSec,
-    [pattern, totalSec, metro, prefs.autoCorrectExhaleEnd],
+    [pattern, totalSec, metro, prefs.useRounds],
   );
 
   const showExhaleInfo = () =>
@@ -229,7 +229,7 @@ export default function BreathScreen() {
   // cycles (Nadi: 2), and the math mirrors the rounds picker so the count lines
   // up with the chosen session length.
   const roundText = useMemo(() => {
-    if (metro || !active) return null;
+    if (metro || !active || !prefs.useRounds) return null;
     const cycleDur = cycleDurationSec(pattern, { countDurationSec: 1 });
     const sets = Math.max(1, Math.floor(pattern.setsPerRound ?? 1));
     const roundDur = sets * cycleDur;
@@ -238,7 +238,7 @@ export default function BreathScreen() {
     const elapsed = effectiveTotalSec - timer.view.totalRemaining;
     const current = Math.min(totalRounds, Math.max(1, Math.floor(elapsed / roundDur) + 1));
     return `Round ${current} of ${totalRounds}`;
-  }, [metro, active, pattern, effectiveTotalSec, timer.view.totalRemaining]);
+  }, [metro, active, prefs.useRounds, pattern, effectiveTotalSec, timer.view.totalRemaining]);
 
   const persist = (over: Partial<Parameters<typeof storeData>[1]>) => {
     storeData(BREATH_DATA_KEY, {
@@ -374,9 +374,10 @@ export default function BreathScreen() {
         </TouchableOpacity>
       </View>
 
-      {/* Session length: real patterns pick a number of ROUNDS (always ends on
-          an exhale); the metronome has no rounds, so it keeps the time wheel. */}
-      {metro ? (
+      {/* Session length: with "Use rounds" on, real patterns pick a number of
+          ROUNDS (always ends on an exhale). The metronome — and any pattern when
+          "Use rounds" is off — use the plain time wheel instead. */}
+      {metro || !prefs.useRounds ? (
         <TimerPickerModal
           visible={showPicker}
           setIsVisible={setShowPicker}
@@ -389,11 +390,7 @@ export default function BreathScreen() {
           closeOnOverlayPress
           Audio={Audio}
           LinearGradient={LinearGradient}
-          styles={{
-            theme: "dark",
-            confirmButton: styles.pickerConfirm,
-            cancelButton: styles.pickerCancel,
-          }}
+          styles={timerPickerModalStyles}
           modalProps={{ overlayOpacity: 0.2 }}
         />
       ) : (
@@ -443,30 +440,6 @@ const styles = StyleSheet.create({
   stopBtn: { borderColor: t.accentSoft }, // light green while running (matches yoga/HIIT)
   startText: { color: t.buttonText, fontSize: 20, fontWeight: "600", letterSpacing: 1 },
   stopText: { color: t.accentSoft },
-  // Metronome time-wheel Confirm/Cancel — bordered like the app's own buttons
-  // instead of the third-party picker's plain defaults.
-  pickerConfirm: {
-    color: t.buttonText,
-    borderWidth: 1,
-    borderColor: t.border,
-    borderRadius: t.radius,
-    paddingHorizontal: t.space.lg,
-    paddingVertical: t.space.sm,
-    fontSize: 18,
-    fontWeight: "600",
-    overflow: "hidden",
-  },
-  pickerCancel: {
-    color: t.muted,
-    borderWidth: 1,
-    borderColor: t.line,
-    borderRadius: t.radius,
-    paddingHorizontal: t.space.lg,
-    paddingVertical: t.space.sm,
-    fontSize: 18,
-    fontWeight: "600",
-    overflow: "hidden",
-  },
   downbeatToggle: { flexDirection: "row", alignItems: "center", gap: 10 },
   dbBox: {
     width: 20,

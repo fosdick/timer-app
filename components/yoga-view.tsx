@@ -8,7 +8,7 @@ import {
   type TextStyle,
   type ViewStyle,
 } from "react-native";
-import { TimerStyles, colorTheme, screenStyles } from "@/assets/styles/timer-app";
+import { TimerStyles, colorTheme, screenStyles, timerPickerModalStyles } from "@/assets/styles/timer-app";
 import {
   formatMinutesSeconds,
   getTimePartsMinSec,
@@ -1255,9 +1255,7 @@ export default function YogaView() {
         onCancel={() => setShowPicker(false)}
         closeOnOverlayPress
         LinearGradient={LinearGradient}
-        styles={{
-          theme: "dark",
-        }}
+        styles={timerPickerModalStyles}
         modalProps={{
           overlayOpacity: 0.2,
         }}

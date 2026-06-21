@@ -11,28 +11,20 @@ import { Audio } from "expo-av";
 import { LinearGradient } from "expo-linear-gradient";
 import { TimerPickerModal } from "react-native-timer-picker";
 
-import {
-  useUserPreferences,
-  isDownbeatEnabled,
-} from "@/components/user-preferences-context";
-import { colorTheme } from "@/assets/styles/timer-app";
+import { useUserPreferences } from "@/components/user-preferences-context";
+import { colorTheme, timerPickerModalStyles } from "@/assets/styles/timer-app";
 import { breathTheme as bt } from "@/components/breath/breath-theme";
 
 export default function UserPreferencesScreen() {
-  const {
-    prefs,
-    setAutoCorrectExhaleEnd,
-    setDownbeatEnabled,
-    setCountInEnabled,
-    setCountInSec,
-  } = useUserPreferences();
+  const { prefs, setUseRounds, setCountInEnabled, setCountInSec } =
+    useUserPreferences();
 
   return (
     <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
       <CheckRow
-        label="Auto Correct Pranayama total time to end on exhale"
-        checked={prefs.autoCorrectExhaleEnd}
-        onToggle={() => setAutoCorrectExhaleEnd(!prefs.autoCorrectExhaleEnd)}
+        label="Use rounds to determine total time"
+        checked={prefs.useRounds}
+        onToggle={() => setUseRounds(!prefs.useRounds)}
       />
       <CountInRow
         label="Begin in countdown:"
@@ -41,23 +33,6 @@ export default function UserPreferencesScreen() {
         value={prefs.countInSec}
         onChange={setCountInSec}
       />
-      <CheckRow
-        label="Enable metronome snap for Viloma “sips”"
-        checked={isDownbeatEnabled(prefs, "viloma")}
-        onToggle={() =>
-          setDownbeatEnabled("viloma", !isDownbeatEnabled(prefs, "viloma"))
-        }
-      />
-      <CheckRow
-        label="Enable metronome snap for Visamavritti"
-        checked={isDownbeatEnabled(prefs, "visama")}
-        onToggle={() =>
-          setDownbeatEnabled("visama", !isDownbeatEnabled(prefs, "visama"))
-        }
-      />
-      <Text style={styles.note}>
-        Each pattern also has a Downbeat toggle on its own screen.
-      </Text>
     </ScrollView>
   );
 }
@@ -154,7 +129,7 @@ function CountInRow({
         closeOnOverlayPress
         Audio={Audio}
         LinearGradient={LinearGradient}
-        styles={{ theme: "dark" }}
+        styles={timerPickerModalStyles}
         modalProps={{ overlayOpacity: 0.2 }}
       />
     </View>
@@ -183,7 +158,6 @@ const styles = StyleSheet.create({
   check: { color: colorTheme.backgroundColor, fontSize: 14, fontWeight: "900", lineHeight: 16 },
   label: { flex: 1, color: colorTheme.headerLiteShade, fontSize: 17, lineHeight: 26 },
   labelDisabled: { opacity: 0.4 },
-  note: { color: "#9BA1A6", fontSize: 13, fontStyle: "italic", marginTop: 4 },
 
   // "Begin in countdown:" row — label left, pranayama-style counter box right.
   countInRow: { flexDirection: "row", alignItems: "center", gap: 14 },

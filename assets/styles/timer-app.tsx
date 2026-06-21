@@ -1,4 +1,5 @@
 import { StyleSheet } from "react-native";
+import type { CustomTimerPickerModalStyles } from "react-native-timer-picker";
 
 const BlueTheme = false;
 const GreenTheme = !BlueTheme;
@@ -78,6 +79,38 @@ export const colorTheme = {
   tabBarInActiveTintColor,
   // Add new design system colors
   ...designColors,
+};
+
+/**
+ * Shared style for EVERY react-native-timer-picker wheel in the app (breath
+ * counts, session length, count-in, yoga pace, HIIT). One definition so all the
+ * wheels read identically and their Confirm/Cancel buttons match the app's
+ * bordered button standard (same palette as the rounds popup). Import this and
+ * pass it as the picker's `styles` prop rather than re-styling per call site.
+ */
+const pickerButtonBase = {
+  borderWidth: 1,
+  borderRadius: 10,
+  paddingHorizontal: 28,
+  paddingVertical: 12,
+  fontSize: 18,
+  fontWeight: "600" as const,
+  letterSpacing: 1,
+  overflow: "hidden" as const,
+};
+
+export const timerPickerModalStyles: CustomTimerPickerModalStyles = {
+  theme: "dark",
+  confirmButton: {
+    ...pickerButtonBase,
+    color: colorTheme.fontColor,
+    borderColor: colorTheme.borderColor,
+  },
+  cancelButton: {
+    ...pickerButtonBase,
+    color: colorTheme.activeTimerDimmed,
+    borderColor: "rgba(124, 179, 66, 0.35)",
+  },
 };
 
 export const Settings = StyleSheet.create({

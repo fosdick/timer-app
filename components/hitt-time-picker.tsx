@@ -1,5 +1,5 @@
 import { TimerPickerModal } from "react-native-timer-picker";
-import { TimerStyles, HiitStyles } from "@/assets/styles/timer-app";
+import { TimerStyles, HiitStyles, timerPickerModalStyles } from "@/assets/styles/timer-app";
 import { LinearGradient } from "expo-linear-gradient"; // or `import LinearGradient from "react-native-linear-gradient"`
 
 import { useState } from "react";
@@ -64,9 +64,7 @@ export default function HittIntervalPicker(props: HittIntervalPickerProps) {
         closeOnOverlayPress
         // Audio={Audio}
         LinearGradient={LinearGradient}
-        styles={{
-          theme: "dark",
-        }}
+        styles={timerPickerModalStyles}
         modalProps={{
           overlayOpacity: 0.2,
         }}

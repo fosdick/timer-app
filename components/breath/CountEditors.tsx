@@ -11,6 +11,7 @@ import {
   countFields,
 } from "@/assets/data/breath-patterns";
 import { breathTheme as t } from "./breath-theme";
+import { timerPickerModalStyles } from "@/assets/styles/timer-app";
 
 /**
  * The single merged count row: each pattern count is one box. Editable counts
@@ -70,7 +71,7 @@ export function CountEditors({
         closeOnOverlayPress
         Audio={Audio}
         LinearGradient={LinearGradient}
-        styles={{ theme: "dark" }}
+        styles={timerPickerModalStyles}
         modalProps={{ overlayOpacity: 0.2 }}
       />
     </View>
