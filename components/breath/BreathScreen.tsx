@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { View, Text, TouchableOpacity, StyleSheet, Alert } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet, Alert, ScrollView } from "react-native";
 import { useRouter, type Href } from "expo-router";
 import { Audio } from "expo-av";
 import { LinearGradient } from "expo-linear-gradient";
@@ -229,7 +229,11 @@ export default function BreathScreen() {
         onPressClock={() => setShowPicker(true)}
       />
 
-      <View style={styles.controls}>
+      <ScrollView
+        style={styles.controlsScroll}
+        contentContainerStyle={styles.controls}
+        showsVerticalScrollIndicator={false}
+      >
         <CountEditors
           pattern={pattern}
           activeKind={timer.isRunning && !metro ? timer.view.kind : undefined}
@@ -278,7 +282,7 @@ export default function BreathScreen() {
           }
           downbeatDisabled={!patternDownbeatOn}
         />
-      </View>
+      </ScrollView>
 
       {/* Bottom-anchored like the yoga tab's button (same shared container),
           so switching tabs doesn't make the button appear to jump. */}
@@ -319,7 +323,11 @@ export default function BreathScreen() {
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: t.bg, paddingHorizontal: t.space.lg },
-  controls: { alignItems: "center", gap: t.space.md, marginBottom: t.space.md },
+  // The controls scroll in the space between the fixed stage and the fixed
+  // Start button, so a tall pattern (e.g. Visamavritti) never pushes Start off
+  // screen / behind the banner ad.
+  controlsScroll: { flex: 1, alignSelf: "stretch" },
+  controls: { alignItems: "center", gap: t.space.md, paddingVertical: t.space.md },
   startBtn: {
     borderWidth: 1,
     borderColor: t.border,

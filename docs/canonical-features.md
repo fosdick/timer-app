@@ -125,6 +125,11 @@ Promote with the user's words, or strike.
   adding new beats"; "Viloma by default has downbeats enabled... all the others are default off.
   excludes metronome.") Guard: **contract test**
   (`assets/data/__tests__/breath-timer-core.test.ts`, downbeatBeats/downbeatsBetween).
+- The Start/Stop button is **bottom-anchored and fixed in place**, in the same spot across all
+  three tabs (Pranayama / Yoga / HIIT) and above the banner ad. Tab content must scroll rather
+  than push the button off-screen or behind the ad. (Provenance: user, 2026-06-20 — "make the
+  start button fixed… place of start, so it matches all tabs in canonical." Surfaced when
+  Visamavritti's controls pushed Start behind the banner; fixed by scrolling the controls.)
 - Library pattern ids stay stable (`metronome/box/nadi/viloma/478`) — persisted selections
   key on them.
 - Breath settings persist across restart (pattern, count edits, length, click, ambience —
