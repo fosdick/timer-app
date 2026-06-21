@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { View, Text, TouchableOpacity, StyleSheet, Alert, ScrollView, Animated, Dimensions } from "react-native";
-import { useRouter, useFocusEffect, type Href } from "expo-router";
+import { useFocusEffect } from "expo-router";
 import { Audio } from "expo-av";
 import { LinearGradient } from "expo-linear-gradient";
 import { TimerPickerModal } from "react-native-timer-picker";
@@ -60,7 +60,6 @@ export default function BreathScreen() {
   const [downbeatId, setDownbeatId] = useState<string>(DEFAULT_DOWNBEAT_ID);
   const [ambienceId, setAmbienceId] = useState<string>(DEFAULT_AMBIENCE_ID);
   const [showPicker, setShowPicker] = useState(false);
-  const router = useRouter();
 
   // The counts/downbeat slide-up overlay covers the stage when open (idle) and
   // slides down out of view while a session runs.
@@ -97,12 +96,15 @@ export default function BreathScreen() {
 
   const showExhaleInfo = () =>
     Alert.alert(
-      "Ends on exhale",
-      "Pranayama sessions round up so you finish on an exhale. You can turn this off in User Preferences.",
-      [
-        { text: "Open Preferences", onPress: () => router.push("/user-preferences" as Href) },
-        { text: "OK", style: "cancel" },
-      ],
+      "Why rounds, not minutes",
+      "Pranayama is measured in complete breaths — rounds — not clock time. " +
+        "Each round ends on the exhale, the releasing half of the breath: a long " +
+        "exhale engages the calming (parasympathetic) response and completes the " +
+        "cycle of drawing prana in and letting it go. Finishing mid-inhale or on a " +
+        "held breath leaves you activated, with the energy unsettled.\n\n" +
+        "So you choose how many rounds to practice and the time shown is the result. " +
+        "(The Metronome has no breath phases, so it's set by total time instead.)",
+      [{ text: "Got it", style: "cancel" }],
     );
 
   // Restore saved settings on mount.

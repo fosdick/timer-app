@@ -1,20 +1,22 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   Pressable,
   ScrollView,
   StyleSheet,
   Text,
-  TextInput,
+  TouchableOpacity,
   View,
 } from "react-native";
+import { Audio } from "expo-av";
+import { LinearGradient } from "expo-linear-gradient";
+import { TimerPickerModal } from "react-native-timer-picker";
 
 import {
   useUserPreferences,
   isDownbeatEnabled,
-  COUNT_IN_MIN,
-  COUNT_IN_MAX,
 } from "@/components/user-preferences-context";
 import { colorTheme } from "@/assets/styles/timer-app";
+import { breathTheme as bt } from "@/components/breath/breath-theme";
 
 export default function UserPreferencesScreen() {
   const {
@@ -33,14 +35,14 @@ export default function UserPreferencesScreen() {
         onToggle={() => setAutoCorrectExhaleEnd(!prefs.autoCorrectExhaleEnd)}
       />
       <CheckRow
-        label="Enable Pranayama “Begin in” countdown"
+        label="Enable “Begin in” countdown"
         checked={prefs.countInEnabled}
         onToggle={() => setCountInEnabled(!prefs.countInEnabled)}
       />
-      <SecondsRow
-        label="“Begin in” countdown starts from"
+      <CountInRow
+        label="Begin in countdown:"
         value={prefs.countInSec}
-        onCommit={setCountInSec}
+        onChange={setCountInSec}
         disabled={!prefs.countInEnabled}
       />
       <CheckRow
@@ -90,52 +92,58 @@ function CheckRow({
 }
 
 /**
- * A labeled whole-second input. Keeps its own text buffer so the field can be
- * cleared/edited freely; commits a clamped value to prefs on blur/submit (the
- * context clamps again, so the stored value is always valid).
+ * Label + a tappable counter box that opens a seconds-only scroll wheel — the
+ * same idiom as the Pranayama tab's count editors, so the "Begin in" duration
+ * is set exactly like the breath counts. The context clamps the chosen value.
  */
-function SecondsRow({
+function CountInRow({
   label,
   value,
-  onCommit,
+  onChange,
   disabled,
 }: {
   label: string;
   value: number;
-  onCommit: (value: number) => void;
+  onChange: (value: number) => void;
   disabled?: boolean;
 }) {
-  const [text, setText] = useState(String(value));
-
-  // Re-sync the buffer whenever the committed value changes (incl. the clamp).
-  useEffect(() => setText(String(value)), [value]);
-
-  const commit = () => {
-    const n = parseInt(text, 10);
-    if (Number.isFinite(n)) onCommit(n);
-    else setText(String(value)); // restore on empty/garbage input
-  };
+  const [editing, setEditing] = useState(false);
 
   return (
-    <View style={styles.secondsRow}>
+    <View style={styles.countInRow}>
       <Text style={[styles.label, disabled && styles.labelDisabled]}>{label}</Text>
-      <View style={styles.secondsField}>
-        <TextInput
-          style={[styles.input, disabled && styles.inputDisabled]}
-          value={text}
-          onChangeText={setText}
-          onEndEditing={commit}
-          onBlur={commit}
-          onSubmitEditing={commit}
-          keyboardType="number-pad"
-          returnKeyType="done"
-          maxLength={2}
-          editable={!disabled}
-          selectTextOnFocus
-          accessibilityLabel={label}
-        />
-        <Text style={[styles.suffix, disabled && styles.labelDisabled]}>sec</Text>
-      </View>
+      <TouchableOpacity
+        style={[styles.countBox, disabled && styles.countBoxDisabled]}
+        activeOpacity={disabled ? 1 : 0.7}
+        disabled={disabled}
+        onPress={() => setEditing(true)}
+        accessibilityRole="button"
+        accessibilityLabel={`${label} ${value} seconds`}
+      >
+        <Text style={[styles.countValue, disabled && styles.labelDisabled]}>{value}</Text>
+        <Text style={[styles.countUnit, disabled && styles.labelDisabled]}>sec</Text>
+      </TouchableOpacity>
+
+      <TimerPickerModal
+        visible={editing}
+        setIsVisible={(v) => {
+          if (!v) setEditing(false);
+        }}
+        initialValue={{ seconds: value }}
+        hideHours
+        hideMinutes
+        modalTitle="Begin in countdown"
+        onConfirm={(picked) => {
+          onChange(picked.seconds);
+          setEditing(false);
+        }}
+        onCancel={() => setEditing(false)}
+        closeOnOverlayPress
+        Audio={Audio}
+        LinearGradient={LinearGradient}
+        styles={{ theme: "dark" }}
+        modalProps={{ overlayOpacity: 0.2 }}
+      />
     </View>
   );
 }
@@ -163,19 +171,19 @@ const styles = StyleSheet.create({
   label: { flex: 1, color: colorTheme.headerLiteShade, fontSize: 17, lineHeight: 26 },
   labelDisabled: { opacity: 0.4 },
   note: { color: "#9BA1A6", fontSize: 13, fontStyle: "italic", marginTop: 4 },
-  secondsRow: { flexDirection: "row", alignItems: "center", gap: 14 },
-  secondsField: { flexDirection: "row", alignItems: "center", gap: 8 },
-  input: {
-    width: 56,
-    paddingVertical: 8,
-    paddingHorizontal: 10,
-    borderRadius: 8,
-    borderWidth: 2,
-    borderColor: colorTheme.borderColor,
-    color: colorTheme.headerLiteShade,
-    fontSize: 17,
-    textAlign: "center",
+
+  // "Begin in countdown:" row — label left, pranayama-style counter box right.
+  countInRow: { flexDirection: "row", alignItems: "center", gap: 14 },
+  countBox: {
+    alignItems: "center",
+    minWidth: 64,
+    paddingVertical: bt.space.xs,
+    paddingHorizontal: bt.space.sm,
+    borderRadius: bt.radius,
+    borderWidth: 1,
+    borderColor: bt.line,
   },
-  inputDisabled: { opacity: 0.4 },
-  suffix: { color: colorTheme.headerLiteShade, fontSize: 15 },
+  countBoxDisabled: { opacity: 0.4 },
+  countValue: { color: bt.text, fontSize: 24, fontWeight: "400", fontVariant: ["tabular-nums"] },
+  countUnit: { color: bt.muted, fontSize: 11, textTransform: "uppercase", letterSpacing: 0.5 },
 });
