@@ -44,6 +44,10 @@ async function playOneShot(
   }
 }
 
+// Generic one-shot for a require()'d asset module — lets the click/downbeat
+// catalog (breath-sounds) own its own sound files without a function per sound.
+export const playAsset = (asset: number) => { void playOneShot(asset); };
+
 export const playBeat = () => { void playOneShot(require("../sounds/sticks-low-1.wav")); };
 export const playHalfway = () => { void playOneShot(require("../sounds/sticks-low-1.wav")); };
 export const playManualModeHalfwayChime = () => { void playOneShot(require("../sounds/sticks-low-1.wav")); };

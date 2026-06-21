@@ -4,7 +4,7 @@
  * Lab). Both are simple id→data lists so the picker UI and persistence stay
  * trivial. RN's require() needs STATIC paths, hence the fixed map.
  */
-import { playSnap, playBeat, playStart } from "@/assets/utils/sounds";
+import { playAsset } from "@/assets/utils/sounds";
 
 export interface ClickSound {
   id: string;
@@ -12,18 +12,25 @@ export interface ClickSound {
   play: () => void;
 }
 
+// require() needs static literal paths. Each sound has a base variant and a
+// "-db" (downbeat-shaped) variant; both Click and Downbeat wheels offer all six.
+const oneShot = (asset: number) => () => playAsset(asset);
+
 export const CLICK_SOUNDS: ClickSound[] = [
-  { id: "snap", label: "Snap", play: playSnap },
-  { id: "sticks", label: "Sticks", play: playBeat },
-  { id: "bell", label: "Bell", play: playStart },
+  { id: "snap", label: "Snap", play: oneShot(require("../../assets/sounds/snap.wav")) },
+  { id: "sticks", label: "Sticks", play: oneShot(require("../../assets/sounds/sticks.wav")) },
+  { id: "bell", label: "Bell", play: oneShot(require("../../assets/sounds/bell.wav")) },
+  { id: "snap-db", label: "Snap DB", play: oneShot(require("../../assets/sounds/snap-db.wav")) },
+  { id: "sticks-db", label: "Sticks DB", play: oneShot(require("../../assets/sounds/sticks-db.wav")) },
+  { id: "bell-db", label: "Bell DB", play: oneShot(require("../../assets/sounds/bell-db.wav")) },
   { id: "none", label: "None", play: () => {} },
 ];
 
 export const DEFAULT_CLICK_ID = "snap";
 
-// Downbeat snap sound (the per-count pulse during inhale/exhale). Uses the same
-// click catalog for now — a dedicated [click]-downbeat.wav set is a future task.
-export const DEFAULT_DOWNBEAT_ID = "snap";
+// Downbeat = the per-count pulse during a phase. Defaults to the snap's
+// downbeat-shaped variant; the user can pick any of the six in the wheel.
+export const DEFAULT_DOWNBEAT_ID = "snap-db";
 
 export const getClickSound = (id: string | undefined): ClickSound =>
   CLICK_SOUNDS.find((c) => c.id === id) ?? CLICK_SOUNDS[0];

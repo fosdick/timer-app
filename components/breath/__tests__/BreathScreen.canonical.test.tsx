@@ -12,6 +12,7 @@ import { Text } from "react-native";
 import renderer, { act, ReactTestRenderer } from "react-test-renderer";
 
 jest.mock("@/assets/utils/sounds", () => ({
+  playAsset: jest.fn(),
   playSnap: jest.fn(),
   playBeat: jest.fn(),
   playStart: jest.fn(),
