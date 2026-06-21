@@ -34,16 +34,12 @@ export default function UserPreferencesScreen() {
         checked={prefs.autoCorrectExhaleEnd}
         onToggle={() => setAutoCorrectExhaleEnd(!prefs.autoCorrectExhaleEnd)}
       />
-      <CheckRow
-        label="Enable “Begin in” countdown"
-        checked={prefs.countInEnabled}
-        onToggle={() => setCountInEnabled(!prefs.countInEnabled)}
-      />
       <CountInRow
         label="Begin in countdown:"
+        enabled={prefs.countInEnabled}
+        onToggleEnabled={() => setCountInEnabled(!prefs.countInEnabled)}
         value={prefs.countInSec}
         onChange={setCountInSec}
-        disabled={!prefs.countInEnabled}
       />
       <CheckRow
         label="Enable metronome snap for Viloma “sips”"
@@ -92,25 +88,42 @@ function CheckRow({
 }
 
 /**
- * Label + a tappable counter box that opens a seconds-only scroll wheel — the
- * same idiom as the Pranayama tab's count editors, so the "Begin in" duration
- * is set exactly like the breath counts. The context clamps the chosen value.
+ * One self-contained control: a checkbox to enable/disable the "Begin in"
+ * pre-roll, the label, and a tappable counter box that opens a seconds-only
+ * scroll wheel — the same idiom as the Pranayama tab's count editors. When the
+ * checkbox is unchecked the wheel is muted (greyed + non-tappable). The context
+ * clamps the chosen value.
  */
 function CountInRow({
   label,
+  enabled,
+  onToggleEnabled,
   value,
   onChange,
-  disabled,
 }: {
   label: string;
+  enabled: boolean;
+  onToggleEnabled: () => void;
   value: number;
   onChange: (value: number) => void;
-  disabled?: boolean;
 }) {
   const [editing, setEditing] = useState(false);
+  const disabled = !enabled;
 
   return (
     <View style={styles.countInRow}>
+      <Pressable
+        accessibilityRole="checkbox"
+        accessibilityState={{ checked: enabled }}
+        accessibilityLabel={`Enable ${label}`}
+        onPress={onToggleEnabled}
+        hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+        style={({ pressed }) => pressed && styles.rowPressed}
+      >
+        <View style={[styles.box, enabled && styles.boxChecked]}>
+          {enabled ? <Text style={styles.check}>{"✓"}</Text> : null}
+        </View>
+      </Pressable>
       <Text style={[styles.label, disabled && styles.labelDisabled]}>{label}</Text>
       <TouchableOpacity
         style={[styles.countBox, disabled && styles.countBoxDisabled]}

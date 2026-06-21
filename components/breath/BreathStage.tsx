@@ -18,6 +18,7 @@ export function BreathStageHeader({
   countIn = null,
   endsOnExhale = false,
   onInfoPress,
+  roundText = null,
 }: {
   view: BreathView;
   isRunning: boolean;
@@ -25,6 +26,8 @@ export function BreathStageHeader({
   countIn?: number | null;
   endsOnExhale?: boolean;
   onInfoPress?: () => void;
+  /** "Round N of M" shown under the countdown during a session (null = hidden). */
+  roundText?: string | null;
 }) {
   const counting = countIn !== null;
   // The clock (session-length picker) is locked once a sequence is committed —
@@ -48,6 +51,7 @@ export function BreathStageHeader({
       <TouchableOpacity activeOpacity={0.7} disabled={clockDisabled} onPress={onPressClock}>
         <Text style={yogaTypography.timerCountdown}>{formatClock(view.totalRemaining)}</Text>
       </TouchableOpacity>
+      {roundText ? <Text style={styles.round}>{roundText}</Text> : null}
     </View>
   );
 }
@@ -89,6 +93,7 @@ const styles = StyleSheet.create({
   header: { alignItems: "center", marginTop: 10 }, // mirrors the yoga tab's timer block offset
   labelRow: { flexDirection: "row", alignItems: "center", gap: 6 },
   info: { color: t.muted, fontSize: 15 },
+  round: { color: t.muted, fontSize: 14, fontWeight: "400", letterSpacing: 0.5, marginTop: 2, fontVariant: ["tabular-nums"] },
   center: { alignItems: "center", justifyContent: "center", height: 150 },
   phase: { fontSize: 24, fontWeight: "300", letterSpacing: 2 },
   count: { fontSize: 88, fontWeight: "200", fontVariant: ["tabular-nums"] },

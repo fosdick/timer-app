@@ -12,6 +12,8 @@ import {
   isMetronome,
   applyCountEdit,
   adjustTotalToExhaleEnd,
+  cycleDurationSec,
+  sessionSecToRounds,
 } from "@/assets/data/breath-patterns";
 import { useBreathTimer } from "@/assets/utils/use-breath-timer";
 import { useAmbience } from "@/assets/utils/use-ambience";
@@ -222,6 +224,22 @@ export default function BreathScreen() {
   // the count-in) is confirmed.
   useReportActiveTimer("breath", active);
 
+  // "Round N of M" shown under the countdown during an active session. Breath
+  // patterns only — the metronome has no rounds. A round spans setsPerRound
+  // cycles (Nadi: 2), and the math mirrors the rounds picker so the count lines
+  // up with the chosen session length.
+  const roundText = useMemo(() => {
+    if (metro || !active) return null;
+    const cycleDur = cycleDurationSec(pattern, { countDurationSec: 1 });
+    const sets = Math.max(1, Math.floor(pattern.setsPerRound ?? 1));
+    const roundDur = sets * cycleDur;
+    if (roundDur <= 0) return null;
+    const totalRounds = sessionSecToRounds(pattern, effectiveTotalSec, { countDurationSec: 1 });
+    const elapsed = effectiveTotalSec - timer.view.totalRemaining;
+    const current = Math.min(totalRounds, Math.max(1, Math.floor(elapsed / roundDur) + 1));
+    return `Round ${current} of ${totalRounds}`;
+  }, [metro, active, pattern, effectiveTotalSec, timer.view.totalRemaining]);
+
   const persist = (over: Partial<Parameters<typeof storeData>[1]>) => {
     storeData(BREATH_DATA_KEY, {
       breathPatternId: patternId,
@@ -268,6 +286,7 @@ export default function BreathScreen() {
         endsOnExhale={endsOnExhale}
         onInfoPress={showExhaleInfo}
         onPressClock={() => setShowPicker(true)}
+        roundText={roundText}
       />
 
       {/* Center region: the live breathe display, with the counts slide-up over
