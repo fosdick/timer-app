@@ -4,18 +4,16 @@ import { yogaTypography } from "@/assets/theme";
 import { breathTheme as t, formatClock } from "./breath-theme";
 
 /**
- * The central live display: total time remaining up top (label + countdown
- * typography shared with the yoga tab so the tabs read as one app; tapping the
- * number still opens the session-length picker), and — while running — the
- * current phase label plus the count remaining in that phase (a single
- * glanceable number; the calm comes from the boundary click, not per-count
- * ticks). The center area is FIXED height so the controls below never shift
- * when the session starts.
+ * The live display, split so the counts slide-up can cover the CENTER while the
+ * header (total time remaining) stays fixed and always visible:
+ *   - BreathStageHeader: "Remaining" label (+ ⓘ) and the countdown — tapping the
+ *     number opens the session-length picker. Shared typography with the yoga tab.
+ *   - BreathStageCenter: while running, the phase label + glanceable count (or
+ *     "Begin in N" during the count-in; idle text otherwise).
  */
-export function BreathStage({
+export function BreathStageHeader({
   view,
   isRunning,
-  metronome = false,
   onPressClock,
   countIn = null,
   endsOnExhale = false,
@@ -23,23 +21,17 @@ export function BreathStage({
 }: {
   view: BreathView;
   isRunning: boolean;
-  metronome?: boolean;
   onPressClock?: () => void;
-  /** Seconds left in the pre-roll count-in ("Begin in N"), or null when not counting in. */
   countIn?: number | null;
-  /** Whether the session length is auto-corrected to end on an exhale (shows the ⓘ). */
   endsOnExhale?: boolean;
-  /** Tapping the ⓘ next to the label (shown only when endsOnExhale). */
   onInfoPress?: () => void;
 }) {
-  const tint = metronome ? t.accentSoft : t.phaseTint[view.kind] ?? t.accentSoft;
   const counting = countIn !== null;
-  const showCount = isRunning && view.segmentType === "breath" && view.countRemaining > 0;
   // The clock (session-length picker) is locked once a sequence is committed —
   // running OR counting in.
   const clockDisabled = isRunning || counting || !onPressClock;
   return (
-    <View style={styles.stage}>
+    <View style={styles.header}>
       <View style={styles.labelRow}>
         <Text style={yogaTypography.timerLabel}>Remaining</Text>
         {endsOnExhale && onInfoPress ? (
@@ -56,31 +48,48 @@ export function BreathStage({
       <TouchableOpacity activeOpacity={0.7} disabled={clockDisabled} onPress={onPressClock}>
         <Text style={yogaTypography.timerCountdown}>{formatClock(view.totalRemaining)}</Text>
       </TouchableOpacity>
+    </View>
+  );
+}
 
-      <View style={styles.center}>
-        {counting ? (
-          <>
-            <Text style={[styles.phase, { color: t.accentSoft }]}>Begin in</Text>
-            <Text style={[styles.count, { color: t.accentSoft }]}>{countIn}</Text>
-          </>
-        ) : isRunning ? (
-          <>
-            {!metronome && <Text style={[styles.phase, { color: tint }]}>{view.label}</Text>}
-            <Text style={[styles.count, { color: tint }]}>{showCount ? view.countRemaining : " "}</Text>
-          </>
-        ) : (
-          <Text style={styles.idle}>{metronome ? "Metronome" : "Breathe"}</Text>
-        )}
-      </View>
+export function BreathStageCenter({
+  view,
+  isRunning,
+  metronome = false,
+  countIn = null,
+}: {
+  view: BreathView;
+  isRunning: boolean;
+  metronome?: boolean;
+  countIn?: number | null;
+}) {
+  const tint = metronome ? t.accentSoft : t.phaseTint[view.kind] ?? t.accentSoft;
+  const counting = countIn !== null;
+  const showCount = isRunning && view.segmentType === "breath" && view.countRemaining > 0;
+  return (
+    <View style={styles.center}>
+      {counting ? (
+        <>
+          <Text style={[styles.phase, { color: t.accentSoft }]}>Begin in</Text>
+          <Text style={[styles.count, { color: t.accentSoft }]}>{countIn}</Text>
+        </>
+      ) : isRunning ? (
+        <>
+          {!metronome && <Text style={[styles.phase, { color: tint }]}>{view.label}</Text>}
+          <Text style={[styles.count, { color: tint }]}>{showCount ? view.countRemaining : " "}</Text>
+        </>
+      ) : (
+        <Text style={styles.idle}>{metronome ? "Metronome" : "Breathe"}</Text>
+      )}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  stage: { alignItems: "center", marginTop: 10 }, // mirrors the yoga tab's timer block offset
+  header: { alignItems: "center", marginTop: 10 }, // mirrors the yoga tab's timer block offset
   labelRow: { flexDirection: "row", alignItems: "center", gap: 6 },
   info: { color: t.muted, fontSize: 15 },
-  center: { alignItems: "center", justifyContent: "center", height: 150 }, // fixed: no layout shift on start
+  center: { alignItems: "center", justifyContent: "center", height: 150 },
   phase: { fontSize: 24, fontWeight: "300", letterSpacing: 2 },
   count: { fontSize: 88, fontWeight: "200", fontVariant: ["tabular-nums"] },
   idle: { color: t.muted, fontSize: 22, fontWeight: "300", letterSpacing: 2 },

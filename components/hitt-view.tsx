@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { useFocusEffect } from "expo-router";
 
 import { Text, TouchableOpacity, View } from "react-native";
 import Slider from "@react-native-community/slider";
@@ -140,6 +141,11 @@ export default function HittView() {
   const [isStop, setIsStop] = useState<boolean>(true);
   // Report to the tab bar so an accidental tab tap mid-session is confirmed.
   useReportActiveTimer("hitt", !isStop);
+
+  // Stop the workout when the tab loses focus (e.g. confirming a tab switch).
+  useFocusEffect(
+    useCallback(() => () => setIsStop(true), []),
+  );
 
   const resetInitalState = ({
     _initialWorkoutTotalTime,

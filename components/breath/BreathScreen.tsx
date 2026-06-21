@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { View, Text, TouchableOpacity, StyleSheet, Alert, ScrollView, Animated, Dimensions } from "react-native";
-import { useRouter, type Href } from "expo-router";
+import { useRouter, useFocusEffect, type Href } from "expo-router";
 import { Audio } from "expo-av";
 import { LinearGradient } from "expo-linear-gradient";
 import { TimerPickerModal } from "react-native-timer-picker";
@@ -23,7 +23,7 @@ import { playStart, playEndChime } from "@/assets/utils/sounds";
 import { screenStyles } from "@/assets/styles/timer-app";
 import { PatternPicker } from "./PatternPicker";
 import { CountEditors } from "./CountEditors";
-import { BreathStage } from "./BreathStage";
+import { BreathStageHeader, BreathStageCenter } from "./BreathStage";
 import { SoundOptions } from "./SoundOptions";
 import { getClickSound, getAmbience, DEFAULT_CLICK_ID, DEFAULT_DOWNBEAT_ID, DEFAULT_AMBIENCE_ID } from "./breath-sounds";
 import { breathTheme as t } from "./breath-theme";
@@ -170,6 +170,24 @@ export default function BreathScreen() {
     if (countInRef.current) clearInterval(countInRef.current);
   }, []);
 
+  // Stop the session when the tab loses focus (e.g. confirming a tab switch),
+  // mirroring the yoga tab — so a running breath timer/count-in doesn't keep
+  // going on another tab.
+  const stopTimer = timer.stop;
+  useFocusEffect(
+    useCallback(
+      () => () => {
+        if (countInRef.current) {
+          clearInterval(countInRef.current);
+          countInRef.current = null;
+        }
+        setCountIn(null);
+        stopTimer();
+      },
+      [stopTimer],
+    ),
+  );
+
   // Slide the counts overlay down on Start (active), back up on Stop.
   useEffect(() => {
     Animated.timing(slide, {
@@ -233,18 +251,26 @@ export default function BreathScreen() {
 
   return (
     <View style={styles.screen}>
-      <View style={styles.stageWrap}>
-        <BreathStage
+      {/* Fixed header: the countdown / session-length picker, always visible. */}
+      <BreathStageHeader
+        view={timer.view}
+        isRunning={timer.isRunning}
+        countIn={countIn}
+        endsOnExhale={endsOnExhale}
+        onInfoPress={showExhaleInfo}
+        onPressClock={() => setShowPicker(true)}
+      />
+
+      {/* Center region: the live breathe display, with the counts slide-up over
+          it. The overlay anchors to the top of the controls (its bottom = the
+          pattern buttons' top) and slides down to reveal the center on Start. */}
+      <View style={styles.midWrap}>
+        <BreathStageCenter
           view={timer.view}
           isRunning={timer.isRunning}
           metronome={metro}
           countIn={countIn}
-          endsOnExhale={endsOnExhale}
-          onInfoPress={showExhaleInfo}
-          onPressClock={() => setShowPicker(true)}
         />
-        {/* Slide-up overlay: breath counts + downbeat snap, covering the stage.
-            Open by default; slides down out of view while a session runs. */}
         <Animated.View
           pointerEvents={active ? "none" : "auto"}
           style={[styles.countsOverlay, { transform: [{ translateY: slide }] }]}
@@ -345,9 +371,17 @@ export default function BreathScreen() {
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: t.bg, paddingHorizontal: t.space.lg },
-  // Stage region; the counts overlay is clipped to it (overflow hidden) so it
-  // can slide down out of view without bleeding onto the controls below.
-  stageWrap: { alignSelf: "stretch", position: "relative", overflow: "hidden" },
+  // Center region between the fixed countdown header and the fixed controls.
+  // The counts overlay is clipped to it (overflow hidden) so it slides down out
+  // of view without bleeding onto the controls/countdown.
+  midWrap: {
+    flex: 1,
+    alignSelf: "stretch",
+    position: "relative",
+    overflow: "hidden",
+    alignItems: "center",
+    justifyContent: "center",
+  },
   countsOverlay: { ...StyleSheet.absoluteFillObject, backgroundColor: t.bg },
   countsOverlayContent: {
     flexGrow: 1,

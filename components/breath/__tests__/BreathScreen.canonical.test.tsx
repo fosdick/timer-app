@@ -19,6 +19,13 @@ jest.mock("@/assets/utils/sounds", () => ({
   playHittStart: jest.fn(),
 }));
 
+// BreathScreen is rendered bare (no navigator), so stub the expo-router hooks it
+// uses. The focus-blur stop is navigation behavior, out of scope for these tests.
+jest.mock("expo-router", () => ({
+  useFocusEffect: () => {},
+  useRouter: () => ({ push: jest.fn() }),
+}));
+
 // Short saved session (5s) so the test fast-forwards quickly.
 jest.mock("@/assets/utils/persistent-storage", () => ({
   getData: jest.fn(async () => ({ breathTotalSec: 5 })),
