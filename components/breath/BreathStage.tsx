@@ -97,9 +97,13 @@ export function BreathStageCenter({
 const styles = StyleSheet.create({
   header: { alignItems: "center", marginTop: 10 }, // mirrors the yoga tab's timer block offset
   labelRow: { flexDirection: "row", alignItems: "center", gap: 6 },
+  // ⓘ intentionally stays superscript: it has no top margin, so it rides higher
+  // than "Remaining" (which carries timerLabel's marginTop:20). The round counter
+  // gets that same marginTop so it sits on the regular line WITH "Remaining",
+  // not up with the ⓘ.
   info: { color: t.muted, fontSize: 15 },
-  divider: { color: t.muted, fontSize: 14, opacity: 0.6 },
-  round: { color: t.muted, fontSize: 14, fontWeight: "400", letterSpacing: 0.5, fontVariant: ["tabular-nums"] },
+  divider: { color: t.muted, fontSize: 14, opacity: 0.6, marginTop: 20 },
+  round: { color: t.muted, fontSize: 14, fontWeight: "400", letterSpacing: 0.5, fontVariant: ["tabular-nums"], marginTop: 20 },
   center: { alignItems: "center", justifyContent: "center", height: 150 },
   phase: { fontSize: 24, fontWeight: "300", letterSpacing: 2 },
   count: { fontSize: 88, fontWeight: "200", fontVariant: ["tabular-nums"] },
