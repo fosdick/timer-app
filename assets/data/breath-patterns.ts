@@ -104,7 +104,9 @@ export const FOUR_SEVEN_EIGHT: BreathPattern = { id: "478", name: "4-7-8", inhal
 // classical 1:4:2:3 ratio (4 / 16 / 8 / 12).
 export const VISAMAVRITTI: BreathPattern = { id: "visama", name: "Visamavritti", inhale: 4, holdIn: 16, exhale: 8, holdOut: 12, independentCounts: true };
 
-export const BREATH_PATTERNS: BreathPattern[] = [METRONOME, BOX, NADI_SHODHANA, VILOMA, FOUR_SEVEN_EIGHT, VISAMAVRITTI];
+// Display order (user, 2026-06-22): Nadi Shodhana leads and is the default;
+// Metronome moves to the end (still present — "can not lose the metronome").
+export const BREATH_PATTERNS: BreathPattern[] = [NADI_SHODHANA, VILOMA, BOX, FOUR_SEVEN_EIGHT, VISAMAVRITTI, METRONOME];
 
 export const getPattern = (id: string): BreathPattern | undefined =>
   BREATH_PATTERNS.find((p) => p.id === id);

@@ -84,6 +84,12 @@ describe("canonical #1: pranayama chimes at start and end", () => {
       tree = renderer.create(<BreathScreen />);
     });
 
+    // Pin the Metronome — a plain total-time pattern — so the mocked 5s session
+    // is exact. (The default is now Nadi Shodhana, a real pattern that rounds the
+    // session up to whole rounds and wouldn't finish in this test window.) This
+    // test guards the chime WIRING, not the default pattern.
+    pressTextButton(tree, "Metronome");
+
     // Start now begins an 8s count-in; the start bell fires when it reaches 0.
     pressTextButton(tree, "Start");
     expect(playStart).not.toHaveBeenCalled();

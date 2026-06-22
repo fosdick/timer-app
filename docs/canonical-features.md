@@ -48,11 +48,15 @@ enforced) → `smoke test` (screen-level wiring test — the layer where losses 
 - Guard: **smoke test** (`components/breath/__tests__/BreathScreen.canonical.test.tsx`) —
   this is UI wiring; pure tests can't see it, which is exactly how it got lost.
 
-### 2. The Metronome survives — and is the default pattern
+### 2. The Metronome survives (no longer first / default)
 - The original uniform-grid pranayama lives on as the Metronome pattern: one interval, a click
-  every N seconds, no phases. It exists, is first in the library, and is the default selection.
+  every N seconds, no phases. It must keep existing in the library — that is the canonical bit.
 - Provenance: user, 2026-06-09 — "can not lose the metronome."
-- Guard: **contract test** (`assets/data/__tests__/canonical.test.ts`).
+- Amended 2026-06-22 (user): the style order is now Nadi Shodhana, Viloma, Box, 4-7-8,
+  Visamavritti, Metronome — so Metronome is LAST, and **Nadi Shodhana is the default selection**.
+  Metronome is still present (canon preserved); being first/default was not.
+- Guard: **contract test** (`assets/data/__tests__/canonical.test.ts`) — asserts Metronome
+  still exists and that Nadi Shodhana is now first/default.
 
 ### 3. 4-7-8 is a lock-in practice: fixed counts, not editable
 - Counts stay 4/7/8/0; the pattern exposes no editable fields. Lock-in is the design intent

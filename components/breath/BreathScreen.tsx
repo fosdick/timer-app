@@ -6,6 +6,8 @@ import { LinearGradient } from "expo-linear-gradient";
 import { TimerPickerModal } from "react-native-timer-picker";
 import {
   METRONOME,
+  NADI_SHODHANA,
+  BREATH_PATTERNS,
   BreathPattern,
   EditFieldKey,
   getPattern,
@@ -55,13 +57,20 @@ const countsOf = (p: BreathPattern): CountSet => ({
  * wheels, a session-length picker, sound options, and persisted settings.
  */
 export default function BreathScreen() {
-  const [patternId, setPatternId] = useState<string>(METRONOME.id);
+  const [patternId, setPatternId] = useState<string>(NADI_SHODHANA.id);
   const [customCounts, setCustomCounts] = useState<Record<string, CountSet>>({});
   const [totalSec, setTotalSec] = useState<number>(DEFAULT_TOTAL_SEC);
-  const [clickId, setClickId] = useState<string>(DEFAULT_CLICK_ID);
-  const [downbeatId, setDownbeatId] = useState<string>(DEFAULT_DOWNBEAT_ID);
-  const [ambienceId, setAmbienceId] = useState<string>(DEFAULT_AMBIENCE_ID);
+  // Click / downbeat / ambience are saved PER pattern (like customCounts), so each
+  // breath style remembers its own sounds. Resolved to the active pattern below.
+  const [clickByPattern, setClickByPattern] = useState<Record<string, string>>({});
+  const [downbeatSoundByPattern, setDownbeatSoundByPattern] = useState<Record<string, string>>({});
+  const [ambienceByPattern, setAmbienceByPattern] = useState<Record<string, string>>({});
   const [showPicker, setShowPicker] = useState(false);
+
+  // Resolved sound ids for the selected pattern (fall back to the global defaults).
+  const clickId = clickByPattern[patternId] ?? DEFAULT_CLICK_ID;
+  const downbeatId = downbeatSoundByPattern[patternId] ?? DEFAULT_DOWNBEAT_ID;
+  const ambienceId = ambienceByPattern[patternId] ?? DEFAULT_AMBIENCE_ID;
 
   // The counts/downbeat slide-up overlay covers the stage when open (idle) and
   // slides down out of view while a session runs.
@@ -116,9 +125,14 @@ export default function BreathScreen() {
       if (saved?.breathPatternId && getPattern(saved.breathPatternId)) setPatternId(saved.breathPatternId);
       if (saved?.breathCustomCounts) setCustomCounts(saved.breathCustomCounts);
       if (saved?.breathTotalSec) setTotalSec(saved.breathTotalSec);
-      if (saved?.breathClick) setClickId(saved.breathClick);
-      if (saved?.breathDownbeat) setDownbeatId(saved.breathDownbeat);
-      if (saved?.breathAmbience) setAmbienceId(saved.breathAmbience);
+      // Sounds: prefer the per-pattern maps; migrate an older single global value
+      // (apply it to every pattern) so a prior choice isn't lost on upgrade.
+      const seedAll = (v: string) => Object.fromEntries(BREATH_PATTERNS.map((p) => [p.id, v]));
+      setClickByPattern(saved?.breathClickByPattern ?? (saved?.breathClick ? seedAll(saved.breathClick) : {}));
+      setDownbeatSoundByPattern(
+        saved?.breathDownbeatByPattern ?? (saved?.breathDownbeat ? seedAll(saved.breathDownbeat) : {}),
+      );
+      setAmbienceByPattern(saved?.breathAmbienceByPattern ?? (saved?.breathAmbience ? seedAll(saved.breathAmbience) : {}));
     })();
   }, []);
 
@@ -245,9 +259,9 @@ export default function BreathScreen() {
     storeData(BREATH_DATA_KEY, {
       breathPatternId: patternId,
       breathTotalSec: totalSec,
-      breathClick: clickId,
-      breathDownbeat: downbeatId,
-      breathAmbience: ambienceId,
+      breathClickByPattern: clickByPattern,
+      breathDownbeatByPattern: downbeatSoundByPattern,
+      breathAmbienceByPattern: ambienceByPattern,
       breathCustomCounts: customCounts,
       ...over,
     });
@@ -340,12 +354,14 @@ export default function BreathScreen() {
           clickId={clickId}
           ambienceId={ambienceId}
           onClickChange={(id) => {
-            setClickId(id);
-            persist({ breathClick: id });
+            const next = { ...clickByPattern, [patternId]: id };
+            setClickByPattern(next);
+            persist({ breathClickByPattern: next });
           }}
           onAmbienceChange={(id) => {
-            setAmbienceId(id);
-            persist({ breathAmbience: id });
+            const next = { ...ambienceByPattern, [patternId]: id };
+            setAmbienceByPattern(next);
+            persist({ breathAmbienceByPattern: next });
           }}
           disabled={active}
           downbeatId={metro ? undefined : downbeatId}
@@ -353,8 +369,9 @@ export default function BreathScreen() {
             metro
               ? undefined
               : (id) => {
-                  setDownbeatId(id);
-                  persist({ breathDownbeat: id });
+                  const next = { ...downbeatSoundByPattern, [patternId]: id };
+                  setDownbeatSoundByPattern(next);
+                  persist({ breathDownbeatByPattern: next });
                 }
           }
           downbeatDisabled={!patternDownbeatOn}

@@ -10,6 +10,7 @@
 import {
   BREATH_PATTERNS,
   METRONOME,
+  NADI_SHODHANA,
   FOUR_SEVEN_EIGHT,
   getPattern,
   isMetronome,
@@ -21,8 +22,11 @@ describe("canonical #2: the Metronome survives ('can not lose the metronome')", 
     expect(getPattern("metronome")).toBe(METRONOME);
     expect(isMetronome(METRONOME)).toBe(true);
   });
-  it("is the first / default pattern", () => {
-    expect(BREATH_PATTERNS[0]).toBe(METRONOME);
+  // Amended 2026-06-22 (user): order changed — Metronome is now LAST, Nadi Shodhana
+  // is first / default. Metronome must still exist (above); it is no longer the default.
+  it("Nadi Shodhana is first / default; Metronome is present but last", () => {
+    expect(BREATH_PATTERNS[0]).toBe(NADI_SHODHANA);
+    expect(BREATH_PATTERNS[BREATH_PATTERNS.length - 1]).toBe(METRONOME);
   });
 });
 

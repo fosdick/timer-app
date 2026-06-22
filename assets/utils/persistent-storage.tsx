@@ -25,10 +25,15 @@ type storageData = {
   // Breath timer (new pranayama)
   breathPatternId?: string;
   breathTotalSec?: number;
+  /** Legacy global sound ids — read only to migrate to the per-pattern maps below. */
   breathAmbience?: string;
   breathClick?: string;
   /** Downbeat snap sound id (uses the click-sound catalog for now). */
   breathDownbeat?: string;
+  /** Per-pattern sound ids, keyed by pattern id (like breathCustomCounts). */
+  breathClickByPattern?: Record<string, string>;
+  breathDownbeatByPattern?: Record<string, string>;
+  breathAmbienceByPattern?: Record<string, string>;
   /** Per-pattern user-edited counts, keyed by pattern id. */
   breathCustomCounts?: Record<
     string,
