@@ -61,7 +61,7 @@ export const PaceListModal = ({
   onRestoreDefaults,
 }: PaceListModalProps) => {
   // Track the currently-open Swipeable so opening a new one closes the previous
-  const [openRowId, setOpenRowId] = useState<string | null>(null);
+  const [, setOpenRowId] = useState<string | null>(null);
 
   const handleDelete = (pace: TimerPace) => {
     Alert.alert(

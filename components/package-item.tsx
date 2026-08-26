@@ -1,11 +1,9 @@
-import React, { useContext, useState } from "react";
-import { View, Text, Pressable, Alert } from "react-native";
+import React, { useContext } from "react";
+import { View, Text, Pressable, Alert, StyleSheet } from "react-native";
 import Purchases, { PurchasesPackage } from "react-native-purchases";
 import { Constants } from "@/constants/constants";
 import { storeData } from "../assets/utils/persistent-storage";
 import { DisplayAdsContext } from "./display-ads-context";
-
-import { StyleSheet } from "react-native";
 
 interface PackageItemProps {
   purchasePackage: PurchasesPackage;
@@ -17,13 +15,11 @@ const PackageItem = ({ purchasePackage, setIsPurchasing }: PackageItemProps) => 
     product: { title, description, priceString },
   } = purchasePackage;
   const { setDisplayAds } = useContext(DisplayAdsContext);
-  const [msg, setMsg] = useState("debug: ");
   const onSelection = async () => {
     setIsPurchasing(true);
 
     try {
       const { customerInfo } = await Purchases.purchasePackage(purchasePackage);
-      setMsg(msg + JSON.stringify(customerInfo));
       if (
         typeof customerInfo.entitlements.active[
           Constants.ENTITLEMENT_IDENTIFIER
@@ -31,10 +27,11 @@ const PackageItem = ({ purchasePackage, setIsPurchasing }: PackageItemProps) => 
       ) {
         // purchase is active, do stuff
         setDisplayAds(false);
-        storeData(Constants.REMOVE_ADS_DATA_KEY, {
+        // appUserId only — the full customerInfo used to be stringified in here,
+        // which stored a growing blob of account data for no reader.
+        await storeData(Constants.REMOVE_ADS_DATA_KEY, {
           removeAds: true,
           appUserId: customerInfo.originalAppUserId,
-          message: JSON.stringify(customerInfo),
         });
       }
     } catch (e: unknown) {
@@ -54,11 +51,6 @@ const PackageItem = ({ purchasePackage, setIsPurchasing }: PackageItemProps) => 
         </View>
         <Text style={styles.title}>{priceString}</Text>
       </Pressable>
-      {/* <Text selectable>
-        {msg}
-        {title}
-        {JSON.stringify(purchasePackage)}
-      </Text> */}
     </View>
   );
 };

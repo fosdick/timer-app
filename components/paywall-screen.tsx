@@ -1,23 +1,27 @@
 import React, { useContext, useEffect, useState } from "react";
 import { DisplayAdsContext } from "./display-ads-context";
-import { storeData } from "../assets/utils/persistent-storage";
-import { Constants } from "@/constants/constants";
 
-import { View, Text, FlatList, StyleSheet, Alert } from "react-native";
+import { View, Text, FlatList, StyleSheet } from "react-native";
 import Purchases, { PurchasesPackage } from "react-native-purchases";
 import PackageItem from "./package-item";
 /*
- An example paywall that uses the current offering.
+ The paywall for the current offering. Entitlement state is owned entirely by
+ DisplayAdsProvider (which also subscribes to the SDK's customer-info updates),
+ so this screen only lists what is for sale and reflects `displayAds`.
  */
 const PaywallScreen = () => {
-  const { displayAds, setDisplayAds } = useContext(DisplayAdsContext);
+  const { displayAds } = useContext(DisplayAdsContext);
 
   // - State for all available package
   const [packages, setPackages] = useState<PurchasesPackage[]>([]);
   // - State for displaying an overlay view
   const [isPurchasing, setIsPurchasing] = useState(false);
+  // Offerings need the network. Report a failure inline rather than in an Alert.
+  const [loadError, setLoadError] = useState(false);
   useEffect(() => {
-    // Get current available packages
+    // Get current available packages. The entitlement check that used to live
+    // here as well was a duplicate of DisplayAdsProvider's — same call, same
+    // cache write, one more place to keep in step. The provider owns it.
     const getPackages = async () => {
       try {
         const offerings = await Purchases.getOfferings();
@@ -29,33 +33,13 @@ const PaywallScreen = () => {
         }
       } catch (e: unknown) {
         const errorMessage = e instanceof Error ? e.message : 'An error occurred';
-        Alert.alert(errorMessage);
+        setLoadError(true);
         console.error("Error getting offers", errorMessage);
       }
     };
 
-    getPackages();
-
-    const checkPurchases = async () => {
-      try {
-        const customerInfo = await Purchases.getCustomerInfo();
-        if (
-          typeof customerInfo.entitlements.active[
-            Constants.ENTITLEMENT_IDENTIFIER
-          ] !== "undefined"
-        ) {
-          // do not show adds
-          setDisplayAds(false);
-          // save in cache
-          await storeData(Constants.REMOVE_ADS_DATA_KEY, { removeAds: true });
-        }
-      } catch (e: unknown) {
-        const errorMessage = e instanceof Error ? e.message : 'Unknown error';
-        console.error("Error fetching customer info", errorMessage);
-      }
-    };
-    checkPurchases();
-  }, [setDisplayAds]);
+    void getPackages();
+  }, []);
 
   return (
     <View>
@@ -78,6 +62,12 @@ const PaywallScreen = () => {
             )}
             keyExtractor={(item) => item.identifier}
           />
+        )}
+        {displayAds && loadError && packages.length === 0 && (
+          <Text style={styles.text}>
+            Couldn&apos;t load the store right now — check your connection and
+            reopen this screen.
+          </Text>
         )}
         {isPurchasing && <View style={styles.overlay} />}
       </View>

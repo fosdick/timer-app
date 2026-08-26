@@ -1,28 +1,57 @@
-import React, { useContext } from "react";
-import { Pressable, Text, View } from "react-native";
+import React, { useContext, useState } from "react";
+import { Pressable, Text, View, StyleSheet } from "react-native";
 import Purchases from "react-native-purchases";
-import { StyleSheet } from "react-native";
-import { useState } from "react";
-import EventEmitter from "eventemitter3";
 import { Constants } from "@/constants/constants";
+import { storeData } from "../assets/utils/persistent-storage";
 import { DisplayAdsContext } from "../components/display-ads-context";
 
+type Status = "idle" | "working" | "none-found" | "error";
+
 const RestorePurchasesButton = () => {
-  const { displayAds } = useContext(DisplayAdsContext);
-  const eventController = new EventEmitter();
+  const { displayAds, setDisplayAds } = useContext(DisplayAdsContext);
+  const [status, setStatus] = useState<Status>("idle");
   const [errorMsg, setErrorMsg] = useState<string>("");
+
+  // Apple requires a restore path for a non-consumable, and reviewers exercise
+  // it. It used to discard restorePurchases()'s return value entirely, so a
+  // successful restore changed NOTHING on screen — ads stayed up until the next
+  // cold launch, which reads as "the button is broken". Now the returned
+  // customerInfo decides, and the outcome is always reported.
   const restorePurchases = async () => {
+    setStatus("working");
+    setErrorMsg("");
     try {
-      setErrorMsg("restoring");
-      await Purchases.restorePurchases();
-      setErrorMsg("");
+      const customerInfo = await Purchases.restorePurchases();
+      const entitled =
+        typeof customerInfo.entitlements.active[
+          Constants.ENTITLEMENT_IDENTIFIER
+        ] !== "undefined";
+      if (entitled) {
+        setDisplayAds(false);
+        await storeData(Constants.REMOVE_ADS_DATA_KEY, { removeAds: true });
+        setStatus("idle"); // ads disappearing IS the confirmation
+      } else {
+        // Restore succeeded, but this Apple ID has nothing to restore. Saying so
+        // is much better than silently doing nothing.
+        setStatus("none-found");
+      }
     } catch (e: unknown) {
-      eventController.emit(Constants.REMOVE_ADS_EVENT);
-      const errorMessage = e instanceof Error ? e.message : "An error occurred";
-      setErrorMsg(errorMessage);
-      console.error("Error restoring purchases", errorMessage);
+      const message = e instanceof Error ? e.message : "An error occurred";
+      setErrorMsg(message);
+      setStatus("error");
+      console.error("Error restoring purchases", message);
     }
   };
+
+  const label =
+    status === "working"
+      ? "restoring"
+      : status === "none-found"
+        ? "No purchases found"
+        : status === "error"
+          ? errorMsg
+          : "Restore Purchases";
+
   const styles = StyleSheet.create({
     button: {
       marginTop: "auto",
@@ -32,7 +61,7 @@ const RestorePurchasesButton = () => {
       padding: 8,
     },
     title: {
-      color: errorMsg ? "red" : "dodgerblue",
+      color: status === "error" ? "red" : "dodgerblue",
       fontFamily: "ArialRoundedMTBold",
       fontSize: 18,
       paddingVertical: 16,
@@ -47,8 +76,13 @@ const RestorePurchasesButton = () => {
   return (
     <View>
       {displayAds && (
-        <Pressable onPress={restorePurchases} style={styles.button}>
-          <Text style={styles.title}>{errorMsg || "Restore Purchases"}</Text>
+        <Pressable
+          testID="restore-purchases"
+          onPress={restorePurchases}
+          disabled={status === "working"}
+          style={styles.button}
+        >
+          <Text style={styles.title}>{label}</Text>
         </Pressable>
       )}
     </View>

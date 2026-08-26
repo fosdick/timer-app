@@ -3,8 +3,8 @@ import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import "react-native-reanimated";
-import Purchases from "react-native-purchases";
-import { Platform, Alert } from "react-native";
+import Purchases, { LOG_LEVEL } from "react-native-purchases";
+import { Platform } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 // app files
@@ -24,12 +24,13 @@ export default function RootLayout() {
   useEffect(() => {
     if (Platform.OS === "ios") {
       try {
+        if (__DEV__) Purchases.setLogLevel(LOG_LEVEL.WARN);
         Purchases.configure({ apiKey: Constants.PURCHASES_API_KEY });
       } catch (e: unknown) {
-        const errorMessage =
-          e instanceof Error ? e.message : "An error occurred";
-        Alert.alert(errorMessage);
-        console.error("Could not cofigure purchases", e);
+        // Log only. This runs during cold launch, so an Alert here greeted the
+        // user with a raw SDK error before they ever saw the app; ads simply
+        // stay on if configure fails.
+        console.error("Could not configure purchases", e);
       }
     }
     /* else if (Platform.OS === 'android') {

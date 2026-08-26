@@ -95,7 +95,7 @@ export default function YogaView() {
 
   // Superset timer state
   const [supersetTimeRemaining, setSupersetTimeRemaining] = useState<number>(0);
-  const [supersetTotalDuration, setSupersetTotalDuration] = useState<number>(0);
+  const [, setSupersetTotalDuration] = useState<number>(0);
 
   // Transition delay state (timing driven by transitionTimeoutRef, not a ticker)
   const [isInTransition, setIsInTransition] = useState<boolean>(false);

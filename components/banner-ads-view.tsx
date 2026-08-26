@@ -10,12 +10,15 @@ import {
 } from "react-native-google-mobile-ads";
 
 export const BannerAdsView = () => {
-  const { displayAds } = useContext(DisplayAdsContext);
+  const { displayAds, adsResolved } = useContext(DisplayAdsContext);
   const adUnitId = __DEV__ ? TestIds.BANNER : Constants.ADMOD_ADUNIT_ID;
 
   return (
     <SafeAreaView style={styles.BannerAdBottom}>
-      {displayAds && (
+      {/* adsResolved gates the first paint: displayAds starts optimistically
+          true, so without it an entitled or promo user saw a banner mount and
+          then disappear on every cold launch. */}
+      {adsResolved && displayAds && (
         <BannerAd
           size={BannerAdSize.FULL_BANNER}
           unitId={adUnitId}
