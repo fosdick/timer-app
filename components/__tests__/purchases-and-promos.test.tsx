@@ -189,7 +189,7 @@ describe("restore purchases", () => {
     await waitFor(() => expect(screen.getByText("resolved")).toBeTruthy());
     expect(screen.getByText("AD")).toBeTruthy();
 
-    fireEvent.press(screen.getByTestId("restore-purchases"));
+    await act(async () => { fireEvent.press(screen.getByTestId("restore-purchases")); });
 
     await waitFor(() => expect(screen.queryByText("AD")).toBeNull());
     expect(storeData).toHaveBeenCalledWith(Constants.REMOVE_ADS_DATA_KEY, {
@@ -208,7 +208,7 @@ describe("restore purchases", () => {
     );
     await waitFor(() => expect(screen.getByText("resolved")).toBeTruthy());
 
-    fireEvent.press(screen.getByTestId("restore-purchases"));
+    await act(async () => { fireEvent.press(screen.getByTestId("restore-purchases")); });
 
     await waitFor(() => expect(screen.getByText("No purchases found")).toBeTruthy());
     expect(screen.getByText("AD")).toBeTruthy(); // still showing, correctly
@@ -226,7 +226,7 @@ describe("restore purchases", () => {
     );
     await waitFor(() => expect(screen.getByText("resolved")).toBeTruthy());
 
-    fireEvent.press(screen.getByTestId("restore-purchases"));
+    await act(async () => { fireEvent.press(screen.getByTestId("restore-purchases")); });
 
     await waitFor(() => expect(screen.getByText("Network error")).toBeTruthy());
     expect(screen.getByText("AD")).toBeTruthy();
@@ -255,7 +255,7 @@ describe("purchase", () => {
     );
     await waitFor(() => expect(screen.getByText("resolved")).toBeTruthy());
 
-    fireEvent.press(screen.getByText("Remove Ads"));
+    await act(async () => { fireEvent.press(screen.getByText("Remove Ads")); });
 
     await waitFor(() => expect(screen.queryByText("AD")).toBeNull());
     expect(storeData).toHaveBeenCalledWith(Constants.REMOVE_ADS_DATA_KEY, {
@@ -275,7 +275,7 @@ describe("purchase", () => {
     );
     await waitFor(() => expect(screen.getByText("resolved")).toBeTruthy());
 
-    fireEvent.press(screen.getByText("Remove Ads"));
+    await act(async () => { fireEvent.press(screen.getByText("Remove Ads")); });
 
     await waitFor(() => expect(purchases.purchasePackage).toHaveBeenCalled());
     expect(screen.getByText("AD")).toBeTruthy();
