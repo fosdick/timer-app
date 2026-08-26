@@ -16,6 +16,7 @@ import {
 import { getData, storeData } from "../assets/utils/persistent-storage";
 import { playStoppableCue } from "../assets/utils/sounds";
 import { useReportActiveTimer } from "./active-timer-context";
+import { useLayoutTier } from "./breath/use-layout-tier";
 
 import YogaFlowSelect from "./yoga-flow-select";
 import YogaAssetRenderer from "./yoga-asset-renderer";
@@ -75,6 +76,7 @@ const YOGA_SOUND_REQUIRE: Record<string, unknown> = {
 
 
 export default function YogaView() {
+  const tier = useLayoutTier();
   // Flow state
   const [selectedFlow, setSelectedFlow] = useState<YogaFlow | null>(null);
   const [currentItemIndex, setCurrentItemIndex] = useState<number>(0);
@@ -991,7 +993,7 @@ export default function YogaView() {
       )}
 
       {/* Content area - flex to prevent pushing button off screen */}
-      <View style={styles.contentArea}>
+      <View style={[styles.contentArea, tier === "expanded" && styles.contentAreaExpanded]}>
       {/* Timer display - moved to top */}
       <View style={TimerStyles.vertBox}>
         <View style={TimerStyles.marginTop}>
@@ -1083,7 +1085,7 @@ export default function YogaView() {
                 width={120}
                 height={120}
                 color={yogaColors.poseNavIcon}
-                style={{ opacity: 0.3 }}
+                style={{ opacity: 0.55 }}
               />
             )}
           </TouchableOpacity>
@@ -1124,7 +1126,7 @@ export default function YogaView() {
               width={120}
               height={120}
               color={yogaColors.poseNavIcon}
-              style={{ opacity: 0.3 }}
+              style={{ opacity: 0.55 }}
             />
           </TouchableOpacity>
 
@@ -1316,6 +1318,7 @@ export default function YogaView() {
 interface YogaViewStyles {
   // Layout
   contentArea: ViewStyle;
+  contentAreaExpanded: ViewStyle;
   hamburgerContainer: ViewStyle;
   flowContentArea: ViewStyle;
   bottomSection: ViewStyle;
@@ -1370,6 +1373,13 @@ const styles = StyleSheet.create<YogaViewStyles>({
     alignItems: "center",
     width: "100%",
   },
+  // Large screens only (iPad, and the tallest iPhones). contentArea is flex:1
+  // with top-aligned content, so on a 13" iPad ~1000pt of slack opened up
+  // between the pose icon and "Current Time". Centring collapses that into
+  // symmetric margins. Deliberately NOT applied to compact/regular: there the
+  // content can already fill the band, and centring an overflowing column
+  // would clip it at BOTH ends.
+  contentAreaExpanded: { justifyContent: "center", maxWidth: 640, alignSelf: "center" },
   // Hamburger button — absolute top-left, above all content
   hamburgerContainer: {
     position: "absolute",

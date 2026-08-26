@@ -32,9 +32,10 @@ App User Id: ${customerInfoData?.originalAppUserId}
         onPress={() => Linking.openURL(`https://youtu.be/FoFX4qkEzig`)}
         title={`Yoga`}
       />
-      <View>
-        <Text style={styles.title}> </Text>
-      </View>
+      {/* Spacer. This used to be <Text style={styles.title}> </Text> — but
+          styles.title carries borderBottomWidth:1, so a single space rendered a
+          one-space-wide underline: the stray dash between the two sections. */}
+      <View style={styles.sectionSpacer} />
 
       <View>
         <Text style={styles.title}>App Support</Text>
@@ -68,6 +69,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 0,
   },
+  sectionSpacer: { height: 30 },
   title: {
     color: tintColorLight,
     fontSize: 24,

@@ -331,7 +331,13 @@ export default function BreathScreen() {
   );
 
   return (
-    <View style={[styles.screen, tier === "expanded" && styles.expandedColumn]}>
+    <View
+      style={[
+        styles.screen,
+        tier === "expanded" && styles.expandedColumn,
+        tier === "expanded" && styles.expandedCenter,
+      ]}
+    >
       {/* Fixed header: the countdown / session-length picker, always visible. */}
       <BreathStageHeader
         view={timer.view}
@@ -351,7 +357,13 @@ export default function BreathScreen() {
       {/* Center region: the live breathe display, with the counts slide-up over
           it. The overlay anchors to the top of the controls (its bottom = the
           pattern buttons' top) and slides down to reveal the center on Start. */}
-      <View style={styles.midWrap}>
+      <View
+        style={[
+          styles.midWrap,
+          tier === "expanded" && styles.midWrapExpanded,
+          compact && styles.midWrapCompact,
+        ]}
+      >
         <BreathStageCenter
           view={timer.view}
           isRunning={timer.isRunning}
@@ -413,7 +425,12 @@ export default function BreathScreen() {
 
       {/* Bottom-anchored like the yoga tab's button (same shared container),
           so switching tabs doesn't make the button appear to jump. */}
-      <View style={screenStyles.buttonContainer}>
+      <View
+        style={[
+          screenStyles.buttonContainer,
+          tier === "expanded" && styles.buttonContainerExpanded,
+        ]}
+      >
         <TouchableOpacity
           testID="breath-start-stop"
           activeOpacity={0.7}
@@ -463,6 +480,24 @@ const styles = StyleSheet.create({
   // iPad / very large screens: cap the column and center it so controls don't
   // stretch edge-to-edge and the layout reads as designed, not stretched.
   expandedColumn: { maxWidth: 600, width: "100%", alignSelf: "center" },
+  // iPad also needs a VERTICAL bound. midWrap is flex:1, so on a 1376pt-tall
+  // iPad it swallowed ~670pt of slack: the countdown stranded at the top, the
+  // counts floating in the middle of a huge empty band, and Start pinned to the
+  // bottom by buttonContainer's marginTop:"auto". Capping midWrap and centering
+  // the whole column turns that dead space into symmetric margins, so the
+  // layout reads as a centred card instead of a stretched phone screen.
+  expandedCenter: { justifyContent: "center" },
+  midWrapExpanded: { flex: 0, height: 360 },
+  // iPhone SE (375x667, the only tier-compact device class): the sheet is taller
+  // than its viewport, so it scrolls — and the viewport's edges are exactly the
+  // countdown above and the Start button below. At rest that put "Downbeat snap
+  // on each count" flush against Start's top border with its checkbox sliced in
+  // half, and scrolled content clipped hard under the countdown. contentContainer
+  // paddingBottom canNOT fix this: it adds scrollable room INSIDE the content,
+  // while the collision is at the viewport boundary. Real clearance is needed, so
+  // whatever the scroll position, clipped rows never touch either neighbour.
+  midWrapCompact: { marginTop: 6, marginBottom: 16 },
+  buttonContainerExpanded: { marginTop: 24, marginBottom: 24 },
   // Center region between the fixed countdown header and the fixed controls.
   // The counts overlay is clipped to it (overflow hidden) so it slides down out
   // of view without bleeding onto the controls/countdown.
