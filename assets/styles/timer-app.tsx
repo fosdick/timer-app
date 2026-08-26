@@ -1,4 +1,5 @@
 import { StyleSheet } from "react-native";
+import type { CustomTimerPickerModalStyles } from "react-native-timer-picker";
 
 const BlueTheme = false;
 const GreenTheme = !BlueTheme;
@@ -80,6 +81,65 @@ export const colorTheme = {
   ...designColors,
 };
 
+/**
+ * Shared style for EVERY react-native-timer-picker wheel in the app (breath
+ * counts, session length, count-in, yoga pace, HIIT). One definition so all the
+ * wheels read identically and their Confirm/Cancel buttons match the app's
+ * bordered button standard (same palette as the rounds popup). Import this and
+ * pass it as the picker's `styles` prop rather than re-styling per call site.
+ */
+// Matches the rounds popup (SessionLengthModal): an "off grey" dark panel with
+// blacker buttons. PICKER_SURFACE mirrors breath-theme's `surface` token; the
+// blacker button fill reads as distinct against it.
+const PICKER_SURFACE = "#0D110B"; // breath-theme surface — the rounds popup card
+const PICKER_BUTTON_BG = "#000000"; // "more black" than the panel
+const PICKER_HAIRLINE = "rgba(124, 179, 66, 0.35)"; // breath-theme line
+
+const pickerButtonBase = {
+  borderWidth: 1,
+  borderRadius: 10,
+  paddingHorizontal: 28,
+  paddingVertical: 12,
+  fontSize: 18,
+  fontWeight: "600" as const,
+  letterSpacing: 1,
+  overflow: "hidden" as const,
+  backgroundColor: PICKER_BUTTON_BG,
+};
+
+export const timerPickerModalStyles: CustomTimerPickerModalStyles = {
+  theme: "dark",
+  // Drives the wheel area AND its gradient fade, so the fade blends cleanly.
+  backgroundColor: PICKER_SURFACE,
+  container: {
+    backgroundColor: PICKER_SURFACE,
+    borderWidth: 1,
+    borderColor: PICKER_HAIRLINE,
+    borderRadius: 14,
+  },
+  // Wheel digits + unit labels in the app's lime (matching the rounds popup
+  // value) instead of the library's default white.
+  pickerItem: { color: colorTheme.activeTimerPrimary },
+  pickerLabel: { color: colorTheme.activeTimerDimmed },
+  // Title matches the rounds popup heading (lime, 20/600, letter-spaced).
+  modalTitle: {
+    color: colorTheme.activeTimerPrimary,
+    fontSize: 20,
+    fontWeight: "600",
+    letterSpacing: 1,
+  },
+  confirmButton: {
+    ...pickerButtonBase,
+    color: colorTheme.fontColor,
+    borderColor: colorTheme.borderColor,
+  },
+  cancelButton: {
+    ...pickerButtonBase,
+    color: colorTheme.activeTimerDimmed,
+    borderColor: PICKER_HAIRLINE,
+  },
+};
+
 export const Settings = StyleSheet.create({
   regText: {
     // marginTop:30,
@@ -155,6 +215,11 @@ export const TimerStyles = StyleSheet.create({
     overflow: "hidden",
     borderColor: borderColor,
     color: fontColor,
+  },
+  // Light-green variant for the Stop/Resume states (shared across all tabs).
+  startButtonEngaged: {
+    borderColor: colorTheme.activeTimerDimmed,
+    color: colorTheme.activeTimerDimmed,
   },
   metronome: {
     // marginTop: 15,

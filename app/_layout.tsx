@@ -9,9 +9,11 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 // app files
 import { Constants } from "@/constants/constants";
-import { SettingsSvg } from "@/assets/images/svgx/settings";
+import { UserMenu } from "@/components/user-menu";
 import { colorTheme } from "@/assets/styles/timer-app";
 import { DisplayAdsProvider } from "../components/display-ads-context";
+import { ActiveTimerProvider } from "../components/active-timer-context";
+import { UserPreferencesProvider } from "../components/user-preferences-context";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -50,20 +52,28 @@ export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <DisplayAdsProvider>
-        <Stack
-          screenOptions={{
-            title: "Timer App Yoga",
-            headerStyle: {
-              // backgroundColor: "#080B0c",
-              backgroundColor: colorTheme.headerLiteShade,
-            },
-            headerRight: () => <SettingsSvg />,
-          }}
-        >
-          {/* <Stack.Screen name="+html" options={{ headerShown: false }} /> */}
-          <Stack.Screen name="+not-found" />
-          <Stack.Screen name="settings" />
-        </Stack>
+        <ActiveTimerProvider>
+          <UserPreferencesProvider>
+            <Stack
+              screenOptions={{
+                title: "Timer App Yoga",
+                headerStyle: {
+                  // backgroundColor: "#080B0c",
+                  backgroundColor: colorTheme.headerLiteShade,
+                },
+                headerRight: () => <UserMenu />,
+              }}
+            >
+              {/* <Stack.Screen name="+html" options={{ headerShown: false }} /> */}
+              <Stack.Screen name="+not-found" />
+              <Stack.Screen name="settings" options={{ title: "App Settings" }} />
+              <Stack.Screen
+                name="user-preferences"
+                options={{ title: "User Preferences" }}
+              />
+            </Stack>
+          </UserPreferencesProvider>
+        </ActiveTimerProvider>
       </DisplayAdsProvider>
     </GestureHandlerRootView>
   );

@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { useFocusEffect } from "expo-router";
 
 import { Text, TouchableOpacity, View } from "react-native";
 import Slider from "@react-native-community/slider";
@@ -6,6 +7,7 @@ import Slider from "@react-native-community/slider";
 import { TimerStyles, HiitStyles, colorTheme, screenStyles } from "@/assets/styles/timer-app";
 import { playLevelComplete, playHittStart } from "@/assets/utils/sounds";
 import HittIntervalPicker from "@/components/hitt-time-picker";
+import { useReportActiveTimer } from "@/components/active-timer-context";
 
 import EventEmitter from "eventemitter3";
 
@@ -137,6 +139,13 @@ export default function HittView() {
 
   const [totalTime, setTotalTime] = useState<number>(0);
   const [isStop, setIsStop] = useState<boolean>(true);
+  // Report to the tab bar so an accidental tab tap mid-session is confirmed.
+  useReportActiveTimer("hitt", !isStop);
+
+  // Stop the workout when the tab loses focus (e.g. confirming a tab switch).
+  useFocusEffect(
+    useCallback(() => () => setIsStop(true), []),
+  );
 
   const resetInitalState = ({
     _initialWorkoutTotalTime,
@@ -338,7 +347,7 @@ export default function HittView() {
           }}
         >
           <View>
-            <Text style={TimerStyles.startButton}>
+            <Text style={[TimerStyles.startButton, isStop !== true && TimerStyles.startButtonEngaged]}>
               {isStop === true ? "Start" : "Stop"}
             </Text>
           </View>

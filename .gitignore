@@ -8,7 +8,8 @@ dist
 android
 ios
 .yarn
-package-lock.json
+# Track the app's own package-lock.json (reproducible installs) but keep
+# dormant subproject lockfiles (admin/, server/, python-api/) out.
 */package-lock.json
 .DS_Store
 */.DS_Store
@@ -22,3 +23,8 @@ expo-env.d.ts
 .env
 *.ipa
 *.p8
+# Claude Code: personal/machine-local settings stay out; shared settings.json is tracked
+.claude/settings.local.json
+
+# Generated screenshot fleet (scripts/screenshots.sh)
+screenshots/

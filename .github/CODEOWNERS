@@ -1,0 +1,14 @@
+# Canonical product behavior is owned by the product owner — changes here need
+# explicit approval (GitHub enforces this on PRs once branch protection requires
+# code-owner review). These are the "locked unless product approves" surfaces:
+#
+#   - the canonical manifest (the living spec)
+#   - the tests that guard canonical behavior (unit/wiring/E2E)
+#
+# Solo today this is a deliberate speed bump + audit trail; with contributors it
+# becomes a real gate at zero extra cost.
+
+/docs/canonical-features.md      @fosdick
+/.maestro/                       @fosdick
+/components/**/__tests__/        @fosdick
+/assets/**/__tests__/            @fosdick

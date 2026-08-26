@@ -47,6 +47,7 @@ const PromoCodeInput = () => {
   }, []);
 
   const handleApply = async () => {
+    if (busy) return; // re-entry guard (field stays editable during activation)
     setFeedback(null);
     const promo = findPromoByCode(input);
     // Clear the input on every Apply press, whatever the outcome — the
@@ -114,7 +115,12 @@ const PromoCodeInput = () => {
           placeholderTextColor="#888"
           autoCapitalize="none"
           autoCorrect={false}
-          editable={!busy}
+          // NOTE: do NOT add editable={!busy}. Disabling the field in the same
+          // render that clears it (success path) strands the native iOS text
+          // clear — the field re-enables with value already "", so no new text
+          // command reaches native and the typed code lingers. The Apply button
+          // is disabled via canApply, and handleApply has a busy re-entry guard,
+          // so double-submit is already prevented without disabling the field.
           returnKeyType="go"
           onSubmitEditing={handleApply}
         />

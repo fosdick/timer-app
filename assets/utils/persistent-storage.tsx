@@ -20,6 +20,29 @@ type storageData = {
   halfMarkEnabled?: boolean;
   transitionSound?: string;
   halfMarkSound?: string;
+  // Pranayama: looping sound bed during long holds (Antara/Bahya Kumbhaka)
+  holdAmbience?: string;
+  // Breath timer (new pranayama)
+  breathPatternId?: string;
+  breathTotalSec?: number;
+  /** Legacy global sound ids — read only to migrate to the per-pattern maps below. */
+  breathAmbience?: string;
+  breathClick?: string;
+  /** Downbeat snap sound id (uses the click-sound catalog for now). */
+  breathDownbeat?: string;
+  /** Per-pattern sound ids, keyed by pattern id (like breathCustomCounts). */
+  breathClickByPattern?: Record<string, string>;
+  breathDownbeatByPattern?: Record<string, string>;
+  breathAmbienceByPattern?: Record<string, string>;
+  /** Per-pattern user-edited counts, keyed by pattern id. */
+  breathCustomCounts?: Record<
+    string,
+    { inhale: number; holdIn: number; exhale: number; holdOut: number }
+  >;
+  // User Preferences page (see components/user-preferences-context.tsx)
+  autoCorrectExhaleEnd?: boolean;
+  /** Per-pattern downbeat-snap enablement, keyed by pattern id. */
+  downbeatByPattern?: Record<string, boolean>;
 };
 const storeData = async (key: string, value: Partial<storageData>) => {
   try {

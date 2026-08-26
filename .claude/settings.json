@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx tsc --noEmit)",
+      "Bash(npx tsc --noEmit *)",
+      "Bash(npx jest)",
+      "Bash(npx jest *)",
+      "Bash(xcrun devicectl list *)"
+    ]
+  }
+}

@@ -37,6 +37,7 @@ import {
   getTimePartsMinSec,
 } from "../assets/utils/format-time";
 import { yogaColors } from "@/assets/theme";
+import { timerPickerModalStyles } from "@/assets/styles/timer-app";
 import type { TimerPaceInput } from "@/assets/data/yoga-paces";
 
 // ─── Props ────────────────────────────────────────────────────────────────────
@@ -256,7 +257,7 @@ export const PaceFormModal = ({
         modalTitle="Set Timer"
         closeOnOverlayPress
         LinearGradient={LinearGradient}
-        styles={{ theme: "dark" }}
+        styles={timerPickerModalStyles}
         modalProps={{ overlayOpacity: 0.2 }}
       />
 

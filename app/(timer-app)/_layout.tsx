@@ -1,14 +1,17 @@
 import { Tabs } from "expo-router";
-import React from "react";
-import { StyleSheet, View } from "react-native";
+import React, { useContext } from "react";
+import { Alert, StyleSheet, View } from "react-native";
 // import { useKeepAwake } from "expo-keep-awake";
 import { YogaSvg } from "@/assets/images/svgx/yoga";
 import { PranayamaSvg } from "@/assets/images/svgx/pranayama";
 import { HittSvg } from "@/assets/images/svgx/hitt";
 import { colorTheme } from "@/assets/styles/timer-app";
+import { ActiveTimerContext } from "@/components/active-timer-context";
+import { guardTabPress } from "@/assets/utils/tab-switch-guard";
 
 export default function TabLayout() {
   // useKeepAwake();
+  const { isAnyTimerRunning } = useContext(ActiveTimerContext);
 
   return (
     <View style={styles.tabsWithAds}>
@@ -27,16 +30,40 @@ export default function TabLayout() {
             borderBlockColor: colorTheme.borderColor,
           },
         }}
-        screenListeners={{
-          tabPress: () => {
-            // Alert.alert("tab pressed");
+        screenListeners={({ navigation, route }) => ({
+          // While a timer is running, an accidental tab tap (phone set down)
+          // must not silently stop the practice. Block the default switch and
+          // confirm first; a clean state switches instantly as before.
+          tabPress: (e) => {
+            // Pressing the already-focused tab isn't a switch — never prompt.
+            if (navigation.isFocused()) return;
+            guardTabPress({
+              isAnyTimerRunning,
+              preventDefault: () => e.preventDefault(),
+              confirmSwitch: () =>
+                Alert.alert(
+                  "Timer running",
+                  "Switching tabs will stop your current timer. Switch anyway?",
+                  [
+                    { text: "Stay", style: "cancel" },
+                    {
+                      text: "Switch",
+                      style: "destructive",
+                      onPress: () => navigation.navigate(route.name),
+                    },
+                  ],
+                ),
+            });
           },
-        }}
+        })}
       >
         <Tabs.Screen
           name="index"
           options={{
             title: "Pranayama",
+            // testID so E2E (Maestro) can tap the tab — its text label isn't
+            // exposed as a matchable element on iOS.
+            tabBarButtonTestID: "tab-pranayama",
             tabBarIcon: ({ color }) => <PranayamaSvg color={color} />,
           }}
         />
@@ -44,6 +71,7 @@ export default function TabLayout() {
           name="yoga"
           options={{
             title: "Yoga",
+            tabBarButtonTestID: "tab-yoga",
             tabBarIcon: ({ color, focused }) => <YogaSvg color={color} />,
           }}
         />
@@ -51,6 +79,7 @@ export default function TabLayout() {
           name="hitt"
           options={{
             title: "HIIT",
+            tabBarButtonTestID: "tab-hitt",
             tabBarIcon: ({ color, focused }) => <HittSvg color={color} />,
           }}
         />

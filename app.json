@@ -2,7 +2,7 @@
   "expo": {
     "name": "TimerAppYoga",
     "slug": "timer-app-yoga",
-    "version": "1.0.6",
+    "version": "1.1.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "myapp",
@@ -15,6 +15,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.example.timer-app",
+      "appleTeamId": "L5MB3YYG22",
       "backgroundColor": "#080B0c",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
@@ -39,6 +40,16 @@
         {
           "androidAppId": "ca-app-pub-9298793039154739~3188608061",
           "iosAppId": "ca-app-pub-9298793039154739~3188608061"
+        }
+      ],
+      "expo-font",
+      "expo-web-browser",
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "deploymentTarget": "15.1"
+          }
         }
       ]
     ],
