@@ -28,10 +28,12 @@ import { screenStyles, timerPickerModalStyles } from "@/assets/styles/timer-app"
 import { PatternPicker } from "./PatternPicker";
 import { CountEditors } from "./CountEditors";
 import { BreathStageHeader, BreathStageCenter } from "./BreathStage";
+import { RoundsIndicator } from "./RoundsIndicator";
 import { SoundOptions } from "./SoundOptions";
 import { getClickSound, getAmbience, DEFAULT_CLICK_ID, DEFAULT_DOWNBEAT_ID, DEFAULT_AMBIENCE_ID } from "./breath-sounds";
 import { breathTheme as t } from "./breath-theme";
 import { SessionLengthModal } from "./SessionLengthModal";
+import { useLayoutTier } from "./use-layout-tier";
 
 const BREATH_DATA_KEY = "breath_timer_data";
 const DEFAULT_TOTAL_SEC = 300; // 5 min
@@ -57,6 +59,7 @@ const countsOf = (p: BreathPattern): CountSet => ({
  * wheels, a session-length picker, sound options, and persisted settings.
  */
 export default function BreathScreen() {
+  const tier = useLayoutTier();
   const [patternId, setPatternId] = useState<string>(NADI_SHODHANA.id);
   const [customCounts, setCustomCounts] = useState<Record<string, CountSet>>({});
   const [totalSec, setTotalSec] = useState<number>(DEFAULT_TOTAL_SEC);
@@ -243,16 +246,16 @@ export default function BreathScreen() {
   // the slide-up/run state. The metronome has no rounds. A round spans
   // setsPerRound cycles (Nadi: 2); the math mirrors the rounds picker so the
   // count lines up with the chosen session length.
-  const roundText = useMemo(() => {
+  const rounds = useMemo(() => {
     if (metro || !prefs.useRounds) return null;
     const cycleDur = cycleDurationSec(pattern, { countDurationSec: 1 });
     const sets = Math.max(1, Math.floor(pattern.setsPerRound ?? 1));
     const roundDur = sets * cycleDur;
     if (roundDur <= 0) return null;
-    const totalRounds = sessionSecToRounds(pattern, effectiveTotalSec, { countDurationSec: 1 });
+    const total = sessionSecToRounds(pattern, effectiveTotalSec, { countDurationSec: 1 });
     const elapsed = effectiveTotalSec - timer.view.totalRemaining;
-    const current = Math.min(totalRounds, Math.max(1, Math.floor(elapsed / roundDur) + 1));
-    return `Round ${current} of ${totalRounds}`;
+    const current = Math.min(total, Math.max(1, Math.floor(elapsed / roundDur) + 1));
+    return { current, total };
   }, [metro, prefs.useRounds, pattern, effectiveTotalSec, timer.view.totalRemaining]);
 
   const persist = (over: Partial<Parameters<typeof storeData>[1]>) => {
@@ -291,8 +294,44 @@ export default function BreathScreen() {
     persist({ breathCustomCounts: nextCustom });
   };
 
+  // The pattern + sound controls. On compact screens they live INSIDE the
+  // slide-up sheet (so Start reveals a clean focus view); on larger screens they
+  // sit on-screen below the stage. Defined once, placed in one spot or the other.
+  const compact = tier === "compact";
+  const patternPicker = (
+    <PatternPicker selectedId={pattern.id} onSelect={choosePattern} disabled={active} />
+  );
+  const soundOptions = (
+    <SoundOptions
+      clickId={clickId}
+      ambienceId={ambienceId}
+      onClickChange={(id) => {
+        const next = { ...clickByPattern, [patternId]: id };
+        setClickByPattern(next);
+        persist({ breathClickByPattern: next });
+      }}
+      onAmbienceChange={(id) => {
+        const next = { ...ambienceByPattern, [patternId]: id };
+        setAmbienceByPattern(next);
+        persist({ breathAmbienceByPattern: next });
+      }}
+      disabled={active}
+      downbeatId={metro ? undefined : downbeatId}
+      onDownbeatChange={
+        metro
+          ? undefined
+          : (id) => {
+              const next = { ...downbeatSoundByPattern, [patternId]: id };
+              setDownbeatSoundByPattern(next);
+              persist({ breathDownbeatByPattern: next });
+            }
+      }
+      downbeatDisabled={!patternDownbeatOn}
+    />
+  );
+
   return (
-    <View style={styles.screen}>
+    <View style={[styles.screen, tier === "expanded" && styles.expandedColumn]}>
       {/* Fixed header: the countdown / session-length picker, always visible. */}
       <BreathStageHeader
         view={timer.view}
@@ -301,8 +340,13 @@ export default function BreathScreen() {
         endsOnExhale={endsOnExhale}
         onInfoPress={showExhaleInfo}
         onPressClock={() => setShowPicker(true)}
-        roundText={roundText}
+        tier={tier}
       />
+
+      {/* Round N of M directly under the total time — but only once a session is
+          underway (running or counting in). Hidden while idle so the setup menu
+          (incl. the downbeat-snap checkbox) has the full height. */}
+      {active && rounds ? <RoundsIndicator current={rounds.current} total={rounds.total} /> : null}
 
       {/* Center region: the live breathe display, with the counts slide-up over
           it. The overlay anchors to the top of the controls (its bottom = the
@@ -313,15 +357,25 @@ export default function BreathScreen() {
           isRunning={timer.isRunning}
           metronome={metro}
           countIn={countIn}
+          tier={tier}
         />
         <Animated.View
           pointerEvents={active ? "none" : "auto"}
           style={[styles.countsOverlay, { transform: [{ translateY: slide }] }]}
         >
           <ScrollView
-            contentContainerStyle={styles.countsOverlayContent}
+            contentContainerStyle={[
+              styles.countsOverlayContent,
+              // Compact: the full control set lives in this sheet, which can be
+              // taller than the short screen (iPhone SE). Top-align + scroll, and
+              // reserve clearance at the bottom so the last rows (downbeat snap /
+              // sounds) never collide with the bottom-anchored Start button.
+              compact && styles.countsOverlaySheetCompact,
+            ]}
             showsVerticalScrollIndicator={false}
           >
+            {/* Compact: the style picker leads the setup sheet. */}
+            {compact && patternPicker}
             <CountEditors
               pattern={pattern}
               activeKind={undefined}
@@ -342,46 +396,26 @@ export default function BreathScreen() {
                 <Text style={styles.dbLabel}>Downbeat snap on each count</Text>
               </TouchableOpacity>
             )}
+            {/* Compact: sounds round out the setup sheet. */}
+            {compact && soundOptions}
           </ScrollView>
         </Animated.View>
       </View>
 
-      {/* Always-visible controls: pattern styles + sounds. */}
-      <View style={styles.controls}>
-        <PatternPicker selectedId={pattern.id} onSelect={choosePattern} disabled={active} />
-
-        <SoundOptions
-          clickId={clickId}
-          ambienceId={ambienceId}
-          onClickChange={(id) => {
-            const next = { ...clickByPattern, [patternId]: id };
-            setClickByPattern(next);
-            persist({ breathClickByPattern: next });
-          }}
-          onAmbienceChange={(id) => {
-            const next = { ...ambienceByPattern, [patternId]: id };
-            setAmbienceByPattern(next);
-            persist({ breathAmbienceByPattern: next });
-          }}
-          disabled={active}
-          downbeatId={metro ? undefined : downbeatId}
-          onDownbeatChange={
-            metro
-              ? undefined
-              : (id) => {
-                  const next = { ...downbeatSoundByPattern, [patternId]: id };
-                  setDownbeatSoundByPattern(next);
-                  persist({ breathDownbeatByPattern: next });
-                }
-          }
-          downbeatDisabled={!patternDownbeatOn}
-        />
-      </View>
+      {/* On larger screens the controls stay on-screen below the stage; on
+          compact they moved into the sheet above (Start reveals a focus view). */}
+      {!compact && (
+        <View style={styles.controls}>
+          {patternPicker}
+          {soundOptions}
+        </View>
+      )}
 
       {/* Bottom-anchored like the yoga tab's button (same shared container),
           so switching tabs doesn't make the button appear to jump. */}
       <View style={screenStyles.buttonContainer}>
         <TouchableOpacity
+          testID="breath-start-stop"
           activeOpacity={0.7}
           style={[styles.startBtn, active && styles.stopBtn]}
           onPress={onPressStartStop}
@@ -426,6 +460,9 @@ export default function BreathScreen() {
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: t.bg, paddingHorizontal: t.space.lg },
+  // iPad / very large screens: cap the column and center it so controls don't
+  // stretch edge-to-edge and the layout reads as designed, not stretched.
+  expandedColumn: { maxWidth: 600, width: "100%", alignSelf: "center" },
   // Center region between the fixed countdown header and the fixed controls.
   // The counts overlay is clipped to it (overflow hidden) so it slides down out
   // of view without bleeding onto the controls/countdown.
@@ -445,6 +482,9 @@ const styles = StyleSheet.create({
     gap: t.space.md,
     padding: t.space.md,
   },
+  // Compact override: scroll from the top and keep ~96pt of clearance below the
+  // last control so it stays above the Start button on short screens.
+  countsOverlaySheetCompact: { justifyContent: "flex-start", paddingBottom: 96 },
   controls: { alignItems: "center", gap: t.space.md, paddingVertical: t.space.md },
   startBtn: {
     borderWidth: 1,
