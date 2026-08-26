@@ -10,6 +10,19 @@ behavior from [`docs/canonical-features.md`](../docs/canonical-features.md).
 |---|---|
 | `count-in.yaml` | #7 — Pranayama "Begin in" count-in on a fresh start |
 | `tab-switch-confirm.yaml` | #6 — running timer gates tab switches behind a confirm |
+| `screens.yaml` | **Not a pass/fail test** — a screenshot tour (see below) |
+
+## Screenshots (fleet capture)
+
+`screens.yaml` is a navigation tour that calls `takeScreenshot` at each key screen
+(Pranayama idle + count-in, Yoga idle + running + Paces, HIIT). It is driven across a
+list of simulators by `scripts/screenshots.sh` (`npm run screenshots`), which builds the
+Release app once, then per device boots it, pins a clean 9:41 status bar
+(`simctl status_bar override`), installs the build, runs the tour, and drops the PNGs in
+`screenshots/<device>/` (git-ignored). Edit the `DEVICES` array at the top of the script;
+the first two are the App Store-required sizes (largest iPhone + iPad). Reuse the last
+build with `BUILD=0 npm run screenshots`. The Yoga Paces shot taps the center pose icon
+via `testID: yoga-center-icon`.
 
 Next flows to add (incrementally): promo redeem clears the field (#5, the money path — needs an
 accessibility label on the header settings icon to be tappable), start/end chimes.

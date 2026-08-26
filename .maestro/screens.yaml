@@ -1,0 +1,63 @@
+# Screenshot tour — drives the real app and captures each key screen.
+# NOT a pass/fail test: the asserts/waits are sync points so each screenshot is
+# taken once the screen has actually rendered. Run via scripts/screenshots.sh.
+#
+# Taps go through testIDs, NOT visible text: tapping text by coordinates proved
+# unreliable (the Start tap silently no-op'd after a UI redesign — see the repo's
+# tab/center-icon testIDs for the same reason). Buttons:
+#   breath-start-stop · yoga-start-stop · yoga-center-icon · tab-{pranayama,yoga,hitt}
+# After pressing Start we wait for "Stop" to appear before screenshotting, which
+# both confirms the press registered and avoids racing the re-render.
+appId: com.example.timer-app
+---
+# --- Pranayama (idle) ---
+- launchApp:
+    clearState: true          # fresh state -> deterministic content on every device
+- extendedWaitUntil:          # absorb cold-launch + splash before the first shot
+    visible: "Start"
+    timeout: 30000
+- takeScreenshot: "01-pranayama-idle"
+
+# --- Pranayama (count-in "Begin in" if enabled, else the running state) ---
+- tapOn:
+    id: "breath-start-stop"
+- extendedWaitUntil:          # press registered -> button flips to Stop (count-in or running)
+    visible: "Stop"
+    timeout: 12000
+- takeScreenshot: "02-pranayama-countin"
+- tapOn:
+    id: "breath-start-stop"   # Stop: cancels the count-in / stops the session
+
+# --- Yoga (idle) ---
+- tapOn:
+    id: "tab-yoga"
+- extendedWaitUntil:
+    visible:
+      id: "yoga-start-stop"
+    timeout: 15000
+- takeScreenshot: "03-yoga-idle"
+
+# --- Yoga (running) ---
+- tapOn:
+    id: "yoga-start-stop"
+- extendedWaitUntil:
+    visible: "Stop"
+    timeout: 12000
+- takeScreenshot: "04-yoga-running"
+
+# --- Yoga Paces ---
+- tapOn:
+    id: "yoga-center-icon"    # center pose icon opens the Paces list
+- assertVisible: "Paces"      # modal header
+- takeScreenshot: "05-yoga-paces"
+- tapOn: "Done"               # close the modal
+- tapOn:
+    id: "yoga-start-stop"     # stop the yoga timer before leaving the tab
+
+# --- HIIT (idle) ---
+- tapOn:
+    id: "tab-hitt"
+- extendedWaitUntil:
+    visible: "Start"
+    timeout: 15000
+- takeScreenshot: "06-hitt-idle"

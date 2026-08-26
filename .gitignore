@@ -25,3 +25,6 @@ expo-env.d.ts
 *.p8
 # Claude Code: personal/machine-local settings stay out; shared settings.json is tracked
 .claude/settings.local.json
+
+# Generated screenshot fleet (scripts/screenshots.sh)
+screenshots/
