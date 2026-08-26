@@ -10,6 +10,30 @@ jest.mock("@react-native-async-storage/async-storage", () =>
   require("@react-native-async-storage/async-storage/jest/async-storage-mock"),
 );
 
-// react-native-purchases is a native SDK with no jest binding; components that
-// import it (e.g. display-ads-context) only need it to not throw on import.
-jest.mock("react-native-purchases", () => ({ __esModule: true, default: {} }));
+// react-native-purchases is a native SDK with no jest binding. Every method is a
+// jest.fn() with a benign default (configured, nothing owned, nothing on offer)
+// so components that merely IMPORT it keep rendering, while a test that cares
+// about purchase flow can drive each call — see
+// components/__tests__/purchases-and-promos.test.tsx. Tests should set the
+// implementations they depend on explicitly rather than leaning on these
+// defaults staying put.
+jest.mock("react-native-purchases", () => {
+  const NOTHING_OWNED = {
+    entitlements: { active: {} },
+    originalAppUserId: "jest-app-user",
+  };
+  return {
+    __esModule: true,
+    LOG_LEVEL: { VERBOSE: "VERBOSE", DEBUG: "DEBUG", INFO: "INFO", WARN: "WARN", ERROR: "ERROR" },
+    default: {
+      configure: jest.fn(),
+      setLogLevel: jest.fn(),
+      getCustomerInfo: jest.fn(async () => NOTHING_OWNED),
+      getOfferings: jest.fn(async () => ({ current: null })),
+      purchasePackage: jest.fn(async () => ({ customerInfo: NOTHING_OWNED })),
+      restorePurchases: jest.fn(async () => NOTHING_OWNED),
+      addCustomerInfoUpdateListener: jest.fn(),
+      removeCustomerInfoUpdateListener: jest.fn(),
+    },
+  };
+});

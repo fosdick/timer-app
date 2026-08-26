@@ -28,6 +28,30 @@ module.exports = [
     ),
   },
   {
+    // Test files and the shared jest setup run under jest, not the app runtime,
+    // so its globals need declaring or every `jest.mock` is a no-undef error.
+    files: [
+      "**/__tests__/**/*.{js,ts,tsx}",
+      "**/*.test.{js,ts,tsx}",
+      "jest.setup.js",
+    ],
+    languageOptions: {
+      globals: {
+        jest: "readonly",
+        describe: "readonly",
+        it: "readonly",
+        test: "readonly",
+        expect: "readonly",
+        beforeEach: "readonly",
+        afterEach: "readonly",
+        beforeAll: "readonly",
+        afterAll: "readonly",
+        require: "readonly",
+        module: "writable",
+      },
+    },
+  },
+  {
     // Not app source: dormant internal tooling, build output, native projects.
     ignores: [
       "dist/*",
