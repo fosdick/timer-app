@@ -14,7 +14,7 @@ import {
   getTimePartsMinSec,
 } from "../assets/utils/format-time";
 import { getData, storeData } from "../assets/utils/persistent-storage";
-import { armAudioSession } from "../assets/utils/sounds";
+import { playStoppableCue } from "../assets/utils/sounds";
 import { useReportActiveTimer } from "./active-timer-context";
 
 import YogaFlowSelect from "./yoga-flow-select";
@@ -60,15 +60,16 @@ const DEFAULT_TRANSITION_PAUSE_MS = 5000; // 5 s default for Main Transition
 const DEFAULT_HALF_MARK_PAUSE_MS  = 1000; // 1 s default for Half Mark
 
 /* eslint-disable @typescript-eslint/no-var-requires */
-const TRANSITION_SOUND_REQUIRE: Record<string, unknown> = {
-  swoosh:    require("../assets/sounds/733936__creator_gt__swoosh-04.wav"),
+// One map for BOTH the Main Transition and Half Mark events — either can now be
+// set to any of these sounds. "none" is intentionally absent: playTimerSound
+// treats a missing entry as silence (the pause/advance still happens).
+const YOGA_SOUND_REQUIRE: Record<string, unknown> = {
+  swoosh:     require("../assets/sounds/733936__creator_gt__swoosh-04.wav"),
   "end-bell": require("../assets/sounds/end-bell.wav"),
-  ocean:     require("../assets/sounds/442944__qubodup__ocean-wave.wav"),
-};
-const HALF_MARK_SOUND_REQUIRE: Record<string, unknown> = {
-  sticks: require("../assets/sounds/sticks-low-1.wav"),
-  snap:   require("../assets/sounds/snap.wav"),
-  bell:   require("../assets/sounds/350548__fairhavencollection__bell-hit.wav"),
+  ocean:      require("../assets/sounds/442944__qubodup__ocean-wave.wav"),
+  sticks:     require("../assets/sounds/sticks-low-1.wav"),
+  snap:       require("../assets/sounds/snap.wav"),
+  bell:       require("../assets/sounds/350548__fairhavencollection__bell-hit.wav"),
 };
 /* eslint-enable @typescript-eslint/no-var-requires */
 
@@ -116,21 +117,20 @@ export default function YogaView() {
     }
   };
 
-  // Stop the previous timer sound, then create and play the new one.
-  // Stores a ref so the sound can be stopped before it finishes naturally.
+  // Stop the previous timer sound, then create and play the new one through the
+  // shared cue path (same audio-session arming + volume as every other player),
+  // storing a ref so the sound can be stopped before it finishes naturally.
+  // A null/missing source (the "none" sound) plays nothing — the event's pause
+  // and advance still happen, the cue is simply silent.
   const playTimerSound = (requireResult: unknown) => {
     stopTimerSound();
-    const play = async () => {
-      // Re-arm the audio session first — an interruption (incoming call) or a
-      // return from another app can have deactivated it, leaving playback silent.
-      await armAudioSession();
-      const { sound } = await Audio.Sound.createAsync(
-        requireResult as Parameters<typeof Audio.Sound.createAsync>[0],
-      );
-      currentTimerSoundRef.current = sound;
-      await sound.playAsync();
-    };
-    play();
+    if (requireResult == null) return;
+    void playStoppableCue(
+      requireResult as Parameters<typeof Audio.Sound.createAsync>[0],
+      (sound) => {
+        currentTimerSoundRef.current = sound;
+      },
+    );
   };
 
   // Cancel any in-flight halfway-pause timeout and stop the timer.
@@ -265,7 +265,10 @@ export default function YogaView() {
     const loadSavedFlow = async () => {
       const savedData = await getData(YOGA_TIMER_APP_DATA);
       if (savedData?.selectedFlowId) {
-        if (savedData.selectedFlowId === "manual") {
+        // When the yoga-flow feature is flagged OFF, never restore into flow
+        // mode — a flow persisted from earlier testing must NOT resurrect the
+        // flagged design. Fall through to manual mode (the shipped behavior).
+        if (savedData.selectedFlowId === "manual" || !YOGA_FLOW_ENABLED) {
           setIsManualMode(true);
           setSelectedFlow(null);
           const savedTime =
@@ -366,7 +369,7 @@ export default function YogaView() {
         if (isManualMode && halfMarkEnabledRef.current) {
           const halfwayPoint = Math.ceil(initialTotalTime / 2);
           if (!halfwayChimePlayed && timeRemaining === halfwayPoint) {
-            playTimerSound(HALF_MARK_SOUND_REQUIRE[halfMarkSoundRef.current]);
+            playTimerSound(YOGA_SOUND_REQUIRE[halfMarkSoundRef.current]);
             setHalfwayChimePlayed(true);
             // Pause briefly so the chime isn't buried by an immediate decrement.
             // isAutoTimerPaused keeps the button showing "Stop" during the pause.
@@ -407,7 +410,7 @@ export default function YogaView() {
           const scaledDuration = getScaledDuration(poseDuration);
           const halfwayPoint = Math.ceil(scaledDuration / 2);
           if (chimeEnabled && halfMarkEnabledRef.current && !halfwayChimePlayed && timeRemaining === halfwayPoint) {
-            playTimerSound(HALF_MARK_SOUND_REQUIRE[halfMarkSoundRef.current]);
+            playTimerSound(YOGA_SOUND_REQUIRE[halfMarkSoundRef.current]);
             setHalfwayChimePlayed(true);
             // Pause briefly so the chime lands cleanly on the halfway second.
             setIsRunning(false);
@@ -434,7 +437,7 @@ export default function YogaView() {
         if (newTime === 0) {
           if (isManualMode) {
             // Manual mode: play sound, pause for transitionPauseMs, then repeat
-            playTimerSound(TRANSITION_SOUND_REQUIRE[transitionSoundRef.current]);
+            playTimerSound(YOGA_SOUND_REQUIRE[transitionSoundRef.current]);
             setIsInTransition(true);
             transitionTimeoutRef.current = setTimeout(() => {
               transitionTimeoutRef.current = null;
@@ -475,7 +478,7 @@ export default function YogaView() {
 
     // Only play transition sound and delay for automatic advancement
     if (useTransition) {
-      playTimerSound(TRANSITION_SOUND_REQUIRE[transitionSoundRef.current]);
+      playTimerSound(YOGA_SOUND_REQUIRE[transitionSoundRef.current]);
       setIsInTransition(true);
       transitionTimeoutRef.current = setTimeout(() => {
         transitionTimeoutRef.current = null;
@@ -577,6 +580,7 @@ export default function YogaView() {
   };
 
   const handleSelectFlow = (flow: YogaFlow, multiplier: number = 1) => {
+    if (!YOGA_FLOW_ENABLED) return; // flagged off — never enter flow mode
     setDurationMultiplier(multiplier);
     setSelectedFlow(flow);
     setIsManualMode(false);
@@ -632,14 +636,14 @@ export default function YogaView() {
         // cycle can leave the flag `true`, which made the first countdown after
         // a switch skip its half-mark chime (it self-corrected on the next loop).
         setHalfwayChimePlayed(false);
-        playTimerSound(HALF_MARK_SOUND_REQUIRE["bell"]);
+        playTimerSound(YOGA_SOUND_REQUIRE["bell"]);
       } else if (!isManualMode && selectedFlow) {
         const firstItem = selectedFlow.items[0];
         const firstPoseDuration = isSuperset(firstItem)
           ? getScaledDuration(firstItem.poses[0].duration)
           : getScaledDuration(firstItem.duration);
         if (currentItemIndex === 0 && currentPoseInSuperset === 0 && timeRemaining === firstPoseDuration) {
-          playTimerSound(HALF_MARK_SOUND_REQUIRE["bell"]);
+          playTimerSound(YOGA_SOUND_REQUIRE["bell"]);
         }
       }
     }
@@ -1168,7 +1172,7 @@ export default function YogaView() {
 
       {/* Start/Stop/Resume button */}
       <View style={screenStyles.buttonContainer}>
-        <TouchableOpacity activeOpacity={0.7} onPress={handleStartStop}>
+        <TouchableOpacity testID="yoga-start-stop" activeOpacity={0.7} onPress={handleStartStop}>
           <View>
             <Text style={[TimerStyles.startButton, startStopLabel !== "Start" && TimerStyles.startButtonEngaged]}>
               {startStopLabel}

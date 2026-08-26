@@ -22,10 +22,15 @@ import {
 } from "react-native";
 import { Audio } from "expo-av";
 import { yogaColors } from "@/assets/theme";
+import { playStoppableCue } from "@/assets/utils/sounds";
 
 // ─── Sound preview helper ─────────────────────────────────────────────────────
 // Module-level ref so only one preview plays at a time and we can stop it
 // when the picker or panel closes (important for long sounds like ocean wave).
+//
+// Preview goes through the SAME shared cue path the running timer uses
+// (playStoppableCue → loadCue), so a sound previews at exactly the volume it
+// plays at mid-session — no separate, divergent player here anymore.
 
 let _previewSound: Audio.Sound | null = null;
 
@@ -40,19 +45,27 @@ export const stopPreviewSound = () => {
 /* eslint-disable @typescript-eslint/no-explicit-any */
 const playPreviewSound = (requireResult: any) => {
   stopPreviewSound(); // stop any currently-playing preview first
-  const play = async () => {
-    const { sound } = await Audio.Sound.createAsync(requireResult);
+  void playStoppableCue(requireResult, (sound) => {
     _previewSound = sound;
-    await sound.playAsync();
-  };
-  play();
+  });
 };
 /* eslint-enable @typescript-eslint/no-explicit-any */
 
 // ─── Sound option types ───────────────────────────────────────────────────────
 
-export type TransitionSoundId = "swoosh" | "end-bell" | "ocean";
-export type HalfMarkSoundId = "sticks" | "snap" | "bell";
+// Every yoga cue sound, usable for EITHER the Main Transition or the Half Mark
+// event (plus "none" = silent for that event). The two ids are aliases of the
+// same union so a pace can carry any sound for either slot.
+export type YogaSoundId =
+  | "swoosh"
+  | "end-bell"
+  | "ocean"
+  | "sticks"
+  | "snap"
+  | "bell"
+  | "none";
+export type TransitionSoundId = YogaSoundId;
+export type HalfMarkSoundId = YogaSoundId;
 
 export interface SoundOption<T> {
   id: T;
@@ -62,8 +75,9 @@ export interface SoundOption<T> {
 
 /* eslint-disable @typescript-eslint/no-var-requires */
 
-// First entry = current coded default, shown first in picker
-export const TRANSITION_SOUNDS: SoundOption<TransitionSoundId>[] = [
+// One catalog shown in BOTH pickers so any sound is available to either event.
+// "None" stops any running preview and plays nothing.
+export const YOGA_SOUNDS: SoundOption<YogaSoundId>[] = [
   {
     id: "swoosh",
     label: "Swoosh",
@@ -73,8 +87,7 @@ export const TRANSITION_SOUNDS: SoundOption<TransitionSoundId>[] = [
   {
     id: "end-bell",
     label: "End Bell",
-    onPreview: () =>
-      playPreviewSound(require("../assets/sounds/end-bell.wav")),
+    onPreview: () => playPreviewSound(require("../assets/sounds/end-bell.wav")),
   },
   {
     id: "ocean",
@@ -82,9 +95,6 @@ export const TRANSITION_SOUNDS: SoundOption<TransitionSoundId>[] = [
     onPreview: () =>
       playPreviewSound(require("../assets/sounds/442944__qubodup__ocean-wave.wav")),
   },
-];
-
-export const HALF_MARK_SOUNDS: SoundOption<HalfMarkSoundId>[] = [
   {
     id: "sticks",
     label: "Sticks",
@@ -104,7 +114,17 @@ export const HALF_MARK_SOUNDS: SoundOption<HalfMarkSoundId>[] = [
         require("../assets/sounds/350548__fairhavencollection__bell-hit.wav"),
       ),
   },
+  {
+    id: "none",
+    label: "None",
+    onPreview: () => stopPreviewSound(),
+  },
 ];
+
+// Both events draw from the full set (kept as separate names for call-site
+// clarity and back-compat).
+export const TRANSITION_SOUNDS: SoundOption<TransitionSoundId>[] = YOGA_SOUNDS;
+export const HALF_MARK_SOUNDS: SoundOption<HalfMarkSoundId>[] = YOGA_SOUNDS;
 
 /* eslint-enable @typescript-eslint/no-var-requires */
 
