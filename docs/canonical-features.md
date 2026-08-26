@@ -74,6 +74,15 @@ enforced) → `smoke test` (screen-level wiring test — the layer where losses 
   fractal." Stands for the upcoming release; expect an explicit amendment if the
   aperiodic/fractal direction lands post-release.
 - Guard: manifest + design doc (behavioral/aesthetic — verified by ear and design review).
+- **1.1.0 audit note (2026-08-26): THIS ENTRY IS THE RELEASE'S ONE UNVERIFIED CANON.** 1.1.0
+  reworked the audio cue path — every one-shot now loads through a shared `loadCue` with a single
+  `CUE_VOLUME`, and the audio session re-arms only when a flag is clear instead of before every
+  cue. Scheduling was NOT touched, so the uniform grid should be intact by construction, and the
+  re-arm change should REDUCE per-cue latency rather than add jitter. But this entry's only guard
+  is the ear, and no automated test can see it. **Needs a device listen before submitting for
+  review**: a Nadi Shodhana session with clicks + downbeats, checking the grid stays even, and one
+  session interrupted by a phone call to confirm audio survives (that path is what the re-arm
+  logic exists for).
 
 ### 5. The promo-code field clears after Apply, on every outcome
 - After pressing Apply the text input clears — valid, unrecognized, or already-active alike —
@@ -107,6 +116,21 @@ enforced) → `smoke test` (screen-level wiring test — the layer where losses 
   functionality begins. This only happens from the beginning of a new breathe sequence. does not
   happen on a pause / resume case." (Duration amended 10 → 8 at ratification, same day.)
 - Guard: **smoke test** (`components/breath/__tests__/BreathScreen.canonical.test.tsx`).
+
+### 8. "Round N of M" shows only during a session, on its own line
+- The round counter appears under the countdown **only while a session is underway** (running or
+  counting in) — never while idle, so the idle setup sheet keeps its full height. It sits on its
+  own line below the total time, NOT inline in the "Remaining" label row. The `ⓘ` on "Remaining"
+  stays superscript regardless (see the note in BreathStage's styles).
+- This REVERSES commit `7c76c10` ("keep Round n of x always visible beside Remaining") — the
+  placement and the always-visible behavior were both deliberately changed, and the change was
+  surfaced and ratified rather than allowed to slide.
+- Provenance: user, 2026-08-26 — "round n of m can stay and it only shows during a session,
+  'only visible while running' that is correct."
+- Guard: manifest (release audit) + `components/breath/RoundsIndicator.tsx` returns null for a
+  non-positive total; the visibility condition lives in BreathScreen (`active && rounds`).
+  Verified on device 2026-08-26 (iPhone 17 Pro Max, iPad Pro 13"): absent when idle, present
+  during count-in and while running.
 
 ---
 
