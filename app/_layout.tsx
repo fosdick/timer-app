@@ -1,7 +1,8 @@
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
-import { useEffect } from "react";
+import { StatusBar } from "expo-status-bar";
+import { useCallback, useEffect } from "react";
 import "react-native-reanimated";
 import Purchases, { LOG_LEVEL } from "react-native-purchases";
 import { Platform } from "react-native";
@@ -40,9 +41,14 @@ export default function RootLayout() {
        Purchases.configure({ apiKey: <revenuecat_project_amazon_api_key>, useAmazon: true });
     } */
   }, []);
-  useEffect(() => {
+  // Hide the splash on the root view's FIRST LAYOUT, not the moment fonts
+  // finish. hideAsync() used to fire in the same tick the tree first rendered,
+  // so the splash could come down before anything had painted — one blank frame
+  // between the splash and the app. onLayout guarantees there is something laid
+  // out underneath before the splash goes away.
+  const onRootLayout = useCallback(() => {
     if (loaded) {
-      SplashScreen.hideAsync();
+      void SplashScreen.hideAsync();
     }
   }, [loaded]);
 
@@ -51,7 +57,12 @@ export default function RootLayout() {
   }
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
+    <GestureHandlerRootView style={{ flex: 1 }} onLayout={onRootLayout}>
+      {/* The header is headerLiteShade (near-white mint) and it extends under
+          the status bar, so the status-bar glyphs must be DARK. Under
+          userInterfaceStyle "dark" iOS would otherwise draw them white — i.e.
+          invisible. */}
+      <StatusBar style="dark" />
       <DisplayAdsProvider>
         <ActiveTimerProvider>
           <UserPreferencesProvider>
@@ -59,9 +70,18 @@ export default function RootLayout() {
               screenOptions={{
                 title: "Timer App Yoga",
                 headerStyle: {
-                  // backgroundColor: "#080B0c",
                   backgroundColor: colorTheme.headerLiteShade,
                 },
+                // Explicit ink for the title and the back button. Without this,
+                // React Navigation tints the header by system appearance, so
+                // every dark-mode user got a WHITE title on near-white mint.
+                headerTintColor: colorTheme.headerInk,
+                // Every Stack screen gets the app background. Without this, the
+                // navigator's default (light) showed through on App Settings —
+                // whose own paywall row is styled dark (#1a1a1a on white text),
+                // i.e. it was always meant to sit on a dark screen. User
+                // Preferences only looked right because it sets its own.
+                contentStyle: { backgroundColor: colorTheme.backgroundColor },
                 headerRight: () => <UserMenu />,
               }}
             >

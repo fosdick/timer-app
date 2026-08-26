@@ -13,6 +13,7 @@ let borderColor,
   maximumTrackTintColor,
   backgroundColor,
   headerLiteShade,
+  headerInk,
   tabBarActiveTintColor,
   tabBarInActiveTintColor;
 
@@ -26,6 +27,7 @@ if (BlueTheme) {
   maximumTrackTintColor = thumbTintColor;
   backgroundColor = "#040E10";
   headerLiteShade = "#C3D8DB";
+  headerInk = "#040E10";
   tabBarActiveTintColor = thumbTintColor;
   tabBarInActiveTintColor = "#687076";
 } else if (GreenTheme) {
@@ -38,6 +40,11 @@ if (BlueTheme) {
   maximumTrackTintColor = thumbTintColor;
   backgroundColor = "#080B0c";
   headerLiteShade = "#dfffea";
+  // Ink for anything drawn ON headerLiteShade. headerLiteShade is near-white, so
+  // the header title and status-bar glyphs must be explicitly dark: React
+  // Navigation's default tint follows the system appearance, which rendered the
+  // title WHITE on near-white mint for every dark-mode user.
+  headerInk = "#080B0c";
   tabBarActiveTintColor = thumbTintColor;
   tabBarInActiveTintColor = "#687076";
 }
@@ -75,6 +82,7 @@ export const colorTheme = {
   maximumTrackTintColor,
   backgroundColor,
   headerLiteShade,
+  headerInk,
   tabBarActiveTintColor,
   tabBarInActiveTintColor,
   // Add new design system colors
