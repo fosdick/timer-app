@@ -497,7 +497,12 @@ const styles = StyleSheet.create({
   // while the collision is at the viewport boundary. Real clearance is needed, so
   // whatever the scroll position, clipped rows never touch either neighbour.
   midWrapCompact: { marginTop: 6, marginBottom: 16 },
-  buttonContainerExpanded: { marginTop: 24, marginBottom: 24 },
+  // Only marginTop is overridden here. The shared buttonContainer's
+  // marginBottom: 80 is the RESERVE FOR THE AD BANNER (a 60pt FULL_BANNER is
+  // absolutely positioned at the bottom of every tab scene) — overriding it to 24
+  // is what let a banner cover the Start button on the expanded tier. Never
+  // shrink marginBottom below the banner height; tighten the card with marginTop.
+  buttonContainerExpanded: { marginTop: 24 },
   // Center region between the fixed countdown header and the fixed controls.
   // The counts overlay is clipped to it (overflow hidden) so it slides down out
   // of view without bleeding onto the controls/countdown.
