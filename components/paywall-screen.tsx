@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import { DisplayAdsContext } from "./display-ads-context";
+import { colorTheme } from "@/assets/styles/timer-app";
 
 import { View, Text, FlatList, StyleSheet } from "react-native";
 import Purchases, { PurchasesPackage } from "react-native-purchases";
@@ -74,14 +75,13 @@ const PaywallScreen = () => {
     </View>
   );
 };
-const tintColorLight = "#0a7ea4";
 const styles = StyleSheet.create({
   container: {
     alignItems: "center",
     padding: 8,
   },
   purchaseTitle: {
-    color: tintColorLight,
+    color: colorTheme.activeTimerPrimary,
     fontSize: 24,
     fontWeight: "normal",
     borderBottomWidth: 1,

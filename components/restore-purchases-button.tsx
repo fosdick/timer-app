@@ -4,6 +4,7 @@ import Purchases from "react-native-purchases";
 import { Constants } from "@/constants/constants";
 import { storeData } from "../assets/utils/persistent-storage";
 import { DisplayAdsContext } from "../components/display-ads-context";
+import { colorTheme } from "@/assets/styles/timer-app";
 
 type Status = "idle" | "working" | "none-found" | "error";
 
@@ -61,7 +62,7 @@ const RestorePurchasesButton = () => {
       padding: 8,
     },
     title: {
-      color: status === "error" ? "red" : "dodgerblue",
+      color: status === "error" ? "red" : colorTheme.activeTimerDimmed,
       fontFamily: "ArialRoundedMTBold",
       fontSize: 18,
       paddingVertical: 16,

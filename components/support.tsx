@@ -1,6 +1,7 @@
 import React, { useContext } from "react";
 import { View, Text, Button, Linking, StyleSheet } from "react-native";
 import { Constants } from "@/constants/constants";
+import { colorTheme } from "@/assets/styles/timer-app";
 import { DisplayAdsContext } from "./display-ads-context";
 const Support = () => {
   const { customerInfoData } = useContext(DisplayAdsContext);
@@ -21,14 +22,17 @@ App User Id: ${customerInfoData?.originalAppUserId}
         <Text style={styles.title}>Demo Videos</Text>
       </View>
       <Button
+        color={colorTheme.activeTimerDimmed}
         onPress={() => Linking.openURL(`https://youtu.be/1_mFRf8dPUE`)}
         title={`Overview`}
       />
       <Button
+        color={colorTheme.activeTimerDimmed}
         onPress={() => Linking.openURL(`https://youtu.be/u9nDcjeLAvo`)}
         title={`Pranayama`}
       />
       <Button
+        color={colorTheme.activeTimerDimmed}
         onPress={() => Linking.openURL(`https://youtu.be/FoFX4qkEzig`)}
         title={`Yoga`}
       />
@@ -42,6 +46,7 @@ App User Id: ${customerInfoData?.originalAppUserId}
       </View>
 
       <Button
+        color={colorTheme.activeTimerDimmed}
         onPress={() =>
           Linking.openURL(
             `mailto:${Constants.SUPPORT_EMAIL}?subject=Timer App Yoga&body=${customerBody}`
@@ -52,6 +57,7 @@ App User Id: ${customerInfoData?.originalAppUserId}
 
       <View>
         <Button
+          color={colorTheme.activeTimerDimmed}
           onPress={() =>
             Linking.openURL("http://timer-app-yoga.jarvis1.fastmail.fm.user.fm")
           }
@@ -62,7 +68,9 @@ App User Id: ${customerInfoData?.originalAppUserId}
   );
 };
 
-const tintColorLight = "#0a7ea4";
+// Settings screens now sit on the app background (#080B0c), so they use the
+// app's GreenTheme instead of the old #0a7ea4 teal that only read as "default"
+// on the light background this page used to have.
 
 const styles = StyleSheet.create({
   container: {
@@ -71,7 +79,7 @@ const styles = StyleSheet.create({
   },
   sectionSpacer: { height: 30 },
   title: {
-    color: tintColorLight,
+    color: colorTheme.activeTimerPrimary,
     fontSize: 24,
     fontWeight: "normal",
     borderBottomWidth: 1,

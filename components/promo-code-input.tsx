@@ -20,6 +20,7 @@ import {
 } from "react-native";
 
 import { Constants } from "@/constants/constants";
+import { colorTheme } from "@/assets/styles/timer-app";
 import { DisplayAdsContext } from "./display-ads-context";
 import { getData } from "../assets/utils/persistent-storage";
 import {
@@ -181,9 +182,9 @@ const PromoCodeInput = () => {
   );
 };
 
-// Match the settings page's existing visual language (tintColorLight title bar,
-// monochrome surrounds, plenty of breathing room).
-const tintColorLight = "#0a7ea4";
+// Match the settings page: GreenTheme headings on the app background, monochrome
+// surrounds, plenty of breathing room. (Was a #0a7ea4 teal, which only read as
+// "default" back when this page had a light background.)
 
 const styles = StyleSheet.create({
   wrapper: {
@@ -192,7 +193,7 @@ const styles = StyleSheet.create({
     paddingTop: 20,
   },
   title: {
-    color: tintColorLight,
+    color: colorTheme.activeTimerPrimary,
     fontSize: 24,
     fontWeight: "normal",
     borderBottomWidth: 1,
@@ -219,7 +220,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   applyButton: {
-    backgroundColor: tintColorLight,
+    backgroundColor: colorTheme.activeTimerDimmed,
     paddingHorizontal: 18,
     paddingVertical: 10,
     borderRadius: 8,
@@ -240,7 +241,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   feedbackSuccess: {
-    color: "#4ade80",
+    color: colorTheme.activeTimerDimmed,
   },
   feedbackError: {
     color: "#f87171",
