@@ -28,3 +28,6 @@ expo-env.d.ts
 
 # Generated screenshot fleet (scripts/screenshots.sh)
 screenshots/
+
+# Composed App Store panels (scripts/store-shots.sh) — regenerate, don't track
+store-shots/
