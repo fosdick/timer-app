@@ -14,6 +14,13 @@ const PackageItem = ({ purchasePackage, setIsPurchasing }: PackageItemProps) => 
   const {
     product: { title, description, priceString },
   } = purchasePackage;
+  // The App Store Connect *display name* for this product is currently the string
+  // "U.S." — the storefront region was typed into the name field — so rendering
+  // product.title put a meaningless heading on the paywall row, right above a
+  // sign-in prompt. The description carries the real meaning ("Remove ads from
+  // TimerAppYoga"), so lead with that and fall back only if a storefront ever
+  // ships an empty one. Fixed here rather than in ASC by the owner's call.
+  const label = description?.trim() || title?.trim() || "Remove Ads";
   const { setDisplayAds } = useContext(DisplayAdsContext);
   const onSelection = async () => {
     setIsPurchasing(true);
@@ -45,9 +52,8 @@ const PackageItem = ({ purchasePackage, setIsPurchasing }: PackageItemProps) => 
   return (
     <View>
       <Pressable onPress={onSelection} style={styles.container}>
-        <View>
-          <Text style={styles.title}>{title}</Text>
-          <Text style={styles.terms}>{description}</Text>
+        <View style={styles.labelWrap}>
+          <Text style={styles.title}>{label}</Text>
         </View>
         <Text style={styles.title}>{priceString}</Text>
       </Pressable>
@@ -65,6 +71,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: "#242424",
   },
+  labelWrap: { flex: 1, paddingRight: 12 },
   title: {
     color: "white",
     fontSize: 16,

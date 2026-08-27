@@ -234,15 +234,35 @@ describe("restore purchases", () => {
 });
 
 describe("purchase", () => {
+  // Mirrors the REAL App Store Connect data: the display name is the junk string
+  // "U.S." (the storefront region was typed into the name field), and the
+  // description carries the actual meaning.
   const pkg = {
     identifier: "remove_ads",
     product: {
-      title: "Remove Ads",
-      description: "Remove all ads. One-time purchase.",
-      priceString: "$0.99",
+      title: "U.S.",
+      description: "Remove ads from TimerAppYoga",
+      priceString: "$3.99",
     },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } as any;
+  const ROW = "Remove ads from TimerAppYoga";
+
+  it("labels the row from the description, never the junk ASC display name", async () => {
+    // Regression net for the paywall showing a row titled "U.S." above a sign-in
+    // prompt. product.title is unusable for this product, so it must not render.
+    renderWithProvider(
+      <>
+        <AdProbe />
+        <PackageItem purchasePackage={pkg} setIsPurchasing={() => {}} />
+      </>,
+    );
+    await waitFor(() => expect(screen.getByText("resolved")).toBeTruthy());
+
+    expect(screen.getByText(ROW)).toBeTruthy();
+    expect(screen.getByText("$3.99")).toBeTruthy();
+    expect(screen.queryByText("U.S.")).toBeNull();
+  });
 
   it("a completed purchase hides the ads and caches the unlock", async () => {
     purchases.purchasePackage.mockResolvedValue({ customerInfo: ENTITLED });
@@ -255,7 +275,7 @@ describe("purchase", () => {
     );
     await waitFor(() => expect(screen.getByText("resolved")).toBeTruthy());
 
-    await act(async () => { fireEvent.press(screen.getByText("Remove Ads")); });
+    await act(async () => { fireEvent.press(screen.getByText(ROW)); });
 
     await waitFor(() => expect(screen.queryByText("AD")).toBeNull());
     expect(storeData).toHaveBeenCalledWith(Constants.REMOVE_ADS_DATA_KEY, {
@@ -275,7 +295,7 @@ describe("purchase", () => {
     );
     await waitFor(() => expect(screen.getByText("resolved")).toBeTruthy());
 
-    await act(async () => { fireEvent.press(screen.getByText("Remove Ads")); });
+    await act(async () => { fireEvent.press(screen.getByText(ROW)); });
 
     await waitFor(() => expect(purchases.purchasePackage).toHaveBeenCalled());
     expect(screen.getByText("AD")).toBeTruthy();
