@@ -25,6 +25,7 @@ import { getData, storeData } from "@/assets/utils/persistent-storage";
 import { getTimeParts } from "@/assets/utils/format-time";
 import { playStart, playEndChime } from "@/assets/utils/sounds";
 import { screenStyles, timerPickerModalStyles } from "@/assets/styles/timer-app";
+import { useWindowDimensions } from "react-native";
 import { PatternPicker } from "./PatternPicker";
 import { CountEditors } from "./CountEditors";
 import { BreathStageHeader, BreathStageCenter } from "./BreathStage";
@@ -60,6 +61,13 @@ const countsOf = (p: BreathPattern): CountSet => ({
  */
 export default function BreathScreen() {
   const tier = useLayoutTier();
+  // "expanded" spans a 956pt Pro Max AND a 1376pt iPad, which need different
+  // treatment: the centred-card layout below assumes SURPLUS height, and a Pro
+  // Max has none once the 80pt ad-banner reserve is counted. Gate the card on
+  // real height — iPads (>=1100: 13" 1376, 11" ~1194, mini 1133) get the card;
+  // tall phones keep the normal top-down flow with expanded type sizes.
+  const { height: winH } = useWindowDimensions();
+  const cardLayout = tier === "expanded" && winH >= 1100;
   const [patternId, setPatternId] = useState<string>(NADI_SHODHANA.id);
   const [customCounts, setCustomCounts] = useState<Record<string, CountSet>>({});
   const [totalSec, setTotalSec] = useState<number>(DEFAULT_TOTAL_SEC);
@@ -335,7 +343,7 @@ export default function BreathScreen() {
       style={[
         styles.screen,
         tier === "expanded" && styles.expandedColumn,
-        tier === "expanded" && styles.expandedCenter,
+        cardLayout && styles.expandedCenter,
       ]}
     >
       {/* Fixed header: the countdown / session-length picker, always visible. */}
@@ -360,7 +368,7 @@ export default function BreathScreen() {
       <View
         style={[
           styles.midWrap,
-          tier === "expanded" && styles.midWrapExpanded,
+          cardLayout && styles.midWrapExpanded,
           compact && styles.midWrapCompact,
         ]}
       >
@@ -428,7 +436,7 @@ export default function BreathScreen() {
       <View
         style={[
           screenStyles.buttonContainer,
-          tier === "expanded" && styles.buttonContainerExpanded,
+          cardLayout && styles.buttonContainerExpanded,
         ]}
       >
         <TouchableOpacity
