@@ -39,9 +39,9 @@ INK="#CDDC39"       # lime, same as the countdowns and picker titles
 # Ratified by the user 2026-08-27. Edit freely and re-run.
 headline_for() {
   case "$1" in
-    01-pranayama-idle)     echo "Breath timed by count, not by clock" ;;
-    02-pranayama-countin)  echo "Sessions measured in rounds — ending on the exhale" ;;
-    03-yoga-idle)          echo "Hold the pose. The timer keeps time." ;;
+    01-pranayama-running)  echo "Breath timed by count, not by clock" ;;
+    02-pranayama-rounds)   echo "Sessions measured in rounds — ending on the exhale" ;;
+    03-pranayama-setup)    echo "Six patterns, six cues — quiet enough to forget" ;;
     04-yoga-running)       echo "Hold the pose. The timer keeps time." ;;
     05-yoga-paces)         echo "Save the sequences you return to" ;;
     06-hitt-idle)          echo "And intervals, when the practice changes" ;;
