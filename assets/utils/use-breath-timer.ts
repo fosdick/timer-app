@@ -90,20 +90,42 @@ export function useBreathTimer(
 
   const tick = useCallback(() => {
     const elapsed = accumulatedRef.current + (Date.now() - runStartedAtRef.current) / 1000;
-    const clicks = clicksBetween(prevElapsedRef.current, elapsed, timelineRef.current, cycleDurRef.current);
-    for (const c of clicks) onClickRef.current?.(c);
-    if (onDownbeatRef.current) {
-      const beats = downbeatsBetween(
-        prevElapsedRef.current,
-        elapsed,
-        timelineRef.current,
-        cycleDurRef.current,
-        countDurRef.current,
-      );
-      for (let i = 0; i < beats.length; i++) onDownbeatRef.current();
-    }
-    prevElapsedRef.current = elapsed;
     const v = breathView(elapsed, timelineRef.current, cycleDurRef.current, totalRef.current, countDurRef.current);
+
+    // In the tick that ENDS the session, nothing else sounds: the end bell owns that
+    // moment. Mirrors the guard in start(), which skips a boundary sitting on the
+    // start instant because the start bell already marks it.
+    //
+    // Reported from practice as the end chime and a click audibly overlapping. Two
+    // ways they collide, and the naive "skip boundaries at or past the total" only
+    // covers the first:
+    //   1. adjustTotalToExhaleEnd puts the session end ON an exhale boundary, so the
+    //      boundary time equals the total exactly.
+    //   2. the metronome (no exhale adjustment) can end just AFTER a boundary, so a
+    //      legitimately-before-the-total click still lands in the finishing window.
+    // Suppressing the whole final window covers both. The cost is at most one click
+    // in the last 100ms, which would have overlapped the bell anyway.
+    //
+    // Timing note for anyone testing this: under fake timers ticks land on exact
+    // 100ms multiples, so a boundary at the total falls outside the half-open window
+    // and the collision never reproduces. Real Date.now() jitter is what pulls it in
+    // — which is exactly why this was intermittent and hard to pin down.
+    if (!v.finished) {
+      const clicks = clicksBetween(prevElapsedRef.current, elapsed, timelineRef.current, cycleDurRef.current);
+      for (const c of clicks) onClickRef.current?.(c);
+      if (onDownbeatRef.current) {
+        const beats = downbeatsBetween(
+          prevElapsedRef.current,
+          elapsed,
+          timelineRef.current,
+          cycleDurRef.current,
+          countDurRef.current,
+        );
+        for (let i = 0; i < beats.length; i++) onDownbeatRef.current();
+      }
+    }
+
+    prevElapsedRef.current = elapsed;
     setView(v);
     if (v.finished) {
       stop();
