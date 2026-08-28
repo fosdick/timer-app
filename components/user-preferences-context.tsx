@@ -13,6 +13,9 @@
  *   page. Absent entry => default (Viloma on, every other pattern off).
  * - countInEnabled / countInSec: the pranayama "Begin in" pre-roll — whether it
  *   runs on a fresh start, and how many seconds it counts down from.
+ * - accentId: which colour accent the app uses. Accent-only theming — the ramp in
+ *   assets/theme/accent.ts changes, the dark ground and neutrals never do. Green is
+ *   the brand (the logo is green) and is the default.
  */
 import React, {
   createContext,
@@ -23,12 +26,14 @@ import React, {
   useState,
 } from "react";
 import { getData, storeData } from "@/assets/utils/persistent-storage";
+import { ACCENTS, DEFAULT_ACCENT_ID, type Accent, type AccentId } from "@/assets/theme/accent";
 
 export type UserPreferences = {
   useRounds: boolean;
   downbeatByPattern: Record<string, boolean>;
   countInEnabled: boolean;
   countInSec: number;
+  accentId: AccentId;
 };
 
 /** Bounds for the "Begin in" pre-roll duration (whole seconds). */
@@ -40,6 +45,7 @@ export const DEFAULT_USER_PREFERENCES: UserPreferences = {
   downbeatByPattern: {},
   countInEnabled: true,
   countInSec: 8,
+  accentId: DEFAULT_ACCENT_ID,
 };
 
 /** Patterns with downbeats on by default (only Viloma, per product). */
@@ -59,6 +65,7 @@ type UserPreferencesContextType = {
   setDownbeatEnabled: (patternId: string, value: boolean) => void;
   setCountInEnabled: (value: boolean) => void;
   setCountInSec: (value: number) => void;
+  setAccentId: (value: AccentId) => void;
 };
 
 const UserPreferencesContext = createContext<UserPreferencesContextType>({
@@ -67,6 +74,7 @@ const UserPreferencesContext = createContext<UserPreferencesContextType>({
   setDownbeatEnabled: () => {},
   setCountInEnabled: () => {},
   setCountInSec: () => {},
+  setAccentId: () => {},
 });
 
 const UserPreferencesProvider: React.FC<{ children: React.ReactNode }> = ({
@@ -84,6 +92,9 @@ const UserPreferencesProvider: React.FC<{ children: React.ReactNode }> = ({
           // Migrate the former autoCorrectExhaleEnd toggle to useRounds (same intent).
           useRounds: saved.useRounds ?? saved.autoCorrectExhaleEnd ?? prev.useRounds,
           downbeatByPattern: { ...prev.downbeatByPattern, ...saved.downbeatByPattern },
+          // Ignore an unknown accent id — a theme could be renamed or removed in a
+          // later version, and a stale preference must not leave the app unstyled.
+          accentId: saved.accentId in ACCENTS ? saved.accentId : prev.accentId,
         }));
       }
     });
@@ -145,6 +156,17 @@ const UserPreferencesProvider: React.FC<{ children: React.ReactNode }> = ({
     [persist],
   );
 
+  const setAccentId = useCallback(
+    (value: AccentId) => {
+      setPrefs((prev) => {
+        const next = { ...prev, accentId: value };
+        persist(next);
+        return next;
+      });
+    },
+    [persist],
+  );
+
   const value = useMemo(
     () => ({
       prefs,
@@ -152,6 +174,7 @@ const UserPreferencesProvider: React.FC<{ children: React.ReactNode }> = ({
       setDownbeatEnabled,
       setCountInEnabled,
       setCountInSec,
+      setAccentId,
     }),
     [
       prefs,
@@ -159,6 +182,7 @@ const UserPreferencesProvider: React.FC<{ children: React.ReactNode }> = ({
       setDownbeatEnabled,
       setCountInEnabled,
       setCountInSec,
+      setAccentId,
     ],
   );
 
@@ -171,7 +195,19 @@ const UserPreferencesProvider: React.FC<{ children: React.ReactNode }> = ({
 
 const useUserPreferences = () => useContext(UserPreferencesContext);
 
+/**
+ * The active accent ramp. This is what styled components read.
+ *
+ * Deliberately a thin wrapper over the preference rather than its own provider:
+ * one source of truth, one place that persists, nothing extra to mount.
+ */
+const useAccent = (): Accent => {
+  const { prefs } = useContext(UserPreferencesContext);
+  return ACCENTS[prefs.accentId] ?? ACCENTS[DEFAULT_ACCENT_ID];
+};
+
 export {
+  useAccent,
   UserPreferencesProvider,
   UserPreferencesContext,
   useUserPreferences,

@@ -78,8 +78,48 @@ export const GREEN: Accent = {
   surface: "#0D110B",
 };
 
-export const ACCENTS = { green: GREEN } as const;
+/**
+ * BlueTheme, finished.
+ *
+ * Six values come from the `const BlueTheme = false` branch that shipped dead in
+ * 1.1.0 — but they were named after components, so they had to be re-mapped to
+ * roles. The mapping is by LUMINANCE, mirroring green's relationships, which is
+ * what keeps contrast comparable without a per-theme audit:
+ *   borderColor #2B9CB3 -> muted   (green's muted is mid-dark, and this matches)
+ *   fontColor   #3670A5 -> deep
+ *   thumbTint   #2D5D8B -> control
+ *   minTrack    #23496C -> track
+ *   trackFalse  #081D21 -> trackOff
+ *   headerLite  #C3D8DB -> tint
+ * The remaining six are new. `bright` is #80DEEA, which is not arbitrary: the old
+ * (now dead) pranayama.tsx used exactly that cyan as its accent text, so it is the
+ * blue identity this app already reached for once.
+ */
+export const BLUE: Accent = {
+  bright: "#80DEEA",
+  soft: "#81D4FA",
+  mid: "#4FC3F7",
+  muted: "#2B9CB3",
+  border: "#4DD0E1",
+  deep: "#3670A5",
+  control: "#2D5D8B",
+  track: "#23496C",
+  trackOff: "#081D21",
+  tint: "#C3D8DB",
+  tintInk: "#040E10",
+  tintStrong: "#E1F5FE",
+  surface: "#0A1014",
+};
+
+/** Every selectable accent. Adding one is a 13-value entry here plus a label. */
+export const ACCENTS = { green: GREEN, blue: BLUE } as const;
 export type AccentId = keyof typeof ACCENTS;
+
+/** Display names for the User Preferences picker. */
+export const ACCENT_LABELS: Record<AccentId, string> = {
+  green: "Green",
+  blue: "Blue",
+};
 
 /** The brand accent, and the fallback whenever no preference is set. */
 export const DEFAULT_ACCENT_ID: AccentId = "green";
