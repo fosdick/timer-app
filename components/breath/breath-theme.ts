@@ -4,12 +4,15 @@
  * numbers, olive / blue-gray labels, outline controls).
  */
 import { colorTheme } from "@/assets/styles/timer-app";
+import { ACCENTS, DEFAULT_ACCENT_ID, withAlpha } from "@/assets/theme/accent";
 import { BreathPhaseKind } from "@/assets/data/breath-patterns";
+
+const accent = ACCENTS[DEFAULT_ACCENT_ID];
 
 export const breathTheme = {
   bg: colorTheme.backgroundColor, //            #080B0c
-  surface: "#0D110B", //                        subtle dark panel
-  line: "rgba(124, 179, 66, 0.35)", //          light green @35% — subtle borders (match yoga/HIIT greens)
+  surface: accent.surface, //                   #0D110B subtle dark panel
+  line: withAlpha(accent.mid, 0.35), //         light green @35% — subtle borders
   border: colorTheme.borderColor, //            #91BD27 lime — active/control borders
   text: colorTheme.activeTimerPrimary, //       #CDDC39 lime — primary numbers
   label: colorTheme.labelPrimary, //            #689F38 olive
@@ -17,7 +20,7 @@ export const breathTheme = {
   accent: colorTheme.activeTimerPrimary, //     #CDDC39 lime
   accentSoft: colorTheme.activeTimerDimmed, //  #7CB342 muted lime
   buttonText: colorTheme.fontColor, //          #629231 green
-  tintFaint: "rgba(205,220,57,0.14)", //        faint lime fill for active chips
+  tintFaint: withAlpha(accent.bright, 0.14), // faint lime fill for active chips
 
   space: { xs: 6, sm: 10, md: 16, lg: 24, xl: 36 },
   radius: 10,

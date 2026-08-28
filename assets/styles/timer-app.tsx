@@ -1,75 +1,52 @@
 import { StyleSheet } from "react-native";
 import type { CustomTimerPickerModalStyles } from "react-native-timer-picker";
 
-const BlueTheme = false;
-const GreenTheme = !BlueTheme;
+// Colour comes from ONE accent ramp (assets/theme/accent.ts). The old
+// `const BlueTheme = false` / if-else branch is gone: it named tokens after the
+// components that used them (`thumbTintColor`, `trackColorFalse`), which is why a
+// second theme could never be finished — "what is thumbTintColor in blue?" has no
+// answer until you decide it means `control`. The names below are kept as-is so no
+// call site changes; each now points at a role in the ramp.
+//
+// This is a pure refactor: every value resolves to exactly what 1.1.0 shipped.
+import { ACCENTS, DEFAULT_ACCENT_ID, fixedColors, withAlpha } from "@/assets/theme/accent";
 
-let borderColor,
-  fontColor,
-  trackColorFalse,
-  thumbTintColor,
-  thumbColorDisabled,
-  minimumTrackTintColor,
-  maximumTrackTintColor,
-  backgroundColor,
-  headerLiteShade,
-  headerInk,
-  tabBarActiveTintColor,
-  tabBarInActiveTintColor;
+const accent = ACCENTS[DEFAULT_ACCENT_ID];
 
-if (BlueTheme) {
-  fontColor = "#3670A5";
-  borderColor = "#2B9CB3";
-  thumbTintColor = "#2D5D8B";
-  trackColorFalse = "#081D21";
-  minimumTrackTintColor = "#23496C";
-  thumbColorDisabled = trackColorFalse;
-  maximumTrackTintColor = thumbTintColor;
-  backgroundColor = "#040E10";
-  headerLiteShade = "#C3D8DB";
-  headerInk = "#040E10";
-  tabBarActiveTintColor = thumbTintColor;
-  tabBarInActiveTintColor = "#687076";
-} else if (GreenTheme) {
-  fontColor = "#629231";
-  borderColor = "#91BD27";
-  thumbTintColor = "#4b6806";
-  trackColorFalse = "#0D2013";
-  minimumTrackTintColor = "#3C4E16";
-  thumbColorDisabled = trackColorFalse;
-  maximumTrackTintColor = thumbTintColor;
-  backgroundColor = "#080B0c";
-  headerLiteShade = "#dfffea";
-  // Ink for anything drawn ON headerLiteShade. headerLiteShade is near-white, so
-  // the header title and status-bar glyphs must be explicitly dark: React
-  // Navigation's default tint follows the system appearance, which rendered the
-  // title WHITE on near-white mint for every dark-mode user.
-  headerInk = "#080B0c";
-  tabBarActiveTintColor = thumbTintColor;
-  tabBarInActiveTintColor = "#687076";
-}
+const fontColor = accent.deep; //                       #629231
+const borderColor = accent.border; //                   #91BD27
+const thumbTintColor = accent.control; //               #4b6806
+const trackColorFalse = accent.trackOff; //             #0D2013
+const minimumTrackTintColor = accent.track; //          #3C4E16
+const thumbColorDisabled = accent.trackOff; //          was = trackColorFalse
+const maximumTrackTintColor = accent.control; //        was = thumbTintColor
+const backgroundColor = fixedColors.ground; //          #080B0c — NOT themed
+const headerLiteShade = accent.tint; //                 #dfffea
+const headerInk = accent.tintInk; //                    #080B0c
+const tabBarActiveTintColor = accent.control; //        was = thumbTintColor
+const tabBarInActiveTintColor = fixedColors.neutralDim; // #687076 — NOT themed
 
 // New Design System Colors
 export const designColors = {
   // Primary - Active elements
-  activeTimerPrimary: "#CDDC39", // Bright Lime - main countdowns
-  activeNumberSecondary: "#CDDC39", // Same - configuration numbers
+  activeTimerPrimary: accent.bright, //      #CDDC39 Bright Lime - main countdowns
+  activeNumberSecondary: accent.bright, //   same - configuration numbers
 
   // Secondary - Dimmed elements
-  activeTimerDimmed: "#7CB342", // Muted Lime - HIIT inactive timer
+  activeTimerDimmed: accent.mid, //          #7CB342 Muted Lime - HIIT inactive timer
 
   // Tertiary - Labels
-  labelPrimary: "#689F38", // Muted Olive - standard labels
-  labelSecondary: "#546E7A", // Blue-Gray - subtle labels
+  labelPrimary: accent.muted, //             #689F38 Muted Olive - standard labels
+  labelSecondary: fixedColors.neutral, //    #546E7A Blue-Gray - NOT themed
 
   // Interactive Controls
-  controlActive: "#CDDC39", // Slider fill, switch on
-  controlInactive: "#546E7A", // Slider track, switch off
-  controlInactiveOpacity: "rgba(84, 110, 122, 0.3)", // 30% opacity version
+  controlActive: accent.bright, //           slider fill, switch on
+  controlInactive: fixedColors.neutral, //   slider track, switch off - NOT themed
+  controlInactiveOpacity: withAlpha(fixedColors.neutral, 0.3), // was rgba(84,110,122,0.3)
 
   // Backgrounds
-  backgroundPrimary: "#000000",
-  backgroundHeader: "#E8F5E9",
+  backgroundPrimary: fixedColors.black, //   #000000 - NOT themed
+  backgroundHeader: accent.tintStrong, //    #E8F5E9 (currently unreferenced)
 };
 
 export const colorTheme = {

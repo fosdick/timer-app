@@ -1,29 +1,36 @@
 // Yoga Timer App - Color Tokens
+//
+// Role names are unchanged (call sites depend on them); the VALUES now come from
+// the shared accent ramp so the yoga tab themes with the rest of the app instead
+// of carrying its own private green.
+import { ACCENTS, DEFAULT_ACCENT_ID, fixedColors } from "./accent";
+
+const accent = ACCENTS[DEFAULT_ACCENT_ID];
 
 export const yogaColors = {
   // Primary Colors - Current Pose (Memory Trigger)
-  poseCurrentIcon: "#81C784", // Soft Green - current pose icon (matches SVG default)
-  poseCurrentName: "#E8F5E9", // White - current pose name (bold weight)
+  poseCurrentIcon: accent.soft, // #81C784 current pose icon
+  poseCurrentName: accent.tintStrong, // #E8F5E9 current pose name
 
-  progressText: "#E8F5E9", // White - progress text like "Superset" (bold weight)
+  progressText: accent.tintStrong, // #E8F5E9 progress text
 
   // Secondary Colors - Instructional Cues (Support)
-  instructionalText: "#81C784", // Soft Sage - readable instructional copy
+  instructionalText: accent.soft, // #81C784 readable instructional copy
 
   // Tertiary Colors - Flow/Context Info (Background)
-  flowName: "#689F38", // Muted Olive - flow name label
-  timerLabel: "#689F38", // Same - "Remaining" and timer labels
-  currentTimeLabel: "#689F38", // Same - "Current Time" label
+  flowName: accent.muted, // #689F38 flow name label
+  timerLabel: accent.muted, // #689F38 "Remaining" and timer labels
+  currentTimeLabel: accent.muted, // #689F38 "Current Time" label
 
   // Functional Colors - Navigation (Visible but Supporting)
-  poseNavIcon: "#81C784", // Soft Green - prev/next pose icons (matches SVG default)
+  poseNavIcon: accent.soft, // #81C784 prev/next pose icons
   poseNavIconOpacity: 1, // Apply 60% opacity to these icons
 
   // Active/Countdown Colors
-  timerCountdown: "#CDDC39", // Matches current pose - active element
-  timerCountdownWarning: "#FF6F00", // Optional - if under 10 seconds
+  timerCountdown: accent.bright, // #CDDC39 active element
+  timerCountdownWarning: fixedColors.warning, // #FF6F00 semantic, not themed
 
   // Background Colors
-  backgroundPrimary: "#000000", // True Black - main background
-  backgroundHeader: "#E8F5E9", // Mint - keep existing header
+  backgroundPrimary: fixedColors.black, // #000000 not themed
+  backgroundHeader: accent.tintStrong, // #E8F5E9
 };
