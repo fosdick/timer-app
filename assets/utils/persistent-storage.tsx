@@ -31,6 +31,9 @@ type storageData = {
   /** Downbeat snap sound id (uses the click-sound catalog for now). */
   breathDownbeat?: string;
   /** Per-pattern sound ids, keyed by pattern id (like breathCustomCounts). */
+  /** Session length in seconds, keyed by breath pattern id. breathTotalSec above
+   *  stays as the fallback for any pattern with no entry (upgrade path). */
+  breathTotalByPattern?: Record<string, number>;
   breathClickByPattern?: Record<string, string>;
   breathDownbeatByPattern?: Record<string, string>;
   breathAmbienceByPattern?: Record<string, string>;

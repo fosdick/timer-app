@@ -70,7 +70,20 @@ export default function BreathScreen() {
   const cardLayout = tier === "expanded" && winH >= 1100;
   const [patternId, setPatternId] = useState<string>(NADI_SHODHANA.id);
   const [customCounts, setCustomCounts] = useState<Record<string, CountSet>>({});
-  const [totalSec, setTotalSec] = useState<number>(DEFAULT_TOTAL_SEC);
+  // Session length is stored PER PATTERN, like counts and the three sound maps —
+  // 10 rounds of Nadi Shodhana and 5 of Box are different practices, so one global
+  // number meant switching pattern silently rewrote the length you had set. Worse
+  // than it sounds: the picker stores SECONDS and the round count is derived per
+  // pattern (sessionSecToRounds), so the same seconds read as a different number of
+  // rounds for each pattern.
+  //
+  // `legacyTotalSec` is the pre-existing single value and remains the fallback for
+  // any pattern with no entry yet. That makes the upgrade a no-op — every pattern
+  // starts at whatever length the user already had — and entries fill in as they
+  // set lengths, instead of resetting everyone to DEFAULT_TOTAL_SEC.
+  const [totalByPattern, setTotalByPattern] = useState<Record<string, number>>({});
+  const [legacyTotalSec, setLegacyTotalSec] = useState<number>(DEFAULT_TOTAL_SEC);
+  const totalSec = totalByPattern[patternId] ?? legacyTotalSec;
   // Click / downbeat / ambience are saved PER pattern (like customCounts), so each
   // breath style remembers its own sounds. Resolved to the active pattern below.
   const [clickByPattern, setClickByPattern] = useState<Record<string, string>>({});
@@ -135,7 +148,10 @@ export default function BreathScreen() {
       const saved = await getData(BREATH_DATA_KEY);
       if (saved?.breathPatternId && getPattern(saved.breathPatternId)) setPatternId(saved.breathPatternId);
       if (saved?.breathCustomCounts) setCustomCounts(saved.breathCustomCounts);
-      if (saved?.breathTotalSec) setTotalSec(saved.breathTotalSec);
+      if (saved?.breathTotalSec) setLegacyTotalSec(saved.breathTotalSec);
+      // Per-pattern lengths; absent on an upgrade, and then every pattern falls
+      // back to breathTotalSec above, so nothing changes until the user sets one.
+      setTotalByPattern(saved?.breathTotalByPattern ?? {});
       // Sounds: prefer the per-pattern maps; migrate an older single global value
       // (apply it to every pattern) so a prior choice isn't lost on upgrade.
       const seedAll = (v: string) => Object.fromEntries(BREATH_PATTERNS.map((p) => [p.id, v]));
@@ -269,7 +285,8 @@ export default function BreathScreen() {
   const persist = (over: Partial<Parameters<typeof storeData>[1]>) => {
     storeData(BREATH_DATA_KEY, {
       breathPatternId: patternId,
-      breathTotalSec: totalSec,
+      breathTotalSec: legacyTotalSec, // kept as the fallback for patterns with no entry
+      breathTotalByPattern: totalByPattern,
       breathClickByPattern: clickByPattern,
       breathDownbeatByPattern: downbeatSoundByPattern,
       breathAmbienceByPattern: ambienceByPattern,
@@ -280,10 +297,11 @@ export default function BreathScreen() {
 
   // Commit a new session length (from either picker), reset the timer, persist.
   const applyTotal = (newTotal: number) => {
-    setTotalSec(newTotal);
+    const next = { ...totalByPattern, [patternId]: newTotal };
+    setTotalByPattern(next);
     setShowPicker(false);
     timer.reset();
-    persist({ breathTotalSec: newTotal });
+    persist({ breathTotalByPattern: next });
   };
 
   const choosePattern = (p: BreathPattern) => {
