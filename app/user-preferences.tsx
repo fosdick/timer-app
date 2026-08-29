@@ -324,7 +324,10 @@ const makeStyles = (c: AppColorTheme, bt: BreathTheme) =>
     width: 30,
     height: 30,
     borderRadius: 15,
-    backgroundColor: "#B9C2BE",
+    // The header's own colour, because that is where this glyph actually lives —
+    // so the chip previews the real thing. It was a hardcoded #B9C2BE grey, which
+    // was the same undesigned-grey problem as the header pill, just self-inflicted.
+    backgroundColor: c.headerLiteShade,
     alignItems: "center",
     justifyContent: "center",
   },
