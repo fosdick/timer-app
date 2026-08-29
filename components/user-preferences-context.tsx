@@ -13,6 +13,9 @@
  *   page. Absent entry => default (Viloma on, every other pattern off).
  * - countInEnabled / countInSec: the pranayama "Begin in" pre-roll — whether it
  *   runs on a fresh start, and how many seconds it counts down from.
+ * - pronoun: she / they / he, shown as the header glyph. Default "they" — someone
+ *   who never opens this page gets the neutral icon rather than a guess. Its colour
+ *   is deliberately NOT themed (see assets/images/svgx/user.tsx).
  * - accentId: which colour accent the app uses. Accent-only theming — the ramp in
  *   assets/theme/accent.ts changes, the dark ground and neutrals never do. Green is
  *   the brand (the logo is green) and is the default.
@@ -27,6 +30,7 @@ import React, {
 } from "react";
 import { getData, storeData } from "@/assets/utils/persistent-storage";
 import { ACCENTS, DEFAULT_ACCENT_ID, type Accent, type AccentId } from "@/assets/theme/accent";
+import { PRONOUNS, type Pronoun } from "@/assets/images/svgx/user";
 import {
   makeColorTheme,
   makeTimerStyles,
@@ -44,6 +48,7 @@ export type UserPreferences = {
   countInEnabled: boolean;
   countInSec: number;
   accentId: AccentId;
+  pronoun: Pronoun;
 };
 
 /** Bounds for the "Begin in" pre-roll duration (whole seconds). */
@@ -56,6 +61,7 @@ export const DEFAULT_USER_PREFERENCES: UserPreferences = {
   countInEnabled: true,
   countInSec: 8,
   accentId: DEFAULT_ACCENT_ID,
+  pronoun: "they",
 };
 
 /** Patterns with downbeats on by default (only Viloma, per product). */
@@ -76,6 +82,7 @@ type UserPreferencesContextType = {
   setCountInEnabled: (value: boolean) => void;
   setCountInSec: (value: number) => void;
   setAccentId: (value: AccentId) => void;
+  setPronoun: (value: Pronoun) => void;
 };
 
 const UserPreferencesContext = createContext<UserPreferencesContextType>({
@@ -85,6 +92,7 @@ const UserPreferencesContext = createContext<UserPreferencesContextType>({
   setCountInEnabled: () => {},
   setCountInSec: () => {},
   setAccentId: () => {},
+  setPronoun: () => {},
 });
 
 const UserPreferencesProvider: React.FC<{ children: React.ReactNode }> = ({
@@ -105,6 +113,9 @@ const UserPreferencesProvider: React.FC<{ children: React.ReactNode }> = ({
           // Ignore an unknown accent id — a theme could be renamed or removed in a
           // later version, and a stale preference must not leave the app unstyled.
           accentId: saved.accentId in ACCENTS ? saved.accentId : prev.accentId,
+          // Same guard: an unrecognised value must fall back rather than render
+          // an icon with no silhouette and no colour.
+          pronoun: PRONOUNS.includes(saved.pronoun) ? saved.pronoun : prev.pronoun,
         }));
       }
     });
@@ -177,6 +188,17 @@ const UserPreferencesProvider: React.FC<{ children: React.ReactNode }> = ({
     [persist],
   );
 
+  const setPronoun = useCallback(
+    (value: Pronoun) => {
+      setPrefs((prev) => {
+        const next = { ...prev, pronoun: value };
+        persist(next);
+        return next;
+      });
+    },
+    [persist],
+  );
+
   const value = useMemo(
     () => ({
       prefs,
@@ -185,6 +207,7 @@ const UserPreferencesProvider: React.FC<{ children: React.ReactNode }> = ({
       setCountInEnabled,
       setCountInSec,
       setAccentId,
+      setPronoun,
     }),
     [
       prefs,
@@ -193,6 +216,7 @@ const UserPreferencesProvider: React.FC<{ children: React.ReactNode }> = ({
       setCountInEnabled,
       setCountInSec,
       setAccentId,
+      setPronoun,
     ],
   );
 

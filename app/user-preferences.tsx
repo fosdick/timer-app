@@ -13,6 +13,7 @@ import { TimerPickerModal } from "react-native-timer-picker";
 
 import { useUserPreferences, useAccent, useAppColors } from "@/components/user-preferences-context";
 import { ACCENTS, ACCENT_LABELS, type AccentId } from "@/assets/theme/accent";
+import { UserSvg, PRONOUNS, PRONOUN_LABELS, type Pronoun } from "@/assets/images/svgx/user";
 import { timerPickerModalStyles, type AppColorTheme } from "@/assets/styles/timer-app";
 import { useBreathTheme, type BreathTheme } from "@/components/breath/breath-theme";
 
@@ -20,7 +21,7 @@ export default function UserPreferencesScreen() {
   const c = useAppColors();
   const bt = useBreathTheme();
   const styles = useMemo(() => makeStyles(c, bt), [c, bt]);
-  const { prefs, setUseRounds, setCountInEnabled, setCountInSec, setAccentId } =
+  const { prefs, setUseRounds, setCountInEnabled, setCountInSec, setAccentId, setPronoun } =
     useUserPreferences();
 
   return (
@@ -38,6 +39,7 @@ export default function UserPreferencesScreen() {
         onChange={setCountInSec}
       />
       <AccentRow selected={prefs.accentId} onSelect={setAccentId} />
+      <PronounRow selected={prefs.pronoun} onSelect={setPronoun} />
     </ScrollView>
   );
 }
@@ -75,9 +77,12 @@ function AccentRow({
               accessibilityRole="radio"
               accessibilityState={{ selected: on }}
               accessibilityLabel={`${ACCENT_LABELS[id]} colour theme`}
+              // Coloured by the chip's OWN accent, never the active one. Before
+              // this, "Blue" rendered in green whenever green was selected — the
+              // label contradicted the swatch sitting next to it.
               style={[
                 styles.accentChip,
-                { borderColor: on ? accent.muted : a.trackOff },
+                { borderColor: on ? a.muted : a.trackOff },
               ]}
             >
               {/* The swatch is the accent judging itself — bright over mid over
@@ -90,10 +95,69 @@ function AccentRow({
               <Text
                 style={[
                   styles.accentLabel,
-                  { color: on ? accent.bright : accent.muted, fontWeight: on ? "600" : "400" },
+                  { color: on ? a.bright : a.muted, fontWeight: on ? "600" : "400" },
                 ]}
               >
                 {ACCENT_LABELS[id]}
+              </Text>
+            </TouchableOpacity>
+          );
+        })}
+      </View>
+    </View>
+  );
+}
+
+/**
+ * Pronoun picker. Sets the glyph shown in the header.
+ *
+ * The icon colour is fixed per pronoun and deliberately does NOT follow the accent:
+ * it is the one mark on screen that says something about the person rather than
+ * about the app, so it should stay put when they recolour everything else. Each
+ * button previews the exact glyph and tone it will produce.
+ */
+function PronounRow({
+  selected,
+  onSelect,
+}: {
+  selected: Pronoun;
+  onSelect: (p: Pronoun) => void;
+}) {
+  const accent = useAccent();
+  const c = useAppColors();
+  const bt = useBreathTheme();
+  const styles = useMemo(() => makeStyles(c, bt), [c, bt]);
+  return (
+    <View style={styles.accentBlock}>
+      <Text style={[styles.accentTitle, { color: accent.muted }]}>Pronoun</Text>
+      <View style={styles.accentRow}>
+        {PRONOUNS.map((p) => {
+          const on = p === selected;
+          return (
+            <TouchableOpacity
+              key={p}
+              testID={`pronoun-${p}`}
+              activeOpacity={0.7}
+              onPress={() => onSelect(p)}
+              accessibilityRole="radio"
+              accessibilityState={{ selected: on }}
+              accessibilityLabel={`Use the ${PRONOUN_LABELS[p]} icon`}
+              style={[
+                styles.pronounChip,
+                { borderColor: on ? accent.muted : accent.trackOff },
+              ]}
+            >
+              {/* The swatch IS the glyph, at the tone it will actually render. */}
+              <View style={styles.pronounGlyph}>
+                <UserSvg pronoun={p} width={26} height={26} />
+              </View>
+              <Text
+                style={[
+                  styles.accentLabel,
+                  { color: on ? accent.bright : accent.muted, fontWeight: on ? "600" : "400" },
+                ]}
+              >
+                {PRONOUN_LABELS[p]}
               </Text>
             </TouchableOpacity>
           );
@@ -226,6 +290,25 @@ const makeStyles = (c: AppColorTheme, bt: BreathTheme) =>
     borderRadius: 10,
     paddingVertical: 10,
     paddingHorizontal: 14,
+  },
+  pronounChip: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    borderWidth: 1,
+    borderRadius: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+  },
+  // Pale disc behind the glyph, mirroring the header's grey circle so the preview
+  // shows the icon in the context it will actually appear in.
+  pronounGlyph: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    backgroundColor: "#B9C2BE",
+    alignItems: "center",
+    justifyContent: "center",
   },
   swatch: { flexDirection: "row", gap: 2 },
   swatchBar: { width: 8, height: 18, borderRadius: 2 },

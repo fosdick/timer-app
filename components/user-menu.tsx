@@ -9,11 +9,12 @@ import { Modal, Pressable, StyleSheet, Text, View } from "react-native";
 import { useRouter, type Href } from "expo-router";
 
 import { UserSvg } from "@/assets/images/svgx/user";
-import { useAppColors } from "@/components/user-preferences-context";
+import { useAppColors, useUserPreferences } from "@/components/user-preferences-context";
 import type { AppColorTheme } from "@/assets/styles/timer-app";
 
 export const UserMenu = () => {
   const colorTheme = useAppColors();
+  const { prefs } = useUserPreferences();
   const styles = useMemo(() => makeStyles(colorTheme), [colorTheme]);
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -39,7 +40,7 @@ export const UserMenu = () => {
         accessibilityRole="button"
         accessibilityLabel="Account menu"
       >
-        <UserSvg />
+        <UserSvg pronoun={prefs.pronoun} />
       </Pressable>
 
       <Modal
