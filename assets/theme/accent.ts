@@ -83,14 +83,16 @@ export const GREEN: Accent = {
  *
  * Six values come from the `const BlueTheme = false` branch that shipped dead in
  * 1.1.0 — but they were named after components, so they had to be re-mapped to
- * roles. The mapping is by LUMINANCE, mirroring green's relationships, which is
- * what keeps contrast comparable without a per-theme audit:
+ * roles. The mapping below is by role; the VALUES were later re-solved, because
+ * the original claim here — that the mapping mirrored green's luminance — was
+ * simply wrong. Measured, soft/mid/border ran ~25% brighter than green and deep
+ * ~35% darker. See the note on BLUE and the calibration test:
  *   borderColor #2B9CB3 -> muted   (green's muted is mid-dark, and this matches)
- *   fontColor   #3670A5 -> deep
+ *   fontColor   #3670A5 -> deep      (re-solved to #4A89C3)
  *   thumbTint   #2D5D8B -> control
  *   minTrack    #23496C -> track
  *   trackFalse  #081D21 -> trackOff
- *   headerLite  #C3D8DB -> tint
+ *   headerLite  #C3D8DB -> tint      (re-solved to #EEF9FB)
  * The remaining six are new. `bright` is #80DEEA, which is not arbitrary: the old
  * (now dead) pranayama.tsx used exactly that cyan as its accent text, so it is the
  * blue identity this app already reached for once.
