@@ -90,7 +90,10 @@ const makeStyles = (t: BreathTheme) =>
   // underline is the shape of something you type into.
   field: {
     alignItems: "center",
-    minWidth: 76,
+    // Fixed, equal width so the three underlines form ONE ruled line across the row.
+    // With minWidth the rule hugged its label, so "BREATH" drew a short rule next to
+    // "RETENTION OUT"'s long one and the row read as ragged rather than as a set.
+    width: 104,
     paddingHorizontal: 4,
     paddingBottom: 3,
     borderBottomWidth: 1,

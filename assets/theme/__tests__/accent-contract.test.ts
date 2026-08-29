@@ -101,9 +101,55 @@ describe("accents keep green's luminance relationships", () => {
     // The roles used for text on #080B0c. Not a full WCAG audit — a floor that
     // catches an accent whose "bright" is too dark to see.
     const a = ACCENTS[id];
-    const tooDark = (["bright", "soft", "mid", "muted"] as const).filter(
+    // `deep` is in this list because the Start button's label uses it. It was NOT
+    // here originally, and that is exactly how blue shipped with the dimmest text on
+    // screen sitting on its most important control.
+    const tooDark = (["bright", "soft", "mid", "muted", "deep"] as const).filter(
       (k) => luminance(a[k]) <= 0.15,
     );
     expect(tooDark).toEqual([]); // names any role too dark for text on the ground
+  });
+});
+
+describe("every accent is calibrated against green", () => {
+  /**
+   * The ordering tests above only check that a ramp goes the right DIRECTION. Blue
+   * passed all of them while being visibly wrong: its `soft`/`mid`/`border` sat ~25%
+   * brighter than green's and its `deep` ~35% darker. On screen that inverted the
+   * hierarchy — the pattern chips shouted and the Start button, which uses `deep`,
+   * became the faintest text on the page.
+   *
+   * Green is the reference because green is what shipped and what the logo is. An
+   * accent is a HUE rotation, not a brightness redesign: hold each role at green's
+   * luminance and any new theme inherits green's contrast decisions for free.
+   */
+  const TOLERANCE = 0.2; // ±20% relative luminance, role for role
+
+  it.each(ids.filter((id) => id !== "green"))("%s matches green's luminance per role", (id) => {
+    const a = ACCENTS[id];
+    const drift = Object.fromEntries(
+      ACCENT_KEYS.map((k) => {
+        const g = luminance(GREEN[k]);
+        const ratio = g === 0 ? 1 : luminance(a[k]) / g;
+        return [k, Number(ratio.toFixed(2))];
+      }).filter(([, r]) => Math.abs((r as number) - 1) > TOLERANCE),
+    );
+    // Names each off role and how far it drifted, e.g. { deep: 0.65 }.
+    expect(drift).toEqual({});
+  });
+
+  it.each(ids)("%s is a hue rotation, not a greyscale", (id) => {
+    // Guard the other direction: calibrating to green's luminance must not be done by
+    // desaturating everything into slate.
+    const a = ACCENTS[id];
+    const spread = (hex: string) => {
+      const h = hex.replace("#", "");
+      const ch = [0, 2, 4].map((i) => parseInt(h.slice(i, i + 2), 16));
+      return Math.max(...ch) - Math.min(...ch);
+    };
+    const flat = (["bright", "soft", "mid", "muted", "border"] as const).filter(
+      (k) => spread(a[k]) < 40,
+    );
+    expect(flat).toEqual([]);
   });
 });

@@ -95,17 +95,26 @@ export const GREEN: Accent = {
  * (now dead) pranayama.tsx used exactly that cyan as its accent text, so it is the
  * blue identity this app already reached for once.
  */
+/**
+ * Blue is green rotated in hue, NOT re-invented. Every role is held at green's
+ * relative luminance (within 20%, asserted in accent-contract.test.ts) so blue
+ * inherits green's contrast decisions instead of relitigating them.
+ *
+ * The first pass did not do this and it showed: soft/mid/border ran ~25% brighter
+ * than green and deep ~35% darker, which made the pattern chips shout and left the
+ * Start button — whose label is `deep` — the faintest text on the screen.
+ */
 export const BLUE: Accent = {
   bright: "#80DEEA",
-  soft: "#81D4FA",
-  mid: "#4FC3F7",
+  soft: "#76C0E2",
+  mid: "#47AEDD",
   muted: "#2B9CB3",
-  border: "#4DD0E1",
-  deep: "#3670A5",
+  border: "#27BFD3",
+  deep: "#4A89C3",
   control: "#2D5D8B",
   track: "#23496C",
   trackOff: "#081D21",
-  tint: "#C3D8DB",
+  tint: "#EEF9FB",
   tintInk: "#040E10",
   tintStrong: "#E1F5FE",
   surface: "#0A1014",
