@@ -10,7 +10,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 // app files
 import { Constants } from "@/constants/constants";
-import { UserMenu } from "@/components/user-menu";
+import { HeaderTitle } from "@/components/header-title";
 import { useAppColors } from "@/components/user-preferences-context";
 import { DisplayAdsProvider } from "../components/display-ads-context";
 import { ActiveTimerProvider } from "../components/active-timer-context";
@@ -99,7 +99,16 @@ function ThemedStack() {
           // i.e. it was always meant to sit on a dark screen. User
           // Preferences only looked right because it sets its own.
           contentStyle: { backgroundColor: c.backgroundColor },
-          headerRight: () => <UserMenu />,
+          // The account button lives in the TITLE view, not headerRight.
+          // Anything in headerRight becomes a UIBarButtonItem, and on iOS 26 the
+          // system paints a shared background behind it and CLIPS the custom view
+          // to its bounds — measured: a #6A7071 pill (dark-variant glass, because
+          // app.json sets userInterfaceStyle "dark") about 7pt larger than our
+          // view on every side. It cannot be covered: it is always bigger, and a
+          // negative margin does not help because the clip wins. A title view
+          // gets none of that treatment.
+          headerTitleAlign: "center",
+          headerTitle: ({ children }) => <HeaderTitle title={String(children ?? "")} />,
         }}
       >
         {/* <Stack.Screen name="+html" options={{ headerShown: false }} /> */}

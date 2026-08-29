@@ -36,18 +36,10 @@ export const UserMenu = () => {
         accessibilityRole="button"
         accessibilityLabel="Account menu"
       >
-        {/* The grey pill behind this is UIKit's, not ours: app.json sets
-            userInterfaceStyle "dark", so iOS renders the bar-button shared
-            background in its DARK variant — measured #6A7071, which is black at
-            ~55% over the header — even though we paint the bar pale. It also
-            clips, which is where the glyph's flat bottom came from.
-
-            So: paint our own disc in the HEADER's own colour and let it overflow
-            its layout box (negative margin) to cover the system pill. The result
-            is a seamless header with just the glyph on it. */}
-        <View style={styles.disc}>
-          <UserSvg pronoun={prefs.pronoun} width={26} height={26} />
-        </View>
+        {/* No disc, no background: this now renders inside the header's TITLE
+            view (see components/header-title.tsx), so there is no system pill
+            left to hide and the glyph sits directly on the bar. */}
+        <UserSvg pronoun={prefs.pronoun} width={26} height={26} />
       </Pressable>
 
       <Modal
@@ -99,20 +91,8 @@ const makeStyles = (colorTheme: AppColorTheme) =>
     overflow: "hidden",
     paddingVertical: 4,
   },
-  button: { paddingHorizontal: 0, paddingVertical: 0 },
+  button: { paddingHorizontal: 8, paddingVertical: 6 },
   buttonPressed: { opacity: 0.6 },
-  disc: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    alignItems: "center",
-    justifyContent: "center",
-    // Same colour as the header bar, so the button reads as part of it.
-    backgroundColor: colorTheme.headerLiteShade,
-    // Paints wider than it lays out: the system pill sizes to our LAYOUT box, so
-    // shrinking that while keeping the painted disc large is what covers it.
-    margin: -7,
-  },
   item: { paddingHorizontal: 18, paddingVertical: 14 },
   itemPressed: { opacity: 0.6 },
   itemText: { color: colorTheme.headerLiteShade, fontSize: 16, fontWeight: "500" },
