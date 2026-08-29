@@ -5,29 +5,30 @@ import { Alert, StyleSheet, View } from "react-native";
 import { YogaSvg } from "@/assets/images/svgx/yoga";
 import { PranayamaSvg } from "@/assets/images/svgx/pranayama";
 import { HittSvg } from "@/assets/images/svgx/hitt";
-import { colorTheme } from "@/assets/styles/timer-app";
+import { useAppColors } from "@/components/user-preferences-context";
 import { ActiveTimerContext } from "@/components/active-timer-context";
 import { guardTabPress } from "@/assets/utils/tab-switch-guard";
 
 export default function TabLayout() {
   // useKeepAwake();
   const { isAnyTimerRunning } = useContext(ActiveTimerContext);
+  const c = useAppColors();
 
   return (
     <View style={styles.tabsWithAds}>
       {/* <BannerAdsView></BannerAdsView> */}
       <Tabs
         screenOptions={{
-          tabBarActiveTintColor: colorTheme.tabBarActiveTintColor,
-          // tabBarInactiveTintColor: colorTheme.tabBarInActiveTintColor,
+          tabBarActiveTintColor: c.tabBarActiveTintColor,
+          // tabBarInactiveTintColor: c.tabBarInActiveTintColor,
           headerShown: false,
           // sceneStyle replaces the old top-level sceneContainerStyle prop
           sceneStyle: {
-            backgroundColor: colorTheme.backgroundColor,
+            backgroundColor: c.backgroundColor,
           },
           tabBarStyle: {
-            backgroundColor: colorTheme.backgroundColor,
-            borderBlockColor: colorTheme.borderColor,
+            backgroundColor: c.backgroundColor,
+            borderBlockColor: c.borderColor,
           },
         }}
         screenListeners={({ navigation, route }) => ({
