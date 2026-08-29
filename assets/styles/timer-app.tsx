@@ -9,7 +9,14 @@ import type { CustomTimerPickerModalStyles } from "react-native-timer-picker";
 // call site changes; each now points at a role in the ramp.
 //
 // This is a pure refactor: every value resolves to exactly what 1.1.0 shipped.
-import { ACCENTS, DEFAULT_ACCENT_ID, fixedColors, withAlpha, type Accent } from "@/assets/theme/accent";
+import {
+  ACCENTS,
+  DEFAULT_ACCENT_ID,
+  fixedColors,
+  over,
+  withAlpha,
+  type Accent,
+} from "@/assets/theme/accent";
 
 export function makeDesignColors(accent: Accent) {
   return {
@@ -49,6 +56,11 @@ export function makeColorTheme(accent: Accent) {
   const headerInk = accent.tintInk;
   const tabBarActiveTintColor = accent.control;
   const tabBarInActiveTintColor = fixedColors.neutralDim;
+  // The account-button disc in the header. Sits on `tint`, so it is a wash of the
+  // accent's darkest text tone rather than a grey — the header button is the one
+  // place iOS would otherwise supply its own undesigned background.
+  const discFill = over(accent.deep, accent.tint, 0.13);
+  const discRing = over(accent.deep, accent.tint, 0.3);
   return {
     fontColor,
     borderColor,
@@ -63,6 +75,8 @@ export function makeColorTheme(accent: Accent) {
     headerInk,
     tabBarActiveTintColor,
     tabBarInActiveTintColor,
+    discFill,
+    discRing,
     ...makeDesignColors(accent),
     /** The raw ramp, for factories that need a role the named tokens don't cover. */
     accent,

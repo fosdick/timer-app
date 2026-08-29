@@ -31,16 +31,18 @@ export const UserMenu = () => {
       <Pressable
         testID="account-menu-button"
         onPress={() => setOpen(true)}
-        style={({ pressed }) => ({
-          paddingHorizontal: 12,
-          paddingVertical: 8,
-          opacity: pressed ? 0.6 : 1,
-        })}
-        hitSlop={4}
+        style={({ pressed }) => [styles.button, pressed && styles.buttonPressed]}
+        hitSlop={8}
         accessibilityRole="button"
         accessibilityLabel="Account menu"
       >
-        <UserSvg pronoun={prefs.pronoun} />
+        {/* The disc is OURS. iOS 26 puts its own grey glass capsule behind a
+            headerRight view; an opaque, accent-tinted disc covers it, so the
+            button reads as designed rather than as a system default. The disc
+            follows the theme; the glyph inside it never does. */}
+        <View style={styles.disc}>
+          <UserSvg pronoun={prefs.pronoun} width={26} height={26} />
+        </View>
       </Pressable>
 
       <Modal
@@ -91,6 +93,19 @@ const makeStyles = (colorTheme: AppColorTheme) =>
     borderRadius: 12,
     overflow: "hidden",
     paddingVertical: 4,
+  },
+  button: { paddingHorizontal: 6, paddingVertical: 2 },
+  buttonPressed: { opacity: 0.6 },
+  // Opaque, not translucent: it has to hide the system capsule underneath.
+  disc: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: colorTheme.discFill,
+    borderWidth: 1,
+    borderColor: colorTheme.discRing,
   },
   item: { paddingHorizontal: 18, paddingVertical: 14 },
   itemPressed: { opacity: 0.6 },

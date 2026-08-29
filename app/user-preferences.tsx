@@ -11,10 +11,15 @@ import { Audio } from "expo-av";
 import { LinearGradient } from "expo-linear-gradient";
 import { TimerPickerModal } from "react-native-timer-picker";
 
-import { useUserPreferences, useAccent, useAppColors } from "@/components/user-preferences-context";
+import {
+  useUserPreferences,
+  useAccent,
+  useAppColors,
+  useAppStyles,
+} from "@/components/user-preferences-context";
 import { ACCENTS, ACCENT_LABELS, type AccentId } from "@/assets/theme/accent";
 import { UserSvg, PRONOUNS, PRONOUN_LABELS, type Pronoun } from "@/assets/images/svgx/user";
-import { timerPickerModalStyles, type AppColorTheme } from "@/assets/styles/timer-app";
+import { type AppColorTheme } from "@/assets/styles/timer-app";
 import { useBreathTheme, type BreathTheme } from "@/components/breath/breath-theme";
 
 export default function UserPreferencesScreen() {
@@ -218,6 +223,10 @@ function CountInRow({
   const c = useAppColors();
   const bt = useBreathTheme();
   const styles = useMemo(() => makeStyles(c, bt), [c, bt]);
+  // From the hook, NOT the static sheet. This screen is where the accent is
+  // chosen, and it was the last call site in the app still importing the
+  // module-level green sheet — so picking blue left this one picker green.
+  const { picker: timerPickerModalStyles } = useAppStyles();
   const [editing, setEditing] = useState(false);
   const disabled = !enabled;
 

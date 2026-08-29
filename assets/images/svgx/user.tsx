@@ -2,21 +2,20 @@ import * as React from "react";
 import Svg, { Circle, Path, SvgProps } from "react-native-svg";
 
 /**
- * Generic "user" glyph for the header menu. A round head over a torso.
+ * Pronoun glyph for the header account button.
  *
- * The user picks a pronoun in User Preferences and this glyph follows it. Three
- * things are deliberate:
+ * Three things are deliberate:
  *
- *  - The three silhouettes share the SAME head and the same bounding box, and
- *    differ only in the torso outline. They read as one family at 24px rather than
- *    as three different icons, and none of them is a caricature.
  *  - `they` is the DEFAULT. Someone who never opens preferences gets the neutral
  *    glyph, not a guess.
+ *  - The three read as one family: same head, same bounding box, same weight. The
+ *    difference is HAIR SILHOUETTE plus shoulder width, not costume. Hair is the
+ *    only cue that survives 24px without becoming a restroom pictogram — the first
+ *    version varied torso taper alone and all three read identically on device.
  *  - The colour is FIXED per pronoun and is NOT part of the accent theme. It is the
- *    one thing on screen that says something about the person rather than about the
- *    app, so it should not move when they change the app's colour. The tones are
- *    deep and desaturated so they read on the pale header circle and stay quiet —
- *    "subtly pronoun typed", not a flag.
+ *    one mark on screen that says something about the person rather than about the
+ *    app, so recolouring the app must not recolour them. The disc BEHIND the glyph
+ *    is themed; the person is not. That split is the whole idea.
  */
 export type Pronoun = "she" | "they" | "he";
 
@@ -28,21 +27,40 @@ export const PRONOUN_LABELS: Record<Pronoun, string> = {
   he: "he",
 };
 
-/** Fixed, never themed. Deep + desaturated so they sit quietly on the header. */
+/**
+ * Rose / olive / steel — three distinct hues rather than two blues and a pink,
+ * which is what the first set amounted to (`they` #3E4A5C and `he` #2F4C68 were
+ * both slate). All deep and desaturated: subtle, but subtle on PURPOSE, and
+ * legible on the pale header. Frozen by pronoun.test.ts.
+ */
 export const PRONOUN_COLORS: Record<Pronoun, string> = {
-  she: "#6E4A5E", // deep muted rose
-  they: "#3E4A5C", // deep neutral slate
-  he: "#2F4C68", // deep muted steel
+  she: "#74495B", // deep rose
+  they: "#4E5346", // warm olive-grey — reads as neither, not as "unstyled"
+  he: "#2F4C68", // deep steel
 };
 
-/** Torso outlines. Same shoulders and same base width; only the taper differs. */
+/**
+ * Hair, drawn BEHIND the head in the same fill so the two merge into a single
+ * silhouette. `they` has none — a plain round crown is the neutral baseline.
+ */
+const HAIR: Record<Pronoun, string | null> = {
+  // Bob: crown plus two curtains falling past the jaw and outside the head circle.
+  she: "M12 2.9 C8.6 2.9 6.9 5.1 6.9 8.2 L6.9 13.1 Q6.9 13.9 7.7 13.9 Q8.6 13.9 8.6 12.9 L8.6 8.2 Q8.6 6 12 6 Q15.4 6 15.4 8.2 L15.4 12.9 Q15.4 13.9 16.3 13.9 Q17.1 13.9 17.1 13.1 L17.1 8.2 C17.1 5.1 15.4 2.9 12 2.9 Z",
+  they: null,
+  // Flat-top cap: a solid rounded slab over the crown, so it MERGES with the head
+  // instead of cutting a notch into it. Squares the top and adds a hair's width
+  // either side — enough to read as short hair at 24px.
+  he: "M7.9 7.6 L7.9 5.4 Q7.9 3.2 10 3.2 L14 3.2 Q16.1 3.2 16.1 5.4 L16.1 7.6 Z",
+};
+
+/** Torsos. Same base width and same hem; only the shoulder line differs. */
 const TORSO: Record<Pronoun, string> = {
-  // Flared — widens steadily from the shoulders.
+  // Narrow shoulders, steady flare to the hem.
   she: "M9 14 L15 14 Q15.9 14 16.2 14.8 L18.8 19.6 Q19.2 20.5 18.3 20.5 L5.7 20.5 Q4.8 20.5 5.2 19.6 L7.8 14.8 Q8.1 14 9 14 Z",
   // Neutral trapezoid — the original glyph.
   they: "M8.5 14 L15.5 14 Q16.4 14 16.7 14.8 L18.6 19.6 Q18.9 20.5 18 20.5 L6 20.5 Q5.1 20.5 5.4 19.6 L7.3 14.8 Q7.6 14 8.5 14 Z",
-  // Squarer — broader shoulders, near-straight sides.
-  he: "M7.8 14 L16.2 14 Q17.1 14 17.3 14.8 L18.2 19.6 Q18.4 20.5 17.5 20.5 L6.5 20.5 Q5.6 20.5 5.8 19.6 L6.7 14.8 Q6.9 14 7.8 14 Z",
+  // Broad, near-straight sides.
+  he: "M7.4 14 L16.6 14 Q17.5 14 17.7 14.8 L18.3 19.6 Q18.5 20.5 17.6 20.5 L6.4 20.5 Q5.5 20.5 5.7 19.6 L6.3 14.8 Q6.5 14 7.4 14 Z",
 };
 
 export const UserSvg = ({
@@ -53,9 +71,10 @@ export const UserSvg = ({
   // `color` still wins when passed, so any caller that wants a specific tone can
   // have one; otherwise the pronoun decides.
   const fill = color ?? PRONOUN_COLORS[pronoun];
+  const hair = HAIR[pronoun];
   return (
     <Svg width={24} height={24} viewBox="0 0 24 24" fill="none" {...props}>
-      {/* head — identical across all three */}
+      {hair ? <Path d={hair} fill={fill} /> : null}
       <Circle cx={12} cy={7.5} r={4} fill={fill} />
       <Path d={TORSO[pronoun]} fill={fill} />
     </Svg>

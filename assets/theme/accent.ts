@@ -61,6 +61,30 @@ export function withAlpha(hex: string, alpha: number): string {
   return `rgba(${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}, ${alpha})`;
 }
 
+/**
+ * Composite `fg` over `bg` at `alpha` and return an OPAQUE hex.
+ *
+ * Needed where a translucent wash is not good enough: the header account disc has
+ * to hide the grey capsule iOS 26 draws behind a headerRight view, so it must be
+ * solid while still reading as a tint of the accent.
+ */
+export function over(fg: string, bg: string, alpha: number): string {
+  const parse = (hex: string) => {
+    const h = hex.replace("#", "");
+    const n = parseInt(h.length === 3 ? h.split("").map((c) => c + c).join("") : h, 16);
+    return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+  };
+  const [fr, fg_, fb] = parse(fg);
+  const [br, bg_, bb] = parse(bg);
+  const mix = (f: number, b: number) => Math.round(f * alpha + b * (1 - alpha));
+  return (
+    "#" +
+    [mix(fr, br), mix(fg_, bg_), mix(fb, bb)]
+      .map((c) => c.toString(16).padStart(2, "0").toUpperCase())
+      .join("")
+  );
+}
+
 /** GreenTheme, as shipped in 1.1.0. The logo is green, so this is the brand. */
 export const GREEN: Accent = {
   bright: "#CDDC39",
