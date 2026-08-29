@@ -1,9 +1,13 @@
+import { useMemo } from "react";
 import React, { useContext } from "react";
 import { View, Text, Button, Linking, StyleSheet } from "react-native";
 import { Constants } from "@/constants/constants";
-import { colorTheme } from "@/assets/styles/timer-app";
+import { useAppColors } from "@/components/user-preferences-context";
+import type { AppColorTheme } from "@/assets/styles/timer-app";
 import { DisplayAdsContext } from "./display-ads-context";
 const Support = () => {
+  const colorTheme = useAppColors();
+  const styles = useMemo(() => makeStyles(colorTheme), [colorTheme]);
   const { customerInfoData } = useContext(DisplayAdsContext);
   const customerBody = customerInfoData
     ? `
@@ -72,7 +76,8 @@ App User Id: ${customerInfoData?.originalAppUserId}
 // app's GreenTheme instead of the old #0a7ea4 teal that only read as "default"
 // on the light background this page used to have.
 
-const styles = StyleSheet.create({
+const makeStyles = (colorTheme: AppColorTheme) =>
+  StyleSheet.create({
   container: {
     alignItems: "center",
     padding: 0,

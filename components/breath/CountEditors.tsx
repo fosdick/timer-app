@@ -1,3 +1,4 @@
+import { useAppStyles } from "@/components/user-preferences-context";
 import { useState, useMemo } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { Audio } from "expo-av";
@@ -11,7 +12,7 @@ import {
   countFields,
 } from "@/assets/data/breath-patterns";
 import { useBreathTheme, type BreathTheme } from "./breath-theme";
-import { timerPickerModalStyles } from "@/assets/styles/timer-app";
+
 
 /**
  * The single merged count row: each pattern count is one box. Editable counts
@@ -32,6 +33,7 @@ export function CountEditors({
   onChange: (key: EditFieldKey, value: number) => void;
   disabled?: boolean;
 }) {
+  const { picker: timerPickerModalStyles } = useAppStyles();
   const t = useBreathTheme();
   const styles = useMemo(() => makeStyles(t), [t]);
   const fields = countFields(pattern);

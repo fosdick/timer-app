@@ -1,5 +1,5 @@
 import { TimerPickerModal } from "react-native-timer-picker";
-import { TimerStyles, HiitStyles, timerPickerModalStyles } from "@/assets/styles/timer-app";
+import { useAppStyles } from "@/components/user-preferences-context";
 import { LinearGradient } from "expo-linear-gradient"; // or `import LinearGradient from "react-native-linear-gradient"`
 
 import { useState } from "react";
@@ -22,6 +22,11 @@ interface HittIntervalPickerProps {
 }
 
 export default function HittIntervalPicker(props: HittIntervalPickerProps) {
+  // Renders the Workout / Rest labels and their big numbers, which is why those two
+  // stayed green while the rest of the HIIT tab themed — this file was never in the
+  // sweep at all.
+  const { timer: TimerStyles, hiit: HiitStyles, picker: timerPickerModalStyles } =
+    useAppStyles();
   const [showPicker, setShowPicker] = useState(false);
   const timerStyle = props.isActive ? HiitStyles.activeTimer : HiitStyles.inactiveTimer;
 

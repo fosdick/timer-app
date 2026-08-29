@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 /**
  * Header account menu (top-right). Replaces the settings gear: a user glyph that
  * opens a small dropdown with "User Preferences" and "App Settings". App Settings
@@ -8,9 +9,12 @@ import { Modal, Pressable, StyleSheet, Text, View } from "react-native";
 import { useRouter, type Href } from "expo-router";
 
 import { UserSvg } from "@/assets/images/svgx/user";
-import { colorTheme } from "@/assets/styles/timer-app";
+import { useAppColors } from "@/components/user-preferences-context";
+import type { AppColorTheme } from "@/assets/styles/timer-app";
 
 export const UserMenu = () => {
+  const colorTheme = useAppColors();
+  const styles = useMemo(() => makeStyles(colorTheme), [colorTheme]);
   const router = useRouter();
   const [open, setOpen] = useState(false);
 
@@ -69,7 +73,8 @@ export const UserMenu = () => {
   );
 };
 
-const styles = StyleSheet.create({
+const makeStyles = (colorTheme: AppColorTheme) =>
+  StyleSheet.create({
   // Full-screen catcher that parks the menu under the header, top-right.
   backdrop: {
     flex: 1,

@@ -1,6 +1,8 @@
+import { useMemo } from "react";
 import React, { useContext, useEffect, useState } from "react";
 import { DisplayAdsContext } from "./display-ads-context";
-import { colorTheme } from "@/assets/styles/timer-app";
+import { useAppColors } from "@/components/user-preferences-context";
+import type { AppColorTheme } from "@/assets/styles/timer-app";
 
 import { View, Text, FlatList, StyleSheet } from "react-native";
 import Purchases, { PurchasesPackage } from "react-native-purchases";
@@ -11,6 +13,8 @@ import PackageItem from "./package-item";
  so this screen only lists what is for sale and reflects `displayAds`.
  */
 const PaywallScreen = () => {
+  const colorTheme = useAppColors();
+  const styles = useMemo(() => makeStyles(colorTheme), [colorTheme]);
   const { displayAds } = useContext(DisplayAdsContext);
 
   // - State for all available package
@@ -75,7 +79,8 @@ const PaywallScreen = () => {
     </View>
   );
 };
-const styles = StyleSheet.create({
+const makeStyles = (colorTheme: AppColorTheme) =>
+  StyleSheet.create({
   container: {
     alignItems: "center",
     padding: 8,

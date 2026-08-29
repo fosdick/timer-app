@@ -20,11 +20,11 @@ import {
 import { useBreathTimer } from "@/assets/utils/use-breath-timer";
 import { useAmbience } from "@/assets/utils/use-ambience";
 import { useReportActiveTimer } from "@/components/active-timer-context";
-import { useUserPreferences, isDownbeatEnabled } from "@/components/user-preferences-context";
+import { useUserPreferences, isDownbeatEnabled, useAppStyles } from "@/components/user-preferences-context";
 import { getData, storeData } from "@/assets/utils/persistent-storage";
 import { getTimeParts } from "@/assets/utils/format-time";
 import { playStart, playEndChime } from "@/assets/utils/sounds";
-import { screenStyles, timerPickerModalStyles } from "@/assets/styles/timer-app";
+
 import { useWindowDimensions } from "react-native";
 import { PatternPicker } from "./PatternPicker";
 import { CountEditors } from "./CountEditors";
@@ -60,6 +60,7 @@ const countsOf = (p: BreathPattern): CountSet => ({
  * wheels, a session-length picker, sound options, and persisted settings.
  */
 export default function BreathScreen() {
+  const { screen: screenStyles, picker: timerPickerModalStyles } = useAppStyles();
   const t = useBreathTheme();
   const styles = useMemo(() => makeStyles(t), [t]);
   const tier = useLayoutTier();

@@ -1,3 +1,4 @@
+import { useAppStyles } from "@/components/user-preferences-context";
 /**
  * PaceFormModal
  *
@@ -37,7 +38,7 @@ import {
   getTimePartsMinSec,
 } from "../assets/utils/format-time";
 import { yogaColors } from "@/assets/theme";
-import { timerPickerModalStyles } from "@/assets/styles/timer-app";
+
 import type { TimerPaceInput } from "@/assets/data/yoga-paces";
 
 // ─── Props ────────────────────────────────────────────────────────────────────
@@ -60,6 +61,7 @@ export const PaceFormModal = ({
   onSave,
   onCancel,
 }: PaceFormModalProps) => {
+  const { picker: timerPickerModalStyles } = useAppStyles();
   const [name, setName] = useState(initialValues.name);
   const [initialTotalTime, setInitialTotalTime] = useState(
     initialValues.initialTotalTime,
