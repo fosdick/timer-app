@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
   },
   multiplierInput: {
     borderWidth: 1,
-    borderColor: colorTheme.borderColor,
+    borderColor: colorTheme.outline,
     borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 8,
@@ -134,7 +134,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderWidth: 1,
-    borderColor: colorTheme.borderColor,
+    borderColor: colorTheme.outline,
     borderRadius: 6,
   },
   multiplierResetText: {
@@ -150,7 +150,7 @@ const styles = StyleSheet.create({
   flowCard: {
     padding: 20,
     borderWidth: 2,
-    borderColor: colorTheme.borderColor,
+    borderColor: colorTheme.outline,
     borderRadius: 12,
     marginBottom: 16,
     backgroundColor: "rgba(0, 0, 0, 0.2)",

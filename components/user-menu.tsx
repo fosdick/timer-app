@@ -81,7 +81,7 @@ const styles = StyleSheet.create({
     minWidth: 200,
     backgroundColor: colorTheme.backgroundColor,
     borderWidth: 1,
-    borderColor: colorTheme.borderColor,
+    borderColor: colorTheme.outline,
     borderRadius: 12,
     overflow: "hidden",
     paddingVertical: 4,

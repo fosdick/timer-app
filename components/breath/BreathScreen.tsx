@@ -536,7 +536,7 @@ const styles = StyleSheet.create({
   controls: { alignItems: "center", gap: t.space.md, paddingVertical: t.space.md },
   startBtn: {
     borderWidth: 1,
-    borderColor: t.border,
+    borderColor: t.label, // toned from t.border (#91BD27) with the rest
     paddingHorizontal: t.space.xl + 12,
     paddingVertical: t.space.md,
     borderRadius: t.radius,
@@ -551,8 +551,8 @@ const styles = StyleSheet.create({
     width: 20,
     height: 20,
     borderRadius: 5,
-    borderWidth: 2,
-    borderColor: t.border,
+    borderWidth: 1, // was 2 — the thickest outline in the tab
+    borderColor: t.label,
     alignItems: "center",
     justifyContent: "center",
   },

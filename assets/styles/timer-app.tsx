@@ -14,7 +14,12 @@ import { ACCENTS, DEFAULT_ACCENT_ID, fixedColors, withAlpha } from "@/assets/the
 const accent = ACCENTS[DEFAULT_ACCENT_ID];
 
 const fontColor = accent.deep; //                       #629231
-const borderColor = accent.border; //                   #91BD27
+const borderColor = accent.border; //                   #91BD27 — the loud outline
+// Toned outline (2026-08-28). accent.border is the brightest value in the ramp;
+// using it for every panel, modal, checkbox and card made outlines compete with
+// the content they frame. `outline` is accent.muted. borderColor is kept for
+// anything that genuinely wants to shout.
+const outline = accent.muted; //                        #689F38
 const thumbTintColor = accent.control; //               #4b6806
 const trackColorFalse = accent.trackOff; //             #0D2013
 const minimumTrackTintColor = accent.track; //          #3C4E16
@@ -60,6 +65,7 @@ export const colorTheme = {
   backgroundColor,
   headerLiteShade,
   headerInk,
+  outline,
   tabBarActiveTintColor,
   tabBarInActiveTintColor,
   // Add new design system colors

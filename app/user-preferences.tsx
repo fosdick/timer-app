@@ -145,8 +145,8 @@ const styles = StyleSheet.create({
     width: 22,
     height: 22,
     borderRadius: 5,
-    borderWidth: 2,
-    borderColor: colorTheme.borderColor,
+    borderWidth: 1, // was 2 — the only 2px outlines in the app were the checkboxes
+    borderColor: colorTheme.outline,
     alignItems: "center",
     justifyContent: "center",
     marginTop: 2,

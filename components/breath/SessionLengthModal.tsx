@@ -189,7 +189,7 @@ const styles = StyleSheet.create({
     height: 52,
     borderRadius: 26,
     borderWidth: 1,
-    borderColor: t.border,
+    borderColor: t.label,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -222,6 +222,6 @@ const styles = StyleSheet.create({
   btnText: { fontSize: 18, fontWeight: "600", letterSpacing: 1 },
   btnCancel: { borderColor: t.line },
   btnCancelText: { color: t.muted },
-  btnConfirm: { borderColor: t.border },
+  btnConfirm: { borderColor: t.label },
   btnConfirmText: { color: t.buttonText },
 });

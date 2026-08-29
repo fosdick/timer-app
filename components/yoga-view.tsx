@@ -1517,14 +1517,14 @@ const styles = StyleSheet.create<YogaViewStyles>({
     width: "80%",
     maxWidth: 300,
     borderWidth: 1,
-    borderColor: colorTheme.borderColor,
+    borderColor: colorTheme.outline,
   },
   pauseButton: {
     paddingVertical: 16,
     paddingHorizontal: 20,
     borderWidth: 1,
     borderRadius: 10,
-    borderColor: colorTheme.borderColor,
+    borderColor: colorTheme.outline,
     marginBottom: 12,
   },
   pauseButtonText: {

@@ -108,7 +108,7 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0, 0, 0, 0.2)",
   },
   currentCard: {
-    borderColor: colorTheme.borderColor,
+    borderColor: colorTheme.outline,
     backgroundColor: "rgba(0, 0, 0, 0.3)",
   },
   nextCard: {
