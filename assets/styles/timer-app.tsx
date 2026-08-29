@@ -321,7 +321,7 @@ export const makeHiitStyles = (c: AppColorTheme) =>
   StyleSheet.create({
   activeTimer: {
     fontSize: 72,
-    fontWeight: "300",
+    fontWeight: "200",
     color: c.activeTimerPrimary,
     textAlign: "center",
     letterSpacing: -2,
@@ -329,7 +329,7 @@ export const makeHiitStyles = (c: AppColorTheme) =>
   },
   inactiveTimer: {
     fontSize: 72,
-    fontWeight: "300",
+    fontWeight: "200",
     color: c.activeTimerDimmed,
     textAlign: "center",
     letterSpacing: -2,
@@ -344,7 +344,7 @@ export const makeHiitStyles = (c: AppColorTheme) =>
   },
   roundsNumber: {
     fontSize: 56,
-    fontWeight: "400",
+    fontWeight: "200",
     color: c.activeTimerPrimary,
     textAlign: "center",
     fontVariant: ["tabular-nums"],
@@ -357,7 +357,7 @@ export const makeHiitStyles = (c: AppColorTheme) =>
   },
   totalTime: {
     fontSize: 52,
-    fontWeight: "300",
+    fontWeight: "200", // thin, matching every other big numeral
     color: c.activeTimerPrimary,
     textAlign: "center",
     letterSpacing: -1,
