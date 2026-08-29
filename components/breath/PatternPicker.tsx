@@ -48,7 +48,12 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: t.line,
   },
-  chipActive: { backgroundColor: t.tintFaint, borderColor: t.border },
+  // Selected: same 1px thickness as unselected (that reads right already) — only
+  // the colour is toned. Was t.border, accent.BORDER #91BD27, the brightest value
+  // in the ramp, which made selection shout. t.label is accent.muted, still clearly
+  // stronger than the unselected translucent line but no longer the loudest thing
+  // on screen. Bold text stays as the primary selection signal.
+  chipActive: { backgroundColor: t.tintFaint, borderColor: t.label },
   dim: { opacity: 0.5 },
   chipText: { color: t.muted, fontSize: 14 },
   chipTextActive: { color: t.accent, fontWeight: "600" },

@@ -89,7 +89,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: t.line,
   },
-  fieldActive: { borderColor: t.border, backgroundColor: t.tintFaint },
+  // Same toning as the pattern chips: identical idiom (t.line base, bright border
+  // + faint tint when active), so the two selected states must not diverge.
+  fieldActive: { borderColor: t.label, backgroundColor: t.tintFaint },
   label: { color: t.muted, fontSize: 11, textTransform: "uppercase", letterSpacing: 0.5 },
   value: { color: t.text, fontSize: 24, fontWeight: "400", fontVariant: ["tabular-nums"] },
   activeText: { color: t.accent },
