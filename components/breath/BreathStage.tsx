@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { BreathView } from "@/assets/data/breath-timer-core";
 import { useYogaTheme } from "@/components/user-preferences-context";
 import { useBreathTheme, type BreathTheme, formatClock } from "./breath-theme";
-import { BreatheCircle } from "./BreatheCircle";
+import { BreatheLotus } from "./BreatheLotus";
 import { LayoutTier } from "./use-layout-tier";
 
 /**
@@ -93,7 +93,7 @@ export function BreathStageCenter({
   const ringSize = tier === "expanded" ? 236 : 150;
   return (
     <View style={[styles.center, { height: centerH }]}>
-      {showRing ? <BreatheCircle view={view} running={isRunning} size={ringSize} metronome={metronome} /> : null}
+      {showRing ? <BreatheLotus view={view} running={isRunning} size={ringSize} metronome={metronome} /> : null}
       {counting ? (
         <>
           <Text style={[styles.phase, { color: t.accentSoft, fontSize: phaseSize }]}>Begin in</Text>
