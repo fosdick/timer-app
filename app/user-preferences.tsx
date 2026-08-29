@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
   Pressable,
   ScrollView,
@@ -11,12 +11,15 @@ import { Audio } from "expo-av";
 import { LinearGradient } from "expo-linear-gradient";
 import { TimerPickerModal } from "react-native-timer-picker";
 
-import { useUserPreferences, useAccent } from "@/components/user-preferences-context";
+import { useUserPreferences, useAccent, useAppColors } from "@/components/user-preferences-context";
 import { ACCENTS, ACCENT_LABELS, type AccentId } from "@/assets/theme/accent";
-import { colorTheme, timerPickerModalStyles } from "@/assets/styles/timer-app";
-import { breathTheme as bt } from "@/components/breath/breath-theme";
+import { timerPickerModalStyles, type AppColorTheme } from "@/assets/styles/timer-app";
+import { useBreathTheme, type BreathTheme } from "@/components/breath/breath-theme";
 
 export default function UserPreferencesScreen() {
+  const c = useAppColors();
+  const bt = useBreathTheme();
+  const styles = useMemo(() => makeStyles(c, bt), [c, bt]);
   const { prefs, setUseRounds, setCountInEnabled, setCountInSec, setAccentId } =
     useUserPreferences();
 
@@ -51,6 +54,9 @@ function AccentRow({
   selected: AccentId;
   onSelect: (id: AccentId) => void;
 }) {
+  const c = useAppColors();
+  const bt = useBreathTheme();
+  const styles = useMemo(() => makeStyles(c, bt), [c, bt]);
   const accent = useAccent();
   const ids = Object.keys(ACCENTS) as AccentId[];
   return (
@@ -106,6 +112,9 @@ function CheckRow({
   checked: boolean;
   onToggle: () => void;
 }) {
+  const c = useAppColors();
+  const bt = useBreathTheme();
+  const styles = useMemo(() => makeStyles(c, bt), [c, bt]);
   return (
     <Pressable
       accessibilityRole="checkbox"
@@ -142,6 +151,9 @@ function CountInRow({
   value: number;
   onChange: (value: number) => void;
 }) {
+  const c = useAppColors();
+  const bt = useBreathTheme();
+  const styles = useMemo(() => makeStyles(c, bt), [c, bt]);
   const [editing, setEditing] = useState(false);
   const disabled = !enabled;
 
@@ -196,7 +208,8 @@ function CountInRow({
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (c: AppColorTheme, bt: BreathTheme) =>
+  StyleSheet.create({
   accentBlock: { marginTop: 28, paddingHorizontal: 20 },
   accentTitle: {
     fontSize: 14,
@@ -217,7 +230,7 @@ const styles = StyleSheet.create({
   swatch: { flexDirection: "row", gap: 2 },
   swatchBar: { width: 8, height: 18, borderRadius: 2 },
   accentLabel: { fontSize: 16 },
-  screen: { flex: 1, backgroundColor: colorTheme.backgroundColor },
+  screen: { flex: 1, backgroundColor: c.backgroundColor },
   content: { padding: 24, gap: 22 },
   row: { flexDirection: "row", alignItems: "flex-start", gap: 14 },
   rowPressed: { opacity: 0.6 },
@@ -226,17 +239,17 @@ const styles = StyleSheet.create({
     height: 22,
     borderRadius: 5,
     borderWidth: 1, // was 2 — the only 2px outlines in the app were the checkboxes
-    borderColor: colorTheme.outline,
+    borderColor: c.outline,
     alignItems: "center",
     justifyContent: "center",
     marginTop: 2,
   },
   boxChecked: {
-    backgroundColor: colorTheme.tabBarActiveTintColor,
-    borderColor: colorTheme.tabBarActiveTintColor,
+    backgroundColor: c.tabBarActiveTintColor,
+    borderColor: c.tabBarActiveTintColor,
   },
-  check: { color: colorTheme.backgroundColor, fontSize: 14, fontWeight: "900", lineHeight: 16 },
-  label: { flex: 1, color: colorTheme.headerLiteShade, fontSize: 17, lineHeight: 26 },
+  check: { color: c.backgroundColor, fontSize: 14, fontWeight: "900", lineHeight: 16 },
+  label: { flex: 1, color: c.headerLiteShade, fontSize: 17, lineHeight: 26 },
   labelDisabled: { opacity: 0.4 },
 
   // "Begin in countdown:" row — label left, pranayama-style counter box right.
