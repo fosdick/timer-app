@@ -147,13 +147,107 @@ export const BLUE: Accent = {
 };
 
 /** Every selectable accent. Adding one is a 13-value entry here plus a label. */
-export const ACCENTS = { green: GREEN, blue: BLUE } as const;
+/**
+ * LeafTheme — the heart-chakra green.
+ *
+ * Direction came from a plate in Jarvis's mudras book: the greens there are
+ * living-foliage greens, where the shipped GREEN is closer to olive. The hues
+ * were read from that page by eye and NOT sampled — it is a photograph under
+ * warm light, so the page carries a yellow cast that literal sampling would bake
+ * straight into the theme.
+ *
+ * Built to the same contract as blue: each role holds GREEN's relative luminance
+ * (within 1%, asserted in accent-contract.test.ts) with the hue pulled off the
+ * lime end toward true green and chroma eased to ~82% of green's, which is what
+ * keeps it natural rather than synthetic. Same weight on screen, different
+ * temperature.
+ */
+export const LEAF: Accent = {
+  bright: "#B6DF88",
+  soft: "#8DC494",
+  mid: "#6DB55A",
+  muted: "#47A34D",
+  border: "#71C23A",
+  deep: "#42963F",
+  control: "#236D11",
+  track: "#23521E",
+  trackOff: "#0F1F17",
+  tint: "#E7FDED",
+  tintInk: "#080B0C",
+  tintStrong: "#EAF4EC",
+  surface: "#0C110C",
+};
+
+/**
+ * TideTheme — the blue counterpart to Leaf.
+ *
+ * The shipped BLUE is a calibrated version of the original two-value experiment;
+ * Tide is designed rather than rescued. It travels 46 degrees of hue from a
+ * green-cyan `bright` to an indigo `deep`, where the shipped blue travels 13 and
+ * reads as a wall of one colour. That travel is the thing green always had and
+ * blue never did.
+ */
+export const TIDE: Accent = {
+  bright: "#84E3D0",
+  soft: "#8FBFC8",
+  mid: "#6EACC3",
+  muted: "#429DA7",
+  border: "#32C2B8",
+  deep: "#5B87C0",
+  control: "#1861A2",
+  track: "#264A72",
+  trackOff: "#0F1F21",
+  tint: "#E7FBFB",
+  tintInk: "#080B0C",
+  tintStrong: "#E9F4F5",
+  surface: "#0D1013",
+};
+
+/**
+ * DuskTheme — violet, and the quietest of the five.
+ *
+ * Purple is the one hue that goes synthetic the moment it is pushed, so its
+ * chroma is capped hardest of the set. It still holds green's luminance per role,
+ * so it is no dimmer on screen — only calmer.
+ *
+ * The first pass capped it too hard: `bright` and `soft` came out at 39 and 37
+ * channel spread, i.e. near-grey, and the "hue rotation, not a greyscale" guard
+ * caught them. Both were raised — and only those two — until they cleared 46
+ * rather than sitting on the 40 threshold, since a value tuned to exactly pass a
+ * test is a value that breaks on the next nudge.
+ */
+export const DUSK: Accent = {
+  bright: "#F2C4F0",
+  soft: "#CFAAD9",
+  mid: "#BB97CC",
+  muted: "#B57CC0",
+  border: "#D799DC",
+  deep: "#9676C0",
+  control: "#7F3CBD",
+  track: "#5B3682",
+  trackOff: "#26162B",
+  tint: "#FBF5FC",
+  tintInk: "#0C0A0D",
+  tintStrong: "#F5F0F7",
+  surface: "#120F14",
+};
+
+export const ACCENTS = {
+  green: GREEN,
+  leaf: LEAF,
+  blue: BLUE,
+  tide: TIDE,
+  dusk: DUSK,
+} as const;
 export type AccentId = keyof typeof ACCENTS;
 
 /** Display names for the User Preferences picker. */
 export const ACCENT_LABELS: Record<AccentId, string> = {
   green: "Green",
+  leaf: "Leaf",
   blue: "Blue",
+  tide: "Tide",
+  dusk: "Dusk",
 };
 
 /** The brand accent, and the fallback whenever no preference is set. */
