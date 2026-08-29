@@ -80,7 +80,6 @@ export function BreathStageCenter({
   tier?: LayoutTier;
 }) {
   const t = useBreathTheme();
-  const { typography: yogaTypography } = useYogaTheme();
   const styles = useMemo(() => makeStyles(t), [t]);
   const tint = metronome ? t.accentSoft : t.phaseTint[view.kind] ?? t.accentSoft;
   const counting = countIn !== null;

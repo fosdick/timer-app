@@ -1,5 +1,5 @@
 import type { TextStyle } from "react-native";
-import { yogaColors, makeYogaColors, type YogaColors } from "./colors";
+import { yogaColors, type YogaColors } from "./colors";
 import { ACCENTS, DEFAULT_ACCENT_ID, type Accent } from "./accent";
 
 // Font Weights
