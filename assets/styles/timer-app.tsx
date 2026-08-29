@@ -64,6 +64,8 @@ export function makeColorTheme(accent: Accent) {
     tabBarActiveTintColor,
     tabBarInActiveTintColor,
     ...makeDesignColors(accent),
+    /** The raw ramp, for factories that need a role the named tokens don't cover. */
+    accent,
   };
 }
 
@@ -84,11 +86,11 @@ export const designColors = makeDesignColors(ACCENTS[DEFAULT_ACCENT_ID]);
  * pass it as the picker's `styles` prop rather than re-styling per call site.
  */
 // Matches the rounds popup (SessionLengthModal): an "off grey" dark panel with
-// blacker buttons. PICKER_SURFACE mirrors breath-theme's `surface` token; the
+// blacker buttons. pickerSurface(ACCENTS[DEFAULT_ACCENT_ID]) mirrors breath-theme's `surface` token; the
 // blacker button fill reads as distinct against it.
-const PICKER_SURFACE = "#0D110B"; // breath-theme surface — the rounds popup card
+const pickerSurface = (a: Accent) => a.surface; //      breath-theme surface
 const PICKER_BUTTON_BG = "#000000"; // "more black" than the panel
-const PICKER_HAIRLINE = "rgba(124, 179, 66, 0.35)"; // breath-theme line
+const pickerHairline = (a: Accent) => withAlpha(a.mid, 0.35); // breath-theme line
 
 const pickerButtonBase = {
   borderWidth: 1,
@@ -106,11 +108,11 @@ export const makeTimerPickerModalStyles = (c: AppColorTheme): CustomTimerPickerM
   ({
   theme: "dark",
   // Drives the wheel area AND its gradient fade, so the fade blends cleanly.
-  backgroundColor: PICKER_SURFACE,
+  backgroundColor: pickerSurface(c.accent),
   container: {
-    backgroundColor: PICKER_SURFACE,
+    backgroundColor: pickerSurface(c.accent),
     borderWidth: 1,
-    borderColor: PICKER_HAIRLINE,
+    borderColor: pickerHairline(c.accent),
     borderRadius: 14,
   },
   // Wheel digits + unit labels in the app's lime (matching the rounds popup
@@ -132,7 +134,7 @@ export const makeTimerPickerModalStyles = (c: AppColorTheme): CustomTimerPickerM
   cancelButton: {
     ...pickerButtonBase,
     color: c.activeTimerDimmed,
-    borderColor: PICKER_HAIRLINE,
+    borderColor: pickerHairline(c.accent),
   },
 });
 export const timerPickerModalStyles: CustomTimerPickerModalStyles = makeTimerPickerModalStyles(colorTheme);
@@ -259,7 +261,7 @@ export const makePranayamaStyles = (c: AppColorTheme) =>
   mainCountdown: {
     fontSize: 72,
     fontWeight: "300",
-    color: "#CDDC39",
+    color: c.activeTimerPrimary,
     textAlign: "center",
     letterSpacing: -2,
     fontVariant: ["tabular-nums"],
@@ -267,13 +269,13 @@ export const makePranayamaStyles = (c: AppColorTheme) =>
   mainLabel: {
     fontSize: 14,
     fontWeight: "400",
-    color: "#689F38",
+    color: c.labelPrimary,
     textAlign: "center",
   },
   metronomeCount: {
     fontSize: 56,
     fontWeight: "400",
-    color: "#CDDC39",
+    color: c.activeTimerPrimary,
     textAlign: "center",
     fontVariant: ["tabular-nums"],
     marginBottom: 16, // Tighten connection to slider
@@ -287,14 +289,14 @@ export const makePranayamaStyles = (c: AppColorTheme) =>
   metronomeLabel: {
     fontSize: 14,
     fontWeight: "400",
-    color: "#689F38",
+    color: c.labelPrimary,
     textAlign: "center",
     marginBottom: 30,
   },
   toggleLabel: {
     fontSize: 16,
     fontWeight: "400",
-    color: "#689F38",
+    color: c.labelPrimary,
     textAlign: "center",
   },
   sliderContainer: {
@@ -320,7 +322,7 @@ export const makeHiitStyles = (c: AppColorTheme) =>
   activeTimer: {
     fontSize: 72,
     fontWeight: "300",
-    color: "#CDDC39",
+    color: c.activeTimerPrimary,
     textAlign: "center",
     letterSpacing: -2,
     fontVariant: ["tabular-nums"],
@@ -328,7 +330,7 @@ export const makeHiitStyles = (c: AppColorTheme) =>
   inactiveTimer: {
     fontSize: 72,
     fontWeight: "300",
-    color: "#7CB342",
+    color: c.activeTimerDimmed,
     textAlign: "center",
     letterSpacing: -2,
     opacity: 0.6,
@@ -337,26 +339,26 @@ export const makeHiitStyles = (c: AppColorTheme) =>
   timerLabel: {
     fontSize: 14,
     fontWeight: "400",
-    color: "#689F38",
+    color: c.labelPrimary,
     textAlign: "center",
   },
   roundsNumber: {
     fontSize: 56,
     fontWeight: "400",
-    color: "#CDDC39",
+    color: c.activeTimerPrimary,
     textAlign: "center",
     fontVariant: ["tabular-nums"],
   },
   roundsLabel: {
     fontSize: 14,
     fontWeight: "400",
-    color: "#689F38",
+    color: c.labelPrimary,
     textAlign: "center",
   },
   totalTime: {
     fontSize: 52,
     fontWeight: "300",
-    color: "#CDDC39",
+    color: c.activeTimerPrimary,
     textAlign: "center",
     letterSpacing: -1,
     fontVariant: ["tabular-nums"],
