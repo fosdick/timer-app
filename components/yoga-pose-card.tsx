@@ -1,6 +1,8 @@
+import { useMemo } from "react";
 import { Text, View, StyleSheet } from "react-native";
 import { YogaPose } from "@/assets/data/yoga-flows";
-import { TimerStyles, colorTheme } from "@/assets/styles/timer-app";
+import { useAppStyles } from "@/components/user-preferences-context";
+import type { AppColorTheme } from "@/assets/styles/timer-app";
 import { formatMinutesSeconds, getTimePartsMinSec } from "@/assets/utils/format-time";
 
 interface YogaPoseCardProps {
@@ -10,6 +12,8 @@ interface YogaPoseCardProps {
 }
 
 export default function YogaPoseCard({ pose, type, timeRemaining }: YogaPoseCardProps) {
+  const { colors: colorTheme, timer: TimerStyles } = useAppStyles();
+  const styles = useMemo(() => makeStyles(colorTheme), [colorTheme]);
   if (!pose) {
     return null;
   }
@@ -93,7 +97,8 @@ export default function YogaPoseCard({ pose, type, timeRemaining }: YogaPoseCard
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colorTheme: AppColorTheme) =>
+  StyleSheet.create({
   card: {
     padding: 16,
     borderRadius: 12,

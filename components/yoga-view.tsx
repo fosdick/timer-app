@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, useMemo } from "react";
 import {
   Modal,
   StyleSheet,
@@ -8,7 +8,7 @@ import {
   type TextStyle,
   type ViewStyle,
 } from "react-native";
-import { TimerStyles, colorTheme, screenStyles, timerPickerModalStyles } from "@/assets/styles/timer-app";
+
 import {
   formatMinutesSeconds,
   getTimePartsMinSec,
@@ -37,7 +37,9 @@ import {
   getFlowById,
   getSupersetName,
 } from "@/assets/data/yoga-flows";
-import { yogaColors, yogaTypography } from "@/assets/theme";
+import { useAppStyles, useYogaTheme } from "@/components/user-preferences-context";
+import type { AppColorTheme } from "@/assets/styles/timer-app";
+import type { YogaColors } from "@/assets/theme/colors";
 import { useFocusEffect } from "expo-router";
 import { YOGA_FLOW_ENABLED } from "@/constants/constants";
 import { PaceListModal } from "./pace-list-modal";
@@ -77,6 +79,17 @@ const YOGA_SOUND_REQUIRE: Record<string, unknown> = {
 
 export default function YogaView() {
   const tier = useLayoutTier();
+  const {
+    colors: colorTheme,
+    timer: TimerStyles,
+    screen: screenStyles,
+    picker: timerPickerModalStyles,
+  } = useAppStyles();
+  const { colors: yogaColors, typography: yogaTypography } = useYogaTheme();
+  const styles = useMemo(
+    () => makeStyles(colorTheme, yogaColors, yogaTypography),
+    [colorTheme, yogaColors, yogaTypography],
+  );
   // Flow state
   const [selectedFlow, setSelectedFlow] = useState<YogaFlow | null>(null);
   const [currentItemIndex, setCurrentItemIndex] = useState<number>(0);
@@ -1366,7 +1379,17 @@ interface YogaViewStyles {
   pauseButtonText: TextStyle;
 }
 
-const styles = StyleSheet.create<YogaViewStyles>({
+/**
+ * Factory over the three token sets this screen draws on. The typed
+ * YogaViewStyles interface is preserved — CLAUDE.md requires it to avoid
+ * union-inference errors, and it is just as useful on the factory's return type.
+ */
+const makeStyles = (
+  colorTheme: AppColorTheme,
+  yogaColors: YogaColors,
+  yogaTypography: Record<string, TextStyle>,
+) =>
+  StyleSheet.create<YogaViewStyles>({
   // Layout
   contentArea: {
     flex: 1,

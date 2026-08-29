@@ -27,7 +27,14 @@ import React, {
 } from "react";
 import { getData, storeData } from "@/assets/utils/persistent-storage";
 import { ACCENTS, DEFAULT_ACCENT_ID, type Accent, type AccentId } from "@/assets/theme/accent";
-import { makeColorTheme } from "@/assets/styles/timer-app";
+import {
+  makeColorTheme,
+  makeTimerStyles,
+  makePranayamaStyles,
+  makeHiitStyles,
+  makeScreenStyles,
+  makeTimerPickerModalStyles,
+} from "@/assets/styles/timer-app";
 import { makeYogaColors } from "@/assets/theme/colors";
 import { makeYogaTypography } from "@/assets/theme/typography";
 
@@ -215,6 +222,27 @@ const useAppColors = () => {
   return useMemo(() => makeColorTheme(accent), [accent]);
 };
 
+/**
+ * The SHARED stylesheets, themed. These are the backbone of the Yoga and HIIT tabs —
+ * those screens are built almost entirely from TimerStyles / HiitStyles /
+ * screenStyles rather than from per-component styles, which is why converting
+ * individual components left them looking completely unthemed.
+ */
+const useAppStyles = () => {
+  const c = useAppColors();
+  return useMemo(
+    () => ({
+      colors: c,
+      timer: makeTimerStyles(c),
+      pranayama: makePranayamaStyles(c),
+      hiit: makeHiitStyles(c),
+      screen: makeScreenStyles(c),
+      picker: makeTimerPickerModalStyles(c),
+    }),
+    [c],
+  );
+};
+
 const useYogaTheme = () => {
   const accent = useAccent();
   return useMemo(() => {
@@ -231,6 +259,7 @@ const useAccent = (): Accent => {
 export {
   useAccent,
   useAppColors,
+  useAppStyles,
   useYogaTheme,
   UserPreferencesProvider,
   UserPreferencesContext,

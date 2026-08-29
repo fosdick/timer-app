@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 /**
  * TimerSettingsPanel
  *
@@ -21,7 +22,8 @@ import {
   View,
 } from "react-native";
 import { Audio } from "expo-av";
-import { yogaColors } from "@/assets/theme";
+import { useYogaTheme } from "@/components/user-preferences-context";
+import type { YogaColors } from "@/assets/theme/colors";
 import { playStoppableCue } from "@/assets/utils/sounds";
 
 // ─── Sound preview helper ─────────────────────────────────────────────────────
@@ -196,6 +198,8 @@ export const PauseStepper = ({
   formatValue = (ms) => `${(ms / 1000).toFixed(1)}s`,
   disabled = false,
 }: PauseStepperProps) => {
+  const { colors: yogaColors } = useYogaTheme();
+  const styles = useMemo(() => makeStyles(yogaColors), [yogaColors]);
   const canDecrement = !disabled && valueMs > minMs;
   const canIncrement = !disabled && valueMs < maxMs;
 
@@ -250,6 +254,8 @@ export function SoundPickerModal<T extends string>({
   onSelect,
   onClose,
 }: SoundPickerModalProps<T>) {
+  const { colors: yogaColors } = useYogaTheme();
+  const styles = useMemo(() => makeStyles(yogaColors), [yogaColors]);
   return (
     <Modal
       visible={visible}
@@ -327,7 +333,12 @@ const SettingRow = ({
   toggleEnabled,
   onToggleChange,
   showToggleSpacer = false,
-}: SettingRowProps) => (
+}: SettingRowProps) => {
+  // Converted from an implicit return: hooks cannot live in `=> (…)`, and this
+  // component needs the themed styles like every other one.
+  const { colors: yogaColors } = useYogaTheme();
+  const styles = useMemo(() => makeStyles(yogaColors), [yogaColors]);
+  return (
   <View style={styles.settingRow}>
     {/* Fixed-width label keeps both rows' controls at the same x offset */}
     <Text style={styles.settingLabel}>{label}</Text>
@@ -359,6 +370,7 @@ const SettingRow = ({
     </View>
   </View>
 );
+}
 
 // ─── TimerSettingsPanel ───────────────────────────────────────────────────────
 
@@ -377,6 +389,8 @@ export const TimerSettingsPanel = ({
   onHalfMarkEnabledChange,
   onSavePace,
 }: TimerSettingsPanelProps) => {
+  const { colors: yogaColors } = useYogaTheme();
+  const styles = useMemo(() => makeStyles(yogaColors), [yogaColors]);
   const [showTransitionPicker, setShowTransitionPicker] = useState(false);
   const [showHalfMarkPicker, setShowHalfMarkPicker] = useState(false);
 
@@ -489,7 +503,8 @@ export const TimerSettingsPanel = ({
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
-const styles = StyleSheet.create({
+const makeStyles = (yogaColors: YogaColors) =>
+  StyleSheet.create({
   // ── Backdrop + panel ──────────────────────────────────────────────────────
   backdrop: {
     ...StyleSheet.absoluteFillObject,

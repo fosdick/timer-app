@@ -4,8 +4,8 @@ import { useFocusEffect } from "expo-router";
 import { Text, TouchableOpacity, View } from "react-native";
 import Slider from "@react-native-community/slider";
 
-import { TimerStyles, HiitStyles, screenStyles } from "@/assets/styles/timer-app";
-import { useAppColors } from "@/components/user-preferences-context";
+
+import { useAppStyles } from "@/components/user-preferences-context";
 import { playLevelComplete, playHittStart } from "@/assets/utils/sounds";
 import HittIntervalPicker from "@/components/hitt-time-picker";
 import { useReportActiveTimer } from "@/components/active-timer-context";
@@ -20,7 +20,7 @@ import {
 import { getData, storeData } from "../assets/utils/persistent-storage";
 
 export default function HittView() {
-  const c = useAppColors();
+  const { colors: c, timer: TimerStyles, hiit: HiitStyles, screen: screenStyles } = useAppStyles();
   const HITT_DATA_STORAGE_KEY = "hitt-data-storage-key";
   const DEFAULT_NUMBER_ROUNDS = 10;
   const DEFAULT_WORKOUT_TIME = 30;

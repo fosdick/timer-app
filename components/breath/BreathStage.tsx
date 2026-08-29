@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { BreathView } from "@/assets/data/breath-timer-core";
-import { yogaTypography } from "@/assets/theme";
+import { useYogaTheme } from "@/components/user-preferences-context";
 import { useBreathTheme, type BreathTheme, formatClock } from "./breath-theme";
 import { BreatheCircle } from "./BreatheCircle";
 import { LayoutTier } from "./use-layout-tier";
@@ -32,6 +32,7 @@ export function BreathStageHeader({
   tier?: LayoutTier;
 }) {
   const t = useBreathTheme();
+  const { typography: yogaTypography } = useYogaTheme();
   const styles = useMemo(() => makeStyles(t), [t]);
   const counting = countIn !== null;
   // The clock (session-length picker) is locked once a sequence is committed —
@@ -79,6 +80,7 @@ export function BreathStageCenter({
   tier?: LayoutTier;
 }) {
   const t = useBreathTheme();
+  const { typography: yogaTypography } = useYogaTheme();
   const styles = useMemo(() => makeStyles(t), [t]);
   const tint = metronome ? t.accentSoft : t.phaseTint[view.kind] ?? t.accentSoft;
   const counting = countIn !== null;

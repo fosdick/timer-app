@@ -102,7 +102,8 @@ const pickerButtonBase = {
   backgroundColor: PICKER_BUTTON_BG,
 };
 
-export const timerPickerModalStyles: CustomTimerPickerModalStyles = {
+export const makeTimerPickerModalStyles = (c: AppColorTheme): CustomTimerPickerModalStyles =>
+  ({
   theme: "dark",
   // Drives the wheel area AND its gradient fade, so the fade blends cleanly.
   backgroundColor: PICKER_SURFACE,
@@ -114,26 +115,27 @@ export const timerPickerModalStyles: CustomTimerPickerModalStyles = {
   },
   // Wheel digits + unit labels in the app's lime (matching the rounds popup
   // value) instead of the library's default white.
-  pickerItem: { color: colorTheme.activeTimerPrimary },
-  pickerLabel: { color: colorTheme.activeTimerDimmed },
+  pickerItem: { color: c.activeTimerPrimary },
+  pickerLabel: { color: c.activeTimerDimmed },
   // Title matches the rounds popup heading (lime, 20/600, letter-spaced).
   modalTitle: {
-    color: colorTheme.activeTimerPrimary,
+    color: c.activeTimerPrimary,
     fontSize: 20,
     fontWeight: "600",
     letterSpacing: 1,
   },
   confirmButton: {
     ...pickerButtonBase,
-    color: colorTheme.fontColor,
-    borderColor: colorTheme.borderColor,
+    color: c.fontColor,
+    borderColor: c.borderColor,
   },
   cancelButton: {
     ...pickerButtonBase,
-    color: colorTheme.activeTimerDimmed,
+    color: c.activeTimerDimmed,
     borderColor: PICKER_HAIRLINE,
   },
-};
+});
+export const timerPickerModalStyles: CustomTimerPickerModalStyles = makeTimerPickerModalStyles(colorTheme);
 
 export const Settings = StyleSheet.create({
   regText: {
@@ -148,7 +150,8 @@ export const Settings = StyleSheet.create({
   },
 });
 
-export const TimerStyles = StyleSheet.create({
+export const makeTimerStyles = (c: AppColorTheme) =>
+  StyleSheet.create({
   vertBox: {
     // flex: 1,
     alignItems: "center",
@@ -175,8 +178,8 @@ export const TimerStyles = StyleSheet.create({
     paddingHorizontal: 18,
     fontSize: 85,
     overflow: "hidden",
-    borderColor: colorTheme.borderColor,
-    color: colorTheme.fontColor,
+    borderColor: c.borderColor,
+    color: c.fontColor,
     fontVariant: ["tabular-nums"],
   },
   timerFaceSmall: {
@@ -185,8 +188,8 @@ export const TimerStyles = StyleSheet.create({
     paddingHorizontal: 18,
     fontSize: 55,
     overflow: "hidden",
-    borderColor: colorTheme.borderColor,
-    color: colorTheme.fontColor,
+    borderColor: c.borderColor,
+    color: c.fontColor,
     fontVariant: ["tabular-nums"],
   },
   timePicker: {
@@ -196,8 +199,8 @@ export const TimerStyles = StyleSheet.create({
     borderRadius: 10,
     fontSize: 16,
     overflow: "hidden",
-    borderColor: colorTheme.borderColor,
-    color: colorTheme.fontColor,
+    borderColor: c.borderColor,
+    color: c.fontColor,
   },
   startButton: {
     paddingVertical: 18,
@@ -208,13 +211,13 @@ export const TimerStyles = StyleSheet.create({
     borderRadius: 10,
     fontSize: 16,
     overflow: "hidden",
-    borderColor: colorTheme.borderColor,
-    color: colorTheme.fontColor,
+    borderColor: c.borderColor,
+    color: c.fontColor,
   },
   // Light-green variant for the Stop/Resume states (shared across all tabs).
   startButtonEngaged: {
-    borderColor: colorTheme.activeTimerDimmed,
-    color: colorTheme.activeTimerDimmed,
+    borderColor: c.activeTimerDimmed,
+    color: c.activeTimerDimmed,
   },
   metronome: {
     // marginTop: 15,
@@ -222,8 +225,8 @@ export const TimerStyles = StyleSheet.create({
     paddingHorizontal: 18,
     fontSize: 16,
     overflow: "hidden",
-    borderColor: colorTheme.borderColor,
-    color: colorTheme.fontColor,
+    borderColor: c.borderColor,
+    color: c.fontColor,
   },
   metronomeMedium: {
     marginTop: 0,
@@ -231,8 +234,8 @@ export const TimerStyles = StyleSheet.create({
     paddingHorizontal: 18,
     fontSize: 30,
     overflow: "hidden",
-    borderColor: colorTheme.borderColor,
-    color: colorTheme.fontColor,
+    borderColor: c.borderColor,
+    color: c.fontColor,
     fontVariant: ["tabular-nums"],
   },
   valueText: {
@@ -241,16 +244,18 @@ export const TimerStyles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 400,
     overflow: "hidden",
-    borderColor: colorTheme.borderColor,
-    color: colorTheme.fontColor,
+    borderColor: c.borderColor,
+    color: c.fontColor,
   },
   small: {
     fontSize: 16,
   },
 });
+export const TimerStyles = makeTimerStyles(colorTheme);
 
 // Pranayama Screen Styles
-export const PranayamaStyles = StyleSheet.create({
+export const makePranayamaStyles = (c: AppColorTheme) =>
+  StyleSheet.create({
   mainCountdown: {
     fontSize: 72,
     fontWeight: "300",
@@ -307,9 +312,11 @@ export const PranayamaStyles = StyleSheet.create({
     justifyContent: "center",
   },
 });
+export const PranayamaStyles = makePranayamaStyles(colorTheme);
 
 // HIIT Screen Styles
-export const HiitStyles = StyleSheet.create({
+export const makeHiitStyles = (c: AppColorTheme) =>
+  StyleSheet.create({
   activeTimer: {
     fontSize: 72,
     fontWeight: "300",
@@ -361,8 +368,10 @@ export const HiitStyles = StyleSheet.create({
     textAlign: "center",
   },
 });
+export const HiitStyles = makeHiitStyles(colorTheme);
 
-export const screenStyles = StyleSheet.create({
+export const makeScreenStyles = (c: AppColorTheme) =>
+  StyleSheet.create({
   headerImage: {
     color: "#808080",
     bottom: -90,
@@ -397,3 +406,4 @@ export const screenStyles = StyleSheet.create({
     width: "100%",
   },
 });
+export const screenStyles = makeScreenStyles(colorTheme);
