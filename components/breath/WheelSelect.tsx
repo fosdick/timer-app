@@ -151,18 +151,18 @@ export function WheelSelect({
 
 const makeStyles = (t: BreathTheme) =>
   StyleSheet.create({
+  // Unboxed and quiet. A sound value at 18px in the brightest role outweighed the
+  // pattern name at 14px — a minor setting louder than the primary choice. Now the
+  // lightest thing in the config stack.
   field: {
     alignItems: "center",
-    minWidth: 96,
-    paddingVertical: t.space.xs,
-    paddingHorizontal: t.space.sm,
-    borderRadius: t.radius,
-    borderWidth: 1,
-    borderColor: t.line,
+    minWidth: 92,
+    paddingHorizontal: 4,
+    paddingVertical: 2,
   },
   fieldMuted: { opacity: 0.4 }, // matches the prefs mute (disabled selector)
-  fieldLabel: { color: t.muted, fontSize: 11, textTransform: "uppercase", letterSpacing: 0.5 },
-  fieldValue: { color: t.text, fontSize: 18, fontWeight: "400", marginTop: 3 },
+  fieldLabel: { color: t.muted, fontSize: 10, textTransform: "uppercase", letterSpacing: 0.5 },
+  fieldValue: { color: t.muted, fontSize: 13, fontWeight: "400", marginTop: 1 },
 
   overlay: {
     flex: 1,

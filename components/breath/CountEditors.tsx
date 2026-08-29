@@ -85,19 +85,21 @@ export function CountEditors({
 const makeStyles = (t: BreathTheme) =>
   StyleSheet.create({
   row: { flexDirection: "row", justifyContent: "center", gap: t.space.sm, flexWrap: "wrap" },
+  // A FIELD, not a box. BREATH/10 and CLICK/Snap were the same bordered container,
+  // so an editable number and a picker read as the same kind of control. An
+  // underline is the shape of something you type into.
   field: {
     alignItems: "center",
-    minWidth: 64,
-    paddingVertical: t.space.xs,
-    paddingHorizontal: t.space.sm,
-    borderRadius: t.radius,
-    borderWidth: 1,
+    minWidth: 76,
+    paddingHorizontal: 4,
+    paddingBottom: 3,
+    borderBottomWidth: 1,
     borderColor: t.line,
   },
   // Same toning as the pattern chips: identical idiom (t.line base, bright border
   // + faint tint when active), so the two selected states must not diverge.
-  fieldActive: { borderColor: t.label, backgroundColor: t.tintFaint },
+  fieldActive: { borderColor: t.label },
   label: { color: t.muted, fontSize: 11, textTransform: "uppercase", letterSpacing: 0.5 },
-  value: { color: t.text, fontSize: 24, fontWeight: "400", fontVariant: ["tabular-nums"] },
+  value: { color: t.muted, fontSize: 24, fontWeight: "400", fontVariant: ["tabular-nums"] },
   activeText: { color: t.accent },
 });
