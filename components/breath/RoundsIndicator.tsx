@@ -3,9 +3,14 @@ import { Text, StyleSheet } from "react-native";
 import { useBreathTheme, type BreathTheme } from "./breath-theme";
 
 /**
- * "Round N of M" under the countdown — text, sized + styled to match the breath
- * count wheel value (24px) but in the lighter accent, bold, so it's legible at
- * arm's length. The ⓘ on "Remaining" stays superscript; this is its own line.
+ * "Round N of M" under the countdown — sized to match the breath count wheel value
+ * (24px). The ⓘ on "Remaining" stays superscript; this is its own line.
+ *
+ * Toned 2026-08-28 at the user's call: was weight 600 in accent.mid, which made the
+ * least important number on the screen the heaviest thing on it (the countdown
+ * beside it is 300). Now 300 in accent.muted. The previous note argued 600 was
+ * "bold, so it's legible at arm's length" — that trade was put to the user, who
+ * practises with this daily, and he chose the quieter option knowingly.
  *
  * REFERENCE IMPLEMENTATION for accent theming. The pattern, applied file by file:
  *
@@ -22,9 +27,10 @@ import { useBreathTheme, type BreathTheme } from "./breath-theme";
 const makeStyles = (t: BreathTheme) =>
   StyleSheet.create({
     text: {
-      color: t.muted, // accent.mid — #7CB342 in green
+      // NOTE: breathTheme.muted is accent.MID; the dimmer role is breathTheme.label.
+      color: t.label, // accent.muted — #689F38 in green
       fontSize: 24, // matches the breath count wheel value
-      fontWeight: "600", // bold
+      fontWeight: "300",
       letterSpacing: 0.5,
       fontVariant: ["tabular-nums"],
       alignSelf: "center", // centered in the screen column (no longer in the header)

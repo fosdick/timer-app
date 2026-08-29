@@ -1,8 +1,12 @@
 import type { TextStyle } from "react-native";
 import { yogaColors } from "./colors";
+import { ACCENTS, DEFAULT_ACCENT_ID } from "./accent";
 
 // Font Weights
 export const fontWeights = {
+  /** Toned display numerals — the Remaining countdown. Deliberately lighter than
+   *  `light`: at 72px a 300 still reads loud in a dark room. */
+  thin: "200",
   light: "300",
   regular: "400",
   medium: "500",
@@ -54,10 +58,15 @@ export const yogaTypography: Record<string, TextStyle> = {
   },
 
   // Timer Countdown (00:04)
+  // Toned 2026-08-28 at the user's call ("screen is too bright to my eye"): was
+  // 300 weight in accent.bright. The countdown is glanceable context during a
+  // practice, not the loudest thing in the room. Weight lives here rather than in
+  // the accent so every present and future accent inherits the same restraint —
+  // themes differ in HUE, not in weight or brightness.
   timerCountdown: {
     fontSize: 72,
-    fontWeight: fontWeights.light,
-    color: yogaColors.timerCountdown,
+    fontWeight: fontWeights.thin,
+    color: ACCENTS[DEFAULT_ACCENT_ID].muted,
     textAlign: "center" as const,
     letterSpacing: -2,
   },

@@ -61,26 +61,39 @@ beforeEach(() => {
 describe("the accent preference reaches the rendered colour", () => {
   it("renders green when no preference is stored", async () => {
     const tree = await renderWithAccent(null);
-    expect(renderedColor(tree)).toBe(GREEN.mid);
+    expect(renderedColor(tree)).toBe(GREEN.muted);
   });
 
   it("renders green when green is stored", async () => {
     const tree = await renderWithAccent("green");
-    expect(renderedColor(tree)).toBe(GREEN.mid);
+    expect(renderedColor(tree)).toBe(GREEN.muted);
   });
 
   it("renders BLUE when blue is stored", async () => {
     // The assertion the whole feature rests on.
     const tree = await renderWithAccent("blue");
-    expect(renderedColor(tree)).toBe(BLUE.mid);
-    expect(renderedColor(tree)).not.toBe(GREEN.mid);
+    expect(renderedColor(tree)).toBe(BLUE.muted);
+    expect(renderedColor(tree)).not.toBe(GREEN.muted);
   });
 
   it("falls back to green for an accent id that no longer exists", async () => {
     // A theme could be renamed or dropped in a later version; a stale preference
     // must not leave the component with an undefined colour.
     const tree = await renderWithAccent("chartreuse-deluxe");
-    expect(renderedColor(tree)).toBe(GREEN.mid);
+    expect(renderedColor(tree)).toBe(GREEN.muted);
+  });
+
+  it("stays toned — weight 300 in the muted role, not the old bold mid", async () => {
+    // Option D, chosen 2026-08-28. Pinned because the previous value (600 in
+    // accent.mid) had its own written rationale, so a future reader could
+    // reasonably "restore" it without knowing the trade was put to the user.
+    const tree = await renderWithAccent("green");
+    const style = StyleSheetFlatten(
+      tree.root.find((n) => n.type === (Text as unknown) && typeof n.props.children === "string")
+        .props.style,
+    );
+    expect(style.fontWeight).toBe("300");
+    expect(style.color).toBe(GREEN.muted);
   });
 
   it("still hides itself when there are no rounds", async () => {
