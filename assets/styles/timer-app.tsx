@@ -9,30 +9,10 @@ import type { CustomTimerPickerModalStyles } from "react-native-timer-picker";
 // call site changes; each now points at a role in the ramp.
 //
 // This is a pure refactor: every value resolves to exactly what 1.1.0 shipped.
-import { ACCENTS, DEFAULT_ACCENT_ID, fixedColors, withAlpha } from "@/assets/theme/accent";
+import { ACCENTS, DEFAULT_ACCENT_ID, fixedColors, withAlpha, type Accent } from "@/assets/theme/accent";
 
-const accent = ACCENTS[DEFAULT_ACCENT_ID];
-
-const fontColor = accent.deep; //                       #629231
-const borderColor = accent.border; //                   #91BD27 — the loud outline
-// Toned outline (2026-08-28). accent.border is the brightest value in the ramp;
-// using it for every panel, modal, checkbox and card made outlines compete with
-// the content they frame. `outline` is accent.muted. borderColor is kept for
-// anything that genuinely wants to shout.
-const outline = accent.muted; //                        #689F38
-const thumbTintColor = accent.control; //               #4b6806
-const trackColorFalse = accent.trackOff; //             #0D2013
-const minimumTrackTintColor = accent.track; //          #3C4E16
-const thumbColorDisabled = accent.trackOff; //          was = trackColorFalse
-const maximumTrackTintColor = accent.control; //        was = thumbTintColor
-const backgroundColor = fixedColors.ground; //          #080B0c — NOT themed
-const headerLiteShade = accent.tint; //                 #dfffea
-const headerInk = accent.tintInk; //                    #080B0c
-const tabBarActiveTintColor = accent.control; //        was = thumbTintColor
-const tabBarInActiveTintColor = fixedColors.neutralDim; // #687076 — NOT themed
-
-// New Design System Colors
-export const designColors = {
+export function makeDesignColors(accent: Accent) {
+  return {
   // Primary - Active elements
   activeTimerPrimary: accent.bright, //      #CDDC39 Bright Lime - main countdowns
   activeNumberSecondary: accent.bright, //   same - configuration numbers
@@ -52,25 +32,49 @@ export const designColors = {
   // Backgrounds
   backgroundPrimary: fixedColors.black, //   #000000 - NOT themed
   backgroundHeader: accent.tintStrong, //    #E8F5E9 (currently unreferenced)
-};
+};;
+}
 
-export const colorTheme = {
-  borderColor,
-  fontColor,
-  trackColorFalse,
-  thumbTintColor,
-  thumbColorDisabled,
-  minimumTrackTintColor,
-  maximumTrackTintColor,
-  backgroundColor,
-  headerLiteShade,
-  headerInk,
-  outline,
-  tabBarActiveTintColor,
-  tabBarInActiveTintColor,
-  // Add new design system colors
-  ...designColors,
-};
+export function makeColorTheme(accent: Accent) {
+  const fontColor = accent.deep;
+  const borderColor = accent.border;
+  const outline = accent.muted;
+  const thumbTintColor = accent.control;
+  const trackColorFalse = accent.trackOff;
+  const minimumTrackTintColor = accent.track;
+  const thumbColorDisabled = accent.trackOff;
+  const maximumTrackTintColor = accent.control;
+  const backgroundColor = fixedColors.ground;
+  const headerLiteShade = accent.tint;
+  const headerInk = accent.tintInk;
+  const tabBarActiveTintColor = accent.control;
+  const tabBarInActiveTintColor = fixedColors.neutralDim;
+  return {
+    fontColor,
+    borderColor,
+    outline,
+    thumbTintColor,
+    trackColorFalse,
+    minimumTrackTintColor,
+    thumbColorDisabled,
+    maximumTrackTintColor,
+    backgroundColor,
+    headerLiteShade,
+    headerInk,
+    tabBarActiveTintColor,
+    tabBarInActiveTintColor,
+    ...makeDesignColors(accent),
+  };
+}
+
+export type AppColorTheme = ReturnType<typeof makeColorTheme>;
+
+/** Green instance, for components not yet reading the hook. */
+export const colorTheme = makeColorTheme(ACCENTS[DEFAULT_ACCENT_ID]);
+export const designColors = makeDesignColors(ACCENTS[DEFAULT_ACCENT_ID]);
+
+
+
 
 /**
  * Shared style for EVERY react-native-timer-picker wheel in the app (breath
@@ -138,8 +142,8 @@ export const Settings = StyleSheet.create({
     paddingHorizontal: 18,
     fontSize: 25,
     overflow: "hidden",
-    borderColor: borderColor,
-    color: fontColor,
+    borderColor: colorTheme.borderColor,
+    color: colorTheme.fontColor,
     fontVariant: ["tabular-nums"],
   },
 });
@@ -171,8 +175,8 @@ export const TimerStyles = StyleSheet.create({
     paddingHorizontal: 18,
     fontSize: 85,
     overflow: "hidden",
-    borderColor: borderColor,
-    color: fontColor,
+    borderColor: colorTheme.borderColor,
+    color: colorTheme.fontColor,
     fontVariant: ["tabular-nums"],
   },
   timerFaceSmall: {
@@ -181,8 +185,8 @@ export const TimerStyles = StyleSheet.create({
     paddingHorizontal: 18,
     fontSize: 55,
     overflow: "hidden",
-    borderColor: borderColor,
-    color: fontColor,
+    borderColor: colorTheme.borderColor,
+    color: colorTheme.fontColor,
     fontVariant: ["tabular-nums"],
   },
   timePicker: {
@@ -192,8 +196,8 @@ export const TimerStyles = StyleSheet.create({
     borderRadius: 10,
     fontSize: 16,
     overflow: "hidden",
-    borderColor: borderColor,
-    color: fontColor,
+    borderColor: colorTheme.borderColor,
+    color: colorTheme.fontColor,
   },
   startButton: {
     paddingVertical: 18,
@@ -204,8 +208,8 @@ export const TimerStyles = StyleSheet.create({
     borderRadius: 10,
     fontSize: 16,
     overflow: "hidden",
-    borderColor: borderColor,
-    color: fontColor,
+    borderColor: colorTheme.borderColor,
+    color: colorTheme.fontColor,
   },
   // Light-green variant for the Stop/Resume states (shared across all tabs).
   startButtonEngaged: {
@@ -218,8 +222,8 @@ export const TimerStyles = StyleSheet.create({
     paddingHorizontal: 18,
     fontSize: 16,
     overflow: "hidden",
-    borderColor: borderColor,
-    color: fontColor,
+    borderColor: colorTheme.borderColor,
+    color: colorTheme.fontColor,
   },
   metronomeMedium: {
     marginTop: 0,
@@ -227,8 +231,8 @@ export const TimerStyles = StyleSheet.create({
     paddingHorizontal: 18,
     fontSize: 30,
     overflow: "hidden",
-    borderColor: borderColor,
-    color: fontColor,
+    borderColor: colorTheme.borderColor,
+    color: colorTheme.fontColor,
     fontVariant: ["tabular-nums"],
   },
   valueText: {
@@ -237,8 +241,8 @@ export const TimerStyles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 400,
     overflow: "hidden",
-    borderColor: borderColor,
-    color: fontColor,
+    borderColor: colorTheme.borderColor,
+    color: colorTheme.fontColor,
   },
   small: {
     fontSize: 16,

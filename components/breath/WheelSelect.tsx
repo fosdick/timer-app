@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useMemo } from "react";
 import {
   Modal,
   View,
@@ -9,7 +9,7 @@ import {
   NativeSyntheticEvent,
   NativeScrollEvent,
 } from "react-native";
-import { breathTheme as t } from "./breath-theme";
+import { useBreathTheme, type BreathTheme } from "./breath-theme";
 
 export interface WheelOption {
   id: string;
@@ -44,6 +44,8 @@ export function WheelSelect({
   /** Greys the field (opacity), like the prefs mute — for an inactive option. */
   muted?: boolean;
 }) {
+  const t = useBreathTheme();
+  const styles = useMemo(() => makeStyles(t), [t]);
   const [open, setOpen] = useState(false);
   const [idx, setIdx] = useState(0);
   const settledIdx = useRef(0);
@@ -147,7 +149,8 @@ export function WheelSelect({
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (t: BreathTheme) =>
+  StyleSheet.create({
   field: {
     alignItems: "center",
     minWidth: 96,

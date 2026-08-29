@@ -3,11 +3,12 @@
 // Role names are unchanged (call sites depend on them); the VALUES now come from
 // the shared accent ramp so the yoga tab themes with the rest of the app instead
 // of carrying its own private green.
-import { ACCENTS, DEFAULT_ACCENT_ID, fixedColors } from "./accent";
+import { ACCENTS, DEFAULT_ACCENT_ID, fixedColors, type Accent } from "./accent";
 
-const accent = ACCENTS[DEFAULT_ACCENT_ID];
 
-export const yogaColors = {
+
+export function makeYogaColors(accent: Accent) {
+  return {
   // Primary Colors - Current Pose (Memory Trigger)
   poseCurrentIcon: accent.soft, // #81C784 current pose icon
   poseCurrentName: accent.tintStrong, // #E8F5E9 current pose name
@@ -33,4 +34,10 @@ export const yogaColors = {
   // Background Colors
   backgroundPrimary: fixedColors.black, // #000000 not themed
   backgroundHeader: accent.tintStrong, // #E8F5E9
-};
+  };
+}
+
+/** Green instance, for components not yet reading the hook. */
+export const yogaColors = makeYogaColors(ACCENTS[DEFAULT_ACCENT_ID]);
+export type YogaColors = ReturnType<typeof makeYogaColors>;
+

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { Audio } from "expo-av";
 import { LinearGradient } from "expo-linear-gradient";
@@ -10,7 +10,7 @@ import {
   CountField,
   countFields,
 } from "@/assets/data/breath-patterns";
-import { breathTheme as t } from "./breath-theme";
+import { useBreathTheme, type BreathTheme } from "./breath-theme";
 import { timerPickerModalStyles } from "@/assets/styles/timer-app";
 
 /**
@@ -32,6 +32,8 @@ export function CountEditors({
   onChange: (key: EditFieldKey, value: number) => void;
   disabled?: boolean;
 }) {
+  const t = useBreathTheme();
+  const styles = useMemo(() => makeStyles(t), [t]);
   const fields = countFields(pattern);
   const [editing, setEditing] = useState<CountField | null>(null);
   if (fields.length === 0) return null;
@@ -78,7 +80,8 @@ export function CountEditors({
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (t: BreathTheme) =>
+  StyleSheet.create({
   row: { flexDirection: "row", justifyContent: "center", gap: t.space.sm, flexWrap: "wrap" },
   field: {
     alignItems: "center",

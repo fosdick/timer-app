@@ -27,6 +27,9 @@ import React, {
 } from "react";
 import { getData, storeData } from "@/assets/utils/persistent-storage";
 import { ACCENTS, DEFAULT_ACCENT_ID, type Accent, type AccentId } from "@/assets/theme/accent";
+import { makeColorTheme } from "@/assets/styles/timer-app";
+import { makeYogaColors } from "@/assets/theme/colors";
+import { makeYogaTypography } from "@/assets/theme/typography";
 
 export type UserPreferences = {
   useRounds: boolean;
@@ -201,6 +204,25 @@ const useUserPreferences = () => useContext(UserPreferencesContext);
  * Deliberately a thin wrapper over the preference rather than its own provider:
  * one source of truth, one place that persists, nothing extra to mount.
  */
+/**
+ * Reactive token sets. Components call these instead of importing the static
+ * exports; the static ones remain valid green instances so the migration is
+ * incremental. Each memoises on the accent so styles rebuild only on a theme
+ * change, not per render.
+ */
+const useAppColors = () => {
+  const accent = useAccent();
+  return useMemo(() => makeColorTheme(accent), [accent]);
+};
+
+const useYogaTheme = () => {
+  const accent = useAccent();
+  return useMemo(() => {
+    const colors = makeYogaColors(accent);
+    return { colors, typography: makeYogaTypography(accent, colors) };
+  }, [accent]);
+};
+
 const useAccent = (): Accent => {
   const { prefs } = useContext(UserPreferencesContext);
   return ACCENTS[prefs.accentId] ?? ACCENTS[DEFAULT_ACCENT_ID];
@@ -208,6 +230,8 @@ const useAccent = (): Accent => {
 
 export {
   useAccent,
+  useAppColors,
+  useYogaTheme,
   UserPreferencesProvider,
   UserPreferencesContext,
   useUserPreferences,

@@ -32,7 +32,7 @@ import { BreathStageHeader, BreathStageCenter } from "./BreathStage";
 import { RoundsIndicator } from "./RoundsIndicator";
 import { SoundOptions } from "./SoundOptions";
 import { getClickSound, getAmbience, DEFAULT_CLICK_ID, DEFAULT_DOWNBEAT_ID, DEFAULT_AMBIENCE_ID } from "./breath-sounds";
-import { breathTheme as t } from "./breath-theme";
+import { useBreathTheme, type BreathTheme } from "./breath-theme";
 import { SessionLengthModal } from "./SessionLengthModal";
 import { useLayoutTier } from "./use-layout-tier";
 
@@ -60,6 +60,8 @@ const countsOf = (p: BreathPattern): CountSet => ({
  * wheels, a session-length picker, sound options, and persisted settings.
  */
 export default function BreathScreen() {
+  const t = useBreathTheme();
+  const styles = useMemo(() => makeStyles(t), [t]);
   const tier = useLayoutTier();
   // "expanded" spans a 956pt Pro Max AND a 1376pt iPad, which need different
   // treatment: the centred-card layout below assumes SURPLUS height, and a Pro
@@ -483,7 +485,8 @@ export default function BreathScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (t: BreathTheme) =>
+  StyleSheet.create({
   screen: { flex: 1, backgroundColor: t.bg, paddingHorizontal: t.space.lg },
   // iPad / very large screens: cap the column and center it so controls don't
   // stretch edge-to-edge and the layout reads as designed, not stretched.

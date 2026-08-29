@@ -1,7 +1,7 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useMemo } from "react";
 import { Animated, StyleSheet, View } from "react-native";
 import { BreathView } from "@/assets/data/breath-timer-core";
-import { breathTheme as t } from "./breath-theme";
+import { useBreathTheme, type BreathTheme } from "./breath-theme";
 
 /**
  * A calm breath-synced ring behind the count — the "time moving forward like
@@ -25,6 +25,8 @@ export function BreatheCircle({
   size: number;
   metronome?: boolean;
 }) {
+  const t = useBreathTheme();
+  const styles = useMemo(() => makeStyles(t), [t]);
   const scale = useRef(new Animated.Value(CONTRACTED)).current;
   const lastPhase = useRef<string>("");
 
@@ -64,7 +66,8 @@ export function BreatheCircle({
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (t: BreathTheme) =>
+  StyleSheet.create({
   wrap: { ...StyleSheet.absoluteFillObject, alignItems: "center", justifyContent: "center" },
   ring: { borderWidth: 2, opacity: 0.45 },
 });

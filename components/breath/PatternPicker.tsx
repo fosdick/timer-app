@@ -1,6 +1,7 @@
+import { useMemo } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { BreathPattern, BREATH_PATTERNS } from "@/assets/data/breath-patterns";
-import { breathTheme as t } from "./breath-theme";
+import { useBreathTheme, type BreathTheme } from "./breath-theme";
 
 /** Row of selectable pattern chips (Box / Nadi Shodhana / Viloma / 4-7-8). */
 export function PatternPicker({
@@ -14,6 +15,8 @@ export function PatternPicker({
   onSelect: (pattern: BreathPattern) => void;
   disabled?: boolean;
 }) {
+  const t = useBreathTheme();
+  const styles = useMemo(() => makeStyles(t), [t]);
   return (
     <View style={styles.row}>
       {patterns.map((p) => {
@@ -34,7 +37,8 @@ export function PatternPicker({
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (t: BreathTheme) =>
+  StyleSheet.create({
   row: {
     flexDirection: "row",
     flexWrap: "wrap",

@@ -1,7 +1,8 @@
+import { useMemo } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { BreathView } from "@/assets/data/breath-timer-core";
 import { yogaTypography } from "@/assets/theme";
-import { breathTheme as t, formatClock } from "./breath-theme";
+import { useBreathTheme, type BreathTheme, formatClock } from "./breath-theme";
 import { BreatheCircle } from "./BreatheCircle";
 import { LayoutTier } from "./use-layout-tier";
 
@@ -30,6 +31,8 @@ export function BreathStageHeader({
   onInfoPress?: () => void;
   tier?: LayoutTier;
 }) {
+  const t = useBreathTheme();
+  const styles = useMemo(() => makeStyles(t), [t]);
   const counting = countIn !== null;
   // The clock (session-length picker) is locked once a sequence is committed —
   // running OR counting in.
@@ -75,6 +78,8 @@ export function BreathStageCenter({
   countIn?: number | null;
   tier?: LayoutTier;
 }) {
+  const t = useBreathTheme();
+  const styles = useMemo(() => makeStyles(t), [t]);
   const tint = metronome ? t.accentSoft : t.phaseTint[view.kind] ?? t.accentSoft;
   const counting = countIn !== null;
   const showCount = isRunning && view.segmentType === "breath" && view.countRemaining > 0;
@@ -107,7 +112,8 @@ export function BreathStageCenter({
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (t: BreathTheme) =>
+  StyleSheet.create({
   header: { alignItems: "center", marginTop: 10 }, // mirrors the yoga tab's timer block offset
   labelRow: { flexDirection: "row", alignItems: "center", gap: 6 },
   // ⓘ intentionally stays superscript: it has no top margin, so it rides higher

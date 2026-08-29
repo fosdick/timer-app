@@ -11,12 +11,13 @@ import { Audio } from "expo-av";
 import { LinearGradient } from "expo-linear-gradient";
 import { TimerPickerModal } from "react-native-timer-picker";
 
-import { useUserPreferences } from "@/components/user-preferences-context";
+import { useUserPreferences, useAccent } from "@/components/user-preferences-context";
+import { ACCENTS, ACCENT_LABELS, type AccentId } from "@/assets/theme/accent";
 import { colorTheme, timerPickerModalStyles } from "@/assets/styles/timer-app";
 import { breathTheme as bt } from "@/components/breath/breath-theme";
 
 export default function UserPreferencesScreen() {
-  const { prefs, setUseRounds, setCountInEnabled, setCountInSec } =
+  const { prefs, setUseRounds, setCountInEnabled, setCountInSec, setAccentId } =
     useUserPreferences();
 
   return (
@@ -33,7 +34,66 @@ export default function UserPreferencesScreen() {
         value={prefs.countInSec}
         onChange={setCountInSec}
       />
+      <AccentRow selected={prefs.accentId} onSelect={setAccentId} />
     </ScrollView>
+  );
+}
+
+/**
+ * Colour accent picker. A list, not a colour wheel — accents are curated so every
+ * one is guaranteed to keep contrast on the fixed ground. Adding a theme adds a row
+ * here automatically; it reads straight from ACCENTS.
+ */
+function AccentRow({
+  selected,
+  onSelect,
+}: {
+  selected: AccentId;
+  onSelect: (id: AccentId) => void;
+}) {
+  const accent = useAccent();
+  const ids = Object.keys(ACCENTS) as AccentId[];
+  return (
+    <View style={styles.accentBlock}>
+      <Text style={[styles.accentTitle, { color: accent.muted }]}>Colour</Text>
+      <View style={styles.accentRow}>
+        {ids.map((id) => {
+          const a = ACCENTS[id];
+          const on = id === selected;
+          return (
+            <TouchableOpacity
+              key={id}
+              testID={`accent-${id}`}
+              activeOpacity={0.7}
+              onPress={() => onSelect(id)}
+              accessibilityRole="radio"
+              accessibilityState={{ selected: on }}
+              accessibilityLabel={`${ACCENT_LABELS[id]} colour theme`}
+              style={[
+                styles.accentChip,
+                { borderColor: on ? accent.muted : a.trackOff },
+              ]}
+            >
+              {/* The swatch is the accent judging itself — bright over mid over
+                  muted, the three roles a user actually sees most. */}
+              <View style={styles.swatch}>
+                <View style={[styles.swatchBar, { backgroundColor: a.bright }]} />
+                <View style={[styles.swatchBar, { backgroundColor: a.mid }]} />
+                <View style={[styles.swatchBar, { backgroundColor: a.muted }]} />
+              </View>
+              <Text
+                style={[
+                  styles.accentLabel,
+                  { color: on ? accent.bright : accent.muted, fontWeight: on ? "600" : "400" },
+                ]}
+              >
+                {ACCENT_LABELS[id]}
+              </Text>
+            </TouchableOpacity>
+          );
+        })}
+      </View>
+    </View>
   );
 }
 
@@ -137,6 +197,26 @@ function CountInRow({
 }
 
 const styles = StyleSheet.create({
+  accentBlock: { marginTop: 28, paddingHorizontal: 20 },
+  accentTitle: {
+    fontSize: 14,
+    letterSpacing: 0.5,
+    textTransform: "uppercase",
+    marginBottom: 10,
+  },
+  accentRow: { flexDirection: "row", gap: 12, flexWrap: "wrap" },
+  accentChip: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    borderWidth: 1,
+    borderRadius: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+  },
+  swatch: { flexDirection: "row", gap: 2 },
+  swatchBar: { width: 8, height: 18, borderRadius: 2 },
+  accentLabel: { fontSize: 16 },
   screen: { flex: 1, backgroundColor: colorTheme.backgroundColor },
   content: { padding: 24, gap: 22 },
   row: { flexDirection: "row", alignItems: "flex-start", gap: 14 },
@@ -171,6 +251,6 @@ const styles = StyleSheet.create({
     borderColor: bt.line,
   },
   countBoxDisabled: { opacity: 0.4 },
-  countValue: { color: bt.text, fontSize: 24, fontWeight: "400", fontVariant: ["tabular-nums"] },
+  countValue: { color: bt.muted, fontSize: 24, fontWeight: "400", fontVariant: ["tabular-nums"] },
   countUnit: { color: bt.muted, fontSize: 11, textTransform: "uppercase", letterSpacing: 0.5 },
 });
