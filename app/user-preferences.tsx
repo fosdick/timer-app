@@ -107,7 +107,7 @@ function AccentRow({
                 // rather than widen the chip, so the grid stays even.
                 numberOfLines={1}
                 adjustsFontSizeToFit
-                minimumFontScale={0.8}
+                minimumFontScale={0.72}
               >
                 {ACCENT_LABELS[id]}
               </Text>
@@ -306,11 +306,11 @@ const makeStyles = (c: AppColorTheme, bt: BreathTheme) =>
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    gap: 8,
+    gap: 7,
     borderWidth: 1,
     borderRadius: 10,
     paddingVertical: 10,
-    paddingHorizontal: 14,
+    paddingHorizontal: 10,
   },
   pronounChip: {
     flexBasis: "30%",
@@ -339,7 +339,10 @@ const makeStyles = (c: AppColorTheme, bt: BreathTheme) =>
   },
   swatch: { flexDirection: "row", gap: 2 },
   swatchBar: { width: 6, height: 18, borderRadius: 2 },
-  accentLabel: { fontSize: 15 },
+  // flexShrink is what makes adjustsFontSizeToFit work: without it the Text has
+  // no width to shrink INTO, so it just overflowed and the chip border clipped
+  // "Golden Sun" mid-word. The prop alone was not enough.
+  accentLabel: { fontSize: 15, flexShrink: 1 },
   screen: { flex: 1, backgroundColor: c.backgroundColor },
   content: { padding: 24, gap: 22 },
   row: { flexDirection: "row", alignItems: "flex-start", gap: 14 },
