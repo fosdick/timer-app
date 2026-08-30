@@ -4,12 +4,17 @@
  * for every user, silently, with nothing in the UI to reveal it.
  */
 describe("screenshot mode", () => {
-  const reload = () => {
-    let mod!: typeof import("../screenshot-mode");
+  // The flag is read at module scope, so the module has to be re-evaluated after
+  // each change to the env var — a plain top-level import would freeze the first
+  // value and make every case below pass vacuously.
+  const reload = (): boolean => {
+    let on = false;
     jest.isolateModules(() => {
-      mod = require("../screenshot-mode");
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      on = (require("../screenshot-mode") as typeof import("../screenshot-mode"))
+        .SCREENSHOT_MODE;
     });
-    return mod.SCREENSHOT_MODE;
+    return on;
   };
 
   afterEach(() => {
