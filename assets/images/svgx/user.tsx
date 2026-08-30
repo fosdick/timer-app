@@ -47,10 +47,15 @@ const HAIR: Record<Pronoun, string | null> = {
   // Bob: crown plus two curtains falling past the jaw and outside the head circle.
   she: "M12 2.9 C8.6 2.9 6.9 5.1 6.9 8.2 L6.9 13.1 Q6.9 13.9 7.7 13.9 Q8.6 13.9 8.6 12.9 L8.6 8.2 Q8.6 6 12 6 Q15.4 6 15.4 8.2 L15.4 12.9 Q15.4 13.9 16.3 13.9 Q17.1 13.9 17.1 13.1 L17.1 8.2 C17.1 5.1 15.4 2.9 12 2.9 Z",
   they: null,
-  // Flat-top cap: a solid rounded slab over the crown, so it MERGES with the head
-  // instead of cutting a notch into it. Squares the top and adds a hair's width
-  // either side — enough to read as short hair at 24px.
-  he: "M7.9 7.6 L7.9 5.4 Q7.9 3.2 10 3.2 L14 3.2 Q16.1 3.2 16.1 5.4 L16.1 7.6 Z",
+  // Short crop that wraps down to the temples, so the silhouette gains contour
+  // rather than sitting a flat slab on the crown.
+  //
+  // Plot the three on a minimal-to-detailed axis and they should read as a U:
+  // `she` and `he` both carry two features (shaped hair plus a distinct torso),
+  // `they` sits alone at the bottom with neither. The flat cap made it a
+  // downward slope instead — `he` was reading as MORE neutral than `they`, which
+  // is the opposite of what a neutral default should mean.
+  he: "M7.9 10.4 L7.9 5.4 Q7.9 3.2 12 3.2 Q16.1 3.2 16.1 5.4 L16.1 10.4 Q16.1 8.2 15.2 7.6 Q13.8 6.6 12 6.6 Q10.2 6.6 8.8 7.6 Q7.9 8.2 7.9 10.4 Z",
 };
 
 /** Torsos. Same base width and same hem; only the shoulder line differs. */
