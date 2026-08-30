@@ -28,7 +28,7 @@ jest.mock("@/assets/utils/persistent-storage", () => ({
 
 import { UserPreferencesProvider } from "@/components/user-preferences-context";
 import { RoundsIndicator } from "../RoundsIndicator";
-import { GREEN, BLUE } from "@/assets/theme/accent";
+import { GREEN, ICE } from "@/assets/theme/accent";
 
 const renderWithAccent = async (accentId: string | null) => {
   mockSaved.data = accentId ? { accentId } : null;
@@ -69,11 +69,19 @@ describe("the accent preference reaches the rendered colour", () => {
     expect(renderedColor(tree)).toBe(GREEN.muted);
   });
 
-  it("renders BLUE when blue is stored", async () => {
+  it("renders ICE when ice is stored", async () => {
     // The assertion the whole feature rests on.
-    const tree = await renderWithAccent("blue");
-    expect(renderedColor(tree)).toBe(BLUE.muted);
+    const tree = await renderWithAccent("ice");
+    expect(renderedColor(tree)).toBe(ICE.muted);
     expect(renderedColor(tree)).not.toBe(GREEN.muted);
+  });
+
+  it("migrates a stored \"blue\" to ice rather than resetting to green", async () => {
+    // "blue" was this accent's id before it was renamed. Anyone running the
+    // branch build has it persisted; without the alias they would silently be
+    // put back on green, which reads as the app forgetting their choice.
+    const tree = await renderWithAccent("blue");
+    expect(renderedColor(tree)).toBe(ICE.muted);
   });
 
   it("falls back to green for an accent id that no longer exists", async () => {

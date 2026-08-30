@@ -7,13 +7,14 @@ import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react-native";
 
 const mockPush = jest.fn();
+const mockNavigate = jest.fn();
 jest.mock("expo-router", () => ({
-  useRouter: () => ({ push: mockPush }),
+  useRouter: () => ({ push: mockPush, navigate: mockNavigate }),
 }));
 
 import { UserMenu } from "../user-menu";
 
-beforeEach(() => mockPush.mockClear());
+beforeEach(() => mockNavigate.mockClear());
 
 describe("UserMenu", () => {
   it("opens the dropdown and shows both items", () => {
@@ -27,13 +28,16 @@ describe("UserMenu", () => {
     render(<UserMenu />);
     fireEvent.press(screen.getByTestId("account-menu-button"));
     fireEvent.press(screen.getByTestId("menu-user-preferences"));
-    expect(mockPush).toHaveBeenCalledWith("/user-preferences");
+    expect(mockNavigate).toHaveBeenCalledWith("/user-preferences");
+    // push would stack a duplicate screen every time the menu is used, so back
+    // needed one press per visit to reach the tab again.
+    expect(mockPush).not.toHaveBeenCalled();
   });
 
   it("App Settings links to /settings", () => {
     render(<UserMenu />);
     fireEvent.press(screen.getByTestId("account-menu-button"));
     fireEvent.press(screen.getByTestId("menu-app-settings"));
-    expect(mockPush).toHaveBeenCalledWith("/settings");
+    expect(mockNavigate).toHaveBeenCalledWith("/settings");
   });
 });

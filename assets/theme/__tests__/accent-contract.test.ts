@@ -9,7 +9,15 @@
  *
  * The exact GREEN values are frozen separately in accent-parity.test.ts.
  */
-import { ACCENTS, ACCENT_LABELS, DEFAULT_ACCENT_ID, GREEN, type Accent, type AccentId } from "../accent";
+import {
+  ACCENTS,
+  ACCENT_LABELS,
+  DEFAULT_ACCENT_ID,
+  GREEN,
+  fixedColors,
+  type Accent,
+  type AccentId,
+} from "../accent";
 
 const ACCENT_KEYS: (keyof Accent)[] = [
   "bright", "soft", "mid", "muted", "border", "deep",
@@ -151,5 +159,31 @@ describe("every accent is calibrated against green", () => {
       (k) => spread(a[k]) < 40,
     );
     expect(flat).toEqual([]);
+  });
+});
+
+describe("the ink role is never themed", () => {
+  /**
+   * The breath tab read as washed under every accent, not under any particular
+   * one, because nearly all of its text was tinted — and when every word carries
+   * the accent, the accent stops lifting anything. `ink` is the fix: primary text
+   * sits at near-white on the ground and the accent is spent on what should
+   * actually stand out.
+   *
+   * Asserted rather than commented because the obvious future "tidy up" is to
+   * make ink follow the theme, which would quietly undo it.
+   */
+  it("is not a value in any accent ramp", () => {
+    const values = new Set(
+      ids.flatMap((id) => Object.values(ACCENTS[id]).map((v) => v.toLowerCase())),
+    );
+    expect(values.has(fixedColors.ink.toLowerCase())).toBe(false);
+  });
+
+  it("clears every accent's brightest role on the ground", () => {
+    // If ink were dimmer than the accent it is meant to out-rank, the hierarchy
+    // inverts — the same failure the blue ramp had with the Start button.
+    const dim = ids.filter((id) => luminance(fixedColors.ink) <= luminance(ACCENTS[id].bright));
+    expect(dim).toEqual([]);
   });
 });

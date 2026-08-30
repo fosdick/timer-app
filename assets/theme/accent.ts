@@ -103,47 +103,29 @@ export const GREEN: Accent = {
 };
 
 /**
- * BlueTheme, finished.
+ * IceTheme — cold blue, and the coldest thing in the set.
  *
- * Six values come from the `const BlueTheme = false` branch that shipped dead in
- * 1.1.0 — but they were named after components, so they had to be re-mapped to
- * roles. The mapping below is by role; the VALUES were later re-solved, because
- * the original claim here — that the mapping mirrored green's luminance — was
- * simply wrong. Measured, soft/mid/border ran ~25% brighter than green and deep
- * ~35% darker. See the note on BLUE and the calibration test:
- *   borderColor #2B9CB3 -> muted   (green's muted is mid-dark, and this matches)
- *   fontColor   #3670A5 -> deep      (re-solved to #4A89C3)
- *   thumbTint   #2D5D8B -> control
- *   minTrack    #23496C -> track
- *   trackFalse  #081D21 -> trackOff
- *   headerLite  #C3D8DB -> tint      (re-solved to #EEF9FB)
- * The remaining six are new. `bright` is #80DEEA, which is not arbitrary: the old
- * (now dead) pranayama.tsx used exactly that cyan as its accent text, so it is the
- * blue identity this app already reached for once.
- */
-/**
- * Blue is green rotated in hue, NOT re-invented. Every role is held at green's
- * relative luminance (within 20%, asserted in accent-contract.test.ts) so blue
- * inherits green's contrast decisions instead of relitigating them.
+ * Was BLUE. Renamed and re-tuned because Ice and Tide sat only a few degrees
+ * apart and read as the same theme twice: both were cyan. Ice now runs 198-228
+ * (blue leaning violet at the deep end), Tide runs 158-193 (aqua leaning green),
+ * which holds them 30-40 degrees apart at EVERY role, not just on average.
  *
- * The first pass did not do this and it showed: soft/mid/border ran ~25% brighter
- * than green and deep ~35% darker, which made the pattern chips shout and left the
- * Start button — whose label is `deep` — the faintest text on the screen.
+ * A stored "blue" preference migrates to this — see user-preferences-context.
  */
-export const BLUE: Accent = {
-  bright: "#80DEEA",
-  soft: "#76C0E2",
-  mid: "#47AEDD",
-  muted: "#2B9CB3",
-  border: "#27BFD3",
-  deep: "#4A89C3",
-  control: "#2D5D8B",
-  track: "#23496C",
-  trackOff: "#081D21",
-  tint: "#EEF9FB",
-  tintInk: "#040E10",
-  tintStrong: "#E1F5FE",
-  surface: "#0A1014",
+export const ICE: Accent = {
+  bright: "#B7D7E7",
+  soft: "#A2B9D1",
+  mid: "#8DA6C6",
+  muted: "#6A95B6",
+  border: "#82B5D3",
+  deep: "#7382BD",
+  control: "#2D59BF",
+  track: "#35457C",
+  trackOff: "#131D24",
+  tint: "#F1F8FC",
+  tintInk: "#090B0C",
+  tintStrong: "#EEF2F5",
+  surface: "#0E1013",
 };
 
 /** Every selectable accent. Adding one is a 13-value entry here plus a label. */
@@ -179,28 +161,27 @@ export const LEAF: Accent = {
 };
 
 /**
- * TideTheme — the blue counterpart to Leaf.
+ * TideTheme — aqua, pulled green to clear Ice.
  *
- * The shipped BLUE is a calibrated version of the original two-value experiment;
- * Tide is designed rather than rescued. It travels 46 degrees of hue from a
- * green-cyan `bright` to an indigo `deep`, where the shipped blue travels 13 and
- * reads as a wall of one colour. That travel is the thing green always had and
- * blue never did.
+ * Travels 158-193: a green-cyan `bright` down to a deep teal. The original blue
+ * travelled 13 degrees across its whole ramp and read as a wall of one colour;
+ * that lesson is why every theme here is specified as a hue ARC rather than a
+ * base colour plus tints.
  */
 export const TIDE: Accent = {
-  bright: "#84E3D0",
-  soft: "#8FBFC8",
-  mid: "#6EACC3",
-  muted: "#429DA7",
-  border: "#32C2B8",
-  deep: "#5B87C0",
-  control: "#1861A2",
-  track: "#264A72",
-  trackOff: "#0F1F21",
-  tint: "#E7FBFB",
-  tintInk: "#080B0C",
-  tintStrong: "#E9F4F5",
-  surface: "#0D1013",
+  bright: "#84E4C4",
+  soft: "#80C2C0",
+  mid: "#51B2B9",
+  muted: "#3EA08F",
+  border: "#30C49D",
+  deep: "#3E8FA5",
+  control: "#0F6876",
+  track: "#1D4E59",
+  trackOff: "#0E1F1E",
+  tint: "#E6FCF8",
+  tintInk: "#080B0B",
+  tintStrong: "#E8F4F2",
+  surface: "#0C1111",
 };
 
 /**
@@ -232,11 +213,37 @@ export const DUSK: Accent = {
   surface: "#120F14",
 };
 
+/**
+ * GoldenSunTheme — Manipura, the city of jewels.
+ *
+ * The third chakra is drawn with ten golden-yellow petals, which is also where
+ * the breath tab's lotus comes from, so this is the theme most tied to what the
+ * app actually shows. Travels 24-52: a yellow `bright` down through amber to a
+ * terracotta `deep`, which is what keeps it from reading as "green's yellow
+ * cousin" — the two share a bright end and diverge everywhere below it.
+ */
+export const GOLD: Accent = {
+  bright: "#E3D473",
+  soft: "#C7B588",
+  mid: "#C19F60",
+  muted: "#BA8647",
+  border: "#CEAB2F",
+  deep: "#BC7343",
+  control: "#944C0C",
+  track: "#61421E",
+  trackOff: "#221B0F",
+  tint: "#FDF8E1",
+  tintInk: "#0C0A08",
+  tintStrong: "#F5F1E8",
+  surface: "#120F0C",
+};
+
 export const ACCENTS = {
   green: GREEN,
   leaf: LEAF,
-  blue: BLUE,
+  gold: GOLD,
   tide: TIDE,
+  ice: ICE,
   dusk: DUSK,
 } as const;
 export type AccentId = keyof typeof ACCENTS;
@@ -245,10 +252,14 @@ export type AccentId = keyof typeof ACCENTS;
 export const ACCENT_LABELS: Record<AccentId, string> = {
   green: "Green",
   leaf: "Leaf",
-  blue: "Blue",
+  gold: "Golden Sun",
   tide: "Tide",
+  ice: "Ice",
   dusk: "Dusk",
 };
+
+/** Renamed ids, so a stored preference is not silently reset to the default. */
+export const ACCENT_ALIASES: Record<string, AccentId> = { blue: "ice" };
 
 /** The brand accent, and the fallback whenever no preference is set. */
 export const DEFAULT_ACCENT_ID: AccentId = "green";
@@ -264,6 +275,14 @@ export const fixedColors = {
   /** True black — used by a couple of legacy surfaces. */
   black: "#000000",
   white: "#FFFFFF",
+  /**
+   * Primary text on the dark ground. NOT themed, on purpose: an accent should
+   * accent something, and when every word on a screen is tinted there is nothing
+   * left for the accent to lift. App Settings already reads this way and is the
+   * highest-contrast page in the app; the breath tab did not, which is why it
+   * felt washed under every theme rather than under any particular one.
+   */
+  ink: "#F2F6F7",
   /** Blue-grey, deliberately NOT part of the accent: it reads as neutral against
    *  any accent and carries "secondary/inactive" without competing. */
   neutral: "#546E7A",

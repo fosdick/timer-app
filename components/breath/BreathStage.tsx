@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { BreathView } from "@/assets/data/breath-timer-core";
+import { fixedColors } from "@/assets/theme/accent";
 import { useYogaTheme } from "@/components/user-preferences-context";
 import { useBreathTheme, type BreathTheme, formatClock } from "./breath-theme";
 import { BreatheLotus } from "./BreatheLotus";
@@ -101,7 +102,7 @@ export function BreathStageCenter({
         </>
       ) : isRunning ? (
         <>
-          {!metronome && <Text style={[styles.phase, { color: tint, fontSize: phaseSize }]}>{view.label}</Text>}
+          {!metronome && <Text style={[styles.phase, { fontSize: phaseSize }]}>{view.label}</Text>}
           <Text style={[styles.count, { color: tint, fontSize: countSize }]}>
             {showCount ? view.countRemaining : " "}
           </Text>
@@ -122,7 +123,10 @@ const makeStyles = (t: BreathTheme) =>
   // now lives on its own line below the countdown (RoundsIndicator), not inline.
   info: { color: t.muted, fontSize: 15 },
   center: { alignItems: "center", justifyContent: "center" }, // height set per tier
-  phase: { fontWeight: "300", letterSpacing: 2 }, // fontSize set per tier
+  // Ink, not the phase tint. The WORD names what you are doing and has to be
+  // readable at a glance mid-practice; the big number below it carries the phase
+  // colour, so the accent still does its job without the label fighting it.
+  phase: { color: fixedColors.ink, fontWeight: "300", letterSpacing: 2 },
   count: { fontWeight: "200", fontVariant: ["tabular-nums"] }, // fontSize set per tier
   idle: { color: t.muted, fontSize: 22, fontWeight: "300", letterSpacing: 2 },
 });

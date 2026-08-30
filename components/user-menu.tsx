@@ -21,9 +21,14 @@ export const UserMenu = () => {
 
   const go = (path: "/user-preferences" | "/settings") => {
     setOpen(false);
+    // navigate, NOT push. The account menu is reachable FROM these screens, so
+    // push stacked a new copy every time: open preferences three times and back
+    // needed three presses to reach the tab again. navigate pops to the existing
+    // route instead of duplicating it, so back is always one press to the tab.
+    //
     // Cast: typed-routes haven't regenerated for /user-preferences until the
     // next expo build; the route resolves fine at runtime.
-    router.push(path as Href);
+    router.navigate(path as Href);
   };
 
   return (

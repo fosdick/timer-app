@@ -12,7 +12,7 @@
  *     glyph rather than a guess.
  */
 import { PRONOUNS, PRONOUN_COLORS, PRONOUN_LABELS, type Pronoun } from "@/assets/images/svgx/user";
-import { GREEN, BLUE } from "@/assets/theme/accent";
+import { GREEN, ICE } from "@/assets/theme/accent";
 import { DEFAULT_USER_PREFERENCES } from "@/components/user-preferences-context";
 
 const luminance = (hex: string): number => {
@@ -75,7 +75,7 @@ describe("the glyph colour is NOT themed", () => {
   it("shares no value with any accent ramp", () => {
     // The property that matters: a pronoun tone must never be an accent value, or a
     // theme change would move it.
-    const accentValues = new Set([...Object.values(GREEN), ...Object.values(BLUE)].map((v) => v.toLowerCase()));
+    const accentValues = new Set([...Object.values(GREEN), ...Object.values(ICE)].map((v) => v.toLowerCase()));
     const clashes = PRONOUNS.filter((p) => accentValues.has(PRONOUN_COLORS[p].toLowerCase()));
     expect(clashes).toEqual([]);
   });

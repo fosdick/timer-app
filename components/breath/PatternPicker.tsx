@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { BreathPattern, BREATH_PATTERNS } from "@/assets/data/breath-patterns";
+import { fixedColors } from "@/assets/theme/accent";
 import { useBreathTheme, type BreathTheme } from "./breath-theme";
 
 /** Row of selectable pattern chips (Box / Nadi Shodhana / Viloma / 4-7-8). */
@@ -74,5 +75,8 @@ const makeStyles = (t: BreathTheme) =>
   chipActive: { backgroundColor: t.tintFaint, borderColor: t.label },
   dim: { opacity: 0.5 },
   chipText: { color: t.muted, fontSize: 14, textAlign: "center" },
-  chipTextActive: { color: t.accent, fontWeight: "600" },
+  // The selected pattern is the one piece of state on this screen you should be
+  // able to read without looking for it, so it goes to ink while the unselected
+  // ones stay in the accent.
+  chipTextActive: { color: fixedColors.ink, fontWeight: "600" },
 });

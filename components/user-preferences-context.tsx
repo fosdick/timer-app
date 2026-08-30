@@ -29,7 +29,9 @@ import React, {
   useState,
 } from "react";
 import { getData, storeData } from "@/assets/utils/persistent-storage";
-import { ACCENTS, DEFAULT_ACCENT_ID, type Accent, type AccentId } from "@/assets/theme/accent";
+import { ACCENTS, DEFAULT_ACCENT_ID, type Accent, type AccentId,
+  ACCENT_ALIASES,
+} from "@/assets/theme/accent";
 import { PRONOUNS, type Pronoun } from "@/assets/images/svgx/user";
 import {
   makeColorTheme,
@@ -112,7 +114,12 @@ const UserPreferencesProvider: React.FC<{ children: React.ReactNode }> = ({
           downbeatByPattern: { ...prev.downbeatByPattern, ...saved.downbeatByPattern },
           // Ignore an unknown accent id — a theme could be renamed or removed in a
           // later version, and a stale preference must not leave the app unstyled.
-          accentId: saved.accentId in ACCENTS ? saved.accentId : prev.accentId,
+          // ACCENT_ALIASES carries renamed ids ("blue" -> "ice"), so a rename
+          // does not silently reset someone to the default accent.
+          accentId:
+            saved.accentId in ACCENTS
+              ? saved.accentId
+              : ACCENT_ALIASES[saved.accentId as string] ?? prev.accentId,
           // Same guard: an unrecognised value must fall back rather than render
           // an icon with no silhouette and no colour.
           pronoun: PRONOUNS.includes(saved.pronoun) ? saved.pronoun : prev.pronoun,
