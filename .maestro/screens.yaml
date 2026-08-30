@@ -63,24 +63,23 @@ appId: com.example.timer-app
 - takeScreenshot: "06-hitt-idle"
 
 # --- User Preferences (colour themes + pronoun) ---
-# The account button lives in the header TITLE view, not headerRight — see
-# components/header-title.tsx for why. Its testID moved with it, so this tap is
-# unaffected, but a future header change is exactly what would break it.
+# Deep link, not the account menu. The menu renders in a React Native <Modal>,
+# which iOS puts in its own window, and Maestro can read NOTHING out of it — not
+# the testIDs, and not the text either. Verified twice against failure
+# screenshots: the menu was open with both items plainly visible while both
+# `id: menu-user-preferences` and `"App Settings"` failed to resolve.
+# expo-router serves the route directly, which skips the whole problem.
+- openLink: myapp://user-preferences
 - tapOn:
-    id: "account-menu-button"
+    # iOS interposes an "Open in <app>?" system alert on a scheme link opened from
+    # outside the app. It is a UIAlertController, not an RN Modal, so Maestro can
+    # see it. optional: in case a future iOS stops prompting.
+    text: "Open"
+    optional: true
 - extendedWaitUntil:
-    # TEXT, not the testID, and this is the one place in the tour that has to be.
-    # The menu renders inside a React Native <Modal>, which iOS puts in its own
-    # window; Maestro reads that window's TEXT (the Paces step above relies on the
-    # same thing) but does not surface testIDs from it. Verified against the
-    # failure screenshot: the menu was open and both items visible, and
-    # `id: menu-user-preferences` still did not resolve.
-    visible: "App Settings"
-    timeout: 8000
-- tapOn: "User Preferences"
-- extendedWaitUntil:
-    # Sync on a theme name, NOT on "User Preferences": that string is on the menu
-    # item too, so it is already visible before the screen has pushed.
-    visible: "Golden Sun"
-    timeout: 12000
+    # The chip's accessibilityLabel, not the visible text: the label overrides the
+    # inner <Text> in the accessibility tree, so a bare "Golden Sun" does not
+    # match. Only this screen has it.
+    visible: "Golden Sun colour theme"
+    timeout: 15000
 - takeScreenshot: "07-preferences"

@@ -102,6 +102,12 @@ function AccentRow({
                   styles.accentLabel,
                   { color: on ? a.bright : a.muted, fontWeight: on ? "600" : "400" },
                 ]}
+                // "Golden Sun" is the longest label and overflowed its third of
+                // the row — it rendered clipped at the chip's edge. Shrink to fit
+                // rather than widen the chip, so the grid stays even.
+                numberOfLines={1}
+                adjustsFontSizeToFit
+                minimumFontScale={0.8}
               >
                 {ACCENT_LABELS[id]}
               </Text>
