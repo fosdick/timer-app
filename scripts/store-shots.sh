@@ -50,6 +50,7 @@ headline_for() {
     04-yoga-running)       echo "Hold the pose. The timer keeps time." ;;
     05-yoga-paces)         echo "Save the sequences you return to" ;;
     06-hitt-idle)          echo "And intervals, when the practice changes" ;;
+    07-preferences)        echo "Six colours. Make it yours." ;;
     *)                     echo "" ;;
   esac
 }

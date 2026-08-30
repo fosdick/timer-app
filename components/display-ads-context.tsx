@@ -1,4 +1,5 @@
 import React, { createContext, useCallback, useEffect, useState } from "react";
+import { SCREENSHOT_MODE } from "@/constants/screenshot-mode";
 import { Platform } from "react-native";
 import { Constants } from "@/constants/constants";
 import Purchases, { CustomerInfo } from "react-native-purchases";
@@ -35,8 +36,11 @@ const PURCHASES_AVAILABLE = Platform.OS === "ios";
 const DisplayAdsProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [displayAds, setDisplayAds] = useState(true);
-  const [adsResolved, setAdsResolved] = useState(false);
+  // Screenshot builds start resolved and ad-free, so no banner ever mounts —
+  // see constants/screenshot-mode.ts. In every normal build SCREENSHOT_MODE is
+  // false and these are the original values.
+  const [displayAds, setDisplayAds] = useState(!SCREENSHOT_MODE);
+  const [adsResolved, setAdsResolved] = useState(SCREENSHOT_MODE);
   const [customerInfoData, setCustomerInfoData] = useState<CustomerInfo>();
 
   const value: DisplayAdsContextType = {

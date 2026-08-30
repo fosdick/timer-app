@@ -15,6 +15,12 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
+# Ads OFF for capture. Store panels should show what a paying customer sees, and
+# the AdMob TEST banner was otherwise landing in whichever panels the ad happened
+# to win the race on. Exported here so it reaches the build below and NOWHERE
+# else; scripts/preflight.sh fails if it is set when you go to ship.
+export EXPO_PUBLIC_SCREENSHOT_MODE=1
+
 # --- Device fleet ----------------------------------------------------------
 # First two are the App Store Connect REQUIRED sizes (largest iPhone + iPad);
 # the rest are marketing/QA extras. Edit this list freely — names must match

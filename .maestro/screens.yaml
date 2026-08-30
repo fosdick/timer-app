@@ -61,3 +61,26 @@ appId: com.example.timer-app
     visible: "Start"
     timeout: 15000
 - takeScreenshot: "06-hitt-idle"
+
+# --- User Preferences (colour themes + pronoun) ---
+# The account button lives in the header TITLE view, not headerRight — see
+# components/header-title.tsx for why. Its testID moved with it, so this tap is
+# unaffected, but a future header change is exactly what would break it.
+- tapOn:
+    id: "account-menu-button"
+- extendedWaitUntil:
+    # TEXT, not the testID, and this is the one place in the tour that has to be.
+    # The menu renders inside a React Native <Modal>, which iOS puts in its own
+    # window; Maestro reads that window's TEXT (the Paces step above relies on the
+    # same thing) but does not surface testIDs from it. Verified against the
+    # failure screenshot: the menu was open and both items visible, and
+    # `id: menu-user-preferences` still did not resolve.
+    visible: "App Settings"
+    timeout: 8000
+- tapOn: "User Preferences"
+- extendedWaitUntil:
+    # Sync on a theme name, NOT on "User Preferences": that string is on the menu
+    # item too, so it is already visible before the screen has pushed.
+    visible: "Golden Sun"
+    timeout: 12000
+- takeScreenshot: "07-preferences"
