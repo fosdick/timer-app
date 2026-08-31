@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
-# Fleet screenshot capture. Builds the app ONCE, then for each simulator in the
-# list below: boots it, pins a clean 9:41 status bar, installs the build, drives
+# Fleet screenshot capture. Builds the app when asked, then for each simulator in
+# the list below: boots it, pins a clean 9:41 status bar, installs the build, drives
 # the .maestro/screens.yaml tour, and collects the PNGs into screenshots/<device>/.
 #
 # Self-sufficient about the environment the same way scripts/e2e.sh is: npm/sh do
@@ -14,6 +14,12 @@
 #
 set -euo pipefail
 cd "$(dirname "$0")/.."
+
+# Ads OFF for capture. Store panels should show what a paying customer sees, and
+# the AdMob TEST banner was otherwise landing in whichever panels the ad happened
+# to win the race on. Exported here so it reaches the build below and NOWHERE
+# else; scripts/preflight.sh fails if it is set when you go to ship.
+export EXPO_PUBLIC_SCREENSHOT_MODE=1
 
 # --- Device fleet ----------------------------------------------------------
 # First two are the App Store Connect REQUIRED sizes (largest iPhone + iPad);
@@ -69,20 +75,23 @@ if ! command -v maestro >/dev/null 2>&1; then
   exit 127
 fi
 
-# --- Locate the build (capture-only — this script does NOT build) ----------
-# Building React Native correctly (codegen specs + JS bundle) is fragile to do by
-# hand; a custom-derivedDataPath xcodebuild here once deleted the codegen artifacts
-# and broke the build. So building is a PREREQUISITE done with the blessed command:
+# --- Build (unless BUILD=0) ------------------------------------------------
+# This USED to be capture-only while documenting a BUILD flag that did nothing,
+# so it shot whatever .app it happened to find. That is how three rounds of store
+# panels were captured from a JS bundle a day old, ads and all.
 #
-#   npx expo run:ios --configuration Release      # builds + installs (Ctrl-C after it boots)
-#
-# To pick up fresh .tsx changes, reset Metro's transform cache first so the JS
-# re-bundles from current source (the Xcode "Bundle React Native" phase runs every
-# build, but it can serve stale transforms from a warm cache):
-#
-#   rm -rf "$TMPDIR"/metro-* "$TMPDIR"/haste-map-*
-#
-# This script just finds the most recent VALID Release simulator build and shoots it.
+# Building React Native by hand is fragile (a custom-derivedDataPath xcodebuild
+# here once deleted the codegen artifacts), so this uses the blessed command and
+# nothing clever. fresh-bundle.sh first: the Xcode bundle phase happily reuses an
+# existing main.jsbundle, which is the whole stale-JS failure.
+if [ "${BUILD:-1}" != "0" ]; then
+  echo "==> Building Release with ads off (EXPO_PUBLIC_SCREENSHOT_MODE=1)"
+  bash scripts/fresh-bundle.sh
+  npx expo run:ios --configuration Release --device "${DEVICES[0]}" \
+    || { echo "!! build failed" >&2; exit 1; }
+fi
+
+# --- Locate the build ------------------------------------------------------
 # Search DerivedData only (where Xcode ▶ / expo run:ios land builds) — NOT ios/build,
 # which can hold an incomplete stub from a half-finished xcodebuild. We also skip any
 # .app missing a CFBundleIdentifier (an empty shell -> "Missing bundle ID" on install).
@@ -102,6 +111,22 @@ if [ -z "${APP_PATH:-}" ] || [ ! -d "$APP_PATH" ]; then
 fi
 echo "==> Using app bundle: $APP_PATH"
 echo "    (built $(stat -f '%Sm' "$APP_PATH"))"
+
+# The embedded JS must be newer than every source file. "Build Succeeded" does not
+# mean your JS is in there — the Xcode bundle phase reuses an existing
+# main.jsbundle — and a stale bundle looks EXACTLY like a working one on screen.
+jsb="$APP_PATH/main.jsbundle"
+[ -f "$jsb" ] || { echo "!! no main.jsbundle in $APP_PATH" >&2; exit 1; }
+newest_src=$(find app components assets constants -type f \( -name '*.ts' -o -name '*.tsx' \) \
+  -newer "$jsb" -print -quit 2>/dev/null || true)
+if [ -n "$newest_src" ]; then
+  echo "" >&2
+  echo "!! STALE BUNDLE — $jsb predates $newest_src" >&2
+  echo "   Capturing this would shoot old JS. Rebuild:" >&2
+  echo "     npm run screenshots -- \"<device>\"       # builds fresh" >&2
+  exit 1
+fi
+echo "    JS bundle is newer than every source file"
 
 # --- Capture per device ----------------------------------------------------
 mkdir -p "$OUT_DIR"

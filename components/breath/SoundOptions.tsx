@@ -1,7 +1,8 @@
+import { useMemo } from "react";
 import { View, StyleSheet } from "react-native";
 import { CLICK_SOUNDS, AMBIENCES, getClickSound } from "./breath-sounds";
 import { WheelSelect } from "./WheelSelect";
-import { breathTheme as t } from "./breath-theme";
+import { useBreathTheme, type BreathTheme } from "./breath-theme";
 
 /**
  * Click-sound and ambience selectors — one compact row of two wheel-select
@@ -29,6 +30,8 @@ export function SoundOptions({
   /** Greys the Downbeat wheel when downbeats are toggled off for the pattern. */
   downbeatDisabled?: boolean;
 }) {
+  const t = useBreathTheme();
+  const styles = useMemo(() => makeStyles(t), [t]);
   const showDownbeat = downbeatId !== undefined && onDownbeatChange !== undefined;
   return (
     <View style={styles.row}>
@@ -62,6 +65,7 @@ export function SoundOptions({
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (t: BreathTheme) =>
+  StyleSheet.create({
   row: { flexDirection: "row", justifyContent: "center", gap: t.space.sm },
 });

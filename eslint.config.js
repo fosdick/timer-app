@@ -52,6 +52,21 @@ module.exports = [
     },
   },
   {
+    // Node build scripts, not app runtime — CommonJS globals need declaring or
+    // every __dirname is a no-undef error.
+    files: ["scripts/**/*.js"],
+    languageOptions: {
+      globals: {
+        __dirname: "readonly",
+        __filename: "readonly",
+        require: "readonly",
+        module: "writable",
+        process: "readonly",
+        console: "readonly",
+      },
+    },
+  },
+  {
     // Not app source: dormant internal tooling, build output, native projects.
     ignores: [
       "dist/*",

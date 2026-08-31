@@ -20,11 +20,11 @@ import {
 import { useBreathTimer } from "@/assets/utils/use-breath-timer";
 import { useAmbience } from "@/assets/utils/use-ambience";
 import { useReportActiveTimer } from "@/components/active-timer-context";
-import { useUserPreferences, isDownbeatEnabled } from "@/components/user-preferences-context";
+import { useUserPreferences, isDownbeatEnabled, useAppStyles } from "@/components/user-preferences-context";
 import { getData, storeData } from "@/assets/utils/persistent-storage";
 import { getTimeParts } from "@/assets/utils/format-time";
 import { playStart, playEndChime } from "@/assets/utils/sounds";
-import { screenStyles, timerPickerModalStyles } from "@/assets/styles/timer-app";
+
 import { useWindowDimensions } from "react-native";
 import { PatternPicker } from "./PatternPicker";
 import { CountEditors } from "./CountEditors";
@@ -32,7 +32,7 @@ import { BreathStageHeader, BreathStageCenter } from "./BreathStage";
 import { RoundsIndicator } from "./RoundsIndicator";
 import { SoundOptions } from "./SoundOptions";
 import { getClickSound, getAmbience, DEFAULT_CLICK_ID, DEFAULT_DOWNBEAT_ID, DEFAULT_AMBIENCE_ID } from "./breath-sounds";
-import { breathTheme as t } from "./breath-theme";
+import { useBreathTheme, type BreathTheme } from "./breath-theme";
 import { SessionLengthModal } from "./SessionLengthModal";
 import { useLayoutTier } from "./use-layout-tier";
 
@@ -60,6 +60,9 @@ const countsOf = (p: BreathPattern): CountSet => ({
  * wheels, a session-length picker, sound options, and persisted settings.
  */
 export default function BreathScreen() {
+  const { screen: screenStyles, picker: timerPickerModalStyles } = useAppStyles();
+  const t = useBreathTheme();
+  const styles = useMemo(() => makeStyles(t), [t]);
   const tier = useLayoutTier();
   // "expanded" spans a 956pt Pro Max AND a 1376pt iPad, which need different
   // treatment: the centred-card layout below assumes SURPLUS height, and a Pro
@@ -483,7 +486,8 @@ export default function BreathScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (t: BreathTheme) =>
+  StyleSheet.create({
   screen: { flex: 1, backgroundColor: t.bg, paddingHorizontal: t.space.lg },
   // iPad / very large screens: cap the column and center it so controls don't
   // stretch edge-to-edge and the layout reads as designed, not stretched.
@@ -536,7 +540,7 @@ const styles = StyleSheet.create({
   controls: { alignItems: "center", gap: t.space.md, paddingVertical: t.space.md },
   startBtn: {
     borderWidth: 1,
-    borderColor: t.border,
+    borderColor: t.label, // toned from t.border (#91BD27) with the rest
     paddingHorizontal: t.space.xl + 12,
     paddingVertical: t.space.md,
     borderRadius: t.radius,
@@ -551,8 +555,8 @@ const styles = StyleSheet.create({
     width: 20,
     height: 20,
     borderRadius: 5,
-    borderWidth: 2,
-    borderColor: t.border,
+    borderWidth: 1, // was 2 — the thickest outline in the tab
+    borderColor: t.label,
     alignItems: "center",
     justifyContent: "center",
   },

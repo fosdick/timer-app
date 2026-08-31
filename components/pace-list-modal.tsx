@@ -1,3 +1,5 @@
+import type { YogaColors } from "@/assets/theme/colors";
+import { useYogaTheme } from "@/components/user-preferences-context";
 /**
  * PaceListModal
  *
@@ -12,7 +14,7 @@
  * handled by the parent. This component just emits the user's intent.
  */
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import {
   Alert,
   FlatList,
@@ -24,7 +26,7 @@ import {
 } from "react-native";
 import { Swipeable } from "react-native-gesture-handler";
 
-import { yogaColors } from "@/assets/theme";
+
 import {
   type TimerPace,
   formatPaceSummary,
@@ -60,6 +62,8 @@ export const PaceListModal = ({
   onDelete,
   onRestoreDefaults,
 }: PaceListModalProps) => {
+  const { colors: yogaColors } = useYogaTheme();
+  const styles = useMemo(() => makeStyles(yogaColors), [yogaColors]);
   // Track the currently-open Swipeable so opening a new one closes the previous
   const [, setOpenRowId] = useState<string | null>(null);
 
@@ -207,7 +211,8 @@ export const PaceListModal = ({
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
-const styles = StyleSheet.create({
+const makeStyles = (yogaColors: YogaColors) =>
+  StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#1a1a1a",

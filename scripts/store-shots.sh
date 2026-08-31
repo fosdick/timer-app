@@ -37,14 +37,20 @@ INK="#CDDC39"       # lime, same as the countdowns and picker titles
 # Keyed by the raw capture's basename. One idea per panel, forming an arc:
 # what it is -> rounds -> sounds -> yoga -> paces -> intervals.
 # Ratified by the user 2026-08-27. Edit freely and re-run.
+# Keys MUST match the takeScreenshot names in .maestro/screens.yaml. They drifted
+# once — the tour was renamed and this map was not, so three of six panels were
+# silently skipped and the run still exited 0. An unmapped capture is now a hard
+# failure (see below), because a half-composed set that reports success is exactly
+# the stale-store-image trap this script exists to prevent.
 headline_for() {
   case "$1" in
-    01-pranayama-running)  echo "Breath timed by count, not by clock" ;;
-    02-pranayama-rounds)   echo "Sessions measured in rounds — ending on the exhale" ;;
-    03-pranayama-setup)    echo "Six patterns, six cues — quiet enough to forget" ;;
+    01-pranayama-idle)     echo "Breath timed by count, not by clock" ;;
+    02-pranayama-countin)  echo "Begin in three. Then stop counting." ;;
+    03-yoga-idle)          echo "Six patterns, six cues — quiet enough to forget" ;;
     04-yoga-running)       echo "Hold the pose. The timer keeps time." ;;
     05-yoga-paces)         echo "Save the sequences you return to" ;;
     06-hitt-idle)          echo "And intervals, when the practice changes" ;;
+    07-preferences)        echo "Six colours. Make it yours." ;;
     *)                     echo "" ;;
   esac
 }
@@ -106,7 +112,7 @@ if [ "$#" -gt 0 ]; then DEVICES=("$@"); else
 fi
 
 mkdir -p "$OUT_DIR"
-made=0; skipped=0
+made=0; skipped=0; unmapped=""
 for slug in "${DEVICES[@]}"; do
   src="$IN_DIR/$slug"
   [ -d "$src" ] || { echo "!! no raw captures in $src — skipping" >&2; continue; }
@@ -123,7 +129,8 @@ for slug in "${DEVICES[@]}"; do
     base="$(basename "$raw" .png)"
     head="$(headline_for "$base")"
     if [ -z "$head" ]; then
-      echo "    - $base : no headline mapped, skipped"; skipped=$((skipped+1)); continue
+      echo "    !! $base : NO HEADLINE MAPPED" >&2
+      unmapped="$unmapped $base"; skipped=$((skipped+1)); continue
     fi
     # Canvas = the capture's native pixel size, which already equals Apple's
     # required size for these two devices (6.9\" iPhone 1320x2868, 13\" iPad
@@ -147,3 +154,11 @@ done
 echo ""
 echo "==> composed $made panel(s), skipped $skipped, under ./$OUT_DIR/<device>/"
 [ "$made" -gt 0 ] || { echo "!! nothing composed" >&2; exit 1; }
+# A capture with no headline is a drift between .maestro/screens.yaml and the map
+# above, not a thing to shrug at: it silently ships an incomplete store set.
+if [ -n "$unmapped" ]; then
+  echo "" >&2
+  echo "!! FAILED — captures with no headline mapped:$unmapped" >&2
+  echo "   Add them to headline_for() in $0, or remove them from the Maestro tour." >&2
+  exit 1
+fi

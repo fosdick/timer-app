@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useAppStyles } from "@/components/user-preferences-context";
+import { useState, useMemo } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { Audio } from "expo-av";
 import { LinearGradient } from "expo-linear-gradient";
@@ -10,8 +11,8 @@ import {
   CountField,
   countFields,
 } from "@/assets/data/breath-patterns";
-import { breathTheme as t } from "./breath-theme";
-import { timerPickerModalStyles } from "@/assets/styles/timer-app";
+import { useBreathTheme, type BreathTheme } from "./breath-theme";
+
 
 /**
  * The single merged count row: each pattern count is one box. Editable counts
@@ -32,6 +33,9 @@ export function CountEditors({
   onChange: (key: EditFieldKey, value: number) => void;
   disabled?: boolean;
 }) {
+  const { picker: timerPickerModalStyles } = useAppStyles();
+  const t = useBreathTheme();
+  const styles = useMemo(() => makeStyles(t), [t]);
   const fields = countFields(pattern);
   const [editing, setEditing] = useState<CountField | null>(null);
   if (fields.length === 0) return null;
@@ -78,19 +82,27 @@ export function CountEditors({
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (t: BreathTheme) =>
+  StyleSheet.create({
   row: { flexDirection: "row", justifyContent: "center", gap: t.space.sm, flexWrap: "wrap" },
+  // A FIELD, not a box. BREATH/10 and CLICK/Snap were the same bordered container,
+  // so an editable number and a picker read as the same kind of control. An
+  // underline is the shape of something you type into.
   field: {
     alignItems: "center",
-    minWidth: 64,
-    paddingVertical: t.space.xs,
-    paddingHorizontal: t.space.sm,
-    borderRadius: t.radius,
-    borderWidth: 1,
+    // Fixed, equal width so the three underlines form ONE ruled line across the row.
+    // With minWidth the rule hugged its label, so "BREATH" drew a short rule next to
+    // "RETENTION OUT"'s long one and the row read as ragged rather than as a set.
+    width: 104,
+    paddingHorizontal: 4,
+    paddingBottom: 3,
+    borderBottomWidth: 1,
     borderColor: t.line,
   },
-  fieldActive: { borderColor: t.border, backgroundColor: t.tintFaint },
+  // Same toning as the pattern chips: identical idiom (t.line base, bright border
+  // + faint tint when active), so the two selected states must not diverge.
+  fieldActive: { borderColor: t.label },
   label: { color: t.muted, fontSize: 11, textTransform: "uppercase", letterSpacing: 0.5 },
-  value: { color: t.text, fontSize: 24, fontWeight: "400", fontVariant: ["tabular-nums"] },
+  value: { color: t.muted, fontSize: 24, fontWeight: "400", fontVariant: ["tabular-nums"] },
   activeText: { color: t.accent },
 });

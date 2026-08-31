@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Text, TouchableOpacity, View, StyleSheet, ScrollView, TextInput } from "react-native";
 import { YOGA_FLOWS, YogaFlow, calculateFlowDurationWithTransitions } from "@/assets/data/yoga-flows";
-import { colorTheme } from "@/assets/styles/timer-app";
+import { useAppColors } from "@/components/user-preferences-context";
+import type { AppColorTheme } from "@/assets/styles/timer-app";
 import { formatMinutesSeconds, getTimePartsMinSec } from "@/assets/utils/format-time";
 
 interface YogaFlowSelectProps {
@@ -11,6 +12,8 @@ interface YogaFlowSelectProps {
 }
 
 export default function YogaFlowSelect({ onSelectFlow, onSelectManual, onCancel }: YogaFlowSelectProps) {
+  const colorTheme = useAppColors();
+  const styles = useMemo(() => makeStyles(colorTheme), [colorTheme]);
   const [multiplierText, setMultiplierText] = useState<string>("1");
 
   const parsedMultiplier = parseFloat(multiplierText);
@@ -86,7 +89,8 @@ export default function YogaFlowSelect({ onSelectFlow, onSelectManual, onCancel 
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colorTheme: AppColorTheme) =>
+  StyleSheet.create({
   container: {
     flex: 1,
     paddingTop: 60,
@@ -115,7 +119,7 @@ const styles = StyleSheet.create({
   },
   multiplierInput: {
     borderWidth: 1,
-    borderColor: colorTheme.borderColor,
+    borderColor: colorTheme.outline,
     borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 8,
@@ -134,7 +138,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderWidth: 1,
-    borderColor: colorTheme.borderColor,
+    borderColor: colorTheme.outline,
     borderRadius: 6,
   },
   multiplierResetText: {
@@ -150,7 +154,7 @@ const styles = StyleSheet.create({
   flowCard: {
     padding: 20,
     borderWidth: 2,
-    borderColor: colorTheme.borderColor,
+    borderColor: colorTheme.outline,
     borderRadius: 12,
     marginBottom: 16,
     backgroundColor: "rgba(0, 0, 0, 0.2)",

@@ -4,7 +4,8 @@ import { useFocusEffect } from "expo-router";
 import { Text, TouchableOpacity, View } from "react-native";
 import Slider from "@react-native-community/slider";
 
-import { TimerStyles, HiitStyles, colorTheme, screenStyles } from "@/assets/styles/timer-app";
+
+import { useAppStyles } from "@/components/user-preferences-context";
 import { playLevelComplete, playHittStart } from "@/assets/utils/sounds";
 import HittIntervalPicker from "@/components/hitt-time-picker";
 import { useReportActiveTimer } from "@/components/active-timer-context";
@@ -19,6 +20,7 @@ import {
 import { getData, storeData } from "../assets/utils/persistent-storage";
 
 export default function HittView() {
+  const { colors: c, timer: TimerStyles, hiit: HiitStyles, screen: screenStyles } = useAppStyles();
   const HITT_DATA_STORAGE_KEY = "hitt-data-storage-key";
   const DEFAULT_NUMBER_ROUNDS = 10;
   const DEFAULT_WORKOUT_TIME = 30;
@@ -305,9 +307,9 @@ export default function HittView() {
           maximumValue={50}
           step={1}
           value={numberRounds}
-          minimumTrackTintColor={colorTheme.controlActive}
-          maximumTrackTintColor={colorTheme.controlInactive}
-          thumbTintColor={colorTheme.controlActive}
+          minimumTrackTintColor={c.controlActive}
+          maximumTrackTintColor={c.controlInactive}
+          thumbTintColor={c.controlActive}
           onValueChange={(val) => {
             setNumberRounds(val);
             setRoundsRemaining(val);

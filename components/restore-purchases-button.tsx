@@ -4,12 +4,13 @@ import Purchases from "react-native-purchases";
 import { Constants } from "@/constants/constants";
 import { storeData } from "../assets/utils/persistent-storage";
 import { DisplayAdsContext } from "../components/display-ads-context";
-import { colorTheme } from "@/assets/styles/timer-app";
+import { useAppColors } from "@/components/user-preferences-context";
 
 type Status = "idle" | "working" | "none-found" | "error";
 
 const RestorePurchasesButton = () => {
   const { displayAds, setDisplayAds } = useContext(DisplayAdsContext);
+  const colorTheme = useAppColors();
   const [status, setStatus] = useState<Status>("idle");
   const [errorMsg, setErrorMsg] = useState<string>("");
 

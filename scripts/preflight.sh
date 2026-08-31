@@ -83,6 +83,21 @@ else
   warn "expo-doctor reported issues (above) — worth resolving before a release"
 fi
 
+# 8. Screenshot mode must be OFF for anything you intend to ship. A build made
+# with EXPO_PUBLIC_SCREENSHOT_MODE=1 has ads disabled for EVERY user, with nothing
+# in the UI to reveal it — the failure would be silent and revenue-shaped.
+echo "── screenshot mode ────────────────────────────────────────"
+sm_on=0
+[ "${EXPO_PUBLIC_SCREENSHOT_MODE:-}" = "1" ] && sm_on=1
+for f in .env .env.local .env.production; do
+  [ -f "$f" ] && grep -qE '^[[:space:]]*EXPO_PUBLIC_SCREENSHOT_MODE[[:space:]]*=[[:space:]]*1' "$f" && sm_on=1
+done
+if [ "$sm_on" -eq 1 ]; then
+  bad "EXPO_PUBLIC_SCREENSHOT_MODE=1 is set — a build from here would ship with ads OFF"
+else
+  ok "screenshot mode off (ads will display normally)"
+fi
+
 echo "───────────────────────────────────────────────────────────"
 if [ "$fail" -ne 0 ]; then
   echo "✗ preflight found blocking issues — fix the ✗ lines before building."

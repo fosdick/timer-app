@@ -1,3 +1,5 @@
+import type { YogaColors } from "@/assets/theme/colors";
+import { useAppStyles, useYogaTheme } from "@/components/user-preferences-context";
 /**
  * PaceFormModal
  *
@@ -10,7 +12,7 @@
  * upward and the parent decides whether to addPace or updatePace.
  */
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import {
   Modal,
   StyleSheet,
@@ -36,8 +38,8 @@ import {
   formatMinutesSeconds,
   getTimePartsMinSec,
 } from "../assets/utils/format-time";
-import { yogaColors } from "@/assets/theme";
-import { timerPickerModalStyles } from "@/assets/styles/timer-app";
+
+
 import type { TimerPaceInput } from "@/assets/data/yoga-paces";
 
 // ─── Props ────────────────────────────────────────────────────────────────────
@@ -60,6 +62,9 @@ export const PaceFormModal = ({
   onSave,
   onCancel,
 }: PaceFormModalProps) => {
+  const { colors: yogaColors } = useYogaTheme();
+  const styles = useMemo(() => makeStyles(yogaColors), [yogaColors]);
+  const { picker: timerPickerModalStyles } = useAppStyles();
   const [name, setName] = useState(initialValues.name);
   const [initialTotalTime, setInitialTotalTime] = useState(
     initialValues.initialTotalTime,
@@ -290,7 +295,8 @@ export const PaceFormModal = ({
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
-const styles = StyleSheet.create({
+const makeStyles = (yogaColors: YogaColors) =>
+  StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#1a1a1a",

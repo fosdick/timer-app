@@ -3,6 +3,7 @@ import React, { useContext } from "react";
 import { DisplayAdsContext } from "./display-ads-context";
 import { StyleSheet, SafeAreaView } from "react-native";
 import { Constants } from "@/constants/constants";
+import { SCREENSHOT_MODE } from "@/constants/screenshot-mode";
 import {
   BannerAdSize,
   BannerAd,
@@ -18,7 +19,10 @@ export const BannerAdsView = () => {
       {/* adsResolved gates the first paint: displayAds starts optimistically
           true, so without it an entitled or promo user saw a banner mount and
           then disappear on every cold launch. */}
-      {adsResolved && displayAds && (
+      {/* SCREENSHOT_MODE is checked HERE and not only in the provider's initial
+          state: removing a promo calls setDisplayAds(true), so a state-only guard
+          could be undone mid-run. At the render it is authoritative. */}
+      {!SCREENSHOT_MODE && adsResolved && displayAds && (
         <BannerAd
           size={BannerAdSize.FULL_BANNER}
           unitId={adUnitId}

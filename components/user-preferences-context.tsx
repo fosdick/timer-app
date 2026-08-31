@@ -13,6 +13,12 @@
  *   page. Absent entry => default (Viloma on, every other pattern off).
  * - countInEnabled / countInSec: the pranayama "Begin in" pre-roll — whether it
  *   runs on a fresh start, and how many seconds it counts down from.
+ * - pronoun: she / they / he, shown as the header glyph. Default "they" — someone
+ *   who never opens this page gets the neutral icon rather than a guess. Its colour
+ *   is deliberately NOT themed (see assets/images/svgx/user.tsx).
+ * - accentId: which colour accent the app uses. Accent-only theming — the ramp in
+ *   assets/theme/accent.ts changes, the dark ground and neutrals never do. Green is
+ *   the brand (the logo is green) and is the default.
  */
 import React, {
   createContext,
@@ -23,12 +29,28 @@ import React, {
   useState,
 } from "react";
 import { getData, storeData } from "@/assets/utils/persistent-storage";
+import { ACCENTS, DEFAULT_ACCENT_ID, type Accent, type AccentId,
+  ACCENT_ALIASES,
+} from "@/assets/theme/accent";
+import { PRONOUNS, type Pronoun } from "@/assets/images/svgx/user";
+import {
+  makeColorTheme,
+  makeTimerStyles,
+  makePranayamaStyles,
+  makeHiitStyles,
+  makeScreenStyles,
+  makeTimerPickerModalStyles,
+} from "@/assets/styles/timer-app";
+import { makeYogaColors } from "@/assets/theme/colors";
+import { makeYogaTypography } from "@/assets/theme/typography";
 
 export type UserPreferences = {
   useRounds: boolean;
   downbeatByPattern: Record<string, boolean>;
   countInEnabled: boolean;
   countInSec: number;
+  accentId: AccentId;
+  pronoun: Pronoun;
 };
 
 /** Bounds for the "Begin in" pre-roll duration (whole seconds). */
@@ -40,6 +62,8 @@ export const DEFAULT_USER_PREFERENCES: UserPreferences = {
   downbeatByPattern: {},
   countInEnabled: true,
   countInSec: 8,
+  accentId: DEFAULT_ACCENT_ID,
+  pronoun: "they",
 };
 
 /** Patterns with downbeats on by default (only Viloma, per product). */
@@ -59,6 +83,8 @@ type UserPreferencesContextType = {
   setDownbeatEnabled: (patternId: string, value: boolean) => void;
   setCountInEnabled: (value: boolean) => void;
   setCountInSec: (value: number) => void;
+  setAccentId: (value: AccentId) => void;
+  setPronoun: (value: Pronoun) => void;
 };
 
 const UserPreferencesContext = createContext<UserPreferencesContextType>({
@@ -67,6 +93,8 @@ const UserPreferencesContext = createContext<UserPreferencesContextType>({
   setDownbeatEnabled: () => {},
   setCountInEnabled: () => {},
   setCountInSec: () => {},
+  setAccentId: () => {},
+  setPronoun: () => {},
 });
 
 const UserPreferencesProvider: React.FC<{ children: React.ReactNode }> = ({
@@ -84,6 +112,17 @@ const UserPreferencesProvider: React.FC<{ children: React.ReactNode }> = ({
           // Migrate the former autoCorrectExhaleEnd toggle to useRounds (same intent).
           useRounds: saved.useRounds ?? saved.autoCorrectExhaleEnd ?? prev.useRounds,
           downbeatByPattern: { ...prev.downbeatByPattern, ...saved.downbeatByPattern },
+          // Ignore an unknown accent id — a theme could be renamed or removed in a
+          // later version, and a stale preference must not leave the app unstyled.
+          // ACCENT_ALIASES carries renamed ids ("blue" -> "ice"), so a rename
+          // does not silently reset someone to the default accent.
+          accentId:
+            saved.accentId in ACCENTS
+              ? saved.accentId
+              : ACCENT_ALIASES[saved.accentId as string] ?? prev.accentId,
+          // Same guard: an unrecognised value must fall back rather than render
+          // an icon with no silhouette and no colour.
+          pronoun: PRONOUNS.includes(saved.pronoun) ? saved.pronoun : prev.pronoun,
         }));
       }
     });
@@ -145,6 +184,28 @@ const UserPreferencesProvider: React.FC<{ children: React.ReactNode }> = ({
     [persist],
   );
 
+  const setAccentId = useCallback(
+    (value: AccentId) => {
+      setPrefs((prev) => {
+        const next = { ...prev, accentId: value };
+        persist(next);
+        return next;
+      });
+    },
+    [persist],
+  );
+
+  const setPronoun = useCallback(
+    (value: Pronoun) => {
+      setPrefs((prev) => {
+        const next = { ...prev, pronoun: value };
+        persist(next);
+        return next;
+      });
+    },
+    [persist],
+  );
+
   const value = useMemo(
     () => ({
       prefs,
@@ -152,6 +213,8 @@ const UserPreferencesProvider: React.FC<{ children: React.ReactNode }> = ({
       setDownbeatEnabled,
       setCountInEnabled,
       setCountInSec,
+      setAccentId,
+      setPronoun,
     }),
     [
       prefs,
@@ -159,6 +222,8 @@ const UserPreferencesProvider: React.FC<{ children: React.ReactNode }> = ({
       setDownbeatEnabled,
       setCountInEnabled,
       setCountInSec,
+      setAccentId,
+      setPronoun,
     ],
   );
 
@@ -171,7 +236,62 @@ const UserPreferencesProvider: React.FC<{ children: React.ReactNode }> = ({
 
 const useUserPreferences = () => useContext(UserPreferencesContext);
 
+/**
+ * The active accent ramp. This is what styled components read.
+ *
+ * Deliberately a thin wrapper over the preference rather than its own provider:
+ * one source of truth, one place that persists, nothing extra to mount.
+ */
+/**
+ * Reactive token sets. Components call these instead of importing the static
+ * exports; the static ones remain valid green instances so the migration is
+ * incremental. Each memoises on the accent so styles rebuild only on a theme
+ * change, not per render.
+ */
+const useAppColors = () => {
+  const accent = useAccent();
+  return useMemo(() => makeColorTheme(accent), [accent]);
+};
+
+/**
+ * The SHARED stylesheets, themed. These are the backbone of the Yoga and HIIT tabs —
+ * those screens are built almost entirely from TimerStyles / HiitStyles /
+ * screenStyles rather than from per-component styles, which is why converting
+ * individual components left them looking completely unthemed.
+ */
+const useAppStyles = () => {
+  const c = useAppColors();
+  return useMemo(
+    () => ({
+      colors: c,
+      timer: makeTimerStyles(c),
+      pranayama: makePranayamaStyles(c),
+      hiit: makeHiitStyles(c),
+      screen: makeScreenStyles(c),
+      picker: makeTimerPickerModalStyles(c),
+    }),
+    [c],
+  );
+};
+
+const useYogaTheme = () => {
+  const accent = useAccent();
+  return useMemo(() => {
+    const colors = makeYogaColors(accent);
+    return { colors, typography: makeYogaTypography(accent, colors) };
+  }, [accent]);
+};
+
+const useAccent = (): Accent => {
+  const { prefs } = useContext(UserPreferencesContext);
+  return ACCENTS[prefs.accentId] ?? ACCENTS[DEFAULT_ACCENT_ID];
+};
+
 export {
+  useAccent,
+  useAppColors,
+  useAppStyles,
+  useYogaTheme,
   UserPreferencesProvider,
   UserPreferencesContext,
   useUserPreferences,

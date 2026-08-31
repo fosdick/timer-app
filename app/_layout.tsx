@@ -10,8 +10,8 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 // app files
 import { Constants } from "@/constants/constants";
-import { UserMenu } from "@/components/user-menu";
-import { colorTheme } from "@/assets/styles/timer-app";
+import { HeaderTitle } from "@/components/header-title";
+import { useAppColors } from "@/components/user-preferences-context";
 import { DisplayAdsProvider } from "../components/display-ads-context";
 import { ActiveTimerProvider } from "../components/active-timer-context";
 import { UserPreferencesProvider } from "../components/user-preferences-context";
@@ -66,36 +66,58 @@ export default function RootLayout() {
       <DisplayAdsProvider>
         <ActiveTimerProvider>
           <UserPreferencesProvider>
-            <Stack
-              screenOptions={{
-                title: "Timer App Yoga",
-                headerStyle: {
-                  backgroundColor: colorTheme.headerLiteShade,
-                },
-                // Explicit ink for the title and the back button. Without this,
-                // React Navigation tints the header by system appearance, so
-                // every dark-mode user got a WHITE title on near-white mint.
-                headerTintColor: colorTheme.headerInk,
-                // Every Stack screen gets the app background. Without this, the
-                // navigator's default (light) showed through on App Settings —
-                // whose own paywall row is styled dark (#1a1a1a on white text),
-                // i.e. it was always meant to sit on a dark screen. User
-                // Preferences only looked right because it sets its own.
-                contentStyle: { backgroundColor: colorTheme.backgroundColor },
-                headerRight: () => <UserMenu />,
-              }}
-            >
-              {/* <Stack.Screen name="+html" options={{ headerShown: false }} /> */}
-              <Stack.Screen name="+not-found" />
-              <Stack.Screen name="settings" options={{ title: "App Settings" }} />
-              <Stack.Screen
-                name="user-preferences"
-                options={{ title: "User Preferences" }}
-              />
-            </Stack>
+            <ThemedStack />
           </UserPreferencesProvider>
         </ActiveTimerProvider>
       </DisplayAdsProvider>
     </GestureHandlerRootView>
+  );
+}
+
+/**
+ * The navigator, split out so it sits INSIDE UserPreferencesProvider and can read
+ * the accent. Calling the hook in RootLayout would silently get the default context
+ * — RootLayout is the provider's parent, not its descendant — and the header would
+ * never follow the theme.
+ */
+function ThemedStack() {
+  const c = useAppColors();
+  return (
+      <Stack
+        screenOptions={{
+          title: "Timer App Yoga",
+          headerStyle: {
+            backgroundColor: c.headerLiteShade,
+          },
+          // Explicit ink for the title and the back button. Without this,
+          // React Navigation tints the header by system appearance, so
+          // every dark-mode user got a WHITE title on near-white mint.
+          headerTintColor: c.headerInk,
+          // Every Stack screen gets the app background. Without this, the
+          // navigator's default (light) showed through on App Settings —
+          // whose own paywall row is styled dark (#1a1a1a on white text),
+          // i.e. it was always meant to sit on a dark screen. User
+          // Preferences only looked right because it sets its own.
+          contentStyle: { backgroundColor: c.backgroundColor },
+          // The account button lives in the TITLE view, not headerRight.
+          // Anything in headerRight becomes a UIBarButtonItem, and on iOS 26 the
+          // system paints a shared background behind it and CLIPS the custom view
+          // to its bounds — measured: a #6A7071 pill (dark-variant glass, because
+          // app.json sets userInterfaceStyle "dark") about 7pt larger than our
+          // view on every side. It cannot be covered: it is always bigger, and a
+          // negative margin does not help because the clip wins. A title view
+          // gets none of that treatment.
+          headerTitleAlign: "center",
+          headerTitle: ({ children }) => <HeaderTitle title={String(children ?? "")} />,
+        }}
+      >
+        {/* <Stack.Screen name="+html" options={{ headerShown: false }} /> */}
+        <Stack.Screen name="+not-found" />
+        <Stack.Screen name="settings" options={{ title: "App Settings" }} />
+        <Stack.Screen
+          name="user-preferences"
+          options={{ title: "User Preferences" }}
+        />
+      </Stack>
   );
 }

@@ -1,8 +1,10 @@
+import { useMemo } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { BreathView } from "@/assets/data/breath-timer-core";
-import { yogaTypography } from "@/assets/theme";
-import { breathTheme as t, formatClock } from "./breath-theme";
-import { BreatheCircle } from "./BreatheCircle";
+import { fixedColors } from "@/assets/theme/accent";
+import { useYogaTheme } from "@/components/user-preferences-context";
+import { useBreathTheme, type BreathTheme, formatClock } from "./breath-theme";
+import { BreatheLotus } from "./BreatheLotus";
 import { LayoutTier } from "./use-layout-tier";
 
 /**
@@ -30,6 +32,9 @@ export function BreathStageHeader({
   onInfoPress?: () => void;
   tier?: LayoutTier;
 }) {
+  const t = useBreathTheme();
+  const { typography: yogaTypography } = useYogaTheme();
+  const styles = useMemo(() => makeStyles(t), [t]);
   const counting = countIn !== null;
   // The clock (session-length picker) is locked once a sequence is committed —
   // running OR counting in.
@@ -75,6 +80,8 @@ export function BreathStageCenter({
   countIn?: number | null;
   tier?: LayoutTier;
 }) {
+  const t = useBreathTheme();
+  const styles = useMemo(() => makeStyles(t), [t]);
   const tint = metronome ? t.accentSoft : t.phaseTint[view.kind] ?? t.accentSoft;
   const counting = countIn !== null;
   const showCount = isRunning && view.segmentType === "breath" && view.countRemaining > 0;
@@ -87,7 +94,7 @@ export function BreathStageCenter({
   const ringSize = tier === "expanded" ? 236 : 150;
   return (
     <View style={[styles.center, { height: centerH }]}>
-      {showRing ? <BreatheCircle view={view} running={isRunning} size={ringSize} metronome={metronome} /> : null}
+      {showRing ? <BreatheLotus view={view} running={isRunning} size={ringSize} metronome={metronome} /> : null}
       {counting ? (
         <>
           <Text style={[styles.phase, { color: t.accentSoft, fontSize: phaseSize }]}>Begin in</Text>
@@ -95,7 +102,7 @@ export function BreathStageCenter({
         </>
       ) : isRunning ? (
         <>
-          {!metronome && <Text style={[styles.phase, { color: tint, fontSize: phaseSize }]}>{view.label}</Text>}
+          {!metronome && <Text style={[styles.phase, { fontSize: phaseSize }]}>{view.label}</Text>}
           <Text style={[styles.count, { color: tint, fontSize: countSize }]}>
             {showCount ? view.countRemaining : " "}
           </Text>
@@ -107,7 +114,8 @@ export function BreathStageCenter({
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (t: BreathTheme) =>
+  StyleSheet.create({
   header: { alignItems: "center", marginTop: 10 }, // mirrors the yoga tab's timer block offset
   labelRow: { flexDirection: "row", alignItems: "center", gap: 6 },
   // ⓘ intentionally stays superscript: it has no top margin, so it rides higher
@@ -115,7 +123,10 @@ const styles = StyleSheet.create({
   // now lives on its own line below the countdown (RoundsIndicator), not inline.
   info: { color: t.muted, fontSize: 15 },
   center: { alignItems: "center", justifyContent: "center" }, // height set per tier
-  phase: { fontWeight: "300", letterSpacing: 2 }, // fontSize set per tier
+  // Ink, not the phase tint. The WORD names what you are doing and has to be
+  // readable at a glance mid-practice; the big number below it carries the phase
+  // colour, so the accent still does its job without the label fighting it.
+  phase: { color: fixedColors.ink, fontWeight: "300", letterSpacing: 2 },
   count: { fontWeight: "200", fontVariant: ["tabular-nums"] }, // fontSize set per tier
   idle: { color: t.muted, fontSize: 22, fontWeight: "300", letterSpacing: 2 },
 });

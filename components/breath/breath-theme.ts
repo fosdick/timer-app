@@ -3,44 +3,60 @@
  * so it matches the yoga / HIIT tabs (GreenTheme: dark background, lime active
  * numbers, olive / blue-gray labels, outline controls).
  */
-import { colorTheme } from "@/assets/styles/timer-app";
+import { useMemo } from "react";
 import { BreathPhaseKind } from "@/assets/data/breath-patterns";
-
-export const breathTheme = {
-  bg: colorTheme.backgroundColor, //            #080B0c
-  surface: "#0D110B", //                        subtle dark panel
-  line: "rgba(124, 179, 66, 0.35)", //          light green @35% — subtle borders (match yoga/HIIT greens)
-  border: colorTheme.borderColor, //            #91BD27 lime — active/control borders
-  text: colorTheme.activeTimerPrimary, //       #CDDC39 lime — primary numbers
-  label: colorTheme.labelPrimary, //            #689F38 olive
-  muted: colorTheme.activeTimerDimmed, //       #7CB342 light green — inactive/secondary (was blue-gray)
-  accent: colorTheme.activeTimerPrimary, //     #CDDC39 lime
-  accentSoft: colorTheme.activeTimerDimmed, //  #7CB342 muted lime
-  buttonText: colorTheme.fontColor, //          #629231 green
-  tintFaint: "rgba(205,220,57,0.14)", //        faint lime fill for active chips
-
-  space: { xs: 6, sm: 10, md: 16, lg: 24, xl: 36 },
-  radius: 10,
-
-  /** Soft per-phase tint. */
-  phaseTint: {
-    inhale: colorTheme.activeTimerPrimary,
-    holdIn: colorTheme.activeTimerDimmed,
-    exhale: colorTheme.labelPrimary,
-    holdOut: colorTheme.activeTimerDimmed,
-  } as Record<BreathPhaseKind, string>,
-};
+import { ACCENTS, DEFAULT_ACCENT_ID, fixedColors, withAlpha, type Accent } from "@/assets/theme/accent";
+import { useAccent } from "@/components/user-preferences-context";
 
 /**
- * Always HH:MM:SS with leading zeros (e.g. 01:10:00, 00:05:00).
+ * Breath-tab tokens for a given accent.
  *
- * Quantizes with `ceil` (not `round`) so the displayed total shares the SAME
- * integer-second boundary as the phase count (breathView.countRemaining, also
- * `ceil`). Both derive from one wall-clock elapsed, so ceiling both makes them
- * flip on the same instant instead of a fraction apart — the count-vs-total
- * desync fix. (Semantically truer too: "5s remaining" holds until a full second
- * has actually passed.)
+ * Values previously read through colorTheme (which is frozen to green at module
+ * load); they now come straight from the accent so this theme can vary. Green
+ * resolves identically — accent-parity.test.ts asserts every value.
  */
+export function makeBreathTheme(accent: Accent) {
+  return {
+    bg: fixedColors.ground, //                    #080B0c — NOT themed
+    surface: accent.surface, //                   #0D110B subtle dark panel
+    line: withAlpha(accent.mid, 0.35), //         light green @35% — subtle borders
+    border: accent.border, //                     #91BD27 — active/control borders
+    text: accent.bright, //                       #CDDC39 — primary numbers
+    label: accent.muted, //                       #689F38
+    muted: accent.mid, //                         #7CB342 — inactive/secondary
+    accent: accent.bright, //                     #CDDC39
+    accentSoft: accent.mid, //                    #7CB342
+    buttonText: accent.deep, //                   #629231
+    tintFaint: withAlpha(accent.bright, 0.14), // faint fill for active chips
+
+    space: { xs: 6, sm: 10, md: 16, lg: 24, xl: 36 },
+    radius: 10,
+
+    /** Soft per-phase tint. */
+    phaseTint: {
+      inhale: accent.bright,
+      holdIn: accent.mid,
+      exhale: accent.muted,
+      holdOut: accent.mid,
+    } as Record<BreathPhaseKind, string>,
+  };
+}
+
+export type BreathTheme = ReturnType<typeof makeBreathTheme>;
+
+/**
+ * Static green tokens, for components not yet converted to the hook. Keeping this
+ * export is what makes the migration incremental instead of one big-bang commit:
+ * an unconverted file keeps compiling and keeps rendering green.
+ */
+export const breathTheme = makeBreathTheme(ACCENTS[DEFAULT_ACCENT_ID]);
+
+/** The reactive form. Converted components use this. */
+export function useBreathTheme(): BreathTheme {
+  const accent = useAccent();
+  return useMemo(() => makeBreathTheme(accent), [accent]);
+}
+
 export function formatClock(totalSeconds: number): string {
   const s = Math.max(0, Math.ceil(totalSeconds));
   const pad = (n: number) => String(n).padStart(2, "0");

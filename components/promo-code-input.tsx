@@ -10,7 +10,7 @@
  * accidentally lose their ad-free state when revoking the promo).
  */
 
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState, useMemo } from "react";
 import {
   Pressable,
   StyleSheet,
@@ -20,7 +20,8 @@ import {
 } from "react-native";
 
 import { Constants } from "@/constants/constants";
-import { colorTheme } from "@/assets/styles/timer-app";
+import { useAppColors } from "@/components/user-preferences-context";
+import type { AppColorTheme } from "@/assets/styles/timer-app";
 import { DisplayAdsContext } from "./display-ads-context";
 import { getData } from "../assets/utils/persistent-storage";
 import {
@@ -36,6 +37,8 @@ import {
 type Feedback = { kind: "success" | "error"; text: string };
 
 const PromoCodeInput = () => {
+  const colorTheme = useAppColors();
+  const styles = useMemo(() => makeStyles(colorTheme), [colorTheme]);
   const { setDisplayAds } = useContext(DisplayAdsContext);
   const [input, setInput] = useState("");
   const [activePromos, setActivePromos] = useState<PromoId[]>([]);
@@ -186,7 +189,8 @@ const PromoCodeInput = () => {
 // surrounds, plenty of breathing room. (Was a #0a7ea4 teal, which only read as
 // "default" back when this page had a light background.)
 
-const styles = StyleSheet.create({
+const makeStyles = (colorTheme: AppColorTheme) =>
+  StyleSheet.create({
   wrapper: {
     alignItems: "stretch",
     paddingHorizontal: 20,

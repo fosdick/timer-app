@@ -61,3 +61,25 @@ appId: com.example.timer-app
     visible: "Start"
     timeout: 15000
 - takeScreenshot: "06-hitt-idle"
+
+# --- User Preferences (colour themes + pronoun) ---
+# Deep link, not the account menu. The menu renders in a React Native <Modal>,
+# which iOS puts in its own window, and Maestro can read NOTHING out of it — not
+# the testIDs, and not the text either. Verified twice against failure
+# screenshots: the menu was open with both items plainly visible while both
+# `id: menu-user-preferences` and `"App Settings"` failed to resolve.
+# expo-router serves the route directly, which skips the whole problem.
+- openLink: myapp://user-preferences
+- tapOn:
+    # iOS interposes an "Open in <app>?" system alert on a scheme link opened from
+    # outside the app. It is a UIAlertController, not an RN Modal, so Maestro can
+    # see it. optional: in case a future iOS stops prompting.
+    text: "Open"
+    optional: true
+- extendedWaitUntil:
+    # The chip's accessibilityLabel, not the visible text: the label overrides the
+    # inner <Text> in the accessibility tree, so a bare "Golden Sun" does not
+    # match. Only this screen has it.
+    visible: "Golden Sun colour theme"
+    timeout: 15000
+- takeScreenshot: "07-preferences"

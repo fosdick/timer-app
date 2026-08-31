@@ -12,7 +12,7 @@
  * Buttons (Cancel / Confirm) use the breath tab's bordered button language so
  * they match the rest of the app rather than the third-party picker's defaults.
  */
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import {
   Modal,
   StyleSheet,
@@ -30,7 +30,7 @@ import {
   formatMinutesSeconds,
   getTimePartsMinSec,
 } from "@/assets/utils/format-time";
-import { breathTheme as t } from "./breath-theme";
+import { useBreathTheme, type BreathTheme } from "./breath-theme";
 
 const MIN_ROUNDS = 1;
 const MAX_ROUNDS = 99;
@@ -54,6 +54,8 @@ export function SessionLengthModal({
   onConfirm: (totalSec: number) => void;
   onCancel: () => void;
 }) {
+  const t = useBreathTheme();
+  const styles = useMemo(() => makeStyles(t), [t]);
   const [rounds, setRounds] = useState(MIN_ROUNDS);
 
   // Seed the stepper from the current length each time the modal opens.
@@ -130,6 +132,10 @@ function StepButton({
   onPress: () => void;
   disabled: boolean;
 }) {
+  // Local (non-exported) component, so it needs the hook in its own right — styles
+  // are no longer module-level for anyone.
+  const t = useBreathTheme();
+  const styles = useMemo(() => makeStyles(t), [t]);
   return (
     <TouchableOpacity
       style={[styles.stepBtn, disabled && styles.stepBtnDisabled]}
@@ -146,7 +152,8 @@ function StepButton({
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (t: BreathTheme) =>
+  StyleSheet.create({
   backdrop: {
     flex: 1,
     backgroundColor: "rgba(0,0,0,0.55)",
@@ -189,7 +196,7 @@ const styles = StyleSheet.create({
     height: 52,
     borderRadius: 26,
     borderWidth: 1,
-    borderColor: t.border,
+    borderColor: t.label,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -222,6 +229,6 @@ const styles = StyleSheet.create({
   btnText: { fontSize: 18, fontWeight: "600", letterSpacing: 1 },
   btnCancel: { borderColor: t.line },
   btnCancelText: { color: t.muted },
-  btnConfirm: { borderColor: t.border },
+  btnConfirm: { borderColor: t.label },
   btnConfirmText: { color: t.buttonText },
 });

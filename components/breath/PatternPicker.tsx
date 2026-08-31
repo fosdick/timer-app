@@ -1,6 +1,8 @@
+import { useMemo } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { BreathPattern, BREATH_PATTERNS } from "@/assets/data/breath-patterns";
-import { breathTheme as t } from "./breath-theme";
+import { fixedColors } from "@/assets/theme/accent";
+import { useBreathTheme, type BreathTheme } from "./breath-theme";
 
 /** Row of selectable pattern chips (Box / Nadi Shodhana / Viloma / 4-7-8). */
 export function PatternPicker({
@@ -14,6 +16,8 @@ export function PatternPicker({
   onSelect: (pattern: BreathPattern) => void;
   disabled?: boolean;
 }) {
+  const t = useBreathTheme();
+  const styles = useMemo(() => makeStyles(t), [t]);
   return (
     <View style={styles.row}>
       {patterns.map((p) => {
@@ -26,7 +30,14 @@ export function PatternPicker({
             onPress={() => onSelect(p)}
             style={[styles.chip, active && styles.chipActive, disabled && !active && styles.dim]}
           >
-            <Text style={[styles.chipText, active && styles.chipTextActive]}>{p.name}</Text>
+            <Text
+              numberOfLines={1}
+              adjustsFontSizeToFit
+              minimumFontScale={0.85}
+              style={[styles.chipText, active && styles.chipTextActive]}
+            >
+              {p.name}
+            </Text>
           </TouchableOpacity>
         );
       })}
@@ -34,7 +45,12 @@ export function PatternPicker({
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (t: BreathTheme) =>
+  StyleSheet.create({
+  // EVEN GRID, three across. Chips previously sized themselves to their text, so
+  // "Nadi Shodhana" was a slab and "Box" a nub — visual weight encoded spelling
+  // rather than importance, and the set read as scattered shapes instead of one
+  // control. Fixed cells make selection the only thing that differs.
   row: {
     flexDirection: "row",
     flexWrap: "wrap",
@@ -42,14 +58,25 @@ const styles = StyleSheet.create({
     gap: t.space.sm,
   },
   chip: {
-    paddingHorizontal: t.space.md,
-    paddingVertical: t.space.xs + 2,
+    flexBasis: "30%",
+    paddingHorizontal: 4,
+    paddingVertical: t.space.xs + 3,
     borderRadius: t.radius,
     borderWidth: 1,
     borderColor: t.line,
+    alignItems: "center",
+    justifyContent: "center",
   },
-  chipActive: { backgroundColor: t.tintFaint, borderColor: t.border },
+  // Selected: same 1px thickness as unselected (that reads right already) — only
+  // the colour is toned. Was t.border, accent.BORDER #91BD27, the brightest value
+  // in the ramp, which made selection shout. t.label is accent.muted, still clearly
+  // stronger than the unselected translucent line but no longer the loudest thing
+  // on screen. Bold text stays as the primary selection signal.
+  chipActive: { backgroundColor: t.tintFaint, borderColor: t.label },
   dim: { opacity: 0.5 },
-  chipText: { color: t.muted, fontSize: 14 },
-  chipTextActive: { color: t.accent, fontWeight: "600" },
+  chipText: { color: t.muted, fontSize: 14, textAlign: "center" },
+  // The selected pattern is the one piece of state on this screen you should be
+  // able to read without looking for it, so it goes to ink while the unselected
+  // ones stay in the accent.
+  chipTextActive: { color: fixedColors.ink, fontWeight: "600" },
 });
