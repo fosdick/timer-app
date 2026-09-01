@@ -55,6 +55,19 @@ headline_for() {
   esac
 }
 
+# Bottom-right patch, in SOURCE pixels, over simulator chrome that is not part of
+# the app. iPadOS 26 runs apps in a resizable window and draws a grey resize
+# handle in that corner; it is in every raw iPad capture and no user ever sees it.
+# The ground there is flat #080B0c, so the patch is invisible.
+#
+# This covers CAPTURE ENVIRONMENT chrome only. It is not for touching up the app.
+mask_for() {
+  case "$1" in
+    iPad*)  echo "200 150" ;;   # w h — the handle measures ~180x140 at 2x
+    *)      echo "0 0" ;;
+  esac
+}
+
 # Status-bar + nav-header height to crop off the top of each capture, in PIXELS
 # per device scale. Cropping the mint header is deliberate: it leaves the panel
 # entirely dark, so the capture's own #080B0C body bleeds into the canvas with no
@@ -91,11 +104,19 @@ compose_one() {
   .shotbox { flex:1 1 auto; width:100%; display:flex; justify-content:center;
              align-items:flex-end; overflow:hidden; }
   .clip { overflow:hidden; width:${SHOT_W}px; height:${SHOT_H}px; }
-  .clip img { display:block; width:${SHOT_W}px; margin-top:-${crop}px; }
+  /* margin-top is in SCALED px, but $crop is measured in SOURCE px, so it has to
+     be converted or the crop eats more of the screen than intended. At 88% width
+     an uncorrected 220 removed 250 source px, which sliced the first row off the
+     preferences screen on iPad. */
+  .clip img { display:block; width:${SHOT_W}px; margin-top:-${crop_scaled}px; }
+  /* See mask_for(): covers the iPadOS window resize handle, not app pixels. */
+  .clip { position:relative; }
+  .mask { position:absolute; right:0; bottom:0;
+          width:${MASK_W}px; height:${MASK_H}px; background:${BG}; }
 </style></head><body>
   <div class="panel">
     <div class="headline">${headline}</div>
-    <div class="shotbox"><div class="clip"><img src="file://${raw}"></div></div>
+    <div class="shotbox"><div class="clip"><img src="file://${raw}"><div class="mask"></div></div></div>
   </div>
 </body></html>
 HTML
@@ -141,7 +162,21 @@ for slug in "${DEVICES[@]}"; do
     HEAD_SIZE=$(( cw * 58 / 1000 ))
     HEAD_PAD=$(( ch * 45 / 1000 ))
     SHOT_W=$(( cw * 88 / 100 ))
-    SHOT_H=$(( ch * 78 / 100 ))
+    # Height of the clip box, derived rather than guessed. The image is scaled to
+    # SHOT_W and then shifted up by $crop, so what REMAINS is
+    # (scaled height - crop). A fixed 78% of the panel was shorter than that on
+    # iPad and silently cut the tab bar off the bottom of every panel — the phone
+    # only escaped because its remainder happened to be smaller. Capped so the
+    # headline always keeps its room.
+    scaled_h=$(( ch * SHOT_W / cw ))
+    crop_scaled=$(( crop * SHOT_W / cw ))
+    read -r mask_w mask_h <<<"$(mask_for "$slug")"
+    MASK_W=$(( mask_w * SHOT_W / cw ))
+    MASK_H=$(( mask_h * SHOT_W / cw ))
+    export crop_scaled MASK_W MASK_H
+    SHOT_H=$(( scaled_h - crop_scaled ))
+    max_h=$(( ch * 82 / 100 ))
+    [ "$SHOT_H" -gt "$max_h" ] && SHOT_H=$max_h
     export HEAD_SIZE HEAD_PAD SHOT_W SHOT_H
     out="$PWD/$dest/$base.png"
     compose_one "$PWD/$raw" "$out" "$head" "$crop" "$cw" "$ch"
