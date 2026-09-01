@@ -5,7 +5,8 @@
 # Taps go through testIDs, NOT visible text: tapping text by coordinates proved
 # unreliable (the Start tap silently no-op'd after a UI redesign — see the repo's
 # tab/center-icon testIDs for the same reason). Buttons:
-#   breath-start-stop · yoga-start-stop · yoga-center-icon · tab-{pranayama,yoga,hitt}
+#   breath-start-stop · yoga-start-stop · yoga-center-icon · meditation-start-stop
+#   tab-{pranayama,yoga,meditation}
 # After pressing Start we wait for "Stop" to appear before screenshotting, which
 # both confirms the press registered and avoids racing the re-render.
 appId: com.example.timer-app
@@ -54,13 +55,13 @@ appId: com.example.timer-app
 - tapOn:
     id: "yoga-start-stop"     # stop the yoga timer before leaving the tab
 
-# --- HIIT (idle) ---
+# --- Meditation (idle) ---
 - tapOn:
-    id: "tab-hitt"
+    id: "tab-meditation"
 - extendedWaitUntil:
     visible: "Start"
     timeout: 15000
-- takeScreenshot: "06-hitt-idle"
+- takeScreenshot: "06-meditation-idle"
 
 # --- User Preferences (colour themes + pronoun) ---
 # Deep link, not the account menu. The menu renders in a React Native <Modal>,

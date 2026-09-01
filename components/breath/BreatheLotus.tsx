@@ -1,15 +1,10 @@
-import { useEffect, useRef, useMemo } from "react";
-import { Animated, StyleSheet, View } from "react-native";
-import Svg, { Path } from "react-native-svg";
+import { useEffect, useRef } from "react";
+import { Animated } from "react-native";
 import { BreathView } from "@/assets/data/breath-timer-core";
-import { lotus } from "@/assets/data/lotus";
-import { useBreathTheme, type BreathTheme } from "./breath-theme";
+import { LotusVisual } from "./LotusVisual";
+import { useBreathTheme } from "./breath-theme";
 
-const AnimatedSvg = Animated.createAnimatedComponent(Svg);
 
-/** The flower is drawn in a -60..60 box so a 50-unit petal has room to breathe. */
-const VIEW_BOX = "-60 -60 120 120";
-const PETALS = lotus();
 
 /**
  * A calm breath-synced lotus behind the count — the "time moving forward like
@@ -42,7 +37,6 @@ export function BreatheLotus({
   metronome?: boolean;
 }) {
   const t = useBreathTheme();
-  const styles = useMemo(() => makeStyles(t), [t]);
   const scale = useRef(new Animated.Value(CONTRACTED)).current;
   const lastPhase = useRef<string>("");
 
@@ -70,33 +64,6 @@ export function BreatheLotus({
   }, [running, metronome, view.phaseIndex, view.kind, view.segmentRemaining, scale]);
 
   const tint = metronome ? t.accentSoft : t.phaseTint[view.kind] ?? t.accentSoft;
-  return (
-    <View pointerEvents="none" style={styles.wrap}>
-      <AnimatedSvg
-        width={size}
-        height={size}
-        viewBox={VIEW_BOX}
-        style={[styles.flower, { transform: [{ scale }] }]}
-      >
-        {PETALS.map((p, i) => (
-          <Path
-            key={i}
-            d={p.d}
-            fill="none"
-            stroke={tint}
-            strokeWidth={2}
-            // Each petal is the same path, just turned. Rotating rather than
-            // baking ten paths keeps the geometry honest to the maths.
-            transform={`rotate(${p.angle})`}
-          />
-        ))}
-      </AnimatedSvg>
-    </View>
-  );
+  return <LotusVisual scale={scale} tint={tint} size={size} />;
 }
 
-const makeStyles = (t: BreathTheme) =>
-  StyleSheet.create({
-  wrap: { ...StyleSheet.absoluteFillObject, alignItems: "center", justifyContent: "center" },
-  flower: { opacity: 0.45 },
-});

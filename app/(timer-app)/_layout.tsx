@@ -4,7 +4,7 @@ import { Alert, StyleSheet, View } from "react-native";
 // import { useKeepAwake } from "expo-keep-awake";
 import { YogaSvg } from "@/assets/images/svgx/yoga";
 import { PranayamaSvg } from "@/assets/images/svgx/pranayama";
-import { HittSvg } from "@/assets/images/svgx/hitt";
+import { LotusSvg } from "@/assets/images/svgx/lotus";
 import { useAppColors } from "@/components/user-preferences-context";
 import { ActiveTimerContext } from "@/components/active-timer-context";
 import { guardTabPress } from "@/assets/utils/tab-switch-guard";
@@ -77,11 +77,11 @@ export default function TabLayout() {
           }}
         />
         <Tabs.Screen
-          name="hitt"
+          name="meditation"
           options={{
-            title: "HIIT",
-            tabBarButtonTestID: "tab-hitt",
-            tabBarIcon: ({ color, focused }) => <HittSvg color={color} />,
+            title: "Meditation",
+            tabBarButtonTestID: "tab-meditation",
+            tabBarIcon: ({ color }) => <LotusSvg color={color} />,
           }}
         />
       </Tabs>
