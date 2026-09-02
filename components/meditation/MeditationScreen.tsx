@@ -102,14 +102,16 @@ export default function MeditationScreen() {
   }, [running, config, stop, bloom]);
 
   const type = meditationType(typeId);
-  const phaseLabel =
-    view.phase === "settling"
+  // `running` is tested FIRST. A stopped session sits at elapsed 0, which is
+  // inside the settling window, so checking the phase first made an idle screen
+  // announce "Settle" before anything had started.
+  const phaseLabel = !running
+    ? "Be still"
+    : view.phase === "settling"
       ? "Settle"
       : view.phase === "closing"
         ? "Closing"
-        : running
-          ? "Sitting"
-          : "Be still";
+        : "Sitting";
 
   const lotusSize = tier === "compact" ? 150 : tier === "expanded" ? 236 : 190;
 
@@ -117,7 +119,12 @@ export default function MeditationScreen() {
     <View style={styles.screen}>
       {/* Stage — the lotus, the phase word, and the clock only if asked for. */}
       <View style={styles.stage}>
-        {running ? <LotusVisual scale={bloom} tint={t.accentSoft} size={lotusSize} /> : null}
+        {/* The flower gets its own block so the phase word sits BELOW it rather
+            than across the petals. LotusVisual absolute-fills its parent, so the
+            spacer is what reserves the room. */}
+        <View style={{ height: lotusSize, width: lotusSize }}>
+          {running ? <LotusVisual scale={bloom} tint={t.accentSoft} size={lotusSize} /> : null}
+        </View>
         <Text style={styles.phase}>{phaseLabel}</Text>
         {showClock ? (
           <Text style={styles.clock}>{formatClock(view.totalRemaining)}</Text>
@@ -212,11 +219,13 @@ export default function MeditationScreen() {
 const makeStyles = (t: BreathTheme) =>
   StyleSheet.create({
     screen: { flex: 1, paddingHorizontal: t.space.md },
+    // flex, not a fixed height: a sit is mostly empty screen, and the empty
+    // should be distributed around the flower rather than dumped underneath it.
     stage: {
-      height: 260,
+      flex: 1,
       alignItems: "center",
       justifyContent: "center",
-      marginTop: t.space.lg,
+      gap: t.space.md,
     },
     // Ink, not the accent — same reasoning as the breath tab's phase word: the
     // one thing you might glance at should not be tinted into the background.
@@ -263,7 +272,16 @@ const makeStyles = (t: BreathTheme) =>
     tick: { color: t.accent, fontSize: 13, lineHeight: 15 },
     checkLabel: { color: t.muted, fontSize: 14 },
 
-    startWrap: { alignItems: "center", paddingVertical: t.space.lg },
+    // marginBottom is the RESERVE FOR THE AD BANNER — a 60pt FULL_BANNER is
+    // absolutely positioned at the bottom of every tab scene. Making the stage
+    // flex:1 without this pushed Start straight under the banner, which is the
+    // exact regression BreathScreen already documents at buttonContainerExpanded.
+    // Never shrink it below the banner height.
+    startWrap: {
+      alignItems: "center",
+      paddingTop: t.space.lg,
+      marginBottom: 80,
+    },
     startBtn: {
       borderWidth: 1,
       borderColor: t.label,
