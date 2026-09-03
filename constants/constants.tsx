@@ -18,4 +18,13 @@ export const Constants: ConstantsType = {
   CONTACT_EMAIL: "timerapp.yoga@fastmail.fm",
 };
 
-export const YOGA_FLOW_ENABLED = false;
+/**
+ * Yoga flows — ON for evaluation on dev-flow-eval, OFF everywhere else.
+ *
+ * The flag guards FOUR places, not just the button that opens the picker: the
+ * restore-from-storage path at yoga-view.tsx:286 falls back to "manual" when
+ * flows are off, which is what stops a stored flow id from re-entering flow mode
+ * on a build where the UI cannot reach it. That leak is the reason this is a
+ * single constant rather than scattered conditionals.
+ */
+export const YOGA_FLOW_ENABLED = true;
